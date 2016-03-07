@@ -1,0 +1,6 @@
+.Rhistory
+.Rproj.user
+*.Rproj
+man/*
+NAMESPACE
+

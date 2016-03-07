@@ -1,0 +1,20 @@
+readIniFile <- function(file) {
+  X <- readLines(file)
+  sections <- grep("^\\[.*\\]$", X)
+  starts <- sections + 1
+  ends <- c(sections[-1] - 1, length(X))
+  L <- vector(mode="list", length=length(sections))
+  names(L) <- gsub("\\[|\\]", "", X[sections])
+  for(i in seq(along = sections)){
+    pairs <- X[seq(starts[i], ends[i])]
+    pairs <- pairs[pairs != ""]
+    pairs <- strsplit(pairs, "=")
+
+    key <- sapply(pairs, function(p) trimws(p[1]))
+    value <- lapply(pairs, function(p) type.convert(trimws(p[2])))
+
+    L[[i]] <- value
+    names(L[[i]]) <- key
+  }
+  L
+}
