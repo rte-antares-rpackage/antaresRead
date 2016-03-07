@@ -51,72 +51,119 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   res
 }
 
-.getOutputHeader <- function(path) {
+
+#' .getOutputHeader
+#'
+#' Private function that uses the first lines of an output file to generate
+#' column names for this file.
+#'
+#' @param path
+#' Path of the output file
+#' @param objectName
+#' (character) object type represented in the file (node ou link)
+#'
+#' @return
+#' Vector containing the generated column names.
+#'
+.getOutputHeader <- function(path, objectName) {
   colname <- read.table(path, header=F, skip = 4, nrows = 3, sep = "\t")
   colname <- apply(colname[c(1,3),], 2, paste, collapse = "_")
-  colname[1:2] <- c("node", "timeId")
+  colname[1:2] <- c(objectName, "timeId")
   colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
   colname
 }
 
-# Importation des résultats pour un seul noeud. La fonction importOutput s'occupe
-# d'itérer sur tous les noeuds
-.importOutputForNode <- function(node, synthesis, mcYears, timeStep) {
+#' .importOutput
+#'
+#' Private function used to import the results of a simulation. The type on result
+#' is determined by the arguments "folder" and "file"
+#' - "areas", "values"  => nodes
+#' - "areas", "details" => clusters
+#' - "links", "values"  => links
+#'
+#' @return
+#' a table if synthesis=TRUE or a list of tables (one table per Monte-Carlo year)
+#'
+.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep) {
   opts <- getOption("antares")
 
-  if (synthesis) { # Récupération résultats synthétiques
+  if (synthesis) {
+    path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
+                    opts$path, opts$opath, folder, id, file, timeStep)
 
-    path <- sprintf("%s/%s/mc-all/areas/%s/values-%s.txt",
-                    opts$path, opts$opath, node, timeStep)
     if (!file.exists(path)) {
-      message("Data not found for node", node)
+      message(timeStep,  " output not found for ", objectName, " ", id)
       return(NULL)
     }
-
-    colname <- .getOutputHeader(path)
 
     res <- fread(path, sep = "\t", header = F, skip = 7, stringsAsFactors = TRUE,
                  integer64 = "numeric")
+    setnames(res, names(res), .getOutputHeader(path, objectName))
 
-  } else { # Récupération des années Monte-Carlo
-
-    path <- sprintf("%s/%s/mc-ind/%%05.0f/areas/%s/values-%s.txt",
-                    opts$path, opts$opath, node, timeStep)
+  } else {
+    path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/values-%s.txt",
+                    opts$path, opts$opath, folder, id, timeStep)
 
     if (!file.exists(sprintf(path, 1))) {
-      message("Data not found for node", node)
+      message(timeStep,  " output not found for ", objectName, " ", id)
       return(NULL)
     }
 
-    colname <- c(.getOutputHeader(sprintf(path, 1)), "mcYear")
-
-    # Importation des données
     res <- llply(mcYears, function(i) {
       x <- fread(sprintf(path,i), sep = "\t", header = F, skip = 7,
                  stringsAsFactors = TRUE, integer64 = "numeric")
       x$mcYear <- i
+      setnames(x, names(x),
+               c(.getOutputHeader(sprintf(path, i), objectName), "McYear"))
+
       x
     })
-
-    res <- rbindlist(res)
-
   }
 
-  setnames(res, names(res), colname)
+  res
+}
+
+#' .importOutputForNode
+#'
+#' Private function used to import the output for one node.
+#'
+#' @return
+#' a data.table
+.importOutputForNode <- function(node, synthesis, mcYears, timeStep) {
+  res <- .importOutput("areas", "values", node, "node", synthesis, mcYears, timeStep)
+  if (is.null(res)) return (NULL)
+
+  if (!synthesis)  res <- rbindlist(res)
+
   res$node <- as.factor(rep(node, nrow(res)))
 
   res
 }
 
-
+#' .importOutputForClusters
+#'
+#' Private function used to import the output for the clusters of one node
+#'
+#' @return
+#' a data.table
 .importOutputForClusters <- function(node, synthesis, mcYears, timeStep) {
-  opts <- getOption("antares")
 
-  if (synthesis) {
-
-  }
 }
 
+#' .importOutputForLink
+#'
+#' Private function used to import the output of one link.
+#'
+#' @return
+#' a data.table
 .importOutputForLink <- function(link, synthesis, mcYears, timeStep) {
+  res <- .importOutput("links", "values", link, "link", synthesis, mcYears, timeStep)
+  if (is.null(res)) return (NULL)
 
+  if (!synthesis)  res <- rbindlist(res)
+
+  res$link <- as.factor(rep(link, nrow(res)))
+
+  res
 }
+
