@@ -24,6 +24,18 @@
 #' @param timeStep
 #' Resolution of the data to import: hourly (default), daily, weekly, monthly or
 #' annual.
+#' @param parallel
+#' Should the importation be parallelized ? (See details)
+#'
+#' @details
+#' In order to parallelize the importation, you have to install the package
+#' \href{https://cran.r-project.org/web/packages/foreach/index.html}{foreach}
+#' and a package that provides a parallel backend (for instance the package
+#' \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}).
+#'
+#' Before running the function with argument \code{parallel=TRUE}, you need to
+#' register your parallel backend. For instance, if you use package "doParallel"
+#' you need to use the function \code{\link{registerDoParallel}} once per session.
 #'
 #' @return
 #' An object of class "antaresOutput". It is a list with the following elements:
@@ -38,9 +50,18 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
                          clusters = NULL, inputs = NULL, misc = NULL,
                          synthesis = getOption("antares")$synthesis,
                          mcYears = 1:getOption("antares")$mcYears,
-                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual")) {
+                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                         parallel = FALSE) {
 
   timeStep <- match.arg(timeStep)
+  opts <- getOption("antares")
+
+  # Can the importation be parallelized ?
+  if (parallel) {
+    if(!require(foreach)) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
+    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend for instance with function 'registerDoParallel'")
+  }
+
   res <- list()
 
   .addOutputToRes <- function(name, ids, outputFun) {
@@ -48,9 +69,11 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
     cat(sprintf("Importing %s\n", name))
 
-    tmp <- llply(ids, outputFun,
-                 synthesis=synthesis, mcYears=mcYears,timeStep=timeStep,
-                 .progress="text")
+    tmp <- llply(ids, outputFun, .progress="text",
+                 synthesis=synthesis, mcYears=mcYears,timeStep=timeStep, opts=opts,
+                 .parallel = parallel,
+                 .paropts = list(.packages="antares",
+                                 .export=c(".getOutputHeader", ".importOutput")))
 
     res[[name]] <<- rbindlist(tmp)
   }
@@ -97,9 +120,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #' @return
 #' a table if synthesis=TRUE or a list of tables (one table per Monte-Carlo year)
 #'
-.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep) {
-  opts <- getOption("antares")
-
+.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts) {
   if (synthesis) {
 
     path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
@@ -148,8 +169,8 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #'
 #' @return
 #' a data.table
-.importOutputForNode <- function(node, synthesis, mcYears, timeStep) {
-  res <- .importOutput("areas", "values", node, "node", synthesis, mcYears, timeStep)
+.importOutputForNode <- function(node, synthesis, mcYears, timeStep, opts) {
+  res <- .importOutput("areas", "values", node, "node", synthesis, mcYears, timeStep, opts)
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)
@@ -163,8 +184,8 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #'
 #' @return
 #' a data.table
-.importOutputForClusters <- function(node, synthesis, mcYears, timeStep) {
-  res <- .importOutput("areas", "details", node, "node", synthesis, mcYears, timeStep)
+.importOutputForClusters <- function(node, synthesis, mcYears, timeStep, opts) {
+  res <- .importOutput("areas", "details", node, "node", synthesis, mcYears, timeStep, opts)
   if (is.null(res)) return(NULL)
 
   .reshapeData <- function(x) {
@@ -201,8 +222,8 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #'
 #' @return
 #' a data.table
-.importOutputForLink <- function(link, synthesis, mcYears, timeStep) {
-  res <- .importOutput("links", "values", link, "link", synthesis, mcYears, timeStep)
+.importOutputForLink <- function(link, synthesis, mcYears, timeStep, opts) {
+  res <- .importOutput("links", "values", link, "link", synthesis, mcYears, timeStep, opts)
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)
