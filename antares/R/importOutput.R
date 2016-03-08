@@ -43,35 +43,21 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   timeStep <- match.arg(timeStep)
   res <- list()
 
-  # Node results
-  if (!is.null(nodes)) {
-    cat("Importing nodes\n")
-    res$nodes <- llply(nodes, .importOutputForNode,
-                       synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
-                       .progress="text")
+  .addOutputToRes <- function(name, ids, outputFun) {
+    if (is.null(ids)) return(NULL)
 
-    res$nodes <- rbindlist(res$nodes)
+    cat(sprintf("Importing %s\n", name))
+
+    tmp <- llply(ids, outputFun,
+                 synthesis=synthesis, mcYears=mcYears,timeStep=timeStep,
+                 .progress="text")
+
+    res[[name]] <<- rbindlist(tmp)
   }
 
-  # Link results
-  if (!is.null(links)) {
-    cat("Importing links\n")
-    res$links <- llply(links, .importOutputForLink,
-                       synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
-                       .progress="text")
-
-    res$links <- rbindlist(res$links)
-  }
-
-  # cluster results
-  if (!is.null(clusters)) {
-    cat("Importing clusters\n")
-    res$clusters <- llply(clusters, .importOutputForClusters,
-                          synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
-                         .progress="text")
-
-    res$clusters <- rbindlist(res$clusters)
-  }
+  .addOutputToRes("nodes", nodes, .importOutputForNode)
+  .addOutputToRes("links", links, .importOutputForLink)
+  .addOutputToRes("clusters", clusters, .importOutputForClusters)
 
   class(res) <- append("antaresOutput", class(res))
 
@@ -115,6 +101,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   opts <- getOption("antares")
 
   if (synthesis) {
+
     path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
 
@@ -127,7 +114,10 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
                  integer64 = "numeric")
     setnames(res, names(res), .getOutputHeader(path, objectName))
 
+    res[, objectName] <- as.factor(rep(id, nrow(res)))
+
   } else {
+
     path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
 
@@ -142,6 +132,8 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
       x$mcYear <- i
       setnames(x, names(x),
                c(.getOutputHeader(sprintf(path, i), objectName), "mcYear"))
+
+      x[, objectName] <- as.factor(rep(id, nrow(x)))
 
       x
     })
@@ -162,8 +154,6 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
   if (!synthesis)  res <- rbindlist(res)
 
-  res$node <- as.factor(rep(node, nrow(res)))
-
   res
 }
 
@@ -178,7 +168,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   if (is.null(res)) return(NULL)
 
   .reshapeData <- function(x) {
-    # For each cluster, there are two columns with same name but diffrent content.
+    # For each cluster, there are two columns with same name but different content.
     # Fix that.
     idVars <- c("node", "timeId", "day", "week", "month", "hour", "mcYear")
 
@@ -202,8 +192,6 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
     res <- rbindlist(res)
   }
 
-  res$node <- as.factor(rep(node, nrow(res)))
-
   res
 }
 
@@ -218,8 +206,6 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)
-
-  res$link <- as.factor(rep(link, nrow(res)))
 
   res
 }
