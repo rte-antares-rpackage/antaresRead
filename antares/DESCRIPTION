@@ -11,6 +11,5 @@ LazyData: TRUE
 Depends:
     lubridate,
     data.table,
-    reshape2,
     plyr
 RoxygenNote: 5.0.1
