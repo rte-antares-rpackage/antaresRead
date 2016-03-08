@@ -4,22 +4,26 @@
 #' links and Monte-Carlo years specified by the user.
 #'
 #' @param nodes
-#' vector containing the name of nodes of interest. NULL if you do not want to
+#' vector containing the names of the nodes of interest. NULL if you do not want to
 #' import results for any node.
 #' @param links
 #' vector containing the name of links of interest. NULL if you do not want to
 #' import results for any link.
+#' @param clusters
+#' vector containing the name of the nodes for wich you want to import results at
+#' cluster level.
+#' @param inputs
+#' vector containing the name of the nodes for wich you want to import inputs.
+#' @param misc
+#' vector containing the name of the nodes for wich you want to import misc.
 #' @param synthesis
 #' TRUE if you want to import the synthetic results. FALSE if you prefer to import
-#' year by year results
+#' year by year results.
 #' @param mcYears
 #' Index of the Monte-Carlo years to import. Used only if synthesis is FALSE.
 #' @param timeStep
-#' Resolution of the data to import: hourly, daily, weekly, monthly or annual
-#' @param inputs
-#' Should inputs be imported?
-#' @param misc
-#' Should misc be imported?
+#' Resolution of the data to import: hourly (default), daily, weekly, monthly or
+#' annual.
 #'
 #' @return
 #' An object of class "antaresOutput". It is a list with the following elements:
@@ -31,16 +35,17 @@
 #'
 importOutput <- function(nodes = getOption("antares")$nodeList,
                          links = getOption("antares")$linkList,
+                         clusters = NULL, inputs = NULL, misc = NULL,
                          synthesis = getOption("antares")$synthesis,
                          mcYears = 1:getOption("antares")$mcYears,
-                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                         clusters = FALSE, inputs = FALSE, misc = FALSE) {
+                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual")) {
 
-  timeStep <- timeStep[1]
+  timeStep <- match.arg(timeStep)
   res <- list()
 
   # Node results
   if (!is.null(nodes)) {
+    cat("Importing nodes\n")
     res$nodes <- llply(nodes, .importOutputForNode,
                        synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
                        .progress="text")
@@ -48,9 +53,27 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
     res$nodes <- rbindlist(res$nodes)
   }
 
-  # Links results
+  # Link results
+  if (!is.null(links)) {
+    cat("Importing links\n")
+    res$links <- llply(links, .importOutputForLink,
+                       synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
+                       .progress="text")
+
+    res$links <- rbindlist(res$links)
+  }
 
   # cluster results
+  if (!is.null(clusters)) {
+    cat("Importing clusters\n")
+    res$clusters <- llply(clusters, .importOutputForClusters,
+                          synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
+                         .progress="text")
+
+    res$clusters <- rbindlist(res$clusters)
+  }
+
+  class(res) <- append("antaresOutput", class(res))
 
   res
 }
@@ -200,4 +223,3 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
   res
 }
-
