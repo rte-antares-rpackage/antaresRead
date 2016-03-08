@@ -39,7 +39,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   timeStep <- timeStep[1]
   res <- list()
 
-  # Importation des résultats pour les noeuds
+  # Node results
   if (!is.null(nodes)) {
     res$nodes <- llply(nodes, .importOutputForNode,
                        synthesis = synthesis, mcYears=mcYears, timeStep=timeStep,
@@ -47,6 +47,10 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
     res$nodes <- rbindlist(res$nodes)
   }
+
+  # Links results
+
+  # cluster results
 
   res
 }
@@ -75,7 +79,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
 #' .importOutput
 #'
-#' Private function used to import the results of a simulation. The type on result
+#' Private function used to import the results of a simulation. The type of result
 #' is determined by the arguments "folder" and "file"
 #' - "areas", "values"  => nodes
 #' - "areas", "details" => clusters
@@ -101,8 +105,8 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
     setnames(res, names(res), .getOutputHeader(path, objectName))
 
   } else {
-    path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/values-%s.txt",
-                    opts$path, opts$opath, folder, id, timeStep)
+    path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
+                    opts$path, opts$opath, folder, id, file, timeStep)
 
     if (!file.exists(sprintf(path, 1))) {
       message(timeStep,  " output not found for ", objectName, " ", id)
@@ -114,7 +118,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
                  stringsAsFactors = TRUE, integer64 = "numeric")
       x$mcYear <- i
       setnames(x, names(x),
-               c(.getOutputHeader(sprintf(path, i), objectName), "McYear"))
+               c(.getOutputHeader(sprintf(path, i), objectName), "mcYear"))
 
       x
     })
@@ -147,7 +151,37 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #' @return
 #' a data.table
 .importOutputForClusters <- function(node, synthesis, mcYears, timeStep) {
+  res <- .importOutput("areas", "details", node, "node", synthesis, mcYears, timeStep)
+  if (is.null(res)) return(NULL)
 
+  .reshapeData <- function(x) {
+    # For each cluster, there are two columns with same name but diffrent content.
+    # Fix that.
+    idVars <- c("node", "timeId", "day", "week", "month", "hour", "mcYear")
+
+    n <- names(x)
+    idx <- ! n %in% idVars
+    n[idx] <- paste0(n[idx] , ifelse(duplicated(n[idx]), "|NP Cost", "|MWh"))
+    setnames(x, 1:ncol(x), n)
+
+    # reshape data
+    x <- data.table::melt(x, id.vars = intersect(idVars, names(x)))
+    x$cluster <- gsub("\\|.*$", "", x$variable)
+    x$unit <- gsub("^.*\\|", "", x$variable)
+    x$variable <- NULL
+    data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
+  }
+
+  if (synthesis) {
+    res <- .reshapeData(res)
+  } else {
+    res <- llply(res, .reshapeData)
+    res <- rbindlist(res)
+  }
+
+  res$node <- as.factor(rep(node, nrow(res)))
+
+  res
 }
 
 #' .importOutputForLink
