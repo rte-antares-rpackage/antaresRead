@@ -69,11 +69,10 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
     cat(sprintf("Importing %s\n", name))
 
-    tmp <- llply(ids, outputFun, .progress="text",
+    tmp <- llply(ids, function(x, ...) outputFun(x, ...), .progress="text",
                  synthesis=synthesis, mcYears=mcYears,timeStep=timeStep, opts=opts,
                  .parallel = parallel,
-                 .paropts = list(.packages="antares",
-                                 .export=c(".getOutputHeader", ".importOutput")))
+                 .paropts = list(.packages="antares"))
 
     res[[name]] <<- rbindlist(tmp)
   }
@@ -121,7 +120,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 #' a table if synthesis=TRUE or a list of tables (one table per Monte-Carlo year)
 #'
 .importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts) {
-  if (synthesis) {
+  if (synthesis) { # Only get synthesis results
 
     path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
@@ -137,7 +136,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
     res[, objectName] <- as.factor(rep(id, nrow(res)))
 
-  } else {
+  } else { # Get Monte Carlo years
 
     path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
@@ -200,7 +199,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
     # reshape data
     x <- data.table::melt(x, id.vars = intersect(idVars, names(x)))
-    x$cluster <- gsub("\\|.*$", "", x$variable)
+    x$cluster <- as.factor(gsub("\\|.*$", "", x$variable))
     x$unit <- gsub("^.*\\|", "", x$variable)
     x$variable <- NULL
     data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
