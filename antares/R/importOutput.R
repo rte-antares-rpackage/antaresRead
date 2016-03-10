@@ -59,7 +59,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
   # Can the importation be parallelized ?
   if (parallel) {
     if(!require(foreach)) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
-    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend for instance with function 'registerDoParallel'")
+    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
 
   res <- list()

@@ -11,32 +11,32 @@
 #' @return A list containing various information about the simulation
 #'
 #' @examples
-#' setSimulationPath()
+#' opts <- setSimulationPath()
 #'
 #' @export
 #'
 setSimulationPath <- function(path, trace=1) {
   if (missing(path)) {
-    # /!\ NE FONCTIONNERAIT QUE SUR WINDOWS
+    # /!\ MAY WORK ONLY ON WINDOWS
     path <- choose.dir(getwd(), "Select an Antares simulation directory")
   }
 
   oldwd <- getwd()
   setwd(path)
 
-  # Vérifier que c'est bien une simulation Antares
+  # Check that the path id an Antares simulation
   if (!file.exists("info.antares-output")) stop("Not an Antares simulation")
 
-  # Récupérer les infos basiques sur la simulation
+  # Get basic information about the simulation
   info <- readIniFile("info.antares-output")$general
 
-  # Où se trouvent les résultats ?
+  # Where are located the results ?
   opath <- switch(as.character(info$mode),
                   "draft" = "adequacy-draft",
                   "Economy" = "economy",
                   "Adequacy" = "adequacy")
 
-  # Quels résultats sont disponibles ? Synthèse ? Années Monte-Carlo ?
+  # Which results are available ? Synthesis ? Monte-Carlo years ?
   synthesis <- file.exists(file.path(opath, "mc-all"))
   yearByYear <- file.exists(file.path(opath, "mc-ind"))
   scenarios <- file.exists("ts-numbers")
@@ -47,7 +47,7 @@ setSimulationPath <- function(path, trace=1) {
 
   if (!synthesis & !yearByYear) stop("No results found")
 
-  # Liste des noeuds et des liens
+  # List of available nodes and links
   opath2 <- file.path(opath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
   nodeList <- list.files(file.path(opath2, "areas"))
   linkList <- list.files(file.path(opath2, "links"))
@@ -76,7 +76,7 @@ setSimulationPath <- function(path, trace=1) {
   invisible(res)
 }
 
-# Fonction privée affichant des informations sur le projet
+# Private function that prints info about the simulation
 printInfo <- function(res, trace) {
   if (trace == 0) return()
   if (trace >= 1) {

@@ -1,3 +1,12 @@
+#' Private function that reads the content of a .ini file and convert it to a
+#' list
+#'
+#' @param file
+#' file path
+#'
+#' @return
+#' A list with an element for each section of the .ini file.
+#'
 readIniFile <- function(file) {
   X <- readLines(file)
   sections <- grep("^\\[.*\\]$", X)

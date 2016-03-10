@@ -12,6 +12,8 @@
 #' @return
 #' character vector containing link names.
 #'
+#' @export
+#'
 getLinks <- function(nodes, internalOnly=FALSE) {
   l <- getOption("antares")$linkList
   lsplit <- tstrsplit(l, " - ")
