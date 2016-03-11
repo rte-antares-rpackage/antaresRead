@@ -20,7 +20,12 @@ readIniFile <- function(file) {
     pairs <- strsplit(pairs, "=")
 
     key <- sapply(pairs, function(p) trimws(p[1]))
-    value <- lapply(pairs, function(p) type.convert(trimws(p[2])))
+    value <- lapply(pairs, function(p) {
+      v <- trimws(p[2])
+      if (v == "true") return(TRUE)
+      if (v == "false") return(FALSE)
+      type.convert(v)
+    })
 
     L[[i]] <- value
     names(L[[i]]) <- key
