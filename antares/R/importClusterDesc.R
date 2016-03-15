@@ -32,5 +32,8 @@ importClusterDesc <- function() {
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })
 
-  as.data.table(res)
+  res <- as.data.table(res)
+  setnames(res, "name", "cluster")
+
+  res
 }

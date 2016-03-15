@@ -286,7 +286,7 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
     setnames(x, 1:ncol(x), n)
 
     # reshape data
-    x <- data.table::melt(x, id.vars = intersect(idVars, names(x)))
+    x <- data.table::melt(x, id.vars = intersect(pkgEnv$idVars, names(x)))
     x$cluster <- as.factor(gsub("\\|.*$", "", x$variable))
     x$unit <- gsub("^.*\\|", "", x$variable)
     x$variable <- NULL
