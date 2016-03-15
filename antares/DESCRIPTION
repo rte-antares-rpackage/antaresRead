@@ -9,7 +9,6 @@ Description: Import, manipulate and explore the results of an Antares simulation
 License: rte
 LazyData: TRUE
 Depends:
-    lubridate,
     data.table,
     plyr
 RoxygenNote: 5.0.1
