@@ -26,6 +26,9 @@
 #' annual.
 #' @param parallel
 #' Should the importation be parallelized ? (See details)
+#' @param simplify
+#' If TRUE and only one type of output is imported then a data.table is returned.
+#' If FALSE, the result will always be a list of class "antaresOutput".
 #'
 #' @details
 #' In order to parallelize the importation, you have to install the package
@@ -51,7 +54,7 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
                          synthesis = getOption("antares")$synthesis,
                          mcYears = 1:getOption("antares")$mcYears,
                          timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                         parallel = FALSE) {
+                         parallel = FALSE, simplify = TRUE) {
 
   timeStep <- match.arg(timeStep)
   opts <- getOption("antares")
@@ -62,10 +65,11 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
     if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
 
-  res <- list()
+  res <- list() # Object the function will return
 
+  # local function that add a type of output to the object "res"
   .addOutputToRes <- function(name, ids, outputFun) {
-    if (is.null(ids)) return(NULL)
+    if (is.null(ids) | length(ids) == 0) return(NULL)
 
     cat(sprintf("Importing %s\n", name))
 
@@ -77,11 +81,15 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
     res[[name]] <<- rbindlist(tmp)
   }
 
+  # Add output to res object.
   .addOutputToRes("nodes", nodes, .importOutputForNode)
   .addOutputToRes("links", links, .importOutputForLink)
   .addOutputToRes("clusters", clusters, .importOutputForClusters)
 
   class(res) <- append("antaresOutput", class(res))
+
+  # Simplify the result if possible
+  if (simplify & length(res) == 1) res <- res[[1]]
 
   res
 }
