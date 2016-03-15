@@ -83,12 +83,12 @@ importOutput <- function(nodes = NULL,
   timeStep <- match.arg(timeStep)
   opts <- getOption("antares")
 
-  if (is.null(nodes) & is.null(links) & is.null(links)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters)) nodes <- "all"
 
   # Manage arguments equal to "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
-  if (identical(clusters, "all")) nodes <- opts$clusters
+  if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
 
   # Can the importation be parallelized ?
   if (parallel) {

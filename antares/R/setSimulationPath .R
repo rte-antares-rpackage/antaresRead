@@ -52,6 +52,14 @@ setSimulationPath <- function(path, trace=1) {
   nodeList <- list.files(file.path(opath2, "areas"))
   linkList <- list.files(file.path(opath2, "links"))
 
+  # Nodes containing clusters
+  hasClusters <- laply(file.path(opath2, "areas", nodeList), function(x) {
+    f <- list.files(x)
+    any(grepl("details", f))
+  })
+
+  nodesWithClusters <- nodeList[hasClusters]
+
   res <- list(
     path = path,
     opath = opath,
@@ -64,7 +72,8 @@ setSimulationPath <- function(path, trace=1) {
     antaresVersion = info$version,
     start = as.POSIXct(Sys.time()),
     nodeList = nodeList,
-    linkList = linkList
+    linkList = linkList,
+    nodesWithClusters = nodesWithClusters
   )
 
   options(antares=res)

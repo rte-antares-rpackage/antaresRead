@@ -4,8 +4,8 @@
 #' antares study: type, capacity, marginal cost, etc.
 #'
 #' @return
-#' A data.frame with one line per cluster. The columns of the data.frame may
-#' change between different versions of Antares, but there will always be a column
+#' A data.table with one line per cluster. The columns of the data.table may
+#' change between different projects, but there will always be a column
 #' "cluster" containing the name of the cluster and a column "node" containing the
 #' name of the node it belongs to.
 #'
@@ -20,7 +20,7 @@ importClusterDesc <- function() {
 
   nodes <- list.files(path)
 
-  ldply(nodes, function(x) {
+  res <- ldply(nodes, function(x) {
     clusters <- readIniFile(file.path(path, x, "list.ini"))
 
     if (length(clusters) == 0) return(NULL)
@@ -31,4 +31,6 @@ importClusterDesc <- function() {
 
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })
+
+  as.data.table(res)
 }
