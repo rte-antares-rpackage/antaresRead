@@ -4,29 +4,47 @@
 #' links and/or clusters at a desired resolution (hourly, daily, weekly,
 #' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 #'
-#' @param nodes vector containing the names of the nodes to import. If
+#' @param nodes
+#'   vector containing the names of the nodes to import. If
 #'   \code{NULL} no node is imported. The special value \code{"all"} tells the
 #'   function to import all nodes.
-#' @param links vector containing the name of links to import. If \code{NULL} no
+#' @param links
+#'   vector containing the name of links to import. If \code{NULL} no
 #'   node is imported. The special value \code{"all"} tells the function to
 #'   import all nodes. Use function \code{\link{getLinks}} to import all links
 #'   connected to some nodes.
-#' @param clusters vector containing the name of the nodes for wich you want to
+#' @param clusters
+#'   vector containing the name of the nodes for wich you want to
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
-#' @param inputs vector containing the name of the nodes for wich you want to
+#' @param inputs
+#'   vector containing the name of the nodes for wich you want to
 #'   import inputs.
-#' @param misc vector containing the name of the nodes for wich you want to
+#' @param misc
+#'   vector containing the name of the nodes for wich you want to
 #'   import misc.
-#' @param synthesis TRUE if you want to import the synthetic results. FALSE if
+#' @param select
+#'   character vector containing the name of the columns to import. If this
+#'   argument is \code{NULL}, all variables are imported. Special names
+#'   \code{"allNodes"} and \code{"allLinks"} indicate to the function to import
+#'   all variables for nodes or for links. The list of available variables can
+#'   be seen with the command \code{getOption("antares")$variables}.  Id
+#'   variables like \code{node}, \code{link} or \code{timeId} are automatically
+#'   imported.
+#' @param synthesis
+#'   TRUE if you want to import the synthetic results. FALSE if
 #'   you prefer to import year by year results.
-#' @param mcYears Index of the Monte-Carlo years to import. Used only if
+#' @param mcYears
+#'   Index of the Monte-Carlo years to import. Used only if
 #'   synthesis is FALSE.
-#' @param timeStep Resolution of the data to import: hourly (default), daily,
+#' @param timeStep
+#'   Resolution of the data to import: hourly (default), daily,
 #'   weekly, monthly or annual.
-#' @param parallel Should the importation be parallelized ? (See details)
-#' @param simplify If TRUE and only one type of output is imported then a
+#' @param parallel
+#'   Should the importation be parallelized ? (See details)
+#' @param simplify
+#'   If TRUE and only one type of output is imported then a
 #'   data.table is returned. If FALSE, the result will always be a list of class
 #'   "antaresOutput".
 #'
@@ -72,23 +90,28 @@
 #'
 #' @export
 #'
-importOutput <- function(nodes = NULL,
-                         links = NULL,
-                         clusters = NULL, inputs = NULL, misc = NULL,
+importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
+                         inputs = NULL, misc = NULL,
+                         select = NULL,
                          synthesis = getOption("antares")$synthesis,
                          mcYears = 1:getOption("antares")$mcYears,
                          timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                          parallel = FALSE, simplify = TRUE) {
 
   timeStep <- match.arg(timeStep)
+  if (!is.list(select)) select <- list(nodes = select, links = select)
   opts <- getOption("antares")
 
+  # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters)) nodes <- "all"
 
-  # Manage arguments equal to "all"
+  # Manage special values ("all", "allNode", "allLink")
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
+
+  select$nodes <- if("allNodes" %in% select$nodes) NULL else select$nodes
+  select$links <- if("allLinks" %in% select$links) NULL else select$links
 
   # Can the importation be parallelized ?
   if (parallel) {
@@ -99,13 +122,14 @@ importOutput <- function(nodes = NULL,
   res <- list() # Object the function will return
 
   # local function that add a type of output to the object "res"
-  .addOutputToRes <- function(name, ids, outputFun) {
+  .addOutputToRes <- function(name, ids, outputFun, select) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
 
     cat(sprintf("Importing %s\n", name))
 
     tmp <- llply(ids, function(x, ...) outputFun(x, ...), .progress="text",
-                 synthesis=synthesis, mcYears=mcYears,timeStep=timeStep, opts=opts,
+                 synthesis=synthesis, mcYears=mcYears,timeStep=timeStep,
+                 opts=opts, select = select,
                  .parallel = parallel,
                  .paropts = list(.packages="antares"))
 
@@ -113,9 +137,9 @@ importOutput <- function(nodes = NULL,
   }
 
   # Add output to res object.
-  .addOutputToRes("nodes", nodes, .importOutputForNode)
-  .addOutputToRes("links", links, .importOutputForLink)
-  .addOutputToRes("clusters", clusters, .importOutputForClusters)
+  .addOutputToRes("nodes", nodes, .importOutputForNode, select$nodes)
+  .addOutputToRes("links", links, .importOutputForLink, select$links)
+  .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
 
   class(res) <- append("antaresOutput", class(res))
 
@@ -158,39 +182,65 @@ importOutput <- function(nodes = NULL,
 #' @return
 #' a table if synthesis=TRUE or a list of tables (one table per Monte-Carlo year)
 #'
-.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts) {
-  if (synthesis) { # Only get synthesis results
+.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts, select) {
+
+  if (synthesis) { # Only get synthesis results ################################
 
     path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
 
+    # Check existence of the output file
     if (!file.exists(path)) {
       message(timeStep,  " output not found for ", objectName, " ", id)
       return(NULL)
     }
 
-    res <- fread(path, sep = "\t", header = F, skip = 7, stringsAsFactors = TRUE,
-                 integer64 = "numeric")
-    setnames(res, names(res), .getOutputHeader(path, objectName))
+    colNames <- .getOutputHeader(path, objectName)
+
+    # Select columns to import
+    if (is.null(select)) {
+      selectCol <- 1:length(colNames)
+    } else {
+      selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
+      colNames <- colNames[selectCol]
+    }
+
+    res <- fread(path, sep = "\t", header = F, skip = 7, select = selectCol,
+                 stringsAsFactors = TRUE, integer64 = "numeric")
+    setnames(res, names(res), colNames)
 
     res[, objectName] <- as.factor(rep(id, nrow(res)))
 
-  } else { # Get Monte Carlo years
+  } else { # Get Monte Carlo scenarios #########################################
 
     path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
                     opts$path, opts$opath, folder, id, file, timeStep)
 
+    # Check output is available.
     if (!file.exists(sprintf(path, 1))) {
       message(timeStep,  " output not found for ", objectName, " ", id)
       return(NULL)
     }
 
+    # Loop over Monte-Carlo years.
     res <- llply(mcYears, function(i) {
+
+      colNames <- .getOutputHeader(sprintf(path,i), objectName)
+
+      # Select columns to import
+      if (is.null(select)) {
+        selectCol <- 1:length(colNames)
+      } else {
+        selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
+        colNames <- colNames[selectCol]
+      }
+
+      # Import output
       x <- fread(sprintf(path,i), sep = "\t", header = F, skip = 7,
+                 select = selectCol,
                  stringsAsFactors = TRUE, integer64 = "numeric")
       x$mcYear <- i
-      setnames(x, names(x),
-               c(.getOutputHeader(sprintf(path, i), objectName), "mcYear"))
+      setnames(x, names(x), c(colNames, "mcYear"))
 
       x[, objectName] <- as.factor(rep(id, nrow(x)))
 
@@ -207,8 +257,8 @@ importOutput <- function(nodes = NULL,
 #'
 #' @return
 #' a data.table
-.importOutputForNode <- function(node, synthesis, mcYears, timeStep, opts) {
-  res <- .importOutput("areas", "values", node, "node", synthesis, mcYears, timeStep, opts)
+.importOutputForNode <- function(node, synthesis, ...) {
+  res <- .importOutput("areas", "values", node, "node", synthesis, ...)
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)
@@ -222,17 +272,16 @@ importOutput <- function(nodes = NULL,
 #'
 #' @return
 #' a data.table
-.importOutputForClusters <- function(node, synthesis, mcYears, timeStep, opts) {
-  res <- .importOutput("areas", "details", node, "node", synthesis, mcYears, timeStep, opts)
+.importOutputForClusters <- function(node, synthesis, ...) {
+  res <- .importOutput("areas", "details", node, "node", synthesis, ...)
   if (is.null(res)) return(NULL)
 
   .reshapeData <- function(x) {
     # For each cluster, there are two columns with same name but different content.
     # Fix that.
-    idVars <- c("node", "timeId", "day", "week", "month", "hour", "mcYear")
 
     n <- names(x)
-    idx <- ! n %in% idVars
+    idx <- ! n %in% pkgEnv$idVars
     n[idx] <- paste0(n[idx] , ifelse(duplicated(n[idx]), "|NP Cost", "|MWh"))
     setnames(x, 1:ncol(x), n)
 
@@ -260,8 +309,8 @@ importOutput <- function(nodes = NULL,
 #'
 #' @return
 #' a data.table
-.importOutputForLink <- function(link, synthesis, mcYears, timeStep, opts) {
-  res <- .importOutput("links", "values", link, "link", synthesis, mcYears, timeStep, opts)
+.importOutputForLink <- function(link, synthesis, ...) {
+  res <- .importOutput("links", "values", link, "link", synthesis, ...)
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)

@@ -60,6 +60,27 @@ setSimulationPath <- function(path, trace=1) {
 
   nodesWithClusters <- nodeList[hasClusters]
 
+  # Available variables
+  variables <- list()
+
+  # Available variables for nodes
+  d <- file.path(opath2, "areas", nodeList[1])
+  f <- list.files(d)
+  f <- f[grep("values", f)]
+  if (length(f) > 0) {
+    v <- .getOutputHeader(file.path(d, f[1]), "node")
+    variables$nodes <- setdiff(v, pkgEnv$idVars)
+  }
+
+  # Available variables for nodes
+  d <- file.path(opath2, "links", linkList[1])
+  f <- list.files(d)
+  f <- f[grep("values", f)]
+  if (length(f) > 0) {
+    v <- .getOutputHeader(file.path(d, f[1]), "link")
+    variables$links <- setdiff(v, pkgEnv$idVars)
+  }
+
   res <- list(
     path = path,
     opath = opath,
@@ -73,7 +94,8 @@ setSimulationPath <- function(path, trace=1) {
     start = as.POSIXct(Sys.time()),
     nodeList = nodeList,
     linkList = linkList,
-    nodesWithClusters = nodesWithClusters
+    nodesWithClusters = nodesWithClusters,
+    variables = variables
   )
 
   options(antares=res)
@@ -103,4 +125,5 @@ printInfo <- function(res, trace) {
     cat("\nLinks:\n")
     print(res$linkList)
   }
+  cat('\nuse getOption("antares")$variables to see the list of available variables.\n')
 }
