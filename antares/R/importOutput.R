@@ -1,55 +1,79 @@
 #' Import the output of an Antares simulation
 #'
-#' This function imports the output of a antares simulation for some nodes,
-#' links and Monte-Carlo years specified by the user.
+#' This function imports the output of a antares simulation for a set of nodes,
+#' links and/or clusters at a desired resolution (hourly, daily, weekly,
+#' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 #'
-#' @param nodes
-#' vector containing the names of the nodes of interest. NULL if you do not want to
-#' import results for any node.
-#' @param links
-#' vector containing the name of links of interest. NULL if you do not want to
-#' import results for any link.
-#' @param clusters
-#' vector containing the name of the nodes for wich you want to import results at
-#' cluster level.
-#' @param inputs
-#' vector containing the name of the nodes for wich you want to import inputs.
-#' @param misc
-#' vector containing the name of the nodes for wich you want to import misc.
-#' @param synthesis
-#' TRUE if you want to import the synthetic results. FALSE if you prefer to import
-#' year by year results.
-#' @param mcYears
-#' Index of the Monte-Carlo years to import. Used only if synthesis is FALSE.
-#' @param timeStep
-#' Resolution of the data to import: hourly (default), daily, weekly, monthly or
-#' annual.
-#' @param parallel
-#' Should the importation be parallelized ? (See details)
-#' @param simplify
-#' If TRUE and only one type of output is imported then a data.table is returned.
-#' If FALSE, the result will always be a list of class "antaresOutput".
+#' @param nodes vector containing the names of the nodes to import. If
+#'   \code{NULL} no node is imported. The special value \code{"all"} tells the
+#'   function to import all nodes.
+#' @param links vector containing the name of links to import. If \code{NULL} no
+#'   node is imported. The special value \code{"all"} tells the function to
+#'   import all nodes. Use function \code{\link{getLinks}} to import all links
+#'   connected to some nodes.
+#' @param clusters vector containing the name of the nodes for wich you want to
+#'   import results at cluster level. If \code{NULL} no cluster is imported. The
+#'   special value \code{"all"} tells the function to import clusters from all
+#'   nodes.
+#' @param inputs vector containing the name of the nodes for wich you want to
+#'   import inputs.
+#' @param misc vector containing the name of the nodes for wich you want to
+#'   import misc.
+#' @param synthesis TRUE if you want to import the synthetic results. FALSE if
+#'   you prefer to import year by year results.
+#' @param mcYears Index of the Monte-Carlo years to import. Used only if
+#'   synthesis is FALSE.
+#' @param timeStep Resolution of the data to import: hourly (default), daily,
+#'   weekly, monthly or annual.
+#' @param parallel Should the importation be parallelized ? (See details)
+#' @param simplify If TRUE and only one type of output is imported then a
+#'   data.table is returned. If FALSE, the result will always be a list of class
+#'   "antaresOutput".
 #'
-#' @details
-#' In order to parallelize the importation, you have to install the package
+#' @details If all arguments are unspecified, the default behavior of the
+#' function is to return the synthetized output for all nodes.
+#'
+#' If you import several elements of the same type (nodes, links, clusters), you
+#' can use parallelized importation to improve performance. Setting the
+#' parameter \code{parallel = TRUE} is not enough to parallelize the
+#' importation, you also have to install the package
 #' \href{https://cran.r-project.org/web/packages/foreach/index.html}{foreach}
 #' and a package that provides a parallel backend (for instance the package
 #' \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}).
 #'
 #' Before running the function with argument \code{parallel=TRUE}, you need to
 #' register your parallel backend. For instance, if you use package "doParallel"
-#' you need to use the function \code{\link{registerDoParallel}} once per session.
+#' you need to use the function \code{\link{registerDoParallel}} once per
+#' session.
 #'
-#' @return
-#' An object of class "antaresOutput". It is a list with the following elements:
-#' \itemize{
-#'    \item{nodes: }{data.table containing}
-#' }
+#' @return If \code{simplify = TRUE} and only one type of output is imported
+#' then the result is a data.table.
+#'
+#' Else an object of class "antaresOutput" is returned. It is a list of
+#' data.tables, each element representing one type of element (nodes, links,
+#' clusters)
+#'
+#' @examples
+#' if (is.null(getOption("antares"))) setSimulationPath()
+#'
+#' # Import nodes and links separately
+#' nodes <- importOutput()
+#' links <- importOutput(links="all")
+#'
+#' # Import nodes and links at same time
+#' output <- importOutput(nodes = "all", links = "all")
+#'
+#' # Get all output for one node
+#' myNode <- sample(getOption("antares")$nodeList, 1)
+#' myNode
+#'
+#' myNodeOutput <- importOutput(node = myNode, links = getLinks(myNode),
+#'                              clusters = myNode)
 #'
 #' @export
 #'
-importOutput <- function(nodes = getOption("antares")$nodeList,
-                         links = getOption("antares")$linkList,
+importOutput <- function(nodes = NULL,
+                         links = NULL,
                          clusters = NULL, inputs = NULL, misc = NULL,
                          synthesis = getOption("antares")$synthesis,
                          mcYears = 1:getOption("antares")$mcYears,
@@ -58,6 +82,13 @@ importOutput <- function(nodes = getOption("antares")$nodeList,
 
   timeStep <- match.arg(timeStep)
   opts <- getOption("antares")
+
+  if (is.null(nodes) & is.null(links) & is.null(links)) nodes <- "all"
+
+  # Manage arguments equal to "all"
+  if (identical(nodes, "all")) nodes <- opts$nodeList
+  if (identical(links, "all")) links <- opts$linkList
+  if (identical(clusters, "all")) nodes <- opts$clusters
 
   # Can the importation be parallelized ?
   if (parallel) {
