@@ -163,6 +163,8 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 #' @return
 #' Vector containing the generated column names.
 #'
+#' @noRd
+#'
 .getOutputHeader <- function(path, objectName) {
   colname <- read.table(path, header=F, skip = 4, nrows = 3, sep = "\t")
   colname <- apply(colname[c(1,3),], 2, paste, collapse = "_")
@@ -181,6 +183,8 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'
 #' @return
 #' a table if synthesis=TRUE or a list of tables (one table per Monte-Carlo year)
+#'
+#' @noRd
 #'
 .importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts, select) {
 
@@ -257,6 +261,9 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'
 #' @return
 #' a data.table
+#'
+#' @noRd
+#'
 .importOutputForNode <- function(node, synthesis, ...) {
   res <- .importOutput("areas", "values", node, "node", synthesis, ...)
   if (is.null(res)) return (NULL)
@@ -272,6 +279,9 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'
 #' @return
 #' a data.table
+#'
+#' @noRd
+#'
 .importOutputForClusters <- function(node, synthesis, ...) {
   res <- .importOutput("areas", "details", node, "node", synthesis, ...)
   if (is.null(res)) return(NULL)
@@ -309,6 +319,9 @@ importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'
 #' @return
 #' a data.table
+#'
+#' @noRd
+#'
 .importOutputForLink <- function(link, synthesis, ...) {
   res <- .importOutput("links", "values", link, "link", synthesis, ...)
   if (is.null(res)) return (NULL)

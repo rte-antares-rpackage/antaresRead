@@ -7,6 +7,8 @@
 #' @return
 #' A list with an element for each section of the .ini file.
 #'
+#' @noRd
+#'
 readIniFile <- function(file) {
   X <- readLines(file)
   sections <- grep("^\\[.*\\]$", X)
