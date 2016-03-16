@@ -10,48 +10,76 @@
 #'   object of class "antaresOutput" or data.table created by the function
 #'   \code{\link{importOutput}}
 #' @param nodes
-#'   (optional) character vector containing the name of nodes to keep in the
-#'   final object
+#'   character vector containing the name of nodes to keep in the
+#'   final object. If \code{NULL}, all nodes are kept in the final object.
 #'
-#' @returns a list of data.tables with one element per node
+#' @returns a list of data.tables with one element per node. The list also
+#' contains an element named "nodeList" containing the name of nodes in the
+#' object and a table called "infos" that contains for each node the number
+#' of variables of différent type (values, details, link).
 #'
 #' @export
 #'
-extractDataList <- function(x, nodes) {
+extractDataList <- function(x, nodes=NULL) {
+  # Check arguments
   if (is.data.frame(x) && !is.null(x$node)) x <- list(nodes = x)
 
   if (is.null(x$nodes)) stop("Object does not contain nodes data.")
 
-  if (!missing(nodes)) x$nodes <- x$nodes[node %in% nodes]
+  if (!is.null(nodes)) x$nodes <- x$nodes[node %in% nodes]
 
-  dataList <- dlply(x$nodes, .(node), data.table)
-  nodeList <- names(dataList)
-
-  # Add clusters production
-  if (!is.null(x$clusters)) {
-    clusters <- dlply(x$clusters, .(node), data.table)
-
-    for (n in names(clusters)) {
-      if(!is.null(dataList[[n]])) {
-        tmp <- dcast(clusters[[n]], timeId ~ cluster, value.var = "MWh")
-        dataList[[n]] <- merge(dataList[[n]], tmp, by = "timeId")
-      }
-    }
+  # Create variable Scenario equal to 0 if synthesis or mcYear if not.
+  if (is.null(x$nodes$mcYear)) {
+    x$nodes$Scenario <- 0
+    if (!is.null(x$clusters)) x$clusters$Scenario <- 0
+    if (!is.null(x$links)) x$links$Scenario <- 0
+  } else {
+    x$nodes$Scenario <- x$nodes$mcYear
+    if (!is.null(x$clusters)) x$clusters$Scenario <- x$clusters$mcYear
+    if (!is.null(x$links)) x$links$Scenario <- x$links$mcYear
+    x$nodes$mcYear <- NULL
   }
 
-  # Add flows
-  if (!is.null(x$links)) {
-    for (n in nodeList) {
+  # Base structure: one table per node
+  dataList <- dlply(x$nodes, .(node), data.table)
+
+  # Additional elements: list of nodes and info about the content of each table
+  nodeList <- names(dataList)
+  info <- data.table(node = nodeList,
+                     valuesLength = ncol(x$nodes),
+                     detailsLength = 0,
+                     linkLength = 0)
+
+  # Add cluster production and flows if available to each element of dataList
+  for (n in nodeList) {
+
+    # Clusters
+    if (!is.null(x$clusters)) {
+      cl <- x$clusters[node == n]
+
+      if (nrow(cl) > 0) {
+        tmp <- dcast(cl, Scenario + timeId ~ cluster, value.var = "MWh")
+        dataList[[n]] <- merge(dataList[[n]], tmp, by = c("Scenario", "timeId"))
+
+        info[node == n, detailsLength := ncol(tmp) - 2]
+      }
+    }
+
+    # Flows
+    if (!is.null(x$links) && !is.null(x$links$`FLOW LIN.`)) {
       links <- x$links[link %in% getLinks(n)]
 
       if(nrow(links) > 0) {
-        tmp <- dcast(links, timeId ~ link, value.var = "FLOW LIN.")
-        dataList[[n]] <- merge(dataList[[n]], tmp, by = "timeId")
+        tmp <- dcast(links, Scenario + timeId ~ link, value.var = "FLOW LIN.")
+        dataList[[n]] <- merge(dataList[[n]], tmp, by = c("Scenario", "timeId"))
+
+        info[node == n, linkLength := ncol(tmp) - 2]
       }
     }
   }
 
   dataList$nodeList <- nodeList
+  dataList$infos <- info
 
   dataList
 }
