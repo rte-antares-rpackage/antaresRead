@@ -10,11 +10,11 @@
 #' name of the node it belongs to.
 #'
 #' @examples
-#' importClusterDesc()
+#' readClusterDesc()
 #'
 #' @export
 #'
-importClusterDesc <- function() {
+readClusterDesc <- function() {
   opts <- getOption("antares")
   path <- file.path(opts$path, "../../input/thermal/clusters")
 

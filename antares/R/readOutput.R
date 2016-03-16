@@ -1,6 +1,6 @@
-#' Import the output of an Antares simulation
+#' Read the output of an Antares simulation
 #'
-#' This function imports the output of a antares simulation for a set of nodes,
+#' This function reads the output of a antares simulation for a set of nodes,
 #' links and/or clusters at a desired resolution (hourly, daily, weekly,
 #' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 #'
@@ -90,13 +90,13 @@
 #'
 #' @export
 #'
-importOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
-                         inputs = NULL, misc = NULL,
-                         select = NULL,
-                         synthesis = getOption("antares")$synthesis,
-                         mcYears = 1:getOption("antares")$mcYears,
-                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                         parallel = FALSE, simplify = TRUE) {
+readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
+                       inputs = NULL, misc = NULL,
+                       select = NULL,
+                       synthesis = getOption("antares")$synthesis,
+                       mcYears = 1:getOption("antares")$mcYears,
+                       timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                       parallel = FALSE, simplify = TRUE) {
 
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select)

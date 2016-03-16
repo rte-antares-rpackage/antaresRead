@@ -1,7 +1,7 @@
-#' import nodes layout from the HMI
+#' Read nodes layout from the HMI
 #'
-#' This function imports the current node layout from the HMI. It is useful
-#' for plotting the network
+#' This function imports the current node layout from the human machine interface (HMI).
+#' It is useful for plotting the network.
 #'
 #' @return A list with two elements
 #' \itemize{
@@ -12,11 +12,11 @@
 #' }
 #'
 #' @examples
-#' importLayout()
+#' readLayout()
 #'
 #' @export
 #'
-importLayout <- function() {
+readLayout <- function() {
   opts <- getOption("antares")
 
   # noeuds
