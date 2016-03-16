@@ -75,18 +75,18 @@
 #' if (is.null(getOption("antares"))) setSimulationPath()
 #'
 #' # Import nodes and links separately
-#' nodes <- importOutput()
-#' links <- importOutput(links="all")
+#' nodes <- readOutput()
+#' links <- readOutput(links="all")
 #'
 #' # Import nodes and links at same time
-#' output <- importOutput(nodes = "all", links = "all")
+#' output <- readOutput(nodes = "all", links = "all")
 #'
 #' # Get all output for one node
 #' myNode <- sample(getOption("antares")$nodeList, 1)
 #' myNode
 #'
-#' myNodeOutput <- importOutput(node = myNode, links = getLinks(myNode),
-#'                              clusters = myNode)
+#' myNodeOutput <- readOutput(node = myNode, links = getLinks(myNode),
+#'                            clusters = myNode)
 #'
 #' @export
 #'
