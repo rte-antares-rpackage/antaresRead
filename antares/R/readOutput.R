@@ -47,6 +47,10 @@
 #'   If TRUE and only one type of output is imported then a
 #'   data.table is returned. If FALSE, the result will always be a list of class
 #'   "antaresOutput".
+#' @param showProgress
+#'   (logical) shoudl the function display information about the progress of the
+#'   importation ?
+#'
 #'
 #' @details If all arguments are unspecified, the default behavior of the
 #' function is to return the synthetized output for all nodes.
@@ -96,7 +100,7 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
                        synthesis = getOption("antares")$synthesis,
                        mcYears = 1:getOption("antares")$mcYears,
                        timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                       parallel = FALSE, simplify = TRUE) {
+                       parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select)
@@ -125,11 +129,12 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes <- function(name, ids, outputFun, select) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
 
-    cat(sprintf("Importing %s\n", name))
+    if (showProgress) cat(sprintf("Importing %s\n", name))
 
-    tmp <- llply(ids, function(x, ...) outputFun(x, ...), .progress="text",
+    tmp <- llply(ids, function(x, ...) outputFun(x, ...),
                  synthesis=synthesis, mcYears=mcYears,timeStep=timeStep,
                  opts=opts, select = select,
+                 .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
                  .paropts = list(.packages="antares"))
 
