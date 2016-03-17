@@ -109,13 +109,22 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters)) nodes <- "all"
 
-  # Manage special values ("all", "allNode", "allLink")
+  # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
 
-  select$nodes <- if("allNodes" %in% select$nodes) NULL else select$nodes
-  select$links <- if("allLinks" %in% select$links) NULL else select$links
+  # Aliases for groups of variables
+  select <- llply(select, function(x) {
+    for (alias in names(pkgEnv$varAliases)) {
+      if (alias %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]])
+    }
+    x
+  })
+
+  # Special aliases allNode and allLink
+  select$nodes <- if(any(grepl("allNode", select$nodes, ignore.case = TRUE))) NULL else select$nodes
+  select$links <- if(any(grepl("allLink", select$links, ignore.case = TRUE))) NULL else select$links
 
   # Can the importation be parallelized ?
   if (parallel) {

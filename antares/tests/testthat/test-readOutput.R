@@ -41,15 +41,15 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
 
 test_that("importation of different objects works", {
   out <- readOutput(nodes = opts$nodeList, links=opts$linkList,
-                    clusters=opts$nodesWithClusters, showProgress= FALSE)
+                    clusters=opts$nodesWithClusters, showProgress= FALSE, timeStep = "annual")
   expect_is(out, "antaresOutput")
   expect_equal(names(out), c("nodes", "links", "clusters"))
 })
 
 test_that("the \"all\" alias is understood", {
   out <- readOutput(nodes = opts$nodeList, links=opts$linkList,
-                    clusters=opts$nodesWithClusters, showProgress = FALSE)
-  out2 <- readOutput("all", "all", "all", showProgress = FALSE)
+                    clusters=opts$nodesWithClusters, showProgress = FALSE, timeStep = "annual")
+  out2 <- readOutput("all", "all", "all", showProgress = FALSE, timeStep = "annual")
 
   expect_identical(out, out2)
 })
@@ -72,4 +72,20 @@ test_that("It is possible to select only some columns", {
                     timeStep = "annual", showProgress = FALSE)
   expect_equal(names(out$nodes), c("node", "timeId", "OP. COST"))
   expect_equal(names(out$links), c("link", "timeId", "FLOW LIN."))
+})
+
+test_that("Aliases for variables work", {
+  out <- readOutput("all", select = c("economy"),
+                    timeStep = "annual", showProgress = FALSE)
+  expect_equal(names(out),
+               c("node", "timeId", "OV. COST", "OP. COST", "MRG. PRICE",
+                 "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
+})
+
+test_that("Aliases are case incensitive", {
+  out <- readOutput("all", select = c("Economy"),
+                    timeStep = "annual", showProgress = FALSE)
+  expect_equal(names(out),
+               c("node", "timeId", "OV. COST", "OP. COST", "MRG. PRICE",
+                 "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
 })
