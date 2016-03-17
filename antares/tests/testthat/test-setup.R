@@ -1,6 +1,6 @@
 context("Setup functions")
 
-studyPath <- system.file("sampleStudy/output/20160317-1406eco-test-eco", package = "antares")
+studyPath <- system.file("sampleStudy/output/20160317-1558eco-test-eco", package = "antares")
 
 trueOpts <- list(
   path = studyPath,
@@ -10,7 +10,7 @@ trueOpts <- list(
   synthesis = TRUE,
   yearByYear = TRUE,
   scenarios = TRUE,
-  mcYears = 5,
+  mcYears = 2,
   antaresVersion = 500L,
   nodeList = c("@ a and b together", "a", "b", "psp in", "psp out"),
   linkList = c("a - b", "b - psp in", "b - psp out"),
