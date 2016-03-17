@@ -10,7 +10,7 @@
 #' name of the node it belongs to.
 #'
 #' @examples
-#' readClusterDesc()
+#' # readClusterDesc()
 #'
 #' @export
 #'

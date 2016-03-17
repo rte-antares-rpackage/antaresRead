@@ -11,4 +11,6 @@ LazyData: TRUE
 Depends:
     data.table,
     plyr
+Suggests:
+    testthat
 RoxygenNote: 5.0.1

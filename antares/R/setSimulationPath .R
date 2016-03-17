@@ -84,8 +84,8 @@ setSimulationPath <- function(path, trace=1) {
   res <- list(
     path = path,
     opath = opath,
-    name = info$name,
-    mode = info$mode,
+    name = as.character(info$name),
+    mode = as.character(info$mode),
     synthesis = synthesis,
     yearByYear = yearByYear,
     scenarios = scenarios,

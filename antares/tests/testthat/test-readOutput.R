@@ -1,0 +1,75 @@
+context("Function readOutput")
+
+studyPath <- system.file("sampleStudy/output/20160317-1406eco-test-eco", package = "antares")
+opts <- setSimulationPath(studyPath, trace=0)
+
+test_that("Nodes importation is ok", {
+  nodes <- readOutput(nodes = opts$nodeList, showProgress = FALSE)
+  expect_is(nodes, "data.table")
+  expect_true(!is.null(nodes$node))
+  expect_equal(nrow(nodes), 24 * 7 * 52 * length(opts$nodeList))
+})
+
+test_that("Links importation is ok", {
+  links <- readOutput(links = opts$linkList, showProgress = FALSE)
+  expect_is(links, "data.table")
+  expect_true(!is.null(links$link))
+  expect_equal(nrow(links), 24 * 7 * 52 * length(opts$linkList))
+})
+
+test_that("Clusters importation is ok", {
+  clusters <- readOutput(clusters = opts$nodesWithClusters, showProgress = FALSE)
+  expect_is(clusters, "data.table")
+  expect_true(!is.null(clusters$cluster))
+  expect_equal(nrow(clusters), 24 * 7 * 52 * nrow(readClusterDesc()))
+})
+
+# Test that importation works for all time resolutions.
+for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
+  expected_rows = switch(timeStep,
+                         hourly = 24 * 7 * 52,
+                         daily = 7 * 52,
+                         weekly = 52,
+                         monthly = 12,
+                         annual = 1)
+
+  test_that(sprintf("one can import %s results", timeStep), {
+    nodes <- readOutput(nodes = opts$nodeList, showProgress = FALSE, timeStep = timeStep)
+    expect_equal(nrow(nodes), expected_rows * length(getOption("antares")$nodeList))
+  })
+}
+
+test_that("importation of different objects works", {
+  out <- readOutput(nodes = opts$nodeList, links=opts$linkList,
+                    clusters=opts$nodesWithClusters, showProgress= FALSE)
+  expect_is(out, "antaresOutput")
+  expect_equal(names(out), c("nodes", "links", "clusters"))
+})
+
+test_that("the \"all\" alias is understood", {
+  out <- readOutput(nodes = opts$nodeList, links=opts$linkList,
+                    clusters=opts$nodesWithClusters, showProgress = FALSE)
+  out2 <- readOutput("all", "all", "all", showProgress = FALSE)
+
+  expect_identical(out, out2)
+})
+
+test_that("default behavior is fine", {
+  nodes <- readOutput(showProgress = FALSE)
+
+  # check simplify
+  expect_is(nodes, "data.table")
+  # Check node output
+  expect_true(!is.null(nodes$node))
+  # Check synthetic output
+  expect_true(is.null(nodes$mcYear))
+  # Check hourly output
+  expect_equal(nrow(nodes), 24 * 7 * 52 * length(getOption("antares")$nodeList))
+})
+
+test_that("It is possible to select only some columns", {
+  out <- readOutput("all", "all", select = c("OP. COST", "FLOW LIN."),
+                    timeStep = "annual", showProgress = FALSE)
+  expect_equal(names(out$nodes), c("node", "timeId", "OP. COST"))
+  expect_equal(names(out$links), c("link", "timeId", "FLOW LIN."))
+})

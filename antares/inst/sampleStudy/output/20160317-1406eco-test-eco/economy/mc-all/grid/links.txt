@@ -1,0 +1,4 @@
+upstream	downstream
+a	b
+b	psp in
+b	psp out
