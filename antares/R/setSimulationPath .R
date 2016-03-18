@@ -25,7 +25,34 @@ setSimulationPath <- function(path, trace=1) {
   setwd(path)
 
   # Check that the path id an Antares simulation
-  if (!file.exists("info.antares-output")) stop("Not an Antares simulation")
+  if (!file.exists("info.antares-output")) {
+    # So the path is not a simulation but maybe it is the path to a study.
+    # If it is the case, either choose the unique simulation or ask the user to
+    # choose the results of a simulation if there are several simulations.
+    if (file.exists("study.antares")) {
+      if (!dir.exists("output") || length(list.dirs("output", recursive = FALSE)) == 0)
+        stop("Cannot find any simulation result")
+
+      f <- list.dirs("output", recursive = FALSE)
+      if (length(f) == 1) {
+
+        path <- file.path(path, f)
+
+      } else {
+
+        cat("Please, choose a simulation\n")
+        for (i in 1:length(f)) cat(sprintf("   %s - %s\n", i, f[i]))
+        i <- scan(what = numeric(), nmax = 1)
+        path <- file.path(path, f[i])
+
+      }
+
+      setwd(path)
+
+    } else {
+      stop("Directory is not an Antares study.")
+    }
+  }
 
   # Get basic information about the simulation
   info <- readIniFile("info.antares-output")$general
