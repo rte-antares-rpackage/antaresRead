@@ -12,7 +12,8 @@ trueOpts <- list(
   scenarios = TRUE,
   mcYears = 2,
   antaresVersion = 500L,
-  nodeList = c("@ a and b together", "a", "b", "psp in", "psp out"),
+  nodeList = c("a", "b", "psp in", "psp out"),
+  setList = "@ a and b together",
   linkList = c("a - b", "b - psp in", "b - psp out"),
   nodesWithClusters = c("a", "b")
 )

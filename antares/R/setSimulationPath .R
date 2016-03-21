@@ -76,7 +76,11 @@ setSimulationPath <- function(path, trace=1) {
 
   # List of available nodes and links
   opath2 <- file.path(opath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
+
   nodeList <- list.files(file.path(opath2, "areas"))
+  setList <- nodeList[nodeList %like% "^@"]
+  nodeList <- nodeList[!nodeList %like% "^@"]
+
   linkList <- list.files(file.path(opath2, "links"))
 
   # Nodes containing clusters
@@ -120,6 +124,7 @@ setSimulationPath <- function(path, trace=1) {
     antaresVersion = info$version,
     start = as.POSIXct(Sys.time()),
     nodeList = nodeList,
+    setList = setList,
     linkList = linkList,
     nodesWithClusters = nodesWithClusters,
     variables = variables
@@ -141,8 +146,8 @@ printInfo <- function(res, trace) {
     cat(sprintf("Antares simulation '%s'\nMode %s\n", res$name, res$mode))
     cat(sprintf("\nContent:\n - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
                 res$synthesis, res$yearByYear, res$scenarios))
-    cat(sprintf(" - Number of nodes: %s\n - Number of links: %s\n",
-                length(res$nodeList), length(res$linkList)))
+    cat(sprintf(" - Number of nodes: %s\n - Number of sets: %s\n - Number of links: %s\n",
+                length(res$nodeList), length(res$setList), length(res$linkList)))
 
     if (res$yearByYear) cat(sprintf(" - Number of Monte-Carlo years: %s\n", res$mcYears))
   }

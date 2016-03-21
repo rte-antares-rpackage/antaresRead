@@ -24,6 +24,10 @@
 #' @param misc
 #'   vector containing the name of the nodes for wich you want to
 #'   import misc.
+#' @param sets
+#'   Vector containing the names of the set of nodes to import. If \code{NULL},
+#'   no is importer. The special value \code{"all"} tells the function to import all
+#'   sets.
 #' @param select
 #'   character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -95,7 +99,7 @@
 #' @export
 #'
 readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
-                       inputs = NULL, misc = NULL,
+                       inputs = NULL, misc = NULL, sets = NULL,
                        select = NULL,
                        synthesis = getOption("antares")$synthesis,
                        mcYears = 1:getOption("antares")$mcYears,
@@ -103,16 +107,17 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
                        parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
-  if (!is.list(select)) select <- list(nodes = select, links = select)
+  if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
+  if (identical(sets, "all")) sets <- opts$setList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -155,6 +160,7 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("nodes", nodes, .importOutputForNode, select$nodes)
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
+  .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
 
   class(res) <- append("antaresOutput", class(res))
 
