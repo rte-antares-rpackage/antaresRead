@@ -9,8 +9,9 @@ Description: Import, manipulate and explore the results of an Antares simulation
 License: rte
 LazyData: TRUE
 Depends:
-    data.table,
     plyr
+Imports:
+    data.table
 Suggests:
     testthat
 RoxygenNote: 5.0.1
