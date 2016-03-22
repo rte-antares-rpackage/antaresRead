@@ -209,14 +209,66 @@
   res <- rbindlist(res)
   setcolorder(res, c("node", "timeId", pkgEnv$miscNames))
 
-  .aggregateByTimeStep(res, timeStep)
+  .aggregateByTimeStep(res, timeStep, opts)
 }
 
-.aggregateByTimeStep <- function(x, timeStep = c("hourly", "daily", "weekly", "monthly", "annual")) {
+
+#' Aggregates input time series at desired time resolution.
+#'
+#' Input time series are only stored at hourly resolution. This function aims
+#' to aggregate the series at the desired resolution.
+#'
+#' Weekly and monthly aggregations are a bit complicated. The strategy is to
+#' find the rows that corresponds to a change of week or month, create a
+#' variable equal to 1 if week/month has changed and 0 otherwise. The cumulated
+#' sum of this variable corresponds to the timeId :
+#'
+#' day change cumsum(change) timeId
+#'   n      1              1      1
+#'   n      0              1      1
+#'   n      0              1      1
+#' ...    ...            ...    ...
+#' n+6      0              1      1
+#' n+7      1              2      2
+#' n+7      0              2      2
+#'
+#' @noRd
+.aggregateByTimeStep <- function(x, timeStep = c("hourly", "daily", "weekly", "monthly", "annual"), opts) {
   if (timeStep == "hourly") return(x)
 
-  if (timeStep == "daily") x$timeId <- (x$timeId - 1) %/% 24 + 1
-  else if (timeStep == "annual") x$timeId <- rep("annual", nrow(x))
+  if (timeStep == "daily") {
+
+    x$timeId <- (x$timeId - 1) %/% 24 + 1
+
+  } else if (timeStep == "weekly") {
+
+    tmp <- opts$start
+    hour(tmp) <- hour(tmp) + 1:(24*7*52) - 1
+    x$wday <- wday(tmp)
+
+    startWeek <- which(c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") == opts$firstWeekday)
+
+    x[, change := wday == startWeek & wday != shift(wday), by = node]
+    x[is.na(change), change := TRUE]
+    x[, timeId := cumsum(change), by = node]
+    x$wday <- x$change <- NULL
+
+  } else if (timeStep == "monthly") {
+
+    tmp <- opts$start
+    hour(tmp) <- hour(tmp) + 1:(24*7*52) - 1
+    x$month <- month(tmp)
+
+    x[, change :=  month != shift(month), by = node]
+    x[is.na(change), change := TRUE]
+    x[, timeId := cumsum(change), by = node]
+    x$month <- x$change <- NULL
+
+  } else if (timeStep == "annual") {
+
+    x$timeId <- rep("annual", nrow(x))
+
+  }
 
   x[, lapply(.SD, sum), keyby=.(node, timeId)]
 
