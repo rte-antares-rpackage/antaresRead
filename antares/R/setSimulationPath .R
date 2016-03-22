@@ -56,6 +56,7 @@ setSimulationPath <- function(path, trace=1) {
 
   # Get basic information about the simulation
   info <- readIniFile("info.antares-output")$general
+  params <- readIniFile("about-the-study/parameters.ini")
 
   # Where are located the results ?
   opath <- switch(as.character(info$mode),
@@ -122,7 +123,8 @@ setSimulationPath <- function(path, trace=1) {
     scenarios = scenarios,
     mcYears = mcYears,
     antaresVersion = info$version,
-    start = as.POSIXct(Sys.time()),
+    start = .getStartDate(params),
+    firstWeekday = as.character(params$general$first.weekday),
     nodeList = nodeList,
     setList = setList,
     linkList = linkList,
@@ -158,4 +160,35 @@ printInfo <- function(res, trace) {
     print(res$linkList)
   }
   cat('\nuse getOption("antares")$variables to see the list of available variables.\n')
+}
+
+.getStartDate <- function(params) {
+  mNames <- c("january", "february", "march", "april", "may", "june", "july",
+              "september", "october", "november", "december")
+  dNames <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+  p <- params$general
+
+  # Extract year from the "horizon" parameter.
+  m <- regexpr("\\d{4}", p$horizon)
+  if (m == -1) year <- 2017
+  else year <- as.numeric(regmatches(p$horizon, m))
+
+  # Is this year compatible with the parameters "january.1st" and "leapyear" ?
+  start <- as.Date(paste(year, "01 01"), format = "%Y %m %d")
+  jan1 <- which(dNames == p$january.1st)
+
+  # If inconsistency, then choose a year that restores consistency
+  if (jan1 != wday(start) | leap_year(start) != p$leapyear) {
+
+    if (p$leapyear) newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
+    else newYear <- switch(jan1, 2017, 2018, 2019, 2025, 2026, 2021, 2022)
+
+    year(start) <- newYear
+    message("Date parameters are inconsistent. Assume correct year is ", newYear)
+
+  }
+
+  month(start) <-  which(mNames == p$`first-month-in-year`)
+  as.POSIXlt(start, tz = "UTC")
 }

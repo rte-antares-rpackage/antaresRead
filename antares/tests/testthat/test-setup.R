@@ -12,6 +12,8 @@ trueOpts <- list(
   scenarios = TRUE,
   mcYears = 2,
   antaresVersion = 500L,
+  start = as.POSIXlt("2018-01-01", tz = "UTC"),
+  firstWeekday = "Monday",
   nodeList = c("a", "b", "psp in", "psp out"),
   setList = "@ a and b together",
   linkList = c("a - b", "b - psp in", "b - psp out"),
@@ -20,7 +22,7 @@ trueOpts <- list(
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath, trace = 0)
-  opts$variables <- opts$start <- NULL
+  opts$variables <- NULL
   expect_equal(opts, trueOpts)
 })
 

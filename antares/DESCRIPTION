@@ -9,7 +9,8 @@ Description: Import, manipulate and explore the results of an Antares simulation
 License: rte
 LazyData: TRUE
 Depends:
-    plyr
+    plyr,
+    lubridate
 Imports:
     data.table
 Suggests:
