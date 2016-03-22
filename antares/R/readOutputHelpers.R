@@ -178,3 +178,36 @@
 
   res
 }
+
+
+#' .importMisc
+#'
+#' Private function used to read misc input files.
+#'
+#' @return
+#' a data.table
+#' @noRd
+#'
+.importMisc <- function(nodes, opts) {
+  if (is.null(nodes)) return(NULL)
+
+  res <- llply(nodes, function(n) {
+    path <- file.path(opts$path, "../../input/misc-gen",
+                      sprintf("miscgen-%s.txt", n))
+
+    if(file.size(path) == 0) misc <- data.table(matrix(0L, 24*7*52,length(pkgEnv$miscNames)))
+    else misc <- fread(path, sep="\t", header = FALSE, integer64 = "numeric")
+
+    setnames(misc, names(misc), pkgEnv$miscNames)
+
+    misc$node <- n
+    misc$timeId <- 1:nrow(misc)
+
+    misc[1:(24 * 7 * 52)]
+  })
+
+  res <- rbindlist(res)
+  setcolorder(res, c("node", "timeId", pkgEnv$miscNames))
+
+  res
+}

@@ -24,6 +24,13 @@ test_that("Clusters importation is ok", {
   expect_equal(nrow(clusters), 24 * 7 * 52 * nrow(readClusterDesc()))
 })
 
+test_that("Misc importation is ok", {
+  misc <- readOutput(misc = opts$nodeList, showProgress = FALSE)
+  expect_is(misc, "data.table")
+  expect_false(is.null(misc$node))
+  expect_equal(nrow(misc), 24 * 7 * 52 * length(opts$nodeList))
+})
+
 # Test that importation works for all time resolutions.
 for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   expected_rows = switch(timeStep,

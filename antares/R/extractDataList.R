@@ -13,7 +13,7 @@
 #'   character vector containing the name of nodes to keep in the
 #'   final object. If \code{NULL}, all nodes are kept in the final object.
 #'
-#' @returns a list of data.tables with one element per node. The list also
+#' @return a list of data.tables with one element per node. The list also
 #' contains an element named "nodeList" containing the name of nodes in the
 #' object and a table called "infos" that contains for each node the number
 #' of variables of différent type (values, details, link).

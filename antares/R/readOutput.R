@@ -111,13 +111,14 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
   if (identical(sets, "all")) sets <- opts$setList
+  if (identical(misc, "all")) misc <- opts$nodeList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -161,6 +162,8 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
   .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
+
+  res$misc <- .importMisc(misc, opts)
 
   class(res) <- append("antaresOutput", class(res))
 
