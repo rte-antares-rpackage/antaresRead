@@ -163,7 +163,7 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
   .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
 
-  res$misc <- .importMisc(misc, opts)
+  res$misc <- .importMisc(misc, opts, timeStep)
 
   class(res) <- append("antaresOutput", class(res))
 

@@ -188,7 +188,7 @@
 #' a data.table
 #' @noRd
 #'
-.importMisc <- function(nodes, opts) {
+.importMisc <- function(nodes, opts, timeStep) {
   if (is.null(nodes)) return(NULL)
 
   res <- llply(nodes, function(n) {
@@ -209,5 +209,15 @@
   res <- rbindlist(res)
   setcolorder(res, c("node", "timeId", pkgEnv$miscNames))
 
-  res
+  .aggregateByTimeStep(res, timeStep)
+}
+
+.aggregateByTimeStep <- function(x, timeStep = c("hourly", "daily", "weekly", "monthly", "annual")) {
+  if (timeStep == "hourly") return(x)
+
+  if (timeStep == "daily") x$timeId <- (x$timeId - 1) %/% 24 + 1
+  else if (timeStep == "annual") x$timeId <- rep("annual", nrow(x))
+
+  x[, lapply(.SD, sum), keyby=.(node, timeId)]
+
 }

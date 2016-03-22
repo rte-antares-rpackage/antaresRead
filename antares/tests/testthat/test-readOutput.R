@@ -40,9 +40,14 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
                          monthly = 12,
                          annual = 1)
 
-  test_that(sprintf("one can import %s results", timeStep), {
+  test_that(sprintf("one can import %s output", timeStep), {
     nodes <- readOutput(nodes = opts$nodeList, showProgress = FALSE, timeStep = timeStep)
-    expect_equal(nrow(nodes), expected_rows * length(getOption("antares")$nodeList))
+    expect_equal(nrow(nodes), expected_rows * length(opts$nodeList))
+  })
+
+  test_that(sprintf("one can import %s Misc input", timeStep), {
+    misc <- readOutput(misc = opts$nodeList, showProgress = FALSE, timeStep = timeStep)
+    expect_equal(nrow(misc), expected_rows * length(opts$nodeList))
   })
 }
 
