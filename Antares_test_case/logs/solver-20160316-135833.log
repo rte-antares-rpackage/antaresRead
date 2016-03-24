@@ -1,0 +1,990 @@
+[Wed Mar 16 13:58:33 2016][solver][check] Antares Solver v5.0.0 (RTE France)
+[Wed Mar 16 13:58:33 2016][solver][infos]   :: built for 64-bit architectures, Microsoft Windows, 4 cpu(s)
+[Wed Mar 16 13:58:33 2016][solver][infos]   :: hostname = GROVSW84
+[Wed Mar 16 13:58:33 2016][solver][infos] 
+[Wed Mar 16 13:58:33 2016][solver][infos]   :: from C:\Program Files\RTE\Antares\5.0.0\bin
+[Wed Mar 16 13:58:33 2016][solver][infos]   :: log filename: V:\ANTARES-COM\TESTS VALIDATION FRANCHIS\500\example_library\033 Mixed Expansion - Storage - edited\logs\solver-20160316-135833.log
+[Wed Mar 16 13:58:33 2016][solver][infos] 
+[Wed Mar 16 13:58:33 2016][solver][notic] Preparing 033 Mixed Expansion - Storage - edited...
+[Wed Mar 16 13:58:33 2016][solver][infos]   detected version: 500
+[Wed Mar 16 13:58:33 2016][solver][infos]   from `V:\ANTARES-COM\TESTS VALIDATION FRANCHIS\500\example_library\033 Mixed Expansion - Storage - edited`
+[Wed Mar 16 13:58:33 2016][solver][infos] 
+[Wed Mar 16 13:58:33 2016][solver][infos]   simulation mode: Economy
+[Wed Mar 16 13:58:33 2016][solver][infos]   simplex optimization range: day
+[Wed Mar 16 13:58:33 2016][solver][infos]   :: ignoring export mps
+[Wed Mar 16 13:58:33 2016][solver][infos]   Output folder : V:\ANTARES-COM\TESTS VALIDATION FRANCHIS\500\example_library\033 Mixed Expansion - Storage - edited\output\20160316-1358eco
+[Wed Mar 16 13:58:33 2016][solver][infos] Loading the list of areas...
+[Wed Mar 16 13:58:33 2016][solver][infos]   Loading the area list from `V:\ANTARES-COM\TESTS VALIDATION FRANCHIS\500\example_library\033 Mixed Expansion - Storage - edited\input\areas\list.txt`
+[Wed Mar 16 13:58:33 2016][solver][infos]   4 areas found
+[Wed Mar 16 13:58:33 2016][solver][infos] Loading global hydro data...
+[Wed Mar 16 13:58:33 2016][solver][infos] Loading thermal clusters...
+[Wed Mar 16 13:58:33 2016][solver][infos] Loading thermal configuration for the area A
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading thermal configuration for the area B
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading thermal configuration for the area PSP IN
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading thermal configuration for the area PSP OUT
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  11%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  22%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  33%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  44%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  55%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  66%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  77%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 1/4: A  88%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  11%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  22%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  33%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  44%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  55%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  66%
+[Wed Mar 16 13:58:34 2016][solver][infos] Loading the area 2/4: B  77%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 2/4: B  88%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN  16%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN  33%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN  50%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN  66%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 3/4: PSP IN  83%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT  16%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT  33%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT  50%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT  66%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading the area 4/4: PSP OUT  83%
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading correlation matrices...
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading constraints...
+[Wed Mar 16 13:58:35 2016][solver][infos]  added `psp` (daily, equality)
+[Wed Mar 16 13:58:35 2016][solver][infos] 1 binding constraint found
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Loading sets of areas...
+[Wed Mar 16 13:58:35 2016][solver][infos]    found `a and b together` (2 items)
+[Wed Mar 16 13:58:35 2016][solver][infos]  Elapsed time: Study loading: 2121ms
+[Wed Mar 16 13:58:35 2016][solver][infos] [statistics] disk: read: 1314 ko, written: 0 ko
+[Wed Mar 16 13:58:35 2016][solver][infos] [statistics] network: read: 0 ko, written: 0 ko
+[Wed Mar 16 13:58:35 2016][solver][infos] The study is loaded.
+[Wed Mar 16 13:58:35 2016][solver][infos] [UI] Display messages: Off
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Generating calendar informations
+[Wed Mar 16 13:58:35 2016][solver][infos]     Partial week detected. Not allowed in Economy
+[Wed Mar 16 13:58:35 2016][solver][infos]     Time interval that has been requested: 1..8760
+[Wed Mar 16 13:58:35 2016][solver][infos] Calendar: hours:1..8736, days:1..364, weeks:1..52, months:1..12, years:1..1000
+[Wed Mar 16 13:58:35 2016][solver][infos] Simulation days per month : 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 30
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Optimizing the thermal clusters in 'must-run' mode...
+[Wed Mar 16 13:58:35 2016][solver][infos] No thermal cluster in 'must-run' mode
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Optimizing 1 binding constraint
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Summary
+[Wed Mar 16 13:58:35 2016][solver][infos]      areas: 4
+[Wed Mar 16 13:58:35 2016][solver][infos]      links: 3
+[Wed Mar 16 13:58:35 2016][solver][infos]      thermal clusters: 6
+[Wed Mar 16 13:58:35 2016][solver][infos]      thermal clusters (must-run): 0
+[Wed Mar 16 13:58:35 2016][solver][infos]      binding constraints: 1
+[Wed Mar 16 13:58:35 2016][solver][infos]      filtering:false
+[Wed Mar 16 13:58:35 2016][solver][infos]      memory : 7Mo
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] Initializing random number generators...
+[Wed Mar 16 13:58:35 2016][solver][infos] [UI] Progression map: V:\ANTARES-COM\TESTS VALIDATION FRANCHIS\500\example_library\033 Mixed Expansion - Storage - edited\output\20160316-1358eco\about-the-study\map
+[Wed Mar 16 13:58:35 2016][solver][infos]   system memory report: 1509 Mib / 3975 Mib,  37.962264% free
+[Wed Mar 16 13:58:35 2016][solver][infos] 
+[Wed Mar 16 13:58:35 2016][solver][infos] [UI] Display messages: On
+[Wed Mar 16 13:58:35 2016][solver][check] Running the simulation (economy)
+[Wed Mar 16 13:58:35 2016][solver][infos] Allocating resources...
+[Wed Mar 16 13:58:36 2016][solver][infos] Allocating resources...
+[Wed Mar 16 13:58:36 2016][solver][infos]  Variables:  (53Mo)
+[Wed Mar 16 13:58:36 2016][solver][infos]  + Areas                             
+[Wed Mar 16 13:58:36 2016][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]        ENERG. PLANT          MWh     Energy generated by all the clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        ROW BAL.              MWh     Row Balance
+[Wed Mar 16 13:58:36 2016][solver][infos]        PSP                   MWh     PSP
+[Wed Mar 16 13:58:36 2016][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Wed Mar 16 13:58:36 2016][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Wed Mar 16 13:58:36 2016][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOLD                  Hours   LOLD
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOLP                  %       LOLP
+[Wed Mar 16 13:58:36 2016][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Wed Mar 16 13:58:36 2016][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Wed Mar 16 13:58:36 2016][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]                              NP Cost Non proportional costs by all the clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]      + Links                         
+[Wed Mar 16 13:58:36 2016][solver][infos]            FLOW LIN.         MWh     Flow assessed, over all MC years, through linear optimization
+[Wed Mar 16 13:58:36 2016][solver][infos]            UCAP LIN.         MWh     Used capacity assessed, over all MC years, through linear optimization
+[Wed Mar 16 13:58:36 2016][solver][infos]            FLOW QUAD.        MWh     Flow (quad.)
+[Wed Mar 16 13:58:36 2016][solver][infos]            CONG. FEE (ALG.)  Euro    Congestion fee collected throughout all MC years (Alg.)
+[Wed Mar 16 13:58:36 2016][solver][infos]            CONG. FEE (ABS.)  Euro    Congestion fee collected throughout all MC years (Absolute value)
+[Wed Mar 16 13:58:36 2016][solver][infos]            MARG. COST        Euro/MW Decrease of the overall operating cost expected by a 1MW capacity reinforcement
+[Wed Mar 16 13:58:36 2016][solver][infos]            CONG. PROB. (+/-) %       Probability for the line to be congested in the upstream-downstream way
+[Wed Mar 16 13:58:36 2016][solver][infos]            HURDLE COST       Euro    Hurdle costs, over all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]  + Sets of Areas                     
+[Wed Mar 16 13:58:36 2016][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        ROW BAL.              MWh     Row Balance
+[Wed Mar 16 13:58:36 2016][solver][infos]        PSP                   MWh     PSP
+[Wed Mar 16 13:58:36 2016][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Wed Mar 16 13:58:36 2016][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Wed Mar 16 13:58:36 2016][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOLD                  Hours   LOLD
+[Wed Mar 16 13:58:36 2016][solver][infos]        LOLP                  %       LOLP
+[Wed Mar 16 13:58:36 2016][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Wed Mar 16 13:58:36 2016][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Wed Mar 16 13:58:36 2016][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Wed Mar 16 13:58:36 2016][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Wed Mar 16 13:58:36 2016][solver][infos] 
+[Wed Mar 16 13:58:36 2016][solver][infos] Preparing time-series numbers...
+[Wed Mar 16 13:58:36 2016][solver][infos] MC-Years : [1 .. 1000], total: 1000
+[Wed Mar 16 13:58:36 2016][solver][infos]  Starting the simulation
+[Wed Mar 16 13:58:36 2016][solver][infos] 
+[Wed Mar 16 13:58:36 2016][solver][infos] Generating the wind time-series
+[Wed Mar 16 13:58:36 2016][solver][infos]   Added the area 'A'
+[Wed Mar 16 13:58:36 2016][solver][infos]   876000 points calculated, using 36500 correlation matrices, out of which 0 were npsd and transformed
+[Wed Mar 16 13:58:36 2016][solver][progress] task 0 wind, year: 0, 100
+[Wed Mar 16 13:58:36 2016][solver][infos] Generating the hydro time-series
+[Wed Mar 16 13:58:36 2016][solver][progress] task 0 hydro, year: 0, 100
+[Wed Mar 16 13:58:36 2016][solver][infos] 
+[Wed Mar 16 13:58:36 2016][solver][infos] Generating the thermal time-series
+[Wed Mar 16 13:58:36 2016][solver][progress] task 0 thermal, year: 0, 100
+[Wed Mar 16 13:58:36 2016][solver][infos] Current MC Year : 1
+[Wed Mar 16 13:58:36 2016][solver][progress] task 0 mc, year: 0, 100
+[Wed Mar 16 13:58:36 2016][solver][infos] Current MC Year : 2
+[Wed Mar 16 13:58:37 2016][solver][progress] task 0 mc, year: 1, 84.615387
+[Wed Mar 16 13:58:37 2016][solver][progress] task 0 mc, year: 1, 100
+[Wed Mar 16 13:58:37 2016][solver][infos] Current MC Year : 3
+[Wed Mar 16 13:58:37 2016][solver][progress] task 0 mc, year: 2, 100
+[Wed Mar 16 13:58:37 2016][solver][infos] Current MC Year : 4
+[Wed Mar 16 13:58:37 2016][solver][progress] task 0 mc, year: 3, 100
+[Wed Mar 16 13:58:37 2016][solver][infos] Current MC Year : 5
+[Wed Mar 16 13:58:38 2016][solver][progress] task 0 mc, year: 4, 100
+[Wed Mar 16 13:58:38 2016][solver][infos] Current MC Year : 6
+[Wed Mar 16 13:58:38 2016][solver][progress] task 0 mc, year: 5, 15.384615
+[Wed Mar 16 13:58:38 2016][solver][progress] task 0 mc, year: 5, 100
+[Wed Mar 16 13:58:38 2016][solver][infos] Current MC Year : 7
+[Wed Mar 16 13:58:38 2016][solver][progress] task 0 mc, year: 6, 100
+[Wed Mar 16 13:58:38 2016][solver][infos] Current MC Year : 8
+[Wed Mar 16 13:58:39 2016][solver][progress] task 0 mc, year: 7, 100
+[Wed Mar 16 13:58:39 2016][solver][infos] Current MC Year : 9
+[Wed Mar 16 13:58:39 2016][solver][progress] task 0 mc, year: 8, 61.538460
+[Wed Mar 16 13:58:39 2016][solver][progress] task 0 mc, year: 8, 100
+[Wed Mar 16 13:58:39 2016][solver][infos] Current MC Year : 10
+[Wed Mar 16 13:58:40 2016][solver][progress] task 0 mc, year: 9, 100
+[Wed Mar 16 13:58:40 2016][solver][infos] Current MC Year : 11
+[Wed Mar 16 13:58:40 2016][solver][progress] task 0 mc, year: 10, 100
+[Wed Mar 16 13:58:40 2016][solver][infos] Current MC Year : 12
+[Wed Mar 16 13:58:40 2016][solver][progress] task 0 mc, year: 11, 100.000000
+[Wed Mar 16 13:58:40 2016][solver][infos] Current MC Year : 13
+[Wed Mar 16 13:58:41 2016][solver][progress] task 0 mc, year: 12, 100
+[Wed Mar 16 13:58:41 2016][solver][infos] Current MC Year : 14
+[Wed Mar 16 13:58:41 2016][solver][progress] task 0 mc, year: 13, 100
+[Wed Mar 16 13:58:41 2016][solver][infos] Current MC Year : 15
+[Wed Mar 16 13:58:41 2016][solver][progress] task 0 mc, year: 14, 100
+[Wed Mar 16 13:58:41 2016][solver][infos] Current MC Year : 16
+[Wed Mar 16 13:58:42 2016][solver][progress] task 0 mc, year: 15, 46.153847
+[Wed Mar 16 13:58:42 2016][solver][progress] task 0 mc, year: 15, 100
+[Wed Mar 16 13:58:42 2016][solver][infos] Current MC Year : 17
+[Wed Mar 16 13:58:42 2016][solver][progress] task 0 mc, year: 16, 100
+[Wed Mar 16 13:58:42 2016][solver][infos] Current MC Year : 18
+[Wed Mar 16 13:58:42 2016][solver][progress] task 0 mc, year: 17, 100
+[Wed Mar 16 13:58:42 2016][solver][infos] Current MC Year : 19
+[Wed Mar 16 13:58:43 2016][solver][progress] task 0 mc, year: 18, 100
+[Wed Mar 16 13:58:43 2016][solver][infos] Current MC Year : 20
+[Wed Mar 16 13:58:43 2016][solver][progress] task 0 mc, year: 19, 11.538462
+[Wed Mar 16 13:58:43 2016][solver][progress] task 0 mc, year: 19, 100
+[Wed Mar 16 13:58:43 2016][solver][infos] Current MC Year : 21
+[Wed Mar 16 13:58:44 2016][solver][progress] task 0 mc, year: 20, 100
+[Wed Mar 16 13:58:44 2016][solver][infos] Current MC Year : 22
+[Wed Mar 16 13:58:44 2016][solver][progress] task 0 mc, year: 21, 100
+[Wed Mar 16 13:58:44 2016][solver][infos] Current MC Year : 23
+[Wed Mar 16 13:58:44 2016][solver][progress] task 0 mc, year: 22, 53.846153
+[Wed Mar 16 13:58:44 2016][solver][progress] task 0 mc, year: 22, 100
+[Wed Mar 16 13:58:44 2016][solver][infos] Current MC Year : 24
+[Wed Mar 16 13:58:45 2016][solver][progress] task 0 mc, year: 23, 100
+[Wed Mar 16 13:58:45 2016][solver][infos] Current MC Year : 25
+[Wed Mar 16 13:58:45 2016][solver][progress] task 0 mc, year: 24, 100
+[Wed Mar 16 13:58:45 2016][solver][infos] Current MC Year : 26
+[Wed Mar 16 13:58:45 2016][solver][progress] task 0 mc, year: 25, 100
+[Wed Mar 16 13:58:45 2016][solver][infos] Current MC Year : 27
+[Wed Mar 16 13:58:45 2016][solver][progress] task 0 mc, year: 26, 15.384615
+[Wed Mar 16 13:58:45 2016][solver][progress] task 0 mc, year: 26, 100
+[Wed Mar 16 13:58:45 2016][solver][infos] Current MC Year : 28
+[Wed Mar 16 13:58:46 2016][solver][progress] task 0 mc, year: 27, 100
+[Wed Mar 16 13:58:46 2016][solver][infos] Current MC Year : 29
+[Wed Mar 16 13:58:46 2016][solver][progress] task 0 mc, year: 28, 100
+[Wed Mar 16 13:58:46 2016][solver][infos] Current MC Year : 30
+[Wed Mar 16 13:58:46 2016][solver][progress] task 0 mc, year: 29, 100
+[Wed Mar 16 13:58:46 2016][solver][infos] Current MC Year : 31
+[Wed Mar 16 13:58:46 2016][solver][progress] task 0 mc, year: 30, 13.461538
+[Wed Mar 16 13:58:47 2016][solver][progress] task 0 mc, year: 30, 100
+[Wed Mar 16 13:58:47 2016][solver][infos] Current MC Year : 32
+[Wed Mar 16 13:58:47 2016][solver][progress] task 0 mc, year: 31, 100
+[Wed Mar 16 13:58:47 2016][solver][infos] Current MC Year : 33
+[Wed Mar 16 13:58:47 2016][solver][progress] task 0 mc, year: 32, 100
+[Wed Mar 16 13:58:47 2016][solver][infos] Current MC Year : 34
+[Wed Mar 16 13:58:48 2016][solver][progress] task 0 mc, year: 33, 98.076920
+[Wed Mar 16 13:58:48 2016][solver][progress] task 0 mc, year: 33, 100
+[Wed Mar 16 13:58:48 2016][solver][infos] Current MC Year : 35
+[Wed Mar 16 13:58:48 2016][solver][progress] task 0 mc, year: 34, 100
+[Wed Mar 16 13:58:48 2016][solver][infos] Current MC Year : 36
+[Wed Mar 16 13:58:48 2016][solver][progress] task 0 mc, year: 35, 100
+[Wed Mar 16 13:58:48 2016][solver][infos] Current MC Year : 37
+[Wed Mar 16 13:58:49 2016][solver][progress] task 0 mc, year: 36, 100
+[Wed Mar 16 13:58:49 2016][solver][infos] Current MC Year : 38
+[Wed Mar 16 13:58:49 2016][solver][progress] task 0 mc, year: 37, 11.538462
+[Wed Mar 16 13:58:49 2016][solver][progress] task 0 mc, year: 37, 100
+[Wed Mar 16 13:58:49 2016][solver][infos] Current MC Year : 39
+[Wed Mar 16 13:58:49 2016][solver][progress] task 0 mc, year: 38, 100
+[Wed Mar 16 13:58:49 2016][solver][infos] Current MC Year : 40
+[Wed Mar 16 13:58:50 2016][solver][progress] task 0 mc, year: 39, 100
+[Wed Mar 16 13:58:50 2016][solver][infos] Current MC Year : 41
+[Wed Mar 16 13:58:50 2016][solver][progress] task 0 mc, year: 40, 82.692307
+[Wed Mar 16 13:58:50 2016][solver][progress] task 0 mc, year: 40, 100
+[Wed Mar 16 13:58:50 2016][solver][infos] Current MC Year : 42
+[Wed Mar 16 13:58:50 2016][solver][progress] task 0 mc, year: 41, 100
+[Wed Mar 16 13:58:50 2016][solver][infos] Current MC Year : 43
+[Wed Mar 16 13:58:51 2016][solver][progress] task 0 mc, year: 42, 100
+[Wed Mar 16 13:58:51 2016][solver][infos] Current MC Year : 44
+[Wed Mar 16 13:58:51 2016][solver][progress] task 0 mc, year: 43, 100
+[Wed Mar 16 13:58:51 2016][solver][infos] Current MC Year : 45
+[Wed Mar 16 13:58:51 2016][solver][progress] task 0 mc, year: 44, 17.307692
+[Wed Mar 16 13:58:52 2016][solver][progress] task 0 mc, year: 44, 100
+[Wed Mar 16 13:58:52 2016][solver][infos] Current MC Year : 46
+[Wed Mar 16 13:58:52 2016][solver][progress] task 0 mc, year: 45, 100
+[Wed Mar 16 13:58:52 2016][solver][infos] Current MC Year : 47
+[Wed Mar 16 13:58:52 2016][solver][progress] task 0 mc, year: 46, 100
+[Wed Mar 16 13:58:52 2016][solver][infos] Current MC Year : 48
+[Wed Mar 16 13:58:52 2016][solver][progress] task 0 mc, year: 47, 100
+[Wed Mar 16 13:58:52 2016][solver][infos] Current MC Year : 49
+[Wed Mar 16 13:58:53 2016][solver][progress] task 0 mc, year: 48, 100
+[Wed Mar 16 13:58:53 2016][solver][infos] Current MC Year : 50
+[Wed Mar 16 13:58:53 2016][solver][progress] task 0 mc, year: 49, 100
+[Wed Mar 16 13:58:53 2016][solver][infos] Current MC Year : 51
+[Wed Mar 16 13:58:53 2016][solver][progress] task 0 mc, year: 50, 100
+[Wed Mar 16 13:58:53 2016][solver][infos] Current MC Year : 52
+[Wed Mar 16 13:58:54 2016][solver][progress] task 0 mc, year: 51, 53.846153
+[Wed Mar 16 13:58:54 2016][solver][progress] task 0 mc, year: 51, 100
+[Wed Mar 16 13:58:54 2016][solver][infos] Current MC Year : 53
+[Wed Mar 16 13:58:54 2016][solver][progress] task 0 mc, year: 52, 100
+[Wed Mar 16 13:58:54 2016][solver][infos] Current MC Year : 54
+[Wed Mar 16 13:58:55 2016][solver][progress] task 0 mc, year: 53, 100
+[Wed Mar 16 13:58:55 2016][solver][infos] Current MC Year : 55
+[Wed Mar 16 13:58:55 2016][solver][progress] task 0 mc, year: 54, 94.230766
+[Wed Mar 16 13:58:55 2016][solver][progress] task 0 mc, year: 54, 100
+[Wed Mar 16 13:58:55 2016][solver][infos] Current MC Year : 56
+[Wed Mar 16 13:58:55 2016][solver][progress] task 0 mc, year: 55, 100
+[Wed Mar 16 13:58:55 2016][solver][infos] Current MC Year : 57
+[Wed Mar 16 13:58:56 2016][solver][progress] task 0 mc, year: 56, 100
+[Wed Mar 16 13:58:56 2016][solver][infos] Current MC Year : 58
+[Wed Mar 16 13:58:56 2016][solver][progress] task 0 mc, year: 57, 100
+[Wed Mar 16 13:58:56 2016][solver][infos] Current MC Year : 59
+[Wed Mar 16 13:58:56 2016][solver][progress] task 0 mc, year: 58, 30.769230
+[Wed Mar 16 13:58:56 2016][solver][progress] task 0 mc, year: 58, 100
+[Wed Mar 16 13:58:56 2016][solver][infos] Current MC Year : 60
+[Wed Mar 16 13:58:57 2016][solver][progress] task 0 mc, year: 59, 100
+[Wed Mar 16 13:58:57 2016][solver][infos] Current MC Year : 61
+[Wed Mar 16 13:58:57 2016][solver][progress] task 0 mc, year: 60, 100
+[Wed Mar 16 13:58:57 2016][solver][infos] Current MC Year : 62
+[Wed Mar 16 13:58:57 2016][solver][progress] task 0 mc, year: 61, 21.153847
+[Wed Mar 16 13:58:58 2016][solver][progress] task 0 mc, year: 61, 100
+[Wed Mar 16 13:58:58 2016][solver][infos] Current MC Year : 63
+[Wed Mar 16 13:58:58 2016][solver][progress] task 0 mc, year: 62, 100
+[Wed Mar 16 13:58:58 2016][solver][infos] Current MC Year : 64
+[Wed Mar 16 13:58:58 2016][solver][progress] task 0 mc, year: 63, 100
+[Wed Mar 16 13:58:58 2016][solver][infos] Current MC Year : 65
+[Wed Mar 16 13:58:59 2016][solver][progress] task 0 mc, year: 64, 96.153847
+[Wed Mar 16 13:58:59 2016][solver][progress] task 0 mc, year: 64, 100
+[Wed Mar 16 13:58:59 2016][solver][infos] Current MC Year : 66
+[Wed Mar 16 13:58:59 2016][solver][progress] task 0 mc, year: 65, 100
+[Wed Mar 16 13:58:59 2016][solver][infos] Current MC Year : 67
+[Wed Mar 16 13:58:59 2016][solver][progress] task 0 mc, year: 66, 100
+[Wed Mar 16 13:58:59 2016][solver][infos] Current MC Year : 68
+[Wed Mar 16 13:59:00 2016][solver][progress] task 0 mc, year: 67, 100
+[Wed Mar 16 13:59:00 2016][solver][infos] Current MC Year : 69
+[Wed Mar 16 13:59:00 2016][solver][progress] task 0 mc, year: 68, 26.923077
+[Wed Mar 16 13:59:00 2016][solver][progress] task 0 mc, year: 68, 100
+[Wed Mar 16 13:59:00 2016][solver][infos] Current MC Year : 70
+[Wed Mar 16 13:59:00 2016][solver][progress] task 0 mc, year: 69, 100
+[Wed Mar 16 13:59:00 2016][solver][infos] Current MC Year : 71
+[Wed Mar 16 13:59:01 2016][solver][progress] task 0 mc, year: 70, 100
+[Wed Mar 16 13:59:01 2016][solver][infos] Current MC Year : 72
+[Wed Mar 16 13:59:01 2016][solver][progress] task 0 mc, year: 71, 100
+[Wed Mar 16 13:59:01 2016][solver][infos] Current MC Year : 73
+[Wed Mar 16 13:59:01 2016][solver][progress] task 0 mc, year: 72, 15.384615
+[Wed Mar 16 13:59:01 2016][solver][progress] task 0 mc, year: 72, 100
+[Wed Mar 16 13:59:01 2016][solver][infos] Current MC Year : 74
+[Wed Mar 16 13:59:02 2016][solver][progress] task 0 mc, year: 73, 100
+[Wed Mar 16 13:59:02 2016][solver][infos] Current MC Year : 75
+[Wed Mar 16 13:59:02 2016][solver][progress] task 0 mc, year: 74, 100
+[Wed Mar 16 13:59:02 2016][solver][infos] Current MC Year : 76
+[Wed Mar 16 13:59:02 2016][solver][progress] task 0 mc, year: 75, 61.538460
+[Wed Mar 16 13:59:02 2016][solver][progress] task 0 mc, year: 75, 100
+[Wed Mar 16 13:59:02 2016][solver][infos] Current MC Year : 77
+[Wed Mar 16 13:59:03 2016][solver][progress] task 0 mc, year: 76, 100
+[Wed Mar 16 13:59:03 2016][solver][infos] Current MC Year : 78
+[Wed Mar 16 13:59:03 2016][solver][progress] task 0 mc, year: 77, 100
+[Wed Mar 16 13:59:03 2016][solver][infos] Current MC Year : 79
+[Wed Mar 16 13:59:03 2016][solver][progress] task 0 mc, year: 78, 100
+[Wed Mar 16 13:59:03 2016][solver][infos] Current MC Year : 80
+[Wed Mar 16 13:59:03 2016][solver][progress] task 0 mc, year: 79, 19.230770
+[Wed Mar 16 13:59:04 2016][solver][progress] task 0 mc, year: 79, 100
+[Wed Mar 16 13:59:04 2016][solver][infos] Current MC Year : 81
+[Wed Mar 16 13:59:04 2016][solver][progress] task 0 mc, year: 80, 100
+[Wed Mar 16 13:59:04 2016][solver][infos] Current MC Year : 82
+[Wed Mar 16 13:59:04 2016][solver][progress] task 0 mc, year: 81, 100
+[Wed Mar 16 13:59:04 2016][solver][infos] Current MC Year : 83
+[Wed Mar 16 13:59:05 2016][solver][progress] task 0 mc, year: 82, 82.692307
+[Wed Mar 16 13:59:05 2016][solver][progress] task 0 mc, year: 82, 100
+[Wed Mar 16 13:59:05 2016][solver][infos] Current MC Year : 84
+[Wed Mar 16 13:59:05 2016][solver][progress] task 0 mc, year: 83, 100
+[Wed Mar 16 13:59:05 2016][solver][infos] Current MC Year : 85
+[Wed Mar 16 13:59:05 2016][solver][progress] task 0 mc, year: 84, 100
+[Wed Mar 16 13:59:05 2016][solver][infos] Current MC Year : 86
+[Wed Mar 16 13:59:06 2016][solver][progress] task 0 mc, year: 85, 100
+[Wed Mar 16 13:59:06 2016][solver][infos] Current MC Year : 87
+[Wed Mar 16 13:59:06 2016][solver][progress] task 0 mc, year: 86, 19.230770
+[Wed Mar 16 13:59:06 2016][solver][progress] task 0 mc, year: 86, 100
+[Wed Mar 16 13:59:06 2016][solver][infos] Current MC Year : 88
+[Wed Mar 16 13:59:06 2016][solver][progress] task 0 mc, year: 87, 100
+[Wed Mar 16 13:59:06 2016][solver][infos] Current MC Year : 89
+[Wed Mar 16 13:59:07 2016][solver][progress] task 0 mc, year: 88, 100
+[Wed Mar 16 13:59:07 2016][solver][infos] Current MC Year : 90
+[Wed Mar 16 13:59:07 2016][solver][progress] task 0 mc, year: 89, 76.923080
+[Wed Mar 16 13:59:07 2016][solver][progress] task 0 mc, year: 89, 100
+[Wed Mar 16 13:59:07 2016][solver][infos] Current MC Year : 91
+[Wed Mar 16 13:59:07 2016][solver][progress] task 0 mc, year: 90, 100
+[Wed Mar 16 13:59:08 2016][solver][infos] Current MC Year : 92
+[Wed Mar 16 13:59:08 2016][solver][progress] task 0 mc, year: 91, 100
+[Wed Mar 16 13:59:08 2016][solver][infos] Current MC Year : 93
+[Wed Mar 16 13:59:08 2016][solver][progress] task 0 mc, year: 92, 90.384613
+[Wed Mar 16 13:59:08 2016][solver][progress] task 0 mc, year: 92, 100
+[Wed Mar 16 13:59:08 2016][solver][infos] Current MC Year : 94
+[Wed Mar 16 13:59:09 2016][solver][progress] task 0 mc, year: 93, 100
+[Wed Mar 16 13:59:09 2016][solver][infos] Current MC Year : 95
+[Wed Mar 16 13:59:09 2016][solver][progress] task 0 mc, year: 94, 100
+[Wed Mar 16 13:59:09 2016][solver][infos] Current MC Year : 96
+[Wed Mar 16 13:59:09 2016][solver][progress] task 0 mc, year: 95, 100
+[Wed Mar 16 13:59:09 2016][solver][infos] Current MC Year : 97
+[Wed Mar 16 13:59:09 2016][solver][progress] task 0 mc, year: 96, 42.307693
+[Wed Mar 16 13:59:10 2016][solver][progress] task 0 mc, year: 96, 100
+[Wed Mar 16 13:59:10 2016][solver][infos] Current MC Year : 98
+[Wed Mar 16 13:59:10 2016][solver][progress] task 0 mc, year: 97, 100
+[Wed Mar 16 13:59:10 2016][solver][infos] Current MC Year : 99
+[Wed Mar 16 13:59:10 2016][solver][progress] task 0 mc, year: 98, 100
+[Wed Mar 16 13:59:10 2016][solver][infos] Current MC Year : 100
+[Wed Mar 16 13:59:11 2016][solver][progress] task 0 mc, year: 99, 100.000000
+[Wed Mar 16 13:59:11 2016][solver][infos] 
+[Wed Mar 16 13:59:11 2016][solver][infos] Generating the wind time-series
+[Wed Mar 16 13:59:11 2016][solver][infos]   876000 points calculated, using 36500 correlation matrices, out of which 0 were npsd and transformed
+[Wed Mar 16 13:59:11 2016][solver][progress] task 0 wind, year: 100, 100
+[Wed Mar 16 13:59:11 2016][solver][infos] Generating the hydro time-series
+[Wed Mar 16 13:59:11 2016][solver][progress] task 0 hydro, year: 100, 100
+[Wed Mar 16 13:59:11 2016][solver][infos] 
+[Wed Mar 16 13:59:11 2016][solver][infos] Generating the thermal time-series
+[Wed Mar 16 13:59:11 2016][solver][progress] task 0 thermal, year: 100, 100
+[Wed Mar 16 13:59:11 2016][solver][infos] Current MC Year : 101
+[Wed Mar 16 13:59:11 2016][solver][progress] task 0 mc, year: 100, 100
+[Wed Mar 16 13:59:11 2016][solver][infos] Current MC Year : 102
+[Wed Mar 16 13:59:12 2016][solver][progress] task 0 mc, year: 101, 100
+[Wed Mar 16 13:59:12 2016][solver][infos] Current MC Year : 103
+[Wed Mar 16 13:59:12 2016][solver][progress] task 0 mc, year: 102, 36.538460
+[Wed Mar 16 13:59:12 2016][solver][progress] task 0 mc, year: 102, 100
+[Wed Mar 16 13:59:12 2016][solver][infos] Current MC Year : 104
+[Wed Mar 16 13:59:12 2016][solver][progress] task 0 mc, year: 103, 100
+[Wed Mar 16 13:59:12 2016][solver][infos] Current MC Year : 105
+[Wed Mar 16 13:59:13 2016][solver][progress] task 0 mc, year: 104, 100
+[Wed Mar 16 13:59:13 2016][solver][infos] Current MC Year : 106
+[Wed Mar 16 13:59:13 2016][solver][progress] task 0 mc, year: 105, 88.461540
+[Wed Mar 16 13:59:13 2016][solver][progress] task 0 mc, year: 105, 100
+[Wed Mar 16 13:59:13 2016][solver][infos] Current MC Year : 107
+[Wed Mar 16 13:59:13 2016][solver][progress] task 0 mc, year: 106, 100
+[Wed Mar 16 13:59:13 2016][solver][infos] Current MC Year : 108
+[Wed Mar 16 13:59:14 2016][solver][progress] task 0 mc, year: 107, 100
+[Wed Mar 16 13:59:14 2016][solver][infos] Current MC Year : 109
+[Wed Mar 16 13:59:14 2016][solver][progress] task 0 mc, year: 108, 100
+[Wed Mar 16 13:59:14 2016][solver][infos] Current MC Year : 110
+[Wed Mar 16 13:59:14 2016][solver][progress] task 0 mc, year: 109, 51.923077
+[Wed Mar 16 13:59:14 2016][solver][progress] task 0 mc, year: 109, 100
+[Wed Mar 16 13:59:14 2016][solver][infos] Current MC Year : 111
+[Wed Mar 16 13:59:15 2016][solver][progress] task 0 mc, year: 110, 100
+[Wed Mar 16 13:59:15 2016][solver][infos] Current MC Year : 112
+[Wed Mar 16 13:59:15 2016][solver][progress] task 0 mc, year: 111, 100
+[Wed Mar 16 13:59:15 2016][solver][infos] Current MC Year : 113
+[Wed Mar 16 13:59:15 2016][solver][progress] task 0 mc, year: 112, 100
+[Wed Mar 16 13:59:15 2016][solver][infos] Current MC Year : 114
+[Wed Mar 16 13:59:15 2016][solver][progress] task 0 mc, year: 113, 23.076923
+[Wed Mar 16 13:59:16 2016][solver][progress] task 0 mc, year: 113, 100
+[Wed Mar 16 13:59:16 2016][solver][infos] Current MC Year : 115
+[Wed Mar 16 13:59:16 2016][solver][progress] task 0 mc, year: 114, 100
+[Wed Mar 16 13:59:16 2016][solver][infos] Current MC Year : 116
+[Wed Mar 16 13:59:16 2016][solver][progress] task 0 mc, year: 115, 100
+[Wed Mar 16 13:59:16 2016][solver][infos] Current MC Year : 117
+[Wed Mar 16 13:59:17 2016][solver][progress] task 0 mc, year: 116, 100
+[Wed Mar 16 13:59:17 2016][solver][infos] Current MC Year : 118
+[Wed Mar 16 13:59:17 2016][solver][progress] task 0 mc, year: 117, 1.923077
+[Wed Mar 16 13:59:17 2016][solver][progress] task 0 mc, year: 117, 100
+[Wed Mar 16 13:59:17 2016][solver][infos] Current MC Year : 119
+[Wed Mar 16 13:59:17 2016][solver][progress] task 0 mc, year: 118, 100
+[Wed Mar 16 13:59:17 2016][solver][infos] Current MC Year : 120
+[Wed Mar 16 13:59:18 2016][solver][progress] task 0 mc, year: 119, 100
+[Wed Mar 16 13:59:18 2016][solver][infos] Current MC Year : 121
+[Wed Mar 16 13:59:18 2016][solver][progress] task 0 mc, year: 120, 86.538460
+[Wed Mar 16 13:59:18 2016][solver][progress] task 0 mc, year: 120, 100
+[Wed Mar 16 13:59:18 2016][solver][infos] Current MC Year : 122
+[Wed Mar 16 13:59:18 2016][solver][progress] task 0 mc, year: 121, 100
+[Wed Mar 16 13:59:18 2016][solver][infos] Current MC Year : 123
+[Wed Mar 16 13:59:18 2016][solver][progress] task 0 mc, year: 122, 100
+[Wed Mar 16 13:59:18 2016][solver][infos] Current MC Year : 124
+[Wed Mar 16 13:59:19 2016][solver][progress] task 0 mc, year: 123, 100
+[Wed Mar 16 13:59:19 2016][solver][infos] Current MC Year : 125
+[Wed Mar 16 13:59:19 2016][solver][progress] task 0 mc, year: 124, 63.461540
+[Wed Mar 16 13:59:19 2016][solver][progress] task 0 mc, year: 124, 100
+[Wed Mar 16 13:59:19 2016][solver][infos] Current MC Year : 126
+[Wed Mar 16 13:59:20 2016][solver][progress] task 0 mc, year: 125, 100
+[Wed Mar 16 13:59:20 2016][solver][infos] Current MC Year : 127
+[Wed Mar 16 13:59:20 2016][solver][progress] task 0 mc, year: 126, 100
+[Wed Mar 16 13:59:20 2016][solver][infos] Current MC Year : 128
+[Wed Mar 16 13:59:20 2016][solver][progress] task 0 mc, year: 127, 100
+[Wed Mar 16 13:59:20 2016][solver][infos] Current MC Year : 129
+[Wed Mar 16 13:59:20 2016][solver][progress] task 0 mc, year: 128, 3.846154
+[Wed Mar 16 13:59:21 2016][solver][progress] task 0 mc, year: 128, 100
+[Wed Mar 16 13:59:21 2016][solver][infos] Current MC Year : 130
+[Wed Mar 16 13:59:21 2016][solver][progress] task 0 mc, year: 129, 100
+[Wed Mar 16 13:59:21 2016][solver][infos] Current MC Year : 131
+[Wed Mar 16 13:59:21 2016][solver][progress] task 0 mc, year: 130, 100
+[Wed Mar 16 13:59:21 2016][solver][infos] Current MC Year : 132
+[Wed Mar 16 13:59:21 2016][solver][progress] task 0 mc, year: 131, 61.538460
+[Wed Mar 16 13:59:22 2016][solver][progress] task 0 mc, year: 131, 100
+[Wed Mar 16 13:59:22 2016][solver][infos] Current MC Year : 133
+[Wed Mar 16 13:59:22 2016][solver][progress] task 0 mc, year: 132, 100
+[Wed Mar 16 13:59:22 2016][solver][infos] Current MC Year : 134
+[Wed Mar 16 13:59:22 2016][solver][progress] task 0 mc, year: 133, 100
+[Wed Mar 16 13:59:22 2016][solver][infos] Current MC Year : 135
+[Wed Mar 16 13:59:22 2016][solver][progress] task 0 mc, year: 134, 100
+[Wed Mar 16 13:59:22 2016][solver][infos] Current MC Year : 136
+[Wed Mar 16 13:59:23 2016][solver][progress] task 0 mc, year: 135, 59.615383
+[Wed Mar 16 13:59:23 2016][solver][progress] task 0 mc, year: 135, 100
+[Wed Mar 16 13:59:23 2016][solver][infos] Current MC Year : 137
+[Wed Mar 16 13:59:23 2016][solver][progress] task 0 mc, year: 136, 100
+[Wed Mar 16 13:59:23 2016][solver][infos] Current MC Year : 138
+[Wed Mar 16 13:59:24 2016][solver][progress] task 0 mc, year: 137, 100
+[Wed Mar 16 13:59:24 2016][solver][infos] Current MC Year : 139
+[Wed Mar 16 13:59:24 2016][solver][progress] task 0 mc, year: 138, 100
+[Wed Mar 16 13:59:24 2016][solver][infos] Current MC Year : 140
+[Wed Mar 16 13:59:24 2016][solver][progress] task 0 mc, year: 139, 19.230770
+[Wed Mar 16 13:59:24 2016][solver][progress] task 0 mc, year: 139, 100
+[Wed Mar 16 13:59:24 2016][solver][infos] Current MC Year : 141
+[Wed Mar 16 13:59:24 2016][solver][progress] task 0 mc, year: 140, 100
+[Wed Mar 16 13:59:24 2016][solver][infos] Current MC Year : 142
+[Wed Mar 16 13:59:25 2016][solver][progress] task 0 mc, year: 141, 100
+[Wed Mar 16 13:59:25 2016][solver][infos] Current MC Year : 143
+[Wed Mar 16 13:59:25 2016][solver][progress] task 0 mc, year: 142, 92.307693
+[Wed Mar 16 13:59:25 2016][solver][progress] task 0 mc, year: 142, 100
+[Wed Mar 16 13:59:25 2016][solver][infos] Current MC Year : 144
+[Wed Mar 16 13:59:26 2016][solver][progress] task 0 mc, year: 143, 100
+[Wed Mar 16 13:59:26 2016][solver][infos] Current MC Year : 145
+[Wed Mar 16 13:59:26 2016][solver][progress] task 0 mc, year: 144, 100
+[Wed Mar 16 13:59:26 2016][solver][infos] Current MC Year : 146
+[Wed Mar 16 13:59:26 2016][solver][progress] task 0 mc, year: 145, 100
+[Wed Mar 16 13:59:26 2016][solver][infos] Current MC Year : 147
+[Wed Mar 16 13:59:26 2016][solver][progress] task 0 mc, year: 146, 53.846153
+[Wed Mar 16 13:59:26 2016][solver][progress] task 0 mc, year: 146, 100
+[Wed Mar 16 13:59:26 2016][solver][infos] Current MC Year : 148
+[Wed Mar 16 13:59:27 2016][solver][progress] task 0 mc, year: 147, 100
+[Wed Mar 16 13:59:27 2016][solver][infos] Current MC Year : 149
+[Wed Mar 16 13:59:27 2016][solver][progress] task 0 mc, year: 148, 100
+[Wed Mar 16 13:59:27 2016][solver][infos] Current MC Year : 150
+[Wed Mar 16 13:59:28 2016][solver][progress] task 0 mc, year: 149, 100.000000
+[Wed Mar 16 13:59:28 2016][solver][infos] Current MC Year : 151
+[Wed Mar 16 13:59:28 2016][solver][progress] task 0 mc, year: 150, 100
+[Wed Mar 16 13:59:28 2016][solver][infos] Current MC Year : 152
+[Wed Mar 16 13:59:28 2016][solver][progress] task 0 mc, year: 151, 100
+[Wed Mar 16 13:59:28 2016][solver][infos] Current MC Year : 153
+[Wed Mar 16 13:59:29 2016][solver][progress] task 0 mc, year: 152, 100
+[Wed Mar 16 13:59:29 2016][solver][infos] Current MC Year : 154
+[Wed Mar 16 13:59:29 2016][solver][progress] task 0 mc, year: 153, 55.769230
+[Wed Mar 16 13:59:29 2016][solver][progress] task 0 mc, year: 153, 100
+[Wed Mar 16 13:59:29 2016][solver][infos] Current MC Year : 155
+[Wed Mar 16 13:59:29 2016][solver][progress] task 0 mc, year: 154, 100
+[Wed Mar 16 13:59:29 2016][solver][infos] Current MC Year : 156
+[Wed Mar 16 13:59:30 2016][solver][progress] task 0 mc, year: 155, 100
+[Wed Mar 16 13:59:30 2016][solver][infos] Current MC Year : 157
+[Wed Mar 16 13:59:30 2016][solver][progress] task 0 mc, year: 156, 100
+[Wed Mar 16 13:59:30 2016][solver][infos] Current MC Year : 158
+[Wed Mar 16 13:59:30 2016][solver][progress] task 0 mc, year: 157, 15.384615
+[Wed Mar 16 13:59:30 2016][solver][progress] task 0 mc, year: 157, 100
+[Wed Mar 16 13:59:30 2016][solver][infos] Current MC Year : 159
+[Wed Mar 16 13:59:30 2016][solver][progress] task 0 mc, year: 158, 100
+[Wed Mar 16 13:59:30 2016][solver][infos] Current MC Year : 160
+[Wed Mar 16 13:59:31 2016][solver][progress] task 0 mc, year: 159, 100
+[Wed Mar 16 13:59:31 2016][solver][infos] Current MC Year : 161
+[Wed Mar 16 13:59:31 2016][solver][progress] task 0 mc, year: 160, 100
+[Wed Mar 16 13:59:31 2016][solver][infos] Current MC Year : 162
+[Wed Mar 16 13:59:32 2016][solver][progress] task 0 mc, year: 161, 100
+[Wed Mar 16 13:59:32 2016][solver][infos] Current MC Year : 163
+[Wed Mar 16 13:59:32 2016][solver][progress] task 0 mc, year: 162, 100
+[Wed Mar 16 13:59:32 2016][solver][infos] Current MC Year : 164
+[Wed Mar 16 13:59:32 2016][solver][progress] task 0 mc, year: 163, 100
+[Wed Mar 16 13:59:32 2016][solver][infos] Current MC Year : 165
+[Wed Mar 16 13:59:32 2016][solver][progress] task 0 mc, year: 164, 25.000000
+[Wed Mar 16 13:59:33 2016][solver][progress] task 0 mc, year: 164, 100
+[Wed Mar 16 13:59:33 2016][solver][infos] Current MC Year : 166
+[Wed Mar 16 13:59:33 2016][solver][progress] task 0 mc, year: 165, 100
+[Wed Mar 16 13:59:33 2016][solver][infos] Current MC Year : 167
+[Wed Mar 16 13:59:33 2016][solver][progress] task 0 mc, year: 166, 100
+[Wed Mar 16 13:59:33 2016][solver][infos] Current MC Year : 168
+[Wed Mar 16 13:59:34 2016][solver][progress] task 0 mc, year: 167, 53.846153
+[Wed Mar 16 13:59:34 2016][solver][progress] task 0 mc, year: 167, 100
+[Wed Mar 16 13:59:34 2016][solver][infos] Current MC Year : 169
+[Wed Mar 16 13:59:34 2016][solver][progress] task 0 mc, year: 168, 100
+[Wed Mar 16 13:59:34 2016][solver][infos] Current MC Year : 170
+[Wed Mar 16 13:59:34 2016][solver][progress] task 0 mc, year: 169, 100
+[Wed Mar 16 13:59:34 2016][solver][infos] Current MC Year : 171
+[Wed Mar 16 13:59:35 2016][solver][progress] task 0 mc, year: 170, 92.307693
+[Wed Mar 16 13:59:35 2016][solver][progress] task 0 mc, year: 170, 100
+[Wed Mar 16 13:59:35 2016][solver][infos] Current MC Year : 172
+[Wed Mar 16 13:59:35 2016][solver][progress] task 0 mc, year: 171, 100
+[Wed Mar 16 13:59:35 2016][solver][infos] Current MC Year : 173
+[Wed Mar 16 13:59:36 2016][solver][progress] task 0 mc, year: 172, 100
+[Wed Mar 16 13:59:36 2016][solver][infos] Current MC Year : 174
+[Wed Mar 16 13:59:36 2016][solver][progress] task 0 mc, year: 173, 100
+[Wed Mar 16 13:59:36 2016][solver][infos] Current MC Year : 175
+[Wed Mar 16 13:59:36 2016][solver][progress] task 0 mc, year: 174, 57.692307
+[Wed Mar 16 13:59:36 2016][solver][progress] task 0 mc, year: 174, 100
+[Wed Mar 16 13:59:36 2016][solver][infos] Current MC Year : 176
+[Wed Mar 16 13:59:37 2016][solver][progress] task 0 mc, year: 175, 100
+[Wed Mar 16 13:59:37 2016][solver][infos] Current MC Year : 177
+[Wed Mar 16 13:59:37 2016][solver][progress] task 0 mc, year: 176, 100
+[Wed Mar 16 13:59:37 2016][solver][infos] Current MC Year : 178
+[Wed Mar 16 13:59:37 2016][solver][progress] task 0 mc, year: 177, 92.307693
+[Wed Mar 16 13:59:37 2016][solver][progress] task 0 mc, year: 177, 100
+[Wed Mar 16 13:59:37 2016][solver][infos] Current MC Year : 179
+[Wed Mar 16 13:59:38 2016][solver][progress] task 0 mc, year: 178, 100
+[Wed Mar 16 13:59:38 2016][solver][infos] Current MC Year : 180
+[Wed Mar 16 13:59:38 2016][solver][progress] task 0 mc, year: 179, 100
+[Wed Mar 16 13:59:38 2016][solver][infos] Current MC Year : 181
+[Wed Mar 16 13:59:38 2016][solver][progress] task 0 mc, year: 180, 100
+[Wed Mar 16 13:59:38 2016][solver][infos] Current MC Year : 182
+[Wed Mar 16 13:59:38 2016][solver][progress] task 0 mc, year: 181, 61.538460
+[Wed Mar 16 13:59:39 2016][solver][progress] task 0 mc, year: 181, 100
+[Wed Mar 16 13:59:39 2016][solver][infos] Current MC Year : 183
+[Wed Mar 16 13:59:39 2016][solver][progress] task 0 mc, year: 182, 100
+[Wed Mar 16 13:59:39 2016][solver][infos] Current MC Year : 184
+[Wed Mar 16 13:59:39 2016][solver][progress] task 0 mc, year: 183, 100
+[Wed Mar 16 13:59:39 2016][solver][infos] Current MC Year : 185
+[Wed Mar 16 13:59:40 2016][solver][progress] task 0 mc, year: 184, 92.307693
+[Wed Mar 16 13:59:40 2016][solver][progress] task 0 mc, year: 184, 100
+[Wed Mar 16 13:59:40 2016][solver][infos] Current MC Year : 186
+[Wed Mar 16 13:59:40 2016][solver][progress] task 0 mc, year: 185, 100
+[Wed Mar 16 13:59:40 2016][solver][infos] Current MC Year : 187
+[Wed Mar 16 13:59:40 2016][solver][progress] task 0 mc, year: 186, 100
+[Wed Mar 16 13:59:40 2016][solver][infos] Current MC Year : 188
+[Wed Mar 16 13:59:41 2016][solver][progress] task 0 mc, year: 187, 100
+[Wed Mar 16 13:59:41 2016][solver][infos] Current MC Year : 189
+[Wed Mar 16 13:59:41 2016][solver][progress] task 0 mc, year: 188, 90.384613
+[Wed Mar 16 13:59:41 2016][solver][progress] task 0 mc, year: 188, 100
+[Wed Mar 16 13:59:41 2016][solver][infos] Current MC Year : 190
+[Wed Mar 16 13:59:41 2016][solver][progress] task 0 mc, year: 189, 100
+[Wed Mar 16 13:59:41 2016][solver][infos] Current MC Year : 191
+[Wed Mar 16 13:59:42 2016][solver][progress] task 0 mc, year: 190, 100
+[Wed Mar 16 13:59:42 2016][solver][infos] Current MC Year : 192
+[Wed Mar 16 13:59:42 2016][solver][progress] task 0 mc, year: 191, 100
+[Wed Mar 16 13:59:42 2016][solver][infos] Current MC Year : 193
+[Wed Mar 16 13:59:42 2016][solver][progress] task 0 mc, year: 192, 53.846153
+[Wed Mar 16 13:59:42 2016][solver][progress] task 0 mc, year: 192, 100
+[Wed Mar 16 13:59:42 2016][solver][infos] Current MC Year : 194
+[Wed Mar 16 13:59:43 2016][solver][progress] task 0 mc, year: 193, 100
+[Wed Mar 16 13:59:43 2016][solver][infos] Current MC Year : 195
+[Wed Mar 16 13:59:43 2016][solver][progress] task 0 mc, year: 194, 100
+[Wed Mar 16 13:59:43 2016][solver][infos] Current MC Year : 196
+[Wed Mar 16 13:59:43 2016][solver][progress] task 0 mc, year: 195, 100
+[Wed Mar 16 13:59:43 2016][solver][infos] Current MC Year : 197
+[Wed Mar 16 13:59:44 2016][solver][progress] task 0 mc, year: 196, 100
+[Wed Mar 16 13:59:44 2016][solver][infos] Current MC Year : 198
+[Wed Mar 16 13:59:44 2016][solver][progress] task 0 mc, year: 197, 100
+[Wed Mar 16 13:59:44 2016][solver][infos] Current MC Year : 199
+[Wed Mar 16 13:59:44 2016][solver][progress] task 0 mc, year: 198, 100
+[Wed Mar 16 13:59:44 2016][solver][infos] Current MC Year : 200
+[Wed Mar 16 13:59:44 2016][solver][progress] task 0 mc, year: 199, 34.615383
+[Wed Mar 16 13:59:45 2016][solver][progress] task 0 mc, year: 199, 100
+[Wed Mar 16 13:59:45 2016][solver][infos] 
+[Wed Mar 16 13:59:45 2016][solver][infos] Generating the wind time-series
+[Wed Mar 16 13:59:45 2016][solver][infos]   876000 points calculated, using 36500 correlation matrices, out of which 0 were npsd and transformed
+[Wed Mar 16 13:59:45 2016][solver][progress] task 0 wind, year: 200, 100
+[Wed Mar 16 13:59:45 2016][solver][infos] Generating the hydro time-series
+[Wed Mar 16 13:59:45 2016][solver][progress] task 0 hydro, year: 200, 100
+[Wed Mar 16 13:59:45 2016][solver][infos] 
+[Wed Mar 16 13:59:45 2016][solver][infos] Generating the thermal time-series
+[Wed Mar 16 13:59:45 2016][solver][progress] task 0 thermal, year: 200, 100
+[Wed Mar 16 13:59:45 2016][solver][infos] Current MC Year : 201
+[Wed Mar 16 13:59:45 2016][solver][progress] task 0 mc, year: 200, 100
+[Wed Mar 16 13:59:45 2016][solver][infos] Current MC Year : 202
+[Wed Mar 16 13:59:46 2016][solver][progress] task 0 mc, year: 201, 100
+[Wed Mar 16 13:59:46 2016][solver][infos] Current MC Year : 203
+[Wed Mar 16 13:59:46 2016][solver][progress] task 0 mc, year: 202, 15.384615
+[Wed Mar 16 13:59:46 2016][solver][progress] task 0 mc, year: 202, 100
+[Wed Mar 16 13:59:46 2016][solver][infos] Current MC Year : 204
+[Wed Mar 16 13:59:46 2016][solver][progress] task 0 mc, year: 203, 100
+[Wed Mar 16 13:59:46 2016][solver][infos] Current MC Year : 205
+[Wed Mar 16 13:59:47 2016][solver][progress] task 0 mc, year: 204, 100
+[Wed Mar 16 13:59:47 2016][solver][infos] Current MC Year : 206
+[Wed Mar 16 13:59:47 2016][solver][progress] task 0 mc, year: 205, 46.153847
+[Wed Mar 16 13:59:47 2016][solver][progress] task 0 mc, year: 205, 100
+[Wed Mar 16 13:59:47 2016][solver][infos] Current MC Year : 207
+[Wed Mar 16 13:59:47 2016][solver][progress] task 0 mc, year: 206, 100
+[Wed Mar 16 13:59:47 2016][solver][infos] Current MC Year : 208
+[Wed Mar 16 13:59:48 2016][solver][progress] task 0 mc, year: 207, 100
+[Wed Mar 16 13:59:48 2016][solver][infos] Current MC Year : 209
+[Wed Mar 16 13:59:48 2016][solver][progress] task 0 mc, year: 208, 53.846153
+[Wed Mar 16 13:59:48 2016][solver][progress] task 0 mc, year: 208, 100
+[Wed Mar 16 13:59:48 2016][solver][infos] Current MC Year : 210
+[Wed Mar 16 13:59:49 2016][solver][progress] task 0 mc, year: 209, 100
+[Wed Mar 16 13:59:49 2016][solver][infos] Current MC Year : 211
+[Wed Mar 16 13:59:49 2016][solver][progress] task 0 mc, year: 210, 100
+[Wed Mar 16 13:59:49 2016][solver][infos] Current MC Year : 212
+[Wed Mar 16 13:59:49 2016][solver][progress] task 0 mc, year: 211, 100
+[Wed Mar 16 13:59:49 2016][solver][infos] Current MC Year : 213
+[Wed Mar 16 13:59:50 2016][solver][progress] task 0 mc, year: 212, 100
+[Wed Mar 16 13:59:50 2016][solver][infos] Current MC Year : 214
+[Wed Mar 16 13:59:50 2016][solver][progress] task 0 mc, year: 213, 100
+[Wed Mar 16 13:59:50 2016][solver][infos] Current MC Year : 215
+[Wed Mar 16 13:59:50 2016][solver][progress] task 0 mc, year: 214, 100
+[Wed Mar 16 13:59:50 2016][solver][infos] Current MC Year : 216
+[Wed Mar 16 13:59:50 2016][solver][progress] task 0 mc, year: 215, 13.461538
+[Wed Mar 16 13:59:51 2016][solver][progress] task 0 mc, year: 215, 100
+[Wed Mar 16 13:59:51 2016][solver][infos] Current MC Year : 217
+[Wed Mar 16 13:59:51 2016][solver][progress] task 0 mc, year: 216, 100
+[Wed Mar 16 13:59:51 2016][solver][infos] Current MC Year : 218
+[Wed Mar 16 13:59:52 2016][solver][progress] task 0 mc, year: 217, 100
+[Wed Mar 16 13:59:52 2016][solver][infos] Current MC Year : 219
+[Wed Mar 16 13:59:52 2016][solver][progress] task 0 mc, year: 218, 36.538460
+[Wed Mar 16 13:59:52 2016][solver][progress] task 0 mc, year: 218, 100
+[Wed Mar 16 13:59:52 2016][solver][infos] Current MC Year : 220
+[Wed Mar 16 13:59:52 2016][solver][progress] task 0 mc, year: 219, 100
+[Wed Mar 16 13:59:52 2016][solver][infos] Current MC Year : 221
+[Wed Mar 16 13:59:53 2016][solver][progress] task 0 mc, year: 220, 100
+[Wed Mar 16 13:59:53 2016][solver][infos] Current MC Year : 222
+[Wed Mar 16 13:59:53 2016][solver][progress] task 0 mc, year: 221, 100
+[Wed Mar 16 13:59:53 2016][solver][infos] Current MC Year : 223
+[Wed Mar 16 13:59:53 2016][solver][progress] task 0 mc, year: 222, 11.538462
+[Wed Mar 16 13:59:53 2016][solver][progress] task 0 mc, year: 222, 100
+[Wed Mar 16 13:59:53 2016][solver][infos] Current MC Year : 224
+[Wed Mar 16 13:59:54 2016][solver][progress] task 0 mc, year: 223, 100
+[Wed Mar 16 13:59:54 2016][solver][infos] Current MC Year : 225
+[Wed Mar 16 13:59:54 2016][solver][progress] task 0 mc, year: 224, 100
+[Wed Mar 16 13:59:54 2016][solver][infos] Current MC Year : 226
+[Wed Mar 16 13:59:54 2016][solver][progress] task 0 mc, year: 225, 98.076920
+[Wed Mar 16 13:59:54 2016][solver][progress] task 0 mc, year: 225, 100
+[Wed Mar 16 13:59:54 2016][solver][infos] Current MC Year : 227
+[Wed Mar 16 13:59:55 2016][solver][progress] task 0 mc, year: 226, 100
+[Wed Mar 16 13:59:55 2016][solver][infos] Current MC Year : 228
+[Wed Mar 16 13:59:55 2016][solver][progress] task 0 mc, year: 227, 100
+[Wed Mar 16 13:59:55 2016][solver][infos] Current MC Year : 229
+[Wed Mar 16 13:59:55 2016][solver][progress] task 0 mc, year: 228, 100
+[Wed Mar 16 13:59:55 2016][solver][infos] Current MC Year : 230
+[Wed Mar 16 13:59:55 2016][solver][progress] task 0 mc, year: 229, 38.461540
+[Wed Mar 16 13:59:56 2016][solver][progress] task 0 mc, year: 229, 100
+[Wed Mar 16 13:59:56 2016][solver][infos] Current MC Year : 231
+[Wed Mar 16 13:59:56 2016][solver][progress] task 0 mc, year: 230, 100
+[Wed Mar 16 13:59:56 2016][solver][infos] Current MC Year : 232
+[Wed Mar 16 13:59:56 2016][solver][progress] task 0 mc, year: 231, 100
+[Wed Mar 16 13:59:56 2016][solver][infos] Current MC Year : 233
+[Wed Mar 16 13:59:57 2016][solver][progress] task 0 mc, year: 232, 100
+[Wed Mar 16 13:59:57 2016][solver][infos] Current MC Year : 234
+[Wed Mar 16 13:59:57 2016][solver][progress] task 0 mc, year: 233, 15.384615
+[Wed Mar 16 13:59:57 2016][solver][progress] task 0 mc, year: 233, 100
+[Wed Mar 16 13:59:57 2016][solver][infos] Current MC Year : 235
+[Wed Mar 16 13:59:57 2016][solver][progress] task 0 mc, year: 234, 100
+[Wed Mar 16 13:59:57 2016][solver][infos] Current MC Year : 236
+[Wed Mar 16 13:59:58 2016][solver][progress] task 0 mc, year: 235, 100
+[Wed Mar 16 13:59:58 2016][solver][infos] Current MC Year : 237
+[Wed Mar 16 13:59:58 2016][solver][progress] task 0 mc, year: 236, 92.307693
+[Wed Mar 16 13:59:58 2016][solver][progress] task 0 mc, year: 236, 100
+[Wed Mar 16 13:59:58 2016][solver][infos] Current MC Year : 238
+[Wed Mar 16 13:59:58 2016][solver][progress] task 0 mc, year: 237, 100
+[Wed Mar 16 13:59:58 2016][solver][infos] Current MC Year : 239
+[Wed Mar 16 13:59:59 2016][solver][progress] task 0 mc, year: 238, 100
+[Wed Mar 16 13:59:59 2016][solver][infos] Current MC Year : 240
+[Wed Mar 16 13:59:59 2016][solver][progress] task 0 mc, year: 239, 100
+[Wed Mar 16 13:59:59 2016][solver][infos] Current MC Year : 241
+[Wed Mar 16 13:59:59 2016][solver][progress] task 0 mc, year: 240, 42.307693
+[Wed Mar 16 13:59:59 2016][solver][progress] task 0 mc, year: 240, 100
+[Wed Mar 16 13:59:59 2016][solver][infos] Current MC Year : 242
+[Wed Mar 16 14:00:00 2016][solver][progress] task 0 mc, year: 241, 100
+[Wed Mar 16 14:00:00 2016][solver][infos] Current MC Year : 243
+[Wed Mar 16 14:00:00 2016][solver][progress] task 0 mc, year: 242, 100
+[Wed Mar 16 14:00:00 2016][solver][infos] Current MC Year : 244
+[Wed Mar 16 14:00:00 2016][solver][progress] task 0 mc, year: 243, 86.538460
+[Wed Mar 16 14:00:00 2016][solver][progress] task 0 mc, year: 243, 100
+[Wed Mar 16 14:00:00 2016][solver][infos] Current MC Year : 245
+[Wed Mar 16 14:00:01 2016][solver][progress] task 0 mc, year: 244, 100
+[Wed Mar 16 14:00:01 2016][solver][infos] Current MC Year : 246
+[Wed Mar 16 14:00:01 2016][solver][progress] task 0 mc, year: 245, 100
+[Wed Mar 16 14:00:01 2016][solver][infos] Current MC Year : 247
+[Wed Mar 16 14:00:01 2016][solver][progress] task 0 mc, year: 246, 100
+[Wed Mar 16 14:00:01 2016][solver][infos] Current MC Year : 248
+[Wed Mar 16 14:00:01 2016][solver][progress] task 0 mc, year: 247, 23.076923
+[Wed Mar 16 14:00:02 2016][solver][progress] task 0 mc, year: 247, 100
+[Wed Mar 16 14:00:02 2016][solver][infos] Current MC Year : 249
+[Wed Mar 16 14:00:02 2016][solver][progress] task 0 mc, year: 248, 100
+[Wed Mar 16 14:00:02 2016][solver][infos] Current MC Year : 250
+[Wed Mar 16 14:00:02 2016][solver][progress] task 0 mc, year: 249, 100
+[Wed Mar 16 14:00:02 2016][solver][infos] Current MC Year : 251
+[Wed Mar 16 14:00:03 2016][solver][progress] task 0 mc, year: 250, 65.384613
+[Wed Mar 16 14:00:03 2016][solver][progress] task 0 mc, year: 250, 100
+[Wed Mar 16 14:00:03 2016][solver][infos] Current MC Year : 252
+[Wed Mar 16 14:00:03 2016][solver][progress] task 0 mc, year: 251, 100
+[Wed Mar 16 14:00:03 2016][solver][infos] Current MC Year : 253
+[Wed Mar 16 14:00:04 2016][solver][progress] task 0 mc, year: 252, 100
+[Wed Mar 16 14:00:04 2016][solver][infos] Current MC Year : 254
+[Wed Mar 16 14:00:04 2016][solver][progress] task 0 mc, year: 253, 100
+[Wed Mar 16 14:00:04 2016][solver][infos] Current MC Year : 255
+[Wed Mar 16 14:00:04 2016][solver][progress] task 0 mc, year: 254, 9.615385
+[Wed Mar 16 14:00:04 2016][solver][progress] task 0 mc, year: 254, 100
+[Wed Mar 16 14:00:04 2016][solver][infos] Current MC Year : 256
+[Wed Mar 16 14:00:04 2016][solver][progress] task 0 mc, year: 255, 100
+[Wed Mar 16 14:00:04 2016][solver][infos] Current MC Year : 257
+[Wed Mar 16 14:00:05 2016][solver][progress] task 0 mc, year: 256, 100
+[Wed Mar 16 14:00:05 2016][solver][infos] Current MC Year : 258
+[Wed Mar 16 14:00:05 2016][solver][progress] task 0 mc, year: 257, 100
+[Wed Mar 16 14:00:05 2016][solver][infos] Current MC Year : 259
+[Wed Mar 16 14:00:05 2016][solver][progress] task 0 mc, year: 258, 100
+[Wed Mar 16 14:00:05 2016][solver][infos] Current MC Year : 260
+[Wed Mar 16 14:00:06 2016][solver][progress] task 0 mc, year: 259, 100
+[Wed Mar 16 14:00:06 2016][solver][infos] Current MC Year : 261
+[Wed Mar 16 14:00:06 2016][solver][progress] task 0 mc, year: 260, 100
+[Wed Mar 16 14:00:06 2016][solver][infos] Current MC Year : 262
+[Wed Mar 16 14:00:06 2016][solver][progress] task 0 mc, year: 261, 44.230770
+[Wed Mar 16 14:00:07 2016][solver][progress] task 0 mc, year: 261, 100
+[Wed Mar 16 14:00:07 2016][solver][infos] Current MC Year : 263
+[Wed Mar 16 14:00:07 2016][solver][progress] task 0 mc, year: 262, 100
+[Wed Mar 16 14:00:07 2016][solver][infos] Current MC Year : 264
+[Wed Mar 16 14:00:07 2016][solver][progress] task 0 mc, year: 263, 100
+[Wed Mar 16 14:00:07 2016][solver][infos] Current MC Year : 265
+[Wed Mar 16 14:00:07 2016][solver][progress] task 0 mc, year: 264, 67.307693
+[Wed Mar 16 14:00:08 2016][solver][progress] task 0 mc, year: 264, 100
+[Wed Mar 16 14:00:08 2016][solver][infos] Current MC Year : 266
+[Wed Mar 16 14:00:08 2016][solver][progress] task 0 mc, year: 265, 100
+[Wed Mar 16 14:00:08 2016][solver][infos] Current MC Year : 267
+[Wed Mar 16 14:00:08 2016][solver][progress] task 0 mc, year: 266, 100
+[Wed Mar 16 14:00:08 2016][solver][infos] Current MC Year : 268
+[Wed Mar 16 14:00:09 2016][solver][progress] task 0 mc, year: 267, 100.000000
+[Wed Mar 16 14:00:09 2016][solver][infos] Current MC Year : 269
+[Wed Mar 16 14:00:09 2016][solver][progress] task 0 mc, year: 268, 100
+[Wed Mar 16 14:00:09 2016][solver][infos] Current MC Year : 270
+[Wed Mar 16 14:00:09 2016][solver][progress] task 0 mc, year: 269, 100
+[Wed Mar 16 14:00:09 2016][solver][infos] Current MC Year : 271
+[Wed Mar 16 14:00:10 2016][solver][progress] task 0 mc, year: 270, 100
+[Wed Mar 16 14:00:10 2016][solver][infos] Current MC Year : 272
+[Wed Mar 16 14:00:10 2016][solver][progress] task 0 mc, year: 271, 61.538460
+[Wed Mar 16 14:00:10 2016][solver][progress] task 0 mc, year: 271, 100
+[Wed Mar 16 14:00:10 2016][solver][infos] Current MC Year : 273
+[Wed Mar 16 14:00:10 2016][solver][progress] task 0 mc, year: 272, 100
+[Wed Mar 16 14:00:10 2016][solver][infos] Current MC Year : 274
+[Wed Mar 16 14:00:11 2016][solver][progress] task 0 mc, year: 273, 100
+[Wed Mar 16 14:00:11 2016][solver][infos] Current MC Year : 275
+[Wed Mar 16 14:00:11 2016][solver][progress] task 0 mc, year: 274, 92.307693
+[Wed Mar 16 14:00:11 2016][solver][progress] task 0 mc, year: 274, 100
+[Wed Mar 16 14:00:11 2016][solver][infos] Current MC Year : 276
+[Wed Mar 16 14:00:11 2016][solver][progress] task 0 mc, year: 275, 100
+[Wed Mar 16 14:00:11 2016][solver][infos] Current MC Year : 277
+[Wed Mar 16 14:00:12 2016][solver][progress] task 0 mc, year: 276, 100
+[Wed Mar 16 14:00:12 2016][solver][infos] Current MC Year : 278
+[Wed Mar 16 14:00:12 2016][solver][progress] task 0 mc, year: 277, 100
+[Wed Mar 16 14:00:12 2016][solver][infos] Current MC Year : 279
+[Wed Mar 16 14:00:12 2016][solver][progress] task 0 mc, year: 278, 61.538460
+[Wed Mar 16 14:00:12 2016][solver][progress] task 0 mc, year: 278, 100
+[Wed Mar 16 14:00:12 2016][solver][infos] Current MC Year : 280
+[Wed Mar 16 14:00:13 2016][solver][progress] task 0 mc, year: 279, 100
+[Wed Mar 16 14:00:13 2016][solver][infos] Current MC Year : 281
+[Wed Mar 16 14:00:13 2016][solver][progress] task 0 mc, year: 280, 100
+[Wed Mar 16 14:00:13 2016][solver][infos] Current MC Year : 282
+[Wed Mar 16 14:00:13 2016][solver][progress] task 0 mc, year: 281, 100
+[Wed Mar 16 14:00:13 2016][solver][infos] Current MC Year : 283
+[Wed Mar 16 14:00:14 2016][solver][progress] task 0 mc, year: 282, 100
+[Wed Mar 16 14:00:14 2016][solver][infos] Current MC Year : 284
+[Wed Mar 16 14:00:14 2016][solver][progress] task 0 mc, year: 283, 100
+[Wed Mar 16 14:00:14 2016][solver][infos] Current MC Year : 285
+[Wed Mar 16 14:00:15 2016][solver][progress] task 0 mc, year: 284, 100
+[Wed Mar 16 14:00:15 2016][solver][infos] Current MC Year : 286
+[Wed Mar 16 14:00:15 2016][solver][progress] task 0 mc, year: 285, 46.153847
+[Wed Mar 16 14:00:15 2016][solver][progress] task 0 mc, year: 285, 100
+[Wed Mar 16 14:00:15 2016][solver][infos] Current MC Year : 287
+[Wed Mar 16 14:00:15 2016][solver][progress] task 0 mc, year: 286, 100
+[Wed Mar 16 14:00:15 2016][solver][infos] Current MC Year : 288
+[Wed Mar 16 14:00:16 2016][solver][progress] task 0 mc, year: 287, 100
+[Wed Mar 16 14:00:16 2016][solver][infos] Current MC Year : 289
+[Wed Mar 16 14:00:16 2016][solver][progress] task 0 mc, year: 288, 63.461540
+[Wed Mar 16 14:00:16 2016][solver][progress] task 0 mc, year: 288, 100
+[Wed Mar 16 14:00:16 2016][solver][infos] Current MC Year : 290
+[Wed Mar 16 14:00:16 2016][solver][progress] task 0 mc, year: 289, 100
+[Wed Mar 16 14:00:16 2016][solver][infos] Current MC Year : 291
+[Wed Mar 16 14:00:17 2016][solver][progress] task 0 mc, year: 290, 100
+[Wed Mar 16 14:00:17 2016][solver][infos] Current MC Year : 292
+[Wed Mar 16 14:00:17 2016][solver][progress] task 0 mc, year: 291, 76.923080
+[Wed Mar 16 14:00:17 2016][solver][progress] task 0 mc, year: 291, 100
+[Wed Mar 16 14:00:17 2016][solver][infos] Current MC Year : 293
+[Wed Mar 16 14:00:17 2016][solver][progress] task 0 mc, year: 292, 100
+[Wed Mar 16 14:00:17 2016][solver][infos] Current MC Year : 294
+[Wed Mar 16 14:00:18 2016][solver][progress] task 0 mc, year: 293, 100
+[Wed Mar 16 14:00:18 2016][solver][infos] Current MC Year : 295
+[Wed Mar 16 14:00:18 2016][solver][progress] task 0 mc, year: 294, 100
+[Wed Mar 16 14:00:18 2016][solver][infos] Current MC Year : 296
+[Wed Mar 16 14:00:18 2016][solver][progress] task 0 mc, year: 295, 28.846153
+[Wed Mar 16 14:00:19 2016][solver][progress] task 0 mc, year: 295, 100
+[Wed Mar 16 14:00:19 2016][solver][infos] Current MC Year : 297
+[Wed Mar 16 14:00:19 2016][solver][progress] task 0 mc, year: 296, 100
+[Wed Mar 16 14:00:19 2016][solver][infos] Current MC Year : 298
+[Wed Mar 16 14:00:19 2016][solver][progress] task 0 mc, year: 297, 100
+[Wed Mar 16 14:00:19 2016][solver][infos] Current MC Year : 299
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 mc, year: 298, 100.000000
+[Wed Mar 16 14:00:20 2016][solver][infos] Current MC Year : 300
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 mc, year: 299, 100
+[Wed Mar 16 14:00:20 2016][solver][infos] 
+[Wed Mar 16 14:00:20 2016][solver][infos] Generating the wind time-series
+[Wed Mar 16 14:00:20 2016][solver][infos]   876000 points calculated, using 36500 correlation matrices, out of which 0 were npsd and transformed
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 wind, year: 300, 100
+[Wed Mar 16 14:00:20 2016][solver][infos] Generating the hydro time-series
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 hydro, year: 300, 100
+[Wed Mar 16 14:00:20 2016][solver][infos] 
+[Wed Mar 16 14:00:20 2016][solver][infos] Generating the thermal time-series
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 thermal, year: 300, 100
+[Wed Mar 16 14:00:20 2016][solver][infos] Current MC Year : 301
+[Wed Mar 16 14:00:20 2016][solver][progress] task 0 mc, year: 300, 100
+[Wed Mar 16 14:00:20 2016][solver][infos] Current MC Year : 302
+[Wed Mar 16 14:00:21 2016][solver][progress] task 0 mc, year: 301, 86.538460
+[Wed Mar 16 14:00:21 2016][solver][progress] task 0 mc, year: 301, 100
+[Wed Mar 16 14:00:21 2016][solver][infos] Current MC Year : 303
+[Wed Mar 16 14:00:21 2016][solver][progress] task 0 mc, year: 302, 100
+[Wed Mar 16 14:00:21 2016][solver][infos] Current MC Year : 304
+[Wed Mar 16 14:00:21 2016][solver][progress] task 0 mc, year: 303, 100
+[Wed Mar 16 14:00:21 2016][solver][infos] Current MC Year : 305
+[Wed Mar 16 14:00:22 2016][solver][progress] task 0 mc, year: 304, 100
+[Wed Mar 16 14:00:22 2016][solver][infos] Current MC Year : 306
+[Wed Mar 16 14:00:22 2016][solver][progress] task 0 mc, year: 305, 17.307692
+[Wed Mar 16 14:00:22 2016][solver][progress] task 0 mc, year: 305, 100
+[Wed Mar 16 14:00:22 2016][solver][infos] Current MC Year : 307
+[Wed Mar 16 14:00:22 2016][solver][progress] task 0 mc, year: 306, 100
+[Wed Mar 16 14:00:22 2016][solver][infos] Current MC Year : 308
+[Wed Mar 16 14:00:23 2016][solver][progress] task 0 mc, year: 307, 100
+[Wed Mar 16 14:00:23 2016][solver][infos] Current MC Year : 309
+[Wed Mar 16 14:00:23 2016][solver][progress] task 0 mc, year: 308, 96.153847
+[Wed Mar 16 14:00:23 2016][solver][progress] task 0 mc, year: 308, 100
+[Wed Mar 16 14:00:23 2016][solver][infos] Current MC Year : 310
+[Wed Mar 16 14:00:23 2016][solver][progress] task 0 mc, year: 309, 100
+[Wed Mar 16 14:00:23 2016][solver][infos] Current MC Year : 311
+[Wed Mar 16 14:00:24 2016][solver][progress] task 0 mc, year: 310, 100
+[Wed Mar 16 14:00:24 2016][solver][infos] Current MC Year : 312
+[Wed Mar 16 14:00:24 2016][solver][progress] task 0 mc, year: 311, 100
+[Wed Mar 16 14:00:24 2016][solver][infos] Current MC Year : 313
+[Wed Mar 16 14:00:24 2016][solver][progress] task 0 mc, year: 312, 53.846153
+[Wed Mar 16 14:00:24 2016][solver][progress] task 0 mc, year: 312, 100
+[Wed Mar 16 14:00:24 2016][solver][infos] Current MC Year : 314
+[Wed Mar 16 14:00:25 2016][solver][progress] task 0 mc, year: 313, 100
+[Wed Mar 16 14:00:25 2016][solver][infos] Current MC Year : 315
+[Wed Mar 16 14:00:25 2016][solver][progress] task 0 mc, year: 314, 100
+[Wed Mar 16 14:00:25 2016][solver][infos] Current MC Year : 316
+[Wed Mar 16 14:00:25 2016][solver][progress] task 0 mc, year: 315, 100
+[Wed Mar 16 14:00:25 2016][solver][infos] Current MC Year : 317
+[Wed Mar 16 14:00:26 2016][solver][progress] task 0 mc, year: 316, 13.461538
+[Wed Mar 16 14:00:26 2016][solver][progress] task 0 mc, year: 316, 100
+[Wed Mar 16 14:00:26 2016][solver][infos] Current MC Year : 318
+[Wed Mar 16 14:00:26 2016][solver][progress] task 0 mc, year: 317, 100
+[Wed Mar 16 14:00:26 2016][solver][infos] Current MC Year : 319
+[Wed Mar 16 14:00:27 2016][solver][progress] task 0 mc, year: 318, 100
+[Wed Mar 16 14:00:27 2016][solver][infos] Current MC Year : 320
+[Wed Mar 16 14:00:27 2016][solver][progress] task 0 mc, year: 319, 71.153847
+[Wed Mar 16 14:00:27 2016][solver][progress] task 0 mc, year: 319, 100
+[Wed Mar 16 14:00:27 2016][solver][infos] Current MC Year : 321
+[Wed Mar 16 14:00:27 2016][solver][progress] task 0 mc, year: 320, 100
+[Wed Mar 16 14:00:27 2016][solver][infos] Current MC Year : 322
+[Wed Mar 16 14:00:27 2016][solver][progress] task 0 mc, year: 321, 100
+[Wed Mar 16 14:00:27 2016][solver][infos] Current MC Year : 323
+[Wed Mar 16 14:00:28 2016][solver][progress] task 0 mc, year: 322, 100
+[Wed Mar 16 14:00:28 2016][solver][infos] Current MC Year : 324
+[Wed Mar 16 14:00:28 2016][solver][progress] task 0 mc, year: 323, 13.461538
+[Wed Mar 16 14:00:28 2016][solver][progress] task 0 mc, year: 323, 100
+[Wed Mar 16 14:00:28 2016][solver][infos] Current MC Year : 325
+[Wed Mar 16 14:00:29 2016][solver][progress] task 0 mc, year: 324, 100
+[Wed Mar 16 14:00:29 2016][solver][infos] Current MC Year : 326
+[Wed Mar 16 14:00:29 2016][solver][progress] task 0 mc, year: 325, 100
+[Wed Mar 16 14:00:29 2016][solver][infos] Current MC Year : 327
+[Wed Mar 16 14:00:29 2016][solver][progress] task 0 mc, year: 326, 50.000000
+[Wed Mar 16 14:00:29 2016][solver][progress] task 0 mc, year: 326, 100
+[Wed Mar 16 14:00:29 2016][solver][infos] Current MC Year : 328
+[Wed Mar 16 14:00:30 2016][solver][progress] task 0 mc, year: 327, 100
+[Wed Mar 16 14:00:30 2016][solver][infos] Current MC Year : 329
+[Wed Mar 16 14:00:30 2016][solver][progress] task 0 mc, year: 328, 100
+[Wed Mar 16 14:00:30 2016][solver][infos] Current MC Year : 330
+[Wed Mar 16 14:00:30 2016][solver][progress] task 0 mc, year: 329, 15.384615
+[Wed Mar 16 14:00:31 2016][solver][progress] task 0 mc, year: 329, 100
+[Wed Mar 16 14:00:31 2016][solver][infos] Current MC Year : 331
+[Wed Mar 16 14:00:31 2016][solver][progress] task 0 mc, year: 330, 100
+[Wed Mar 16 14:00:31 2016][solver][infos] Current MC Year : 332
+[Wed Mar 16 14:00:32 2016][solver][progress] task 0 mc, year: 331, 100
+[Wed Mar 16 14:00:32 2016][solver][infos] Current MC Year : 333
+[Wed Mar 16 14:00:32 2016][solver][progress] task 0 mc, year: 332, 15.384615
+[Wed Mar 16 14:00:32 2016][solver][progress] task 0 mc, year: 332, 100
+[Wed Mar 16 14:00:32 2016][solver][infos] Current MC Year : 334
+[Wed Mar 16 14:00:32 2016][solver][progress] task 0 mc, year: 333, 100
+[Wed Mar 16 14:00:32 2016][solver][infos] Current MC Year : 335
+[Wed Mar 16 14:00:33 2016][solver][progress] task 0 mc, year: 334, 100
+[Wed Mar 16 14:00:33 2016][solver][infos] Current MC Year : 336
+[Wed Mar 16 14:00:33 2016][solver][progress] task 0 mc, year: 335, 44.230770
+[Wed Mar 16 14:00:33 2016][solver][progress] task 0 mc, year: 335, 100
+[Wed Mar 16 14:00:33 2016][solver][infos] Current MC Year : 337
+[Wed Mar 16 14:00:34 2016][solver][progress] task 0 mc, year: 336, 100
+[Wed Mar 16 14:00:34 2016][solver][infos] Current MC Year : 338
+[Wed Mar 16 14:00:34 2016][solver][progress] task 0 mc, year: 337, 100
+[Wed Mar 16 14:00:34 2016][solver][infos] Current MC Year : 339
+[Wed Mar 16 14:00:34 2016][solver][progress] task 0 mc, year: 338, 94.230766
+[Wed Mar 16 14:00:34 2016][solver][progress] task 0 mc, year: 338, 100
+[Wed Mar 16 14:00:34 2016][solver][infos] Current MC Year : 340
+[Wed Mar 16 14:00:35 2016][solver][progress] task 0 mc, year: 339, 100
+[Wed Mar 16 14:00:35 2016][solver][infos] Current MC Year : 341
+[Wed Mar 16 14:00:35 2016][solver][progress] task 0 mc, year: 340, 100
+[Wed Mar 16 14:00:35 2016][solver][infos] Current MC Year : 342
+[Wed Mar 16 14:00:35 2016][solver][progress] task 0 mc, year: 341, 100
+[Wed Mar 16 14:00:35 2016][solver][infos] Current MC Year : 343
+[Wed Mar 16 14:00:35 2016][solver][progress] task 0 mc, year: 342, 5.769231
+[Wed Mar 16 14:00:36 2016][solver][progress] task 0 mc, year: 342, 100
+[Wed Mar 16 14:00:36 2016][solver][infos] Current MC Year : 344
+[Wed Mar 16 14:00:36 2016][solver][progress] task 0 mc, year: 343, 100
+[Wed Mar 16 14:00:36 2016][solver][infos] Current MC Year : 345
+[Wed Mar 16 14:00:36 2016][solver][progress] task 0 mc, year: 344, 100
+[Wed Mar 16 14:00:36 2016][solver][infos] Current MC Year : 346
+[Wed Mar 16 14:00:37 2016][solver][progress] task 0 mc, year: 345, 92.307693
+[Wed Mar 16 14:00:37 2016][solver][progress] task 0 mc, year: 345, 100
+[Wed Mar 16 14:00:37 2016][solver][infos] Current MC Year : 347
+[Wed Mar 16 14:00:37 2016][solver][progress] task 0 mc, year: 346, 100
+[Wed Mar 16 14:00:37 2016][solver][infos] Current MC Year : 348
+[Wed Mar 16 14:00:37 2016][solver][progress] task 0 mc, year: 347, 100
+[Wed Mar 16 14:00:37 2016][solver][infos] Current MC Year : 349
+[Wed Mar 16 14:00:38 2016][solver][progress] task 0 mc, year: 348, 100
+[Wed Mar 16 14:00:38 2016][solver][infos] Current MC Year : 350
+[Wed Mar 16 14:00:38 2016][solver][progress] task 0 mc, year: 349, 26.923077
+[Wed Mar 16 14:00:38 2016][solver][progress] task 0 mc, year: 349, 100
+[Wed Mar 16 14:00:38 2016][solver][infos] Current MC Year : 351
+[Wed Mar 16 14:00:38 2016][solver][progress] task 0 mc, year: 350, 100
+[Wed Mar 16 14:00:38 2016][solver][infos] Current MC Year : 352
+[Wed Mar 16 14:00:39 2016][solver][progress] task 0 mc, year: 351, 100
+[Wed Mar 16 14:00:39 2016][solver][infos] Current MC Year : 353
