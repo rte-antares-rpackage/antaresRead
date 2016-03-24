@@ -1,0 +1,8 @@
+A	area	de	annual
+	VARIABLES	BEGIN	END
+	6	1	1
+
+A	annual	BASE	PEAK	SEMI BASE	BASE	PEAK	SEMI BASE
+		MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro
+		EXP	EXP	EXP	EXP	EXP	EXP
+	Annual	338566796	4044129	109302085	0	0	0

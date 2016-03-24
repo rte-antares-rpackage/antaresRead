@@ -1,0 +1,8 @@
+C	area	de	annual
+	VARIABLES	BEGIN	END
+	6	1	1
+
+C	annual	base	peak	semi base	base	peak	semi base
+		MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro
+							
+	Annual	332445746	3816497	108870621	0	0	0
