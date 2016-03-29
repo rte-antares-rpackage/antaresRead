@@ -16,6 +16,7 @@ for (timeStep in c("daily", "weekly", "monthly", "annual")) {
     tmp <- merge(calc, read[, .(node, timeId, mcYear, read = LOAD)], by = c("node", "timeId", "mcYear"))
     
     expect_true(tmp[, all(read - LOAD == 0)])
+    
   })
   
 }
