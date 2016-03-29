@@ -32,6 +32,8 @@
 
 
 .importThermal <- function(nodes, timeStep, opts) {
+  if (is.null(nodes)) return(NULL)
+  
   pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
   if (! file.exists(pathTSNumbers)) {
     message("Monte-Carlo scenarii not available for thermal capacity.")
@@ -88,6 +90,7 @@
   
   series <- data.table(series)
   
+  .aggregateByTimeStep(series, timeStep, opts)
   
 }
 
@@ -116,6 +119,11 @@
 .aggregateByTimeStep <- function(x, timeStep = c("hourly", "daily", "weekly", "monthly", "annual"), opts) {
   if (timeStep == "hourly") return(x)
   
+  # Identify id variables used for aggregation
+  idVars <- intersect(names(x), pkgEnv$idVars)
+  by <- parse(text = sprintf("list(%s)", paste(setdiff(idVars, "timeId"), collapse = ", ")))
+  byt <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
+  
   if (timeStep == "daily") {
     
     x$timeId <- (x$timeId - 1) %/% 24 + 1
@@ -128,9 +136,9 @@
     
     startWeek <- which(c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") == opts$firstWeekday)
     
-    x[, change := wday == startWeek & wday != shift(wday), by = node]
+    x[, change := wday == startWeek & wday != shift(wday), by = eval(by)]
     x[is.na(change), change := TRUE]
-    x[, timeId := cumsum(change), by = node]
+    x[, timeId := cumsum(change), by = eval(by)]
     x$wday <- x$change <- NULL
     
   } else if (timeStep == "monthly") {
@@ -139,9 +147,9 @@
     hour(tmp) <- hour(tmp) + 1:(24*7*52) - 1
     x$month <- month(tmp)
     
-    x[, change :=  month != shift(month), by = node]
+    x[, change :=  month != shift(month), by = eval(by)]
     x[is.na(change), change := TRUE]
-    x[, timeId := cumsum(change), by = node]
+    x[, timeId := cumsum(change), by = eval(by)]
     x$month <- x$change <- NULL
     
   } else if (timeStep == "annual") {
@@ -150,6 +158,6 @@
     
   }
   
-  x[, lapply(.SD, sum), keyby=.(node, timeId)]
+  x[, lapply(.SD, sum), keyby=eval(byt)]
   
 }
