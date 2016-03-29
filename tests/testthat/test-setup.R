@@ -1,10 +1,9 @@
 
 context("Setup functions")
 
-studyPath <- system.file("antares_test_case/output/20160324-1430eco-test", package = "antares")
+source("setup_test_case.R")
 
 trueOpts <- list(
-  path = studyPath,
   opath = "economy",
   name = "test",
   mode = "Economy",
@@ -23,7 +22,7 @@ trueOpts <- list(
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath, trace = 0)
-  opts$variables <- NULL
+  opts$variables <- opts$path <- NULL
   expect_equal(opts, trueOpts)
 })
 

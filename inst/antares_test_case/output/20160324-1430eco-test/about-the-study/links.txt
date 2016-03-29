@@ -1,9 +1,0 @@
-a
-	b
-b
-	c
-	psp in
-	psp out
-c
-psp in
-psp out

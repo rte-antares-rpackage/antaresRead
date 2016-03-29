@@ -1,6 +1,7 @@
 context("Function readOutput")
 
-studyPath <- system.file("antares_test_case/output/20160324-1430eco-test", package = "antares")
+source("setup_test_case.R")
+
 opts <- setSimulationPath(studyPath, trace=0)
 
 test_that("Nodes importation is ok", {

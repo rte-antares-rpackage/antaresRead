@@ -6,6 +6,7 @@
 #' a data.table
 #' @noRd
 #'
+#'
 .importMisc <- function(nodes, timeStep, opts) {
   if (is.null(nodes)) return(NULL)
   
