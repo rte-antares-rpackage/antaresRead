@@ -132,8 +132,8 @@
   } else if (timeStep == "weekly") {
     
     tmp <- opts$start
-    hour(tmp) <- hour(tmp) + 1:(24*7*52) - 1
-    x$wday <- wday(tmp)
+    lubridate::hour(tmp) <- lubridate::hour(tmp) + 1:(24*7*52) - 1
+    x$wday <- lubridate::wday(tmp)
     
     startWeek <- which(c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday") == opts$firstWeekday)
     
@@ -145,8 +145,8 @@
   } else if (timeStep == "monthly") {
     
     tmp <- opts$start
-    hour(tmp) <- hour(tmp) + 1:(24*7*52) - 1
-    x$month <- month(tmp)
+    lubridate::hour(tmp) <- lubridate::hour(tmp) + 1:(24*7*52) - 1
+    x$month <- lubridate::month(tmp)
     
     x[, change :=  month != shift(month), by = eval(by)]
     x[is.na(change), change := TRUE]

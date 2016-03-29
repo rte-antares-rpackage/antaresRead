@@ -1,4 +1,5 @@
 #' @import data.table
+#' @import plyr
 
 # Private variables accessible only by functions from the package
 
