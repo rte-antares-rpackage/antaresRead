@@ -14,20 +14,23 @@
 #'   import all nodes. Use function \code{\link{getLinks}} to import all links
 #'   connected to some nodes.
 #' @param clusters
-#'   vector containing the name of the nodes for wich you want to
+#'   vector containing the name of the nodes for which you want to
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
 #' @param inputs
-#'   vector containing the name of the nodes for wich you want to
+#'   vector containing the name of the nodes for which you want to
 #'   import inputs.
 #' @param misc
-#'   vector containing the name of the nodes for wich you want to
+#'   vector containing the name of the nodes for which you want to
 #'   import misc.
 #' @param sets
 #'   Vector containing the names of the set of nodes to import. If \code{NULL},
 #'   no is importer. The special value \code{"all"} tells the function to import all
 #'   sets.
+#' @param thermalCapacity
+#'   Vector of node names for which to import thermal capacity. If \code{NULL},
+#'   thermal capacity is not imported.
 #' @param select
 #'   character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -99,7 +102,7 @@
 #' @export
 #'
 readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
-                       inputs = NULL, misc = NULL, sets = NULL,
+                       inputs = NULL, misc = NULL, sets = NULL, thermalCapacity = NULL,
                        select = NULL,
                        synthesis = getOption("antares")$synthesis,
                        mcYears = 1:getOption("antares")$mcYears,
@@ -111,7 +114,7 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null(thermalCapacity)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
@@ -119,6 +122,7 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
   if (identical(sets, "all")) sets <- opts$setList
   if (identical(misc, "all")) misc <- opts$nodeList
+  if (identical(thermalCapacity, "all")) thermalCapacity <- opts$nodesWithClusters
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -163,7 +167,15 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
   .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
 
-  res$misc <- .importMisc(misc, opts, timeStep)
+  # Add misc
+  res$misc <- .importMisc(misc, timeStep, opts)
+  
+  # Add thermal capacity
+  res$thermalCapacity <- .importThermal(thermalCapacity, timeStep, opts)
+  if (!is.null(res$thermalCapacity) && synthesis) {
+    res$thermalCapacity <- res$thermalCapacity[, colMeans(.SD), 
+                                               keyby = .(node, cluster, timeId)]
+  }
 
   class(res) <- append("antaresOutput", class(res))
 

@@ -1,11 +1,11 @@
+
 context("Setup functions")
 
-studyPath <- system.file("sampleStudy/output/20160317-1558eco-test-eco", package = "antares")
+source("setup_test_case.R")
 
 trueOpts <- list(
-  path = studyPath,
   opath = "economy",
-  name = "test-eco",
+  name = "test",
   mode = "Economy",
   synthesis = TRUE,
   yearByYear = TRUE,
@@ -14,15 +14,15 @@ trueOpts <- list(
   antaresVersion = 500L,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
   firstWeekday = "Monday",
-  nodeList = c("a", "b", "psp in", "psp out"),
+  nodeList = c("a", "b", "c", "psp in", "psp out"),
   setList = "@ a and b together",
-  linkList = c("a - b", "b - psp in", "b - psp out"),
-  nodesWithClusters = c("a", "b")
+  linkList = c("a - b", "b - c", "b - psp in", "b - psp out"),
+  nodesWithClusters = c("a", "b", "c")
 )
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath, trace = 0)
-  opts$variables <- NULL
+  opts$variables <- opts$path <- NULL
   expect_equal(opts, trueOpts)
 })
 

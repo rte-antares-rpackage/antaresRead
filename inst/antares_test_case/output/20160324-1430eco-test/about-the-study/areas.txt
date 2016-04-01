@@ -1,6 +1,0 @@
-@ a and b together
-A
-B
-C
-PSP IN
-PSP OUT

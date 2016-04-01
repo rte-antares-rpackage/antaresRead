@@ -179,16 +179,16 @@ printInfo <- function(res, trace) {
   jan1 <- which(dNames == p$january.1st)
 
   # If inconsistency, then choose a year that restores consistency
-  if (jan1 != wday(start) | leap_year(start) != p$leapyear) {
+  if (jan1 != wday(start) | lubridate::leap_year(start) != p$leapyear) {
 
     if (p$leapyear) newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
     else newYear <- switch(jan1, 2017, 2018, 2019, 2025, 2026, 2021, 2022)
 
-    year(start) <- newYear
+    lubridate::year(start) <- newYear
     message("Date parameters are inconsistent. Assume correct year is ", newYear)
 
   }
 
-  month(start) <-  which(mNames == p$`first-month-in-year`)
+  lubridate::month(start) <-  which(mNames == p$`first-month-in-year`)
   as.POSIXlt(start, tz = "UTC")
 }
