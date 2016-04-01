@@ -22,7 +22,7 @@ trueOpts <- list(
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath, trace = 0)
-  opts$variables <- opts$path <- NULL
+  opts$variables <- opts$path <- opts$parameters <- NULL
   expect_equal(opts, trueOpts)
 })
 

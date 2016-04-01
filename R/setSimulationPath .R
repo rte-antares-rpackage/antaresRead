@@ -112,6 +112,9 @@ setSimulationPath <- function(path, trace=1) {
     v <- .getOutputHeader(file.path(d, f[1]), "link")
     variables$links <- setdiff(v, pkgEnv$idVars)
   }
+  
+  # Optimisation parameters
+  parameters <- readIniFile("about-the-study/parameters.ini")
 
   res <- list(
     path = path,
@@ -129,7 +132,8 @@ setSimulationPath <- function(path, trace=1) {
     setList = setList,
     linkList = linkList,
     nodesWithClusters = nodesWithClusters,
-    variables = variables
+    variables = variables,
+    parameters = parameters
   )
 
   options(antares=res)
