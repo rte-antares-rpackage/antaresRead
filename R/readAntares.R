@@ -20,9 +20,6 @@
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
-#' @param inputs
-#'   vector containing the name of the nodes for which you want to
-#'   import inputs.
 #' @param misc
 #'   vector containing the name of the nodes for which you want to
 #'   import misc.
@@ -104,7 +101,7 @@
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
-                        inputs = NULL, misc = NULL, sets = NULL,  thermalAvailabilities = NULL,
+                        misc = NULL, sets = NULL,  thermalAvailabilities = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
