@@ -155,8 +155,15 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                  .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
                  .paropts = list(.packages="antares"))
-
-    res[[name]] <<- rbindlist(tmp)
+    
+    tmp <- rbindlist(tmp)
+    
+    class(tmp) <- append("antaresTable", class(tmp))
+    attr(tmp, "type") <- name
+    attr(tmp, "timeStep") <- timeStep
+    attr(tmp, "synthesis") <- synthesis
+    
+    res[[name]] <<- tmp
   }
 
   # Add output to res object. The ".importOutputForXXX" functions are
@@ -165,18 +172,15 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
   .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
-
-  # Add misc
-  res$misc <- .importMisc(misc, timeStep, opts)
   
-  # Add thermal capacity
-  res$ thermalAvailabilities <- .importThermal( thermalAvailabilities, timeStep, opts)
-  if (!is.null(res$ thermalAvailabilities) && synthesis) {
-    res$ thermalAvailabilities <- res$ thermalAvailabilities[, colMeans(.SD), 
-                                               keyby = .(node, cluster, timeId)]
-  }
-
+  # Add inputs
+  .addOutputToRes("misc", misc, .importMisc, NA)
+  .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermal, NA)
+  
+  # Class and attributes
   class(res) <- append("antaresOutput", class(res))
+  attr(res, "timeStep") <- timeStep
+  attr(res, "synthesis") <- synthesis
 
   # Simplify the result if possible
   if (simplify & length(res) == 1) res <- res[[1]]

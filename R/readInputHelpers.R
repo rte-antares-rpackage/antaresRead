@@ -7,33 +7,28 @@
 #' @noRd
 #'
 #'
-.importMisc <- function(nodes, timeStep, opts) {
-  if (is.null(nodes)) return(NULL)
+.importMisc <- function(node, timeStep, opts, ...) {
+  path <- file.path(opts$path, "../../input/misc-gen",
+                    sprintf("miscgen-%s.txt", node))
+    
+  if(file.size(path) == 0) misc <- data.table(matrix(0L, 24*7*52,length(pkgEnv$miscNames)))
+  else misc <- fread(path, sep="\t", header = FALSE, integer64 = "numeric")
+    
+  setnames(misc, names(misc), pkgEnv$miscNames)
+    
+  misc$node <- node
+  misc$timeId <- 1:nrow(misc)
+    
+  misc <- misc[1:(24 * 7 * 52)]
   
-  res <- llply(nodes, function(n) {
-    path <- file.path(opts$path, "../../input/misc-gen",
-                      sprintf("miscgen-%s.txt", n))
-    
-    if(file.size(path) == 0) misc <- data.table(matrix(0L, 24*7*52,length(pkgEnv$miscNames)))
-    else misc <- fread(path, sep="\t", header = FALSE, integer64 = "numeric")
-    
-    setnames(misc, names(misc), pkgEnv$miscNames)
-    
-    misc$node <- n
-    misc$timeId <- 1:nrow(misc)
-    
-    misc[1:(24 * 7 * 52)]
-  })
+  setcolorder(misc, c("node", "timeId", pkgEnv$miscNames))
   
-  res <- rbindlist(res)
-  setcolorder(res, c("node", "timeId", pkgEnv$miscNames))
-  
-  .aggregateByTimeStep(res, timeStep, opts)
+  .aggregateByTimeStep(misc, timeStep, opts)
 }
 
 
-.importThermal <- function(nodes, timeStep, opts) {
-  if (is.null(nodes)) return(NULL)
+.importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+  if (!node %in% opts$nodesWithClusters) return(NULL)
   
   pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
   if (! file.exists(pathTSNumbers)) {
@@ -41,58 +36,49 @@
     return(NULL)
   }
   
-  # Keep only nodes with clusters to avoid difficulties in the rest of the function
-  nodes <- nodes[nodes %in% opts$nodesWithClusters]
-  
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  tsIds <- llply(nodes, function(n) {
-    cls <- list.files(file.path(pathTSNumbers, n))
-    nameCls <- gsub(".txt", "", cls)
+  cls <- list.files(file.path(pathTSNumbers, node))
+  if (length(cls) == 0) return(NULL)
+  
+  nameCls <- gsub(".txt", "", cls)
     
-    
-    if (length(cls) == 0) return(NULL)
-    
-    res <- llply(cls, function(cl) {
-      as.numeric(readLines(file.path(pathTSNumbers, n, cl))[-1])
-    })
-    
-    names(res) <- nameCls
-    
-    res
+  tsIds <- llply(cls, function(cl) {
+    as.numeric(readLines(file.path(pathTSNumbers, node, cl))[-1])
   })
   
-  names(tsIds) <- nodes
+  names(tsIds) <- nameCls
   
   # Read the input time series. 
   pathInput <- file.path(opts$path, "../../input/thermal/series")
   
-  # Three nested loops: nodes, clusters, Monte Carlo simulations.
-  series <- ldply(nodes, function(n) {
-    cls <- list.files(file.path(pathInput, n))
+  # Two nested loops: clusters, Monte Carlo simulations.
+  cls <- list.files(file.path(pathInput, node))
+  if (length(cls) == 0) return(NULL)
     
-    if (length(cls) == 0) return(NULL)
+  series <- ldply(cls, function(cl) {
+    ts <- fread(file.path(pathInput, node, cl, "series.txt"), integer64 = "numeric")[1:(24*7*52),]
+    ids <- tsIds[[cl]]
     
-    ldply(cls, function(cl) {
-      ts <- fread(file.path(pathInput, n, cl, "series.txt"))[1:(24*7*52),]
-      ids <- tsIds[[n]][[cl]]
-      
-      ldply(1:length(ids), function(i) {
-        data.frame(
-          node = n, 
-          cluster = cl, 
-          mcYear = i,
-          timeId = 1:nrow(ts),
-          capacity = ts[[ ids[i] ]]
-        )
-      })
+    ldply(1:length(ids), function(i) {
+      data.frame(
+        node = node, 
+        cluster = cl, 
+        mcYear = i,
+        timeId = 1:nrow(ts),
+        capacity = ts[[ ids[i] ]]
+      )
     })
-    
   })
   
   series <- data.table(series)
   
-  .aggregateByTimeStep(series, timeStep, opts)
+  res <- .aggregateByTimeStep(series, timeStep, opts)
   
+  if (synthesis) {
+    res <- res[, .(capacity=mean(capacity)), keyby = .(node, cluster, timeId)]
+  }
+  
+  res
 }
 
 
