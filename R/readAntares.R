@@ -4,6 +4,8 @@
 #' links and/or clusters at a desired resolution (hourly, daily, weekly,
 #' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 #'
+#' @aliases readOutput
+#'
 #' @param nodes
 #'   vector containing the names of the nodes to import. If
 #'   \code{NULL} no node is imported. The special value \code{"all"} tells the
@@ -86,28 +88,28 @@
 #' if (is.null(getOption("antares"))) setSimulationPath()
 #'
 #' # Import nodes and links separately
-#' nodes <- readOutput()
-#' links <- readOutput(links="all")
+#' nodes <- readAntares()
+#' links <- readAntares(links="all")
 #'
 #' # Import nodes and links at same time
-#' output <- readOutput(nodes = "all", links = "all")
+#' output <- readAntares(nodes = "all", links = "all")
 #'
 #' # Get all output for one node
 #' myNode <- sample(getOption("antares")$nodeList, 1)
 #' myNode
 #'
-#' myNodeOutput <- readOutput(node = myNode, links = getLinks(myNode),
+#' myNodeOutput <- readAntares(node = myNode, links = getLinks(myNode),
 #'                            clusters = myNode)
 #'
 #' @export
 #'
-readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
-                       inputs = NULL, misc = NULL, sets = NULL, thermalCapacity = NULL,
-                       select = NULL,
-                       synthesis = getOption("antares")$synthesis,
-                       mcYears = 1:getOption("antares")$mcYears,
-                       timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                       parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
+readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
+                        inputs = NULL, misc = NULL, sets = NULL, thermalCapacity = NULL,
+                        select = NULL,
+                        synthesis = getOption("antares")$synthesis,
+                        mcYears = 1:getOption("antares")$mcYears,
+                        timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                        parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
@@ -184,3 +186,6 @@ readOutput <- function(nodes = NULL, links = NULL, clusters = NULL,
 
   res
 }
+
+#' @export
+readOutput <- readAntares

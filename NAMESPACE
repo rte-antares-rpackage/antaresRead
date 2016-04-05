@@ -2,6 +2,7 @@
 
 export(extractDataList)
 export(getLinks)
+export(readAntares)
 export(readClusterDesc)
 export(readLayout)
 export(readOutput)
