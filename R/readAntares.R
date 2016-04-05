@@ -30,7 +30,7 @@
 #'   Vector containing the names of the set of nodes to import. If \code{NULL},
 #'   no is importer. The special value \code{"all"} tells the function to import all
 #'   sets.
-#' @param thermalCapacity
+#' @param  thermalAvailabilities
 #'   Vector of node names for which to import thermal capacity. If \code{NULL},
 #'   thermal capacity is not imported.
 #' @param select
@@ -104,7 +104,7 @@
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
-                        inputs = NULL, misc = NULL, sets = NULL, thermalCapacity = NULL,
+                        inputs = NULL, misc = NULL, sets = NULL,  thermalAvailabilities = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -116,7 +116,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null(thermalCapacity)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
@@ -124,7 +124,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
   if (identical(sets, "all")) sets <- opts$setList
   if (identical(misc, "all")) misc <- opts$nodeList
-  if (identical(thermalCapacity, "all")) thermalCapacity <- opts$nodesWithClusters
+  if (identical( thermalAvailabilities, "all"))  thermalAvailabilities <- opts$nodesWithClusters
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -173,9 +173,9 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   res$misc <- .importMisc(misc, timeStep, opts)
   
   # Add thermal capacity
-  res$thermalCapacity <- .importThermal(thermalCapacity, timeStep, opts)
-  if (!is.null(res$thermalCapacity) && synthesis) {
-    res$thermalCapacity <- res$thermalCapacity[, colMeans(.SD), 
+  res$ thermalAvailabilities <- .importThermal( thermalAvailabilities, timeStep, opts)
+  if (!is.null(res$ thermalAvailabilities) && synthesis) {
+    res$ thermalAvailabilities <- res$ thermalAvailabilities[, colMeans(.SD), 
                                                keyby = .(node, cluster, timeId)]
   }
 
