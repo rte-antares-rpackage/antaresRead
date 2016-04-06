@@ -16,6 +16,20 @@
 #' @param opts
 #'   list of simulation parameters returned by the function 
 #'   \code{\link{setSimulationPath}}
+#'   
+#' @return 
+#' Either a data.table or an object of class "antaresOutput" depending on the 
+#' class of \code{x}
+#' 
+#' @examples 
+#' \dontrun{
+#' nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
+#' nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
+#' 
+#' nodesDAgg <- changeTimeStep(nodesH, "daily")
+#' 
+#' all.equal(nodesDAgg$LOAD, nodesD$LOAD)
+#' }
 #' 
 #' @export
 #' 

@@ -17,9 +17,27 @@ argument is optional since the time step is stored in an attribute of the
 data.}
 
 \item{fun}{function to use for aggregation. Either "sum" or "mean"}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
+}
+\value{
+Either a data.table or an object of class "antaresOutput" depending on the 
+class of \code{x}
 }
 \description{
 This function changes the timestep of a table or an antaresOutput object
-and performs the required aggregation
+and performs the required aggregation or desaggregation.
+}
+\examples{
+\dontrun{
+nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
+nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
+
+nodesDAgg <- changeTimeStep(nodesH, "daily")
+
+all.equal(nodesDAgg$LOAD, nodesD$LOAD)
+}
+
 }
 
