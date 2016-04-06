@@ -36,3 +36,11 @@ test_that("Aggregating desaggregated data should give the initial values.", {
   expect_equal(nodesD$LOAD, nodesD2$LOAD)
 })
 
+test_that("chnageTimeStep works on antaresOutput objects", {
+  mydata <- readAntares("all", "all", synthesis = FALSE, showProgress = FALSE)
+  mydataAgg <- changeTimeStep(mydata, "daily")
+  expect_equal(attr(mydataAgg, "timeStep"), "daily")
+  expect_equal(attr(mydataAgg$nodes, "timeStep"), "daily")
+  expect_equal(attr(mydataAgg$links, "timeStep"), "daily")
+})
+

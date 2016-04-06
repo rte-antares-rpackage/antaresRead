@@ -1,18 +1,21 @@
 #' Change the timestep of an output
 #' 
 #' This function changes the timestep of a table or an antaresOutput object
-#' and performs the required aggregation
+#' and performs the required aggregation or desaggregation.
 #' 
 #' @param x
-#' data.table with a column "timeId" or an object of class "antaresOutput"
+#'   data.table with a column "timeId" or an object of class "antaresOutput"
 #' @param newTimeStep
-#' Desired time step.
+#'   Desired time step.
 #' @param oldTimeStep
-#' Current time step of the data. If the data has not been manipulated, this 
-#' argument is optional since the time step is stored in an attribute of the
-#' data.
+#'   Current time step of the data. If the data has not been manipulated, this 
+#'   argument is optional since the time step is stored in an attribute of the
+#'   data.
 #' @param fun
-#' function to use for aggregation. Either "sum" or "mean"
+#'   function to use for aggregation. Either "sum" or "mean"
+#' @param opts
+#'   list of simulation parameters returned by the function 
+#'   \code{\link{setSimulationPath}}
 #' 
 #' @export
 #' 
@@ -25,8 +28,11 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
   
   if (is(x, "antaresOutput")) {
     for (i in 1:length(x)) {
-      x[[i]] <- changeTimeStep(x[[i]], newTimeStep, oldTimeStep, fun)
+      x[[i]] <- changeTimeStep(x[[i]], newTimeStep, oldTimeStep, fun, opts)
     }
+    
+    attr(x, "timeStep") <- newTimeStep
+    
     return(x)
   }
   
@@ -56,11 +62,16 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
     idVars  <- idVars[idVars != "timeId"]
     by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
     
+    # Code below is a bit hacky: we want to use a window function on all variables but one (timeId).
+    # Instead of writing a loop on the columns, we separate the timeId column
+    # from the table, use the syntax of data.table to perform the window function
+    # and finally put back the timeId in the table.
     setorderv(x, idVars)
     timeId <- x$timeId
     x$timeId <- NULL
     
     x <- x[, lapply(.SD, function(x) x / .N), by = eval(by)]
+    
     x$timeId <- timeId
   }
   
