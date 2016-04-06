@@ -124,37 +124,3 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
   }
   
 }
-
-#' Aggregates input time series at desired time resolution.
-#'
-#' Input time series are only stored at hourly resolution. This function aims
-#' to aggregate the series at the desired resolution.
-#'
-#' Weekly and monthly aggregations are a bit complicated. The strategy is to
-#' find the rows that corresponds to a change of week or month, create a
-#' variable equal to 1 if week/month has changed and 0 otherwise. The cumulated
-#' sum of this variable corresponds to the timeId :
-#'
-#' day change cumsum(change) timeId
-#'   n      1              1      1
-#'   n      0              1      1
-#'   n      0              1      1
-#' ...    ...            ...    ...
-#' n+6      0              1      1
-#' n+7      1              2      2
-#' n+7      0              2      2
-#'
-#' @noRd
-#' 
-.aggregateByTimeStep <- function(x, timeStep = c("hourly", "daily", "weekly", "monthly", "annual"), opts) {
-  if (timeStep == "hourly") return(x)
-  
-  x$timeId <- .getTimeId(x$timeId, timeStep, opts)
-  
-  # Identify id variables used for aggregation
-  idVars <- intersect(names(x), pkgEnv$idVars)
-  byt <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
-  
-  x[, lapply(.SD, sum), keyby=eval(byt)]
-  
-}
