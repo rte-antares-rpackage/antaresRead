@@ -54,8 +54,8 @@
 #'   data.table is returned. If FALSE, the result will always be a list of class
 #'   "antaresOutput".
 #' @param showProgress
-#'   (logical) shoudl the function display information about the progress of the
-#'   importation ?
+#'   If TRUE show the function display information about the progress of the
+#'   importation.
 #'
 #'
 #' @details If all arguments are unspecified, the default behavior of the
