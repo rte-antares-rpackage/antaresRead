@@ -190,3 +190,52 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 
 #' @export
 readOutput <- readAntares
+
+#' Read output for a list of nodes
+#' 
+#' This a function is a wrapper for "antaresOutput" that reads all data for a
+#' list of nodes.
+#' 
+#' @param links
+#'   should links connected to the nodes be imported ?
+#' @param clusters
+#'   should the clusters of the nodes be imported ?
+#' @param misc
+#'   should misc generation of the nodes be imported ?
+#' @param thermalAvailabilities
+#'   Should the thermal availabilities of the nodes be imported ?
+#' @param internalLinksOnly
+#'   If FALSE, all links connected to one of the nodes is imported, else
+#'   only links connecting two nodes of the list are imported
+#' @param ...
+#'   Other arguments passed to the function \code{\link{readAntares}}
+#'   
+#' @return If \code{simplify = TRUE} and only one type of output is imported
+#' then the result is a data.table.
+#'
+#' Else an object of class "antaresOutput" is returned. It is a list of
+#' data.tables, each element representing one type of element (nodes, links,
+#' clusters)
+#'  
+#' @examples 
+#' \dontrun{
+#' mynode <- getOption("antares")$nodeList[1]
+#' data <- readAntaresNodes(mynode)
+#' 
+#' # Equivalent but more concise than:
+#' data2 <- readAntares(mynode, links = getLinks(mynode), clusters = mynode)
+#' 
+#' all.equal(data, data2)
+#' } 
+#'  
+#' @export
+readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE, 
+                             thermalAvailabilities = FALSE, internalLinksOnly = FALSE, ...) {
+  
+  links <- if (links) getLinks(nodes, internalLinksOnly) else NULL
+  clusters <- if(clusters) nodes else NULL
+  misc <- if(misc) nodes else NULL
+  thermalAvailabilities <- if(thermalAvailabilities) nodes else NULL
+  
+  readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities, ...)
+}
