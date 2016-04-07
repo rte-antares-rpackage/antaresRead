@@ -4,7 +4,7 @@
 \alias{extractDataList}
 \title{Format data PPE-style}
 \usage{
-extractDataList(x, nodes = NULL)
+extractDataList(x, nodes = NULL, opts = getOption("antares"))
 }
 \arguments{
 \item{x}{object of class "antaresOutput" or data.table created by the function
