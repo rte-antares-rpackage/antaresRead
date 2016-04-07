@@ -4,7 +4,7 @@
 \alias{extractDataList}
 \title{Format data PPE-style}
 \usage{
-extractDataList(x, nodes = NULL)
+extractDataList(x, nodes = NULL, opts = getOption("antares"))
 }
 \arguments{
 \item{x}{object of class "antaresOutput" or data.table created by the function
@@ -12,6 +12,9 @@ extractDataList(x, nodes = NULL)
 
 \item{nodes}{character vector containing the name of nodes to keep in the
 final object. If \code{NULL}, all nodes are kept in the final object.}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 }
 \value{
 a list of data.tables with one element per node. The list also

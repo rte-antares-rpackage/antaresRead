@@ -12,6 +12,9 @@
 #' @param nodes
 #'   character vector containing the name of nodes to keep in the
 #'   final object. If \code{NULL}, all nodes are kept in the final object.
+#' @param opts
+#'   list of simulation parameters returned by the function 
+#'   \code{\link{setSimulationPath}}
 #'
 #' @return a list of data.tables with one element per node. The list also
 #' contains an element named "nodeList" containing the name of nodes in the
@@ -20,11 +23,11 @@
 #'
 #' @export
 #'
-extractDataList <- function(x, nodes=NULL) {
+extractDataList <- function(x, nodes=NULL, opts = getOption("antares")) {
   # Check arguments
   if (is.data.frame(x) && !is.null(x$node)) x <- list(nodes = x)
 
-  if (is.null(x$nodes)) stop("Object does not contain nodes data.")
+  if (is.null(x$nodes)) stop("x does not contain nodes data.")
 
   if (!is.null(nodes)) x$nodes <- x$nodes[node %in% nodes]
 
@@ -39,6 +42,9 @@ extractDataList <- function(x, nodes=NULL) {
     if (!is.null(x$links)) x$links$Scenario <- x$links$mcYear
     x$nodes$mcYear <- NULL
   }
+  
+  # Add time variable
+  x$nodes$Dtime <- .timeIdToDate(x$nodes$timeId, attr(x, "timeStep"), opts)
 
   # Base structure: one table per node
   dataList <- dlply(x$nodes, .(node), data.table)
