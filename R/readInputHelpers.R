@@ -26,7 +26,6 @@
   changeTimeStep(misc, timeStep, "hourly", opts=opts)
 }
 
-
 .importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   if (!node %in% opts$nodesWithClusters) return(NULL)
   
@@ -79,4 +78,47 @@
   }
   
   res
+}
+
+.importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+  
+  pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
+  if (! file.exists(pathTSNumbers)) {
+    message("Monte-Carlo scenarii not available for hydro capacity.")
+    return(NULL)
+  }
+  
+  # Read the Ids of the time series used in each Monte-Carlo Scenario.
+  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
+  
+  # Input time series
+  pathInput <- file.path(opts$path, "../../input/hydro/series")
+  f <- file.path(pathInput, node, "mod.txt")
+  
+  if (file.size(f) == 0) return(NULL)
+  
+  ts <- fread(f, integer64 = "numeric")
+  
+  N <- nrow(ts)
+  
+  series <- ldply(1:length(tsIds), function(i) {
+    data.frame(
+      node = node, 
+      mcYear = i,
+      timeId = 1:nrow(ts),
+      hydroStorage = ts[[ tsIds[i] ]]
+    )
+  })
+  
+  series <- data.table(series)
+  
+  
+  res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
+  
+  if (synthesis) {
+    res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(node, timeId)]
+  }
+  
+  res
+
 }

@@ -39,6 +39,13 @@ test_that("Thermal availability importation is ok", {
   expect_equal(nrow(misc), 24 * 7 * 52 * nrow(readClusterDesc()))
 })
 
+test_that("Hydro storage importation is ok", {
+  misc <- readAntares(hydroStorage = "all", showProgress = FALSE)
+  expect_is(misc, "data.table")
+  expect_false(is.null(misc$node))
+  expect_equal(nrow(misc) %% (24 * 7 * 52), 0)
+})
+
 # Test that importation works for all time resolutions.
 for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   expected_rows = switch(timeStep,

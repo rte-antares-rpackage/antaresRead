@@ -6,8 +6,8 @@
 \title{Read the output of an Antares simulation}
 \usage{
 readAntares(nodes = NULL, links = NULL, clusters = NULL, misc = NULL,
-  sets = NULL, thermalAvailabilities = NULL, select = NULL,
-  synthesis = getOption("antares")$synthesis,
+  sets = NULL, thermalAvailabilities = NULL, hydroStorage = NULL,
+  select = NULL, synthesis = getOption("antares")$synthesis,
   mcYears = 1:getOption("antares")$mcYears, timeStep = c("hourly", "daily",
   "weekly", "monthly", "annual"), parallel = FALSE, simplify = TRUE,
   showProgress = TRUE)
@@ -36,6 +36,9 @@ sets.}
 
 \item{thermalAvailabilities}{Vector of node names for which to import thermal capacity. If \code{NULL},
 thermal capacity is not imported.}
+
+\item{hydroStorage}{Vector of node names for which to import hydro storage. If \code{NULL}, 
+hydro storage is not imported}
 
 \item{select}{character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names

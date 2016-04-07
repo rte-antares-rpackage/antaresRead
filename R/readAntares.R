@@ -30,6 +30,9 @@
 #' @param  thermalAvailabilities
 #'   Vector of node names for which to import thermal capacity. If \code{NULL},
 #'   thermal capacity is not imported.
+#' @param hydroStorage
+#'   Vector of node names for which to import hydro storage. If \code{NULL}, 
+#'   hydro storage is not imported
 #' @param select
 #'   character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -102,6 +105,7 @@
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         misc = NULL, sets = NULL,  thermalAvailabilities = NULL,
+                        hydroStorage = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -113,7 +117,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
@@ -121,7 +125,8 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
   if (identical(sets, "all")) sets <- opts$setList
   if (identical(misc, "all")) misc <- opts$nodeList
-  if (identical( thermalAvailabilities, "all"))  thermalAvailabilities <- opts$nodesWithClusters
+  if (identical(thermalAvailabilities, "all"))  thermalAvailabilities <- opts$nodesWithClusters
+  if (identical(hydroStorage, "all"))  hydroStorage <- opts$nodeList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -176,6 +181,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   # Add inputs
   .addOutputToRes("misc", misc, .importMisc, NA)
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermal, NA)
+  .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorage, NA)
   
   # Class and attributes
   class(res) <- append("antaresOutput", class(res))
