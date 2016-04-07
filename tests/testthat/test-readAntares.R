@@ -60,6 +60,13 @@ test_that("Reserve is ok", {
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
+test_that("Link capacity is ok", {
+  output <- readAntares(linkCapacity = "all", showProgress = FALSE)
+  expect_is(output, "data.table")
+  expect_false(is.null(output$link))
+  expect_equal(nrow(output), 24 * 7 * 52 * length(opts$linkList))
+})
+
 # Test that importation works for all time resolutions.
 for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   expected_rows = switch(timeStep,

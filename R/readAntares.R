@@ -39,6 +39,9 @@
 #' @param reserve
 #'   Vector of node names for which to import reserve. 
 #'   If \code{NULL}, reserve is not imported
+#' @param LinkCapacity
+#'   Vector of link names for wich to import their capacity and hurdle cost.
+#'   If \code{NULL}, link capacity is not imported
 #' @param select
 #'   character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -112,7 +115,7 @@
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         sets = NULL, misc = NULL, thermalAvailabilities = NULL,
                         hydroStorage = NULL, hydroStorageMaxPower = NULL,
-                        reserve = NULL,
+                        reserve = NULL, linkCapacity = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -124,7 +127,11 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & is.null(hydroStorageMaxPower) &is.null(reserve)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & 
+      is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & 
+      is.null(hydroStorageMaxPower) & is.null(reserve) & is.null(linkCapacity)) {
+    nodes <- "all"
+  }
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
@@ -136,6 +143,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(hydroStorage, "all"))  hydroStorage <- opts$nodeList
   if (identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$nodeList
   if (identical(reserve, "all")) reserve <- opts$nodeList
+  if (identical(linkCapacity, "all")) linkCapacity <- opts$linkList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -193,6 +201,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorage, NA)
   .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower, NA)
   .addOutputToRes("reserve", reserve, .importReserves, NA)
+  .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity, NA)
   
   # Class and attributes
   class(res) <- append("antaresOutput", class(res))
@@ -227,6 +236,8 @@ readOutput <- readAntares
 #'   Should the max power of hydro storage of the nodes be imported ?
 #' @param reserve
 #'   Should the reserve of the nodes be imported ?
+#' @param linkCapacity
+#'   Should the capacity of the links connected to the nodes be imported ?
 #' @param internalLinksOnly
 #'   If FALSE, all links connected to one of the nodes is imported, else
 #'   only links connecting two nodes of the list are imported
@@ -257,6 +268,7 @@ readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE,
                              hydroStorage = FALSE,
                              hydroStorageMaxPower = FALSE,
                              reserve = FALSE,
+                             linkCapacity = FALSE,
                              internalLinksOnly = FALSE, ...) {
   
   links <- if (links) getLinks(nodes, internalLinksOnly) else NULL
@@ -266,8 +278,10 @@ readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE,
   hydroStorage <- if(hydroStorage) nodes else NULL
   hydroStorageMaxPower <- if(hydroStorageMaxPower) nodes else NULL
   reserve <- if(reserve) nodes else NULL
+  linkCapacity <- if (linkCapacity) getLinks(nodes, internalLinksOnly) else NULL
   
   readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities,
               hydroStorage=hydroStorage, hydroStorageMaxPower=hydroStorageMaxPower, 
-              reserve=reserve, ...)
+              reserve=reserve, linkcapacity = linkCapacity, ...)
+  
 }

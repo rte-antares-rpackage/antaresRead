@@ -103,7 +103,8 @@
 #' 
 #' @noRd
 #' 
-.importSimpleInputTS <- function(node, timeStep, opts, path, fileNamePattern, colnames, inputTimeStep, ...) {
+.importSimpleInputTS <- function(node, timeStep, opts, path, fileNamePattern, 
+                                 colnames, inputTimeStep, fun = "sum", ...) {
   
   path <- file.path(opts$path, path, sprintf(fileNamePattern, node))
   
@@ -122,7 +123,7 @@
   
   setcolorder(inputTS, c("node", "timeId", colnames))
   
-  changeTimeStep(inputTS, timeStep, inputTimeStep)
+  changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
   
 }
 
@@ -147,5 +148,25 @@
   .importSimpleInputTS(node, timeStep, opts, "../../input/reserves",
                        "%s.txt", colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
                        inputTimeStep = "hourly")
+  
+}
+
+.importLinkCapacity <- function(link, timeStep, opts, ...) {
+  
+  nodes <- strsplit(link, " - ")[[1]]
+  
+  colnames <- c("transCapacityDirect", "transCapacityIndirect",
+                "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  
+  # A bit hacky, but it works !
+  res <- .importSimpleInputTS(nodes[2], timeStep, opts, 
+                              file.path("../../input/links", nodes[1]), "%s.txt", 
+                              colnames=colnames,
+                              inputTimeStep = "hourly")
+  
+  res$node <- NULL
+  res$link <- link
+  
+  setcolorder(res, c("link", "timeId", colnames))
   
 }

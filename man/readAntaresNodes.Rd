@@ -6,7 +6,7 @@
 \usage{
 readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
   thermalAvailabilities = FALSE, hydroStorage = FALSE,
-  hydroStorageMaxPower = FALSE, reserve = FALSE,
+  hydroStorageMaxPower = FALSE, reserve = FALSE, linkCapacity = FALSE,
   internalLinksOnly = FALSE, ...)
 }
 \arguments{
@@ -23,6 +23,8 @@ readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
 \item{hydroStorageMaxPower}{Should the max power of hydro storage of the nodes be imported ?}
 
 \item{reserve}{Should the reserve of the nodes be imported ?}
+
+\item{linkCapacity}{Should the capacity of the links connected to the nodes be imported ?}
 
 \item{internalLinksOnly}{If FALSE, all links connected to one of the nodes is imported, else
 only links connecting two nodes of the list are imported}

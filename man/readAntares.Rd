@@ -7,8 +7,8 @@
 \usage{
 readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
   misc = NULL, thermalAvailabilities = NULL, hydroStorage = NULL,
-  hydroStorageMaxPower = NULL, reserve = NULL, select = NULL,
-  synthesis = getOption("antares")$synthesis,
+  hydroStorageMaxPower = NULL, reserve = NULL, linkCapacity = NULL,
+  select = NULL, synthesis = getOption("antares")$synthesis,
   mcYears = 1:getOption("antares")$mcYears, timeStep = c("hourly", "daily",
   "weekly", "monthly", "annual"), parallel = FALSE, simplify = TRUE,
   showProgress = TRUE)
@@ -72,6 +72,9 @@ importation ?}
 
 \item{hydroStorageMaxPoser}{Vector of node names for which to import hydro storage maximum power. 
 If \code{NULL}, hydro storage maximum power is not imported}
+
+\item{LinkCapacity}{Vector of link names for wich to import their capacity and hurdle cost.
+If \code{NULL}, link capacity is not imported}
 }
 \value{
 If \code{simplify = TRUE} and only one type of output is imported
