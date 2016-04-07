@@ -101,7 +101,7 @@
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
-                        misc = NULL, sets = NULL,  thermalAvailabilities = NULL,
+                        sets = NULL, misc = NULL,  thermalAvailabilities = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
