@@ -122,3 +122,21 @@
   res
 
 }
+
+.importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
+  
+  path <- file.path(opts$path, "../../input/hydro/common/capacity",
+                    sprintf("maxpower_%s.txt", node))
+  
+  if (file.size(path) == 0) return(NULL)
+  
+  maxpower <- fread(path, integer64 = "numeric", header = FALSE, 
+                    col.names = c("low", "avg", "high"))
+  
+  maxpower$node <- node
+  maxpower$timeId <- 1:nrow(maxpower)
+  maxpower <- maxpower[timeId <= 7 * 52]
+  
+  changeTimeStep(maxpower, timeStep, "daily")
+  
+}
