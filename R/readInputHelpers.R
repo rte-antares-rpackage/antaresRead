@@ -67,20 +67,29 @@
   pathInput <- file.path(opts$path, "../../input/hydro/series")
   f <- file.path(pathInput, node, "mod.txt")
   
-  if (file.size(f) == 0) return(NULL)
-  
-  ts <- fread(f, integer64 = "numeric")
-  
-  N <- nrow(ts)
-  
-  series <- ldply(1:length(tsIds), function(i) {
-    data.frame(
-      node = node, 
-      mcYear = i,
-      timeId = 1:nrow(ts),
-      hydroStorage = ts[[ tsIds[i] ]]
-    )
-  })
+  if (file.size(f) == 0) {
+    series <- ldply(1:length(tsIds), function(i) {
+      data.frame(
+        node = node, 
+        mcYear = i,
+        timeId = 1:12,
+        hydroStorage = rep(0L, 12)
+      )
+    })
+  } else {
+    ts <- fread(f, integer64 = "numeric")
+    
+    N <- nrow(ts)
+    
+    series <- ldply(1:length(tsIds), function(i) {
+      data.frame(
+        node = node, 
+        mcYear = i,
+        timeId = 1:nrow(ts),
+        hydroStorage = ts[[ tsIds[i] ]]
+      )
+    })
+  }
   
   series <- data.table(series)
   
