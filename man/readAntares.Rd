@@ -5,9 +5,10 @@
 \alias{readOutput}
 \title{Read the output of an Antares simulation}
 \usage{
-readAntares(nodes = NULL, links = NULL, clusters = NULL, misc = NULL,
-  sets = NULL, thermalAvailabilities = NULL, hydroStorage = NULL,
-  select = NULL, synthesis = getOption("antares")$synthesis,
+readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
+  misc = NULL, thermalAvailabilities = NULL, hydroStorage = NULL,
+  hydroStorageMaxPower = NULL, reserve = NULL, select = NULL,
+  synthesis = getOption("antares")$synthesis,
   mcYears = 1:getOption("antares")$mcYears, timeStep = c("hourly", "daily",
   "weekly", "monthly", "annual"), parallel = FALSE, simplify = TRUE,
   showProgress = TRUE)
@@ -27,18 +28,21 @@ import results at cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import clusters from all
 nodes.}
 
-\item{misc}{vector containing the name of the nodes for which you want to
-import misc.}
-
 \item{sets}{Vector containing the names of the set of nodes to import. If \code{NULL},
 no is importer. The special value \code{"all"} tells the function to import all
 sets.}
 
+\item{misc}{vector containing the name of the nodes for which you want to
+import misc.}
+
 \item{thermalAvailabilities}{Vector of node names for which to import thermal capacity. If \code{NULL},
 thermal capacity is not imported.}
 
-\item{hydroStorage}{Vector of node names for which to import hydro storage. If \code{NULL}, 
-hydro storage is not imported}
+\item{hydroStorage}{Vector of node names for which to import hydro storage. 
+If \code{NULL}, hydro storage is not imported}
+
+\item{reserve}{Vector of node names for which to import reserve. 
+If \code{NULL}, reserve is not imported}
 
 \item{select}{character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
@@ -65,6 +69,9 @@ data.table is returned. If FALSE, the result will always be a list of class
 
 \item{showProgress}{(logical) shoudl the function display information about the progress of the
 importation ?}
+
+\item{hydroStorageMaxPoser}{Vector of node names for which to import hydro storage maximum power. 
+If \code{NULL}, hydro storage maximum power is not imported}
 }
 \value{
 If \code{simplify = TRUE} and only one type of output is imported

@@ -33,24 +33,31 @@ test_that("Misc importation is ok", {
 })
 
 test_that("Thermal availability importation is ok", {
-  misc <- readAntares(thermalAvailabilities = opts$nodesWithClusters, showProgress = FALSE)
-  expect_is(misc, "data.table")
-  expect_false(is.null(misc$node))
-  expect_equal(nrow(misc), 24 * 7 * 52 * nrow(readClusterDesc()))
+  output <- readAntares(thermalAvailabilities = opts$nodesWithClusters, showProgress = FALSE)
+  expect_is(output, "data.table")
+  expect_false(is.null(output$node))
+  expect_equal(nrow(output), 24 * 7 * 52 * nrow(readClusterDesc()))
 })
 
 test_that("Hydro storage importation is ok", {
-  misc <- readAntares(hydroStorage = "all", showProgress = FALSE)
-  expect_is(misc, "data.table")
-  expect_false(is.null(misc$node))
-  expect_equal(nrow(misc) %% (24 * 7 * 52), 0)
+  output <- readAntares(hydroStorage = "all", showProgress = FALSE)
+  expect_is(output, "data.table")
+  expect_false(is.null(output$node))
+  expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 test_that("Hydro storage maximum power is ok", {
-  misc <- readAntares(hydroStorageMaxPower = "all", showProgress = FALSE)
-  expect_is(misc, "data.table")
-  expect_false(is.null(misc$node))
-  expect_equal(nrow(misc) %% (24 * 7 * 52), 0)
+  output <- readAntares(hydroStorageMaxPower = "all", showProgress = FALSE)
+  expect_is(output, "data.table")
+  expect_false(is.null(output$node))
+  expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
+})
+
+test_that("Reserve is ok", {
+  output <- readAntares(reserve = "all", showProgress = FALSE)
+  expect_is(output, "data.table")
+  expect_false(is.null(output$node))
+  expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 # Test that importation works for all time resolutions.

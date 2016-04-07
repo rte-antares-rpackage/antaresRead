@@ -1,31 +1,3 @@
-#' .importMisc
-#'
-#' Private function used to read misc input files.
-#'
-#' @return
-#' a data.table
-#' @noRd
-#'
-#'
-.importMisc <- function(node, timeStep, opts, ...) {
-  path <- file.path(opts$path, "../../input/misc-gen",
-                    sprintf("miscgen-%s.txt", node))
-    
-  if(file.size(path) == 0) misc <- data.table(matrix(0L, 24*7*52,length(pkgEnv$miscNames)))
-  else misc <- fread(path, sep="\t", header = FALSE, integer64 = "numeric")
-    
-  setnames(misc, names(misc), pkgEnv$miscNames)
-    
-  misc$node <- node
-  misc$timeId <- 1:nrow(misc)
-    
-  misc <- misc[1:(24 * 7 * 52)]
-  
-  setcolorder(misc, c("node", "timeId", pkgEnv$miscNames))
-  
-  changeTimeStep(misc, timeStep, "hourly", opts=opts)
-}
-
 .importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   if (!node %in% opts$nodesWithClusters) return(NULL)
   
@@ -123,20 +95,57 @@
 
 }
 
+#' .importSimpleInputTS
+#' 
+#' This private function is used to read input time series that do not vary 
+#' between Monte-Carlo scenarios: misc production, reserve, hydro storage
+#' max power.
+#' 
+#' @noRd
+#' 
+.importSimpleInputTS <- function(node, timeStep, opts, path, fileNamePattern, colnames, inputTimeStep, ...) {
+  
+  path <- file.path(opts$path, path, sprintf(fileNamePattern, node))
+  
+  expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
+  
+  if (file.size(path) == 0) {
+    inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
+    setnames(inputTS, names(inputTS), colnames)
+  } else {
+    inputTS <- fread(path, integer64 = "numeric", header = FALSE, col.names = colnames)
+    inputTS <- inputTS[1:expectedRows]
+  }
+  
+  inputTS$node <- node
+  inputTS$timeId <- 1:nrow(inputTS)
+  
+  setcolorder(inputTS, c("node", "timeId", colnames))
+  
+  changeTimeStep(inputTS, timeStep, inputTimeStep)
+  
+}
+
 .importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
   
-  path <- file.path(opts$path, "../../input/hydro/common/capacity",
-                    sprintf("maxpower_%s.txt", node))
+  .importSimpleInputTS(node, timeStep, opts, "../../input/hydro/common/capacity",
+                       "maxpower_%s.txt", colnames=c("low", "avg", "high"),
+                       inputTimeStep = "daily")
   
-  if (file.size(path) == 0) return(NULL)
+}
+
+.importMisc <- function(node, timeStep, opts, ...) {
   
-  maxpower <- fread(path, integer64 = "numeric", header = FALSE, 
-                    col.names = c("low", "avg", "high"))
+  .importSimpleInputTS(node, timeStep, opts, "../../input/misc-gen",
+                       "miscgen-%s.txt", colnames=pkgEnv$miscNames,
+                       inputTimeStep = "hourly")
   
-  maxpower$node <- node
-  maxpower$timeId <- 1:nrow(maxpower)
-  maxpower <- maxpower[timeId <= 7 * 52]
+}
+
+.importReserves <- function(node, timeStep, opts, ...) {
   
-  changeTimeStep(maxpower, timeStep, "daily")
+  .importSimpleInputTS(node, timeStep, opts, "../../input/reserves",
+                       "%s.txt", colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
+                       inputTimeStep = "hourly")
   
 }

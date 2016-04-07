@@ -36,6 +36,9 @@
 #' @param hydroStorageMaxPoser
 #'   Vector of node names for which to import hydro storage maximum power. 
 #'   If \code{NULL}, hydro storage maximum power is not imported
+#' @param reserve
+#'   Vector of node names for which to import reserve. 
+#'   If \code{NULL}, reserve is not imported
 #' @param select
 #'   character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -109,6 +112,7 @@
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         sets = NULL, misc = NULL, thermalAvailabilities = NULL,
                         hydroStorage = NULL, hydroStorageMaxPower = NULL,
+                        reserve = NULL,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -120,7 +124,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & is.null(hydroStorageMaxPower)) nodes <- "all"
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & is.null(hydroStorageMaxPower) &is.null(reserve)) nodes <- "all"
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList
@@ -131,6 +135,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(thermalAvailabilities, "all"))  thermalAvailabilities <- opts$nodesWithClusters
   if (identical(hydroStorage, "all"))  hydroStorage <- opts$nodeList
   if (identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$nodeList
+  if (identical(reserve, "all")) reserve <- opts$nodeList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -187,6 +192,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermal, NA)
   .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorage, NA)
   .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower, NA)
+  .addOutputToRes("reserve", reserve, .importReserves, NA)
   
   # Class and attributes
   class(res) <- append("antaresOutput", class(res))
@@ -215,6 +221,12 @@ readOutput <- readAntares
 #'   should misc generation of the nodes be imported ?
 #' @param thermalAvailabilities
 #'   Should the thermal availabilities of the nodes be imported ?
+#' @param hydroStorage
+#'   Should hydro storage of the nodes be imported ?
+#' @param hydroStorageMaxPower
+#'   Should the max power of hydro storage of the nodes be imported ?
+#' @param reserve
+#'   Should the reserve of the nodes be imported ?
 #' @param internalLinksOnly
 #'   If FALSE, all links connected to one of the nodes is imported, else
 #'   only links connecting two nodes of the list are imported
@@ -244,12 +256,18 @@ readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE,
                              thermalAvailabilities = FALSE, 
                              hydroStorage = FALSE,
                              hydroStorageMaxPower = FALSE,
+                             reserve = FALSE,
                              internalLinksOnly = FALSE, ...) {
   
   links <- if (links) getLinks(nodes, internalLinksOnly) else NULL
   clusters <- if(clusters) nodes else NULL
   misc <- if(misc) nodes else NULL
   thermalAvailabilities <- if(thermalAvailabilities) nodes else NULL
+  hydroStorage <- if(hydroStorage) nodes else NULL
+  hydroStorageMaxPower <- if(hydroStorageMaxPower) nodes else NULL
+  reserve <- if(reserve) nodes else NULL
   
-  readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities, ...)
+  readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities,
+              hydroStorage=hydroStorage, hydroStorageMaxPower=hydroStorageMaxPower, 
+              reserve=reserve, ...)
 }

@@ -5,7 +5,9 @@
 \title{Read output for a list of nodes}
 \usage{
 readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
-  thermalAvailabilities = FALSE, internalLinksOnly = FALSE, ...)
+  thermalAvailabilities = FALSE, hydroStorage = FALSE,
+  hydroStorageMaxPower = FALSE, reserve = FALSE,
+  internalLinksOnly = FALSE, ...)
 }
 \arguments{
 \item{links}{should links connected to the nodes be imported ?}
@@ -15,6 +17,12 @@ readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
 \item{misc}{should misc generation of the nodes be imported ?}
 
 \item{thermalAvailabilities}{Should the thermal availabilities of the nodes be imported ?}
+
+\item{hydroStorage}{Should hydro storage of the nodes be imported ?}
+
+\item{hydroStorageMaxPower}{Should the max power of hydro storage of the nodes be imported ?}
+
+\item{reserve}{Should the reserve of the nodes be imported ?}
 
 \item{internalLinksOnly}{If FALSE, all links connected to one of the nodes is imported, else
 only links connecting two nodes of the list are imported}
