@@ -27,9 +27,18 @@ extractDataList <- function(x, nodes=NULL, opts = getOption("antares")) {
   # Check arguments
   if (is.data.frame(x) && !is.null(x$node)) x <- list(nodes = x)
 
-  if (is.null(x$nodes)) stop("x does not contain nodes data.")
+  if (is.null(x$nodes)) stop("'x' does not contain nodes data.")
 
-  if (!is.null(nodes)) x$nodes <- x$nodes[node %in% nodes]
+  if (!is.null(nodes)) {
+    missingNodes <- nodes[! nodes %in% x$nodes$node]
+    for (m in missingNodes) warning("Node '", m, "' missing in 'x'")
+    
+    x$nodes <- x$nodes[node %in% nodes]
+    
+    if (nrow(x$nodes) == 0) {
+      stop("Argument 'nodes' does not contain any node name present in 'x'")
+    }
+  }
 
   # Create variable Scenario equal to 0 if synthesis or mcYear if not.
   if (is.null(x$nodes$mcYear)) {
