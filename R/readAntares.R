@@ -59,6 +59,9 @@
 #' @param timeStep
 #'   Resolution of the data to import: hourly (default), daily,
 #'   weekly, monthly or annual.
+#' @param opts
+#'   list of simulation parameters returned by the function 
+#'   \code{\link{setSimulationPath}}
 #' @param parallel
 #'   Should the importation be parallelized ? (See details)
 #' @param simplify
@@ -120,11 +123,11 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                        opts = getOption("antares"),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
-  opts <- getOption("antares")
 
   # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & 

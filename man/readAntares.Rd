@@ -10,8 +10,8 @@ readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
   hydroStorageMaxPower = NULL, reserve = NULL, linkCapacity = NULL,
   select = NULL, synthesis = getOption("antares")$synthesis,
   mcYears = 1:getOption("antares")$mcYears, timeStep = c("hourly", "daily",
-  "weekly", "monthly", "annual"), parallel = FALSE, simplify = TRUE,
-  showProgress = TRUE)
+  "weekly", "monthly", "annual"), opts = getOption("antares"),
+  parallel = FALSE, simplify = TRUE, showProgress = TRUE)
 }
 \arguments{
 \item{nodes}{vector containing the names of the nodes to import. If
@@ -60,6 +60,9 @@ synthesis is FALSE.}
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 
 \item{parallel}{Should the importation be parallelized ? (See details)}
 
