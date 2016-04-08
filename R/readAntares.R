@@ -7,16 +7,16 @@
 #' @aliases readOutput
 #'
 #' @param nodes
-#'   vector containing the names of the nodes to import. If
+#'   Vector containing the names of the nodes to import. If
 #'   \code{NULL} no node is imported. The special value \code{"all"} tells the
-#'   function to import all nodes.
+#'   function to import all nodes. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter. 
 #' @param links
-#'   vector containing the name of links to import. If \code{NULL} no
+#'   Vector containing the name of links to import. If \code{NULL} no
 #'   node is imported. The special value \code{"all"} tells the function to
 #'   import all nodes. Use function \code{\link{getLinks}} to import all links
 #'   connected to some nodes.
 #' @param clusters
-#'   vector containing the name of the nodes for which you want to
+#'   Vector containing the name of the nodes for which you want to
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
@@ -25,13 +25,13 @@
 #'   no is importer. The special value \code{"all"} tells the function to import all
 #'   sets.
 #' @param misc
-#'   vector containing the name of the nodes for which you want to
+#'   Vector containing the name of the nodes for which you want to
 #'   import misc.
 #' @param  thermalAvailabilities
 #'   Vector of node names for which to import thermal capacity. If \code{NULL},
 #'   thermal capacity is not imported.
 #' @param select
-#'   character vector containing the name of the columns to import. If this
+#'   Character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
 #'   \code{"allNodes"} and \code{"allLinks"} indicate to the function to import
 #'   all variables for nodes or for links. The list of available variables can
