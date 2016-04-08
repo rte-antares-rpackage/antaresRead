@@ -1,3 +1,13 @@
+#' Read binding constraints
+#' 
+#' This function reads the binding constraints of an Antares project.
+#' 
+#' @inheritParams readAntares
+#' 
+#' @return 
+#' A list with an element per binding constraint. 
+#' 
+#' @export
 readBindingContraints <- function(opts=getOption("antares")) {
   
   path <- file.path(opts$path, "../../input/bindingConstraints/bindingconstraints.ini")
@@ -8,13 +18,24 @@ readBindingContraints <- function(opts=getOption("antares")) {
                                          bindingConstraints[[i]]$id))
     
     if (file.size(path) == 0) {
-      bindingConstraints[[i]]$values <- matrix(0L)
+      nrows <- switch(bindingConstraints[[i]]$type,
+                      hourly = 24*7*52,
+                      daily = 7 * 52,
+                      weekly = 52,
+                      monthly = 12,
+                      annual = 1)
+      
+      bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
     } else {
       bindingConstraints[[i]]$values <- fread(path)
     }
     
+    setnames(bindingConstraints[[i]]$values, 
+             names(bindingConstraints[[i]]$values),
+             c("less", "greater", "equal"))
+    
   }
   
-  bindingConstraints
+  unname(bindingConstraints)
   
 }
