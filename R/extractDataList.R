@@ -8,7 +8,7 @@
 #'
 #' @param x
 #'   object of class "readAntares" or data.table created by the function
-#'   \code{\link{importOutput}}
+#'   \code{\link{readAntares}}
 #' @param nodes
 #'   character vector containing the name of nodes to keep in the
 #'   final object. If \code{NULL}, all nodes are kept in the final object.
