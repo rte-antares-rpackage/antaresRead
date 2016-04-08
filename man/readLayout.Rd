@@ -4,7 +4,11 @@
 \alias{readLayout}
 \title{Read nodes layout from the HMI}
 \usage{
-readLayout()
+readLayout(opts = getOption("antares"))
+}
+\arguments{
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 }
 \value{
 A list with two elements

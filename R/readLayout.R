@@ -3,6 +3,8 @@
 #' This function imports the current node layout from the human machine interface (HMI).
 #' It is useful for plotting the network.
 #'
+#' @inheritParams readAntares
+#'
 #' @return A list with two elements
 #' \itemize{
 #'    \item{nodes: }{A data.frame containing the name, the color and the coordinate
@@ -16,10 +18,9 @@
 #'
 #' @export
 #'
-readLayout <- function() {
-  opts <- getOption("antares")
-
-  # noeuds
+readLayout <- function(opts = getOption("antares")) {
+  
+  # nodes
   path <- file.path(opts$path, "../../input/areas")
   nodes <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)

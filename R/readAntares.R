@@ -241,11 +241,9 @@ readOutput <- readAntares
 #'   Should the reserve of the nodes be imported ?
 #' @param linkCapacity
 #'   Should the capacity of the links connected to the nodes be imported ?
-#' @param internalLinksOnly
-#'   If FALSE, all links connected to one of the nodes is imported, else
-#'   only links connecting two nodes of the list are imported
 #' @param ...
 #'   Other arguments passed to the function \code{\link{readAntares}}
+#' @inheritParams getLinks
 #'   
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
@@ -272,16 +270,16 @@ readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE,
                              hydroStorageMaxPower = FALSE,
                              reserve = FALSE,
                              linkCapacity = FALSE,
-                             internalLinksOnly = FALSE, ...) {
+                             internalOnly = FALSE, ...) {
   
-  links <- if (links) getLinks(nodes, internalLinksOnly) else NULL
+  links <- if (links) getLinks(nodes, internalOnly) else NULL
   clusters <- if(clusters) nodes else NULL
   misc <- if(misc) nodes else NULL
   thermalAvailabilities <- if(thermalAvailabilities) nodes else NULL
   hydroStorage <- if(hydroStorage) nodes else NULL
   hydroStorageMaxPower <- if(hydroStorageMaxPower) nodes else NULL
   reserve <- if(reserve) nodes else NULL
-  linkCapacity <- if (linkCapacity) getLinks(nodes, internalLinksOnly) else NULL
+  linkCapacity <- if (linkCapacity) getLinks(nodes, internalOnly) else NULL
   
   readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities,
               hydroStorage=hydroStorage, hydroStorageMaxPower=hydroStorageMaxPower, 

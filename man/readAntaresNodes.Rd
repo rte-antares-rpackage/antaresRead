@@ -7,9 +7,11 @@
 readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
   thermalAvailabilities = FALSE, hydroStorage = FALSE,
   hydroStorageMaxPower = FALSE, reserve = FALSE, linkCapacity = FALSE,
-  internalLinksOnly = FALSE, ...)
+  internalOnly = FALSE, ...)
 }
 \arguments{
+\item{nodes}{vector containing node names.}
+
 \item{links}{should links connected to the nodes be imported ?}
 
 \item{clusters}{should the clusters of the nodes be imported ?}
@@ -26,8 +28,9 @@ readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
 
 \item{linkCapacity}{Should the capacity of the links connected to the nodes be imported ?}
 
-\item{internalLinksOnly}{If FALSE, all links connected to one of the nodes is imported, else
-only links connecting two nodes of the list are imported}
+\item{internalOnly}{if TRUE, only links that connect two nodes from the list are returned. 
+If not, the function may return links that connect a node from the list with 
+a node outside the list.}
 
 \item{...}{Other arguments passed to the function \code{\link{readAntares}}}
 }

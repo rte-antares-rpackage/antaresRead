@@ -3,6 +3,8 @@
 #' This function creates a table containing description of the clusters of an
 #' antares study: type, capacity, marginal cost, etc.
 #'
+#' @inheritParams readAntares
+#'
 #' @return
 #' A data.table with one line per cluster. The columns of the data.table may
 #' change between different projects, but there will always be a column
@@ -14,8 +16,7 @@
 #'
 #' @export
 #'
-readClusterDesc <- function() {
-  opts <- getOption("antares")
+readClusterDesc <- function(opts = getOption("antares")) {
   path <- file.path(opts$path, "../../input/thermal/clusters")
 
   nodes <- list.files(path)

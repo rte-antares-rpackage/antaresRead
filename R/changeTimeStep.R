@@ -13,9 +13,7 @@
 #'   data.
 #' @param fun
 #'   function to use for aggregation. Either "sum" or "mean"
-#' @param opts
-#'   list of simulation parameters returned by the function 
-#'   \code{\link{setSimulationPath}}
+#' @inheritParams readAntares
 #'   
 #' @return 
 #' Either a data.table or an object of class "antaresOutput" depending on the 

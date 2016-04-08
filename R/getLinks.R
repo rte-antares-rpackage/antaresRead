@@ -5,9 +5,9 @@
 #' @param nodes
 #' vector containing node names.
 #' @param internalOnly
-#' if TRUE, only links that connect two nodes from the set defined by the
-#' previous argument are returned. If not, the function may return links that
-#' connect a node from the set with a node outside the set.
+#' if TRUE, only links that connect two nodes from the list are returned. 
+#' If not, the function may return links that connect a node from the list with 
+#' a node outside the list.
 #'
 #' @return
 #' character vector containing link names.

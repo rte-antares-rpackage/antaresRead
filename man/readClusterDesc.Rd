@@ -4,7 +4,11 @@
 \alias{readClusterDesc}
 \title{Import clusters description}
 \usage{
-readClusterDesc()
+readClusterDesc(opts = getOption("antares"))
+}
+\arguments{
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 }
 \value{
 A data.table with one line per cluster. The columns of the data.table may
