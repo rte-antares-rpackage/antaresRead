@@ -20,13 +20,13 @@
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
-#' @param misc
-#'   vector containing the name of the nodes for which you want to
-#'   import misc.
 #' @param sets
 #'   Vector containing the names of the set of nodes to import. If \code{NULL},
 #'   no is importer. The special value \code{"all"} tells the function to import all
 #'   sets.
+#' @param misc
+#'   vector containing the name of the nodes for which you want to
+#'   import misc.
 #' @param  thermalAvailabilities
 #'   Vector of node names for which to import thermal capacity. If \code{NULL},
 #'   thermal capacity is not imported.
