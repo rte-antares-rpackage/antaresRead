@@ -9,7 +9,7 @@
 #'
 #' @noRd
 #'
-readIniFile <- function(file) {
+readIniFile <- function(file, stringsAsFactors=FALSE) {
   X <- readLines(file)
   sections <- grep("^\\[.*\\]$", X)
   starts <- sections + 1
@@ -26,7 +26,7 @@ readIniFile <- function(file) {
       v <- trimws(p[2])
       if (v == "true") return(TRUE)
       if (v == "false") return(FALSE)
-      type.convert(v)
+      type.convert(v, as.is = !stringsAsFactors)
     })
 
     L[[i]] <- value
