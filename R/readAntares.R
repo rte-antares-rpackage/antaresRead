@@ -1,6 +1,6 @@
-#' Read the output of an Antares simulation
+#' Read the data of an Antares simulation
 #'
-#' This function reads the output of a antares simulation for a set of nodes,
+#' This function reads the data of a antares simulation for a set of nodes,
 #' links and/or clusters at a desired resolution (hourly, daily, weekly,
 #' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 #'
