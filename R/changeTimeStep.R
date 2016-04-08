@@ -1,10 +1,10 @@
 #' Change the timestep of an output
 #' 
-#' This function changes the timestep of a table or an antaresOutput object
+#' This function changes the timestep of a table or an readAntares object
 #' and performs the required aggregation or desaggregation.
 #' 
 #' @param x
-#'   data.table with a column "timeId" or an object of class "antaresOutput"
+#'   data.table with a column "timeId" or an object of class "readAntares"
 #' @param newTimeStep
 #'   Desired time step.
 #' @param oldTimeStep
@@ -18,7 +18,7 @@
 #'   \code{\link{setSimulationPath}}
 #'   
 #' @return 
-#' Either a data.table or an object of class "antaresOutput" depending on the 
+#' Either a data.table or an object of class "readAntares" depending on the 
 #' class of \code{x}
 #' 
 #' @examples 
