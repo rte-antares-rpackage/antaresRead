@@ -5,8 +5,8 @@
 \alias{readOutput}
 \title{Read the output of an Antares simulation}
 \usage{
-readAntares(nodes = NULL, links = NULL, clusters = NULL, misc = NULL,
-  sets = NULL, thermalAvailabilities = NULL, select = NULL,
+readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
+  misc = NULL, thermalAvailabilities = NULL, select = NULL,
   synthesis = getOption("antares")$synthesis,
   mcYears = 1:getOption("antares")$mcYears, timeStep = c("hourly", "daily",
   "weekly", "monthly", "annual"), parallel = FALSE, simplify = TRUE,
@@ -27,12 +27,12 @@ import results at cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import clusters from all
 nodes.}
 
-\item{misc}{vector containing the name of the nodes for which you want to
-import misc.}
-
 \item{sets}{Vector containing the names of the set of nodes to import. If \code{NULL},
 no is importer. The special value \code{"all"} tells the function to import all
 sets.}
+
+\item{misc}{vector containing the name of the nodes for which you want to
+import misc.}
 
 \item{thermalAvailabilities}{Vector of node names for which to import thermal capacity. If \code{NULL},
 thermal capacity is not imported.}
@@ -60,8 +60,8 @@ weekly, monthly or annual.}
 data.table is returned. If FALSE, the result will always be a list of class
 "antaresOutput".}
 
-\item{showProgress}{(logical) shoudl the function display information about the progress of the
-importation ?}
+\item{showProgress}{If TRUE show the function display information about the progress of the
+importation.}
 }
 \value{
 If \code{simplify = TRUE} and only one type of output is imported
