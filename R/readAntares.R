@@ -242,9 +242,6 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   res
 }
 
-#' @export
-readOutput <- readAntares
-
 #' Read output for a list of nodes
 #' 
 #' This a function is a wrapper for "antaresOutput" that reads all data for a
