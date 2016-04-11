@@ -7,7 +7,7 @@
 extractDataList(x, nodes = NULL, opts = getOption("antares"))
 }
 \arguments{
-\item{x}{object of class "readAntares" or data.table created by the function
+\item{x}{object of class "antaresOutput" or data.table created by the function
 \code{\link{readAntares}}}
 
 \item{nodes}{character vector containing the name of nodes to keep in the

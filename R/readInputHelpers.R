@@ -1,5 +1,6 @@
 .importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   if (!node %in% opts$nodesWithClusters) return(NULL)
+  if (synthesis) mcYears <- 1:opts$mcYears
   
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
@@ -29,22 +30,20 @@
   names(tsIds) <- nameCls
   
   # Two nested loops: clusters, Monte Carlo simulations.
-  cls <- list.files(file.path(pathInput, node))
-  cls <- gsub(".txt$", "", cls)
-  if (length(cls) == 0) return(NULL)
+  series <- ldply(nameCls, function(cl) {
+    ids <- tsIds[[cl]][mcYears]
+    colToRead <- sort(unique(ids)) # Columns to read in the ts file
+    colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
     
-  series <- ldply(cls, function(cl) {
-    
-    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric")[1:(24*7*52),]
-    ids <- tsIds[[cl]]
+    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)[1:(24*7*52),]
     
     ldply(1:length(ids), function(i) {
       data.frame(
         node = node, 
         cluster = cl, 
-        mcYear = i,
+        mcYear = mcYears[i],
         timeId = 1:nrow(ts),
-        capacity = ts[[ ids[i] ]]
+        capacity = ts[[ colIds[i] ]]
       )
     })
   })
@@ -61,11 +60,14 @@
 }
 
 .importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+  if (synthesis) mcYears <- 1:opts$mcYears
   
   pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
   
+  
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
   tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
+  tsIds <- tsIds[mcYears]
   
   # Input time series
   pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
@@ -81,22 +83,26 @@
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         node = node, 
-        mcYear = i,
+        mcYear = mcYears[i],
         timeId = 1:12,
         hydroStorage = rep(0L, 12)
       )
     })
   } else {
-    ts <- fread(f, integer64 = "numeric")
+    colToRead <- sort(unique(tsIds)) # Columns to read in the ts file
+    colIds <- sapply(tsIds, function(i) which(colToRead == i)) # link between the initial ids and the columns in the generated table
+    
+    
+    ts <- fread(f, integer64 = "numeric", select = colToRead)
     
     N <- nrow(ts)
     
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         node = node, 
-        mcYear = i,
+        mcYear = mcYears[i],
         timeId = 1:nrow(ts),
-        hydroStorage = ts[[ tsIds[i] ]]
+        hydroStorage = ts[[ colIds[i] ]]
       )
     })
   }
