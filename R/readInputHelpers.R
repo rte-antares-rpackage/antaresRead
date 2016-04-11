@@ -43,7 +43,7 @@
         cluster = cl, 
         mcYear = mcYears[i],
         timeId = 1:nrow(ts),
-        capacity = ts[[ colIds[i] ]]
+        thermalAvailability = ts[[ colIds[i] ]]
       )
     })
   })
@@ -53,7 +53,7 @@
   res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
   
   if (synthesis) {
-    res <- res[, .(capacity=mean(capacity)), keyby = .(node, cluster, timeId)]
+    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(node, cluster, timeId)]
   }
   
   res
