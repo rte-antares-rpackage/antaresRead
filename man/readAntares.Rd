@@ -3,7 +3,7 @@
 \name{readAntares}
 \alias{readAntares}
 \alias{readOutput}
-\title{Read the output of an Antares simulation}
+\title{Read the data of an Antares simulation}
 \usage{
 readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
   misc = NULL, thermalAvailabilities = NULL, hydroStorage = NULL,
@@ -14,16 +14,16 @@ readAntares(nodes = NULL, links = NULL, clusters = NULL, sets = NULL,
   parallel = FALSE, simplify = TRUE, showProgress = TRUE)
 }
 \arguments{
-\item{nodes}{vector containing the names of the nodes to import. If
+\item{nodes}{Vector containing the names of the nodes to import. If
 \code{NULL} no node is imported. The special value \code{"all"} tells the
-function to import all nodes.}
+function to import all nodes. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.}
 
-\item{links}{vector containing the name of links to import. If \code{NULL} no
+\item{links}{Vector containing the name of links to import. If \code{NULL} no
 node is imported. The special value \code{"all"} tells the function to
 import all nodes. Use function \code{\link{getLinks}} to import all links
 connected to some nodes.}
 
-\item{clusters}{vector containing the name of the nodes for which you want to
+\item{clusters}{Vector containing the name of the nodes for which you want to
 import results at cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import clusters from all
 nodes.}
@@ -32,7 +32,7 @@ nodes.}
 no is importer. The special value \code{"all"} tells the function to import all
 sets.}
 
-\item{misc}{vector containing the name of the nodes for which you want to
+\item{misc}{Vector containing the name of the nodes for which you want to
 import misc.}
 
 \item{thermalAvailabilities}{Vector of node names for which to import thermal capacity. If \code{NULL},
@@ -44,7 +44,7 @@ If \code{NULL}, hydro storage is not imported}
 \item{reserve}{Vector of node names for which to import reserve. 
 If \code{NULL}, reserve is not imported}
 
-\item{select}{character vector containing the name of the columns to import. If this
+\item{select}{Character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
 \code{"allNodes"} and \code{"allLinks"} indicate to the function to import
 all variables for nodes or for links. The list of available variables can
@@ -88,7 +88,7 @@ data.tables, each element representing one type of element (nodes, links,
 clusters)
 }
 \description{
-This function reads the output of a antares simulation for a set of nodes,
+This function reads the data of a antares simulation for a set of nodes,
 links and/or clusters at a desired resolution (hourly, daily, weekly,
 monthly, annual). It can import synthetic results or Monte-Carlo simulations.
 }
