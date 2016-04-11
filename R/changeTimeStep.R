@@ -6,7 +6,8 @@
 #' @param x
 #'   data.table with a column "timeId" or an object of class "antaresOutput"
 #' @param newTimeStep
-#'   Desired time step.
+#'   Desired time step.The possible values are hourly, daily, weekly, 
+#'   monthly and annual.
 #' @param oldTimeStep
 #'   Current time step of the data. If the data has not been manipulated, this 
 #'   argument is optional since the time step is stored in an attribute of the

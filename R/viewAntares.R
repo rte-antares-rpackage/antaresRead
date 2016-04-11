@@ -9,6 +9,8 @@
 #'
 #' @return
 #' Invisible NULL.
+#' 
+#' @export
 #'
 viewAntares <- function(x) {
   if (!is(x, "antaresOutput")) stop("Argument is not an antaresOutput object.")

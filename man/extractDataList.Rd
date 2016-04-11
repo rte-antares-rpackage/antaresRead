@@ -2,13 +2,13 @@
 % Please edit documentation in R/extractDataList.R
 \name{extractDataList}
 \alias{extractDataList}
-\title{Format data PPE-style}
+\title{Format data PPSE-style}
 \usage{
 extractDataList(x, nodes = NULL, opts = getOption("antares"))
 }
 \arguments{
-\item{x}{object of class "antaresOutput" or data.table created by the function
-\code{\link{importOutput}}}
+\item{x}{object of class "readAntares" or data.table created by the function
+\code{\link{readAntares}}}
 
 \item{nodes}{character vector containing the name of nodes to keep in the
 final object. If \code{NULL}, all nodes are kept in the final object.}
@@ -23,8 +23,8 @@ object and a table called "infos" that contains for each node the number
 of variables of différent type (values, details, link).
 }
 \description{
-This function converts an "antaresOutput" object in the data structure used
-by PPE : instead of having one table for nodes, one for links and one for
+This function converts an "readAntares" object in the data structure used
+by PPSE : instead of having one table for nodes, one for links and one for
 clusters, the function creates a list with one element per node. Each element
 is a data.table containing the data about the node and one column per cluster
 of the node containing the production of this cluster.

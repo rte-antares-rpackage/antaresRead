@@ -70,8 +70,8 @@ weekly, monthly or annual.}
 data.table is returned. If FALSE, the result will always be a list of class
 "antaresOutput".}
 
-\item{showProgress}{(logical) shoudl the function display information about the progress of the
-importation ?}
+\item{showProgress}{If TRUE the function displays information about the progress of the
+importation.}
 
 \item{hydroStorageMaxPoser}{Vector of node names for which to import hydro storage maximum power. 
 If \code{NULL}, hydro storage maximum power is not imported}

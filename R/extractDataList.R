@@ -1,14 +1,14 @@
-#' Format data PPE-style
+#' Format data PPSE-style
 #'
-#' This function converts an "antaresOutput" object in the data structure used
-#' by PPE : instead of having one table for nodes, one for links and one for
+#' This function converts an "readAntares" object in the data structure used
+#' by PPSE : instead of having one table for nodes, one for links and one for
 #' clusters, the function creates a list with one element per node. Each element
 #' is a data.table containing the data about the node and one column per cluster
 #' of the node containing the production of this cluster.
 #'
 #' @param x
 #'   object of class "antaresOutput" or data.table created by the function
-#'   \code{\link{importOutput}}
+#'   \code{\link{readAntares}}
 #' @param nodes
 #'   character vector containing the name of nodes to keep in the
 #'   final object. If \code{NULL}, all nodes are kept in the final object.

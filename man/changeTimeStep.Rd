@@ -10,7 +10,8 @@ changeTimeStep(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"),
 \arguments{
 \item{x}{data.table with a column "timeId" or an object of class "antaresOutput"}
 
-\item{newTimeStep}{Desired time step.}
+\item{newTimeStep}{Desired time step.The possible values are hourly, daily, weekly, 
+monthly and annual.}
 
 \item{oldTimeStep}{Current time step of the data. If the data has not been manipulated, this 
 argument is optional since the time step is stored in an attribute of the
