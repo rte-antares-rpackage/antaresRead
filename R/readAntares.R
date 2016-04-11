@@ -135,6 +135,31 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
       is.null(hydroStorageMaxPower) & is.null(reserve) & is.null(linkCapacity)) {
     nodes <- "all"
   }
+  
+  # If user asks input time series, first throw an error if monte-carlo scenarii
+  # are not available. Then check if time series are available in output. If it
+  # not the case, throw a warning.
+  if (!is.null(thermalAvailabilities)) {
+    if (! opts$scenarios) {
+      stop("Cannot import thermal availabilities because Monte Carlo scenarii have not been stored in output.")
+    }
+    if (!file.exists(file.path(opts$path, "ts-generator/thermal/mc-0"))) {
+      warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    }
+  }
+  
+  if (!is.null(hydroStorage)) {
+    if (! opts$scenarios) {
+      stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
+    }
+    if (!file.exists(file.path(opts$path, "ts-generator/hydro/mc-0"))) {
+      warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    }
+  }
+  
+  if (!is.null(misc) | !is.null(hydroStorageMaxPower) | !is.null(reserve) | !is.null(linkCapacity)) {
+    warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
+  }
 
   # Manage special value "all"
   if (identical(nodes, "all")) nodes <- opts$nodeList

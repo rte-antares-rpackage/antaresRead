@@ -1,10 +1,19 @@
 .importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   if (!node %in% opts$nodesWithClusters) return(NULL)
   
+  # Path to the files containing the IDs of the time series used for each
+  # Monte-Carlo years.
   pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
-  if (! file.exists(pathTSNumbers)) {
-    message("Monte-Carlo scenarii not available for thermal capacity.")
-    return(NULL)
+  
+  # Path to the time series. Ideally, time series are stored in output. If it is
+  # not the case, read the series in the input.
+  pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
+  
+  if (dir.exists(pathInput)) {
+    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, node)
+  } else {
+    pathInput <- file.path(opts$path, "../../input/thermal/series")
+    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, node)
   }
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
@@ -19,15 +28,14 @@
   
   names(tsIds) <- nameCls
   
-  # Read the input time series. 
-  pathInput <- file.path(opts$path, "../../input/thermal/series")
-  
   # Two nested loops: clusters, Monte Carlo simulations.
   cls <- list.files(file.path(pathInput, node))
+  cls <- gsub(".txt$", "", cls)
   if (length(cls) == 0) return(NULL)
     
   series <- ldply(cls, function(cl) {
-    ts <- fread(file.path(pathInput, node, cl, "series.txt"), integer64 = "numeric")[1:(24*7*52),]
+    
+    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric")[1:(24*7*52),]
     ids <- tsIds[[cl]]
     
     ldply(1:length(ids), function(i) {
@@ -55,17 +63,19 @@
 .importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   
   pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
-  if (! file.exists(pathTSNumbers)) {
-    message("Monte-Carlo scenarii not available for hydro capacity.")
-    return(NULL)
-  }
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
   tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
   
   # Input time series
-  pathInput <- file.path(opts$path, "../../input/hydro/series")
-  f <- file.path(pathInput, node, "mod.txt")
+  pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
+  
+  if (dir.exists(pathInput)) {
+    f <- file.path(pathInput, node, "storage.txt")
+  } else {
+    pathInput <- file.path(opts$path, "../../input/hydro/series")
+    f <- file.path(pathInput, node, "mod.txt")
+  }
   
   if (file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
