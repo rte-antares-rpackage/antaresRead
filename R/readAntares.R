@@ -305,6 +305,6 @@ readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE,
   
   readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities,
               hydroStorage=hydroStorage, hydroStorageMaxPower=hydroStorageMaxPower, 
-              reserve=reserve, linkcapacity = linkCapacity, ...)
+              reserve=reserve, linkCapacity = linkCapacity, ...)
   
 }

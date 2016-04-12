@@ -5,7 +5,7 @@
 \title{Select and exclude nodes}
 \usage{
 getNodes(select = NULL, exclude = NULL, regexpSelect = TRUE,
-  regexpExclude = TRUE, opts = getOption("antares"))
+  regexpExclude = TRUE, opts = getOption("antares"), ignore.case = TRUE)
 }
 \arguments{
 \item{select}{Character vector. If \code{regexpSelect} is TRUE, this vector is
@@ -23,6 +23,9 @@ exclude. If \code{NULL}, not any node is excluded.}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
+
+\item{ignore.case}{Should the case be ignored when evaluating the regular
+expressions ?}
 }
 \value{
 A character vector containg the name of the nodes satisfying the rules
