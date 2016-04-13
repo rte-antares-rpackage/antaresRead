@@ -8,15 +8,7 @@ data <- readAntares("all", "all", showProgress = FALSE)
 
 vnodes <- c("psp in", "psp out")
 
-spec <- list(
-  list(
-    type = "pumped storage",
-    trueNodes = "b",
-    virtualNodes = vnodes
-  )
-)
-
-dataCorrected <- removeVirtualNodes(data, spec)
+dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes)
 
 test_that("removeVirtualNodes effectively removes virtual nodes", {
   expect_false(any(dataCorrected$nodes$node %in% vnodes))
