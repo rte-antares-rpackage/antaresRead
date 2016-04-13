@@ -214,6 +214,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     attr(tmp, "synthesis") <- synthesis
     
     res[[name]] <<- tmp
+    gc() # Ensures R frees unused memory
   }
 
   # Add output to res object. The ".importOutputForXXX" functions are
