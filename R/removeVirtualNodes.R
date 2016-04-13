@@ -36,24 +36,50 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL) 
   setkey(x$nodes, node, timeId)
   setkey(x$links, link, timeId)
   
-  vnodes <- c() # list of virtual nodes that need to be removed at the end
+  vnodes <- c(storageFlexibility, production) # list of virtual nodes that need to be removed at the end
   
-  linkList <- unique(x$links$link)
   nodeList <- unique(x$nodes$node)
   
   # Manage storage/flexbility nodes
   if (!is.null(storageFlexibility)) {
     
     # Analyse links to identify is there are hubs among virtual nodes
+    linkList <- ldply(storageFlexibility, function(vn) {
+      ldply(getLinks(vn), function(x) {
+        xx <- strsplit(x, " - ")[[1]]
+        if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
+        else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
+      })
+    })
     
+    linkList <- data.table(linkList)
+    
+    # If a virtual node is only connected to virtual nodes then it should be a
+    # "very virtual" node and the nodes it is connected to should be hubs. 
+    # (by assumption there are only two levels of virtual nodes)
+    # In such case we remove the "very virtual" nodes by using removeVirtualNodes
+    # and treating the hubs as real nodes. This way, the costs of the very
+    # virtual nodes are agregated in the hubs.
+    # Finally we run treat the hubs as normal virtual nodes and continue the
+    # execution of the function.
+    linkList$connectedToVirtualNode <- linkList$to %in% storageFlexibility
+    
+    connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualNode)), 
+                               by = from]
+    
+    if (any(connectedToHub$connectedToHub)) {
+      
+      veryVirtualNodes <- connectedToHub[connectedToHub == TRUE]$from
+      x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
+      storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
+      
+    }
+    
+    # Loop over storage flexibility virtual nodes
     for (vn in storageFlexibility) {
       
       # get all nodes linked to the virtual node
-      links <- ldply(getLinks(vn), function(x) {
-        xx <- strsplit(x, " - ")[[1]]
-        if (xx[1] == vn) return (data.table(link = x, to = xx[2], direction = "out"))
-        else return (data.table(link = x, to = xx[1], direction = "in"))
-      })
+      links <- linkList[from == vn]
       
       # Total flow of the virtual node. Used when a single virtual node is
       # connected to many real nodes in order to distribute costs between them
@@ -86,7 +112,10 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL) 
       }
     }
     
-    vnodes <- union(vnodes, c(storageFlexibility))
+  }
+  
+  # Manage production virtual nodes
+  if (!is.null(production)) {
     
   }
   
