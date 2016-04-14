@@ -1,0 +1,24 @@
+Changes in version 0.3 (2016-04-14)
+
+NEW FEATURES:
+* "readAntares" can now read hydro storage, hydro storage maximum power, reserve and links capacity
+* New function "readAntaresNodes": read all the desired data for a set of nodes
+* New function "readBindingConstraints"
+* New function "changeTimeStep": change the timestep of an "antaresOutput" object or any table containing a variable timeId
+* New function "getNodes": select and filter nodes of an antares study
+* "extractDataList" has been improved for better compatibility with PPSE scripts
+* Improved documentation
+* New function removeVirtualNodes (still experimental)
+* Added this NEWS file :)
+
+Changes in version 0.2 (2016-04-05)
+
+API CHANGES:
+* "readOutput" has been renamed "readAntares"
+
+NEW FEATURES:
+* "readAntares" can now read thermal availabilities
+* "setSimulationPath" now reads simulation parameters
+* "setSimulationPath" now accepts path to a study and eventually asks the user to choose an output
+* Nodes and sets are now separated in "readAntares" and "setSimulationPath"
+* aliases for groups of variables in parameter "select" of "readAntares"

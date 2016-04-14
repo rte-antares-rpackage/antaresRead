@@ -4,14 +4,19 @@
 \alias{removeVirtualNodes}
 \title{Remove virtual nodes}
 \usage{
-removeVirtualNodes(x, spec)
+removeVirtualNodes(x, storageFlexibility = NULL, production = NULL,
+  opts = getOption("antares"))
 }
 \arguments{
 \item{x}{An object of class \code{antaresOutput} with at least components 
 \code{nodes} and \code{links}}
 
-\item{spec}{A list containing the specification of the corrections to perform 
-(see details)}
+\item{storageFlexibility}{A vector containing the names of the virtual storage/flexibility nodes}
+
+\item{production}{A vector containing the names of the virtual production nodes}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 }
 \value{
 an \code{antaresOutput object} that has been corrected according to the
@@ -28,15 +33,7 @@ data <- readAntares(nodes="all", links="all")
 
 # Remove pumped storage virtual nodes
 
-spec <- list(
-  list(
-    type = "pumped storage",
-    trueNodes = "B",
-    virtualNodes = c("psp in", "psp out")
-  )
-)
-
-correctedData <- removeVirtualNodes(data, spec)
+correctedData <- removeVirtualNodes(data, storageFlexibility = c("psp in", "psp out"))
 }
 
 }
