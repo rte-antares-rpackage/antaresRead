@@ -11,6 +11,7 @@
 #'   A vector containing the names of the virtual storage/flexibility nodes
 #' @param production
 #'   A vector containing the names of the virtual production nodes
+#' @inheritParams readAntares
 #'   
 #' @return 
 #' an \code{antaresOutput object} that has been corrected according to the
@@ -27,7 +28,7 @@
 #' 
 #' @export
 #' 
-removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL) {
+removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, opts = getOption("antares")) {
   # check x is an antaresOutput object with elements nodes and links
   if (!is(x, "antaresOutput") || is.null(x$nodes) || is.null(x$links))
     stop("x has to be an 'antaresOutput' object with elements 'nodes' and 'links'")
@@ -116,6 +117,39 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL) 
   
   # Manage production virtual nodes
   if (!is.null(production)) {
+    
+    linkList <- ldply(production, function(vn) {
+      ldply(getLinks(vn), function(x) {
+        xx <- strsplit(x, " - ")[[1]]
+        if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
+        else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
+      })
+    })
+    
+    linkList <- data.table(linkList)
+    
+    # Add virtual productions columns to x$nodes
+    prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, "SPIL. ENRG"))
+    vars <- c("node", "timeId", prodVars)
+    
+    virtualProd <- x$nodes[node %in% production, mget(vars)]
+    
+    # Remove columns containing only zeros
+    for (v in prodVars) {
+      if(all(virtualProd[[v]] == 0)) virtualProd[[v]] <- NULL
+    }
+    prodVars <- prodVars[prodVars %in% names(virtualProd)]
+    
+    # Rename columns by appending "_virtual" to their names
+    setnames(virtualProd, prodVars, paste0(prodVars, "_virtual"))
+    
+    # Merging with original data
+    # /!\ Undesired results if multiple virtual nodes are connected to a true
+    # and conversely
+    setnames(virtualProd, "node", "from")
+    virtualProd <- merge(virtualProd, linkList[, .(from, node = to)], by = "from")
+    virtualProd$from <- NULL
+    x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
     
   }
   
