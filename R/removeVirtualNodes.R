@@ -37,96 +37,86 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
   setkey(x$nodes, node, timeId)
   setkey(x$links, link, timeId)
   
-  vnodes <- c(storageFlexibility, production) # list of virtual nodes that need to be removed at the end
-  
   nodeList <- unique(x$nodes$node)
   
-  # Manage storage/flexbility nodes
-  if (!is.null(storageFlexibility)) {
-    
-    # Analyse links to identify is there are hubs among virtual nodes
-    linkList <- ldply(storageFlexibility, function(vn) {
-      ldply(getLinks(vn), function(x) {
-        xx <- strsplit(x, " - ")[[1]]
-        if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
-        else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
-      })
+  vnodes <- c(storageFlexibility, production) # list of virtual nodes that need to be removed at the end
+  if (is.null(vnodes)) stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
+  
+  # Create a table containing all links that connect virtual nodes to other nodes
+  linkList <- ldply(vnodes, function(vn) {
+    ldply(getLinks(vn), function(x) {
+      xx <- strsplit(x, " - ")[[1]]
+      if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
+      else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
     })
+  })
+  
+  linkList <- data.table(linkList)
+  
+  # Treatment of hubs:
+  #
+  # If a virtual node is only connected to virtual nodes then it should be a
+  # "very virtual" node and the nodes it is connected to should be hubs. 
+  # (by assumption there are only two levels of virtual nodes)
+  # In such case we remove the "very virtual" nodes by using removeVirtualNodes
+  # and treating the hubs as real nodes. This way, the costs of the very
+  # virtual nodes are agregated in the hubs.
+  # Finally we run treat the hubs as normal virtual nodes and continue the
+  # execution of the function.
+  linkList$connectedToVirtualNode <- linkList$to %in% storageFlexibility
+  
+  connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualNode)), 
+                             by = from]
+  
+  if (any(connectedToHub$connectedToHub)) {
     
-    linkList <- data.table(linkList)
-    
-    # If a virtual node is only connected to virtual nodes then it should be a
-    # "very virtual" node and the nodes it is connected to should be hubs. 
-    # (by assumption there are only two levels of virtual nodes)
-    # In such case we remove the "very virtual" nodes by using removeVirtualNodes
-    # and treating the hubs as real nodes. This way, the costs of the very
-    # virtual nodes are agregated in the hubs.
-    # Finally we run treat the hubs as normal virtual nodes and continue the
-    # execution of the function.
-    linkList$connectedToVirtualNode <- linkList$to %in% storageFlexibility
-    
-    connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualNode)), 
-                               by = from]
-    
-    if (any(connectedToHub$connectedToHub)) {
-      
-      veryVirtualNodes <- connectedToHub[connectedToHub == TRUE]$from
-      x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
-      storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
-      
-    }
-    
-    # Loop over storage flexibility virtual nodes
-    for (vn in storageFlexibility) {
-      
-      # get all nodes linked to the virtual node
-      links <- linkList[from == vn]
-      
-      # Total flow of the virtual node. Used when a single virtual node is
-      # connected to many real nodes in order to distribute costs between them
-      totalFlow <- x$links[J(links$link), .(totalFlow = sum(abs(`FLOW LIN.`))), keyby = timeId]
-      
-      totalFlow <- totalFlow[totalFlow == 0, totalFlow := 1] # To avoid divide by 0 errors
-      
-      # Loop over real nodes connected to the virtual node
-      for (i in 1:nrow(links)) {
-        if (! links$to[i] %in% nodeList) next
-        
-        tn <- links$to[i]
-        l <- links$link[i]
-        dir <- ifelse(links$direction[i] == "in", -1, 1)
-        
-        flow <- dir * x$links[J(l)]$`FLOW LIN.`
-        
-        # Correct balance
-        if (! is.null(x$nodes$BALANCE)) 
-          x$nodes[J(tn)]$BALANCE <- x$nodes[J(tn)]$BALANCE + flow
-        
-        # Correct costs and CO2
-        prop <- abs(flow / totalFlow$totalFlow)
-        
-        for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
-          if (! is.null(x$nodes[[v]]))
-            x$nodes[J(tn)][[v]] <- x$nodes[J(tn)][[v]] + prop * x$nodes[J(vn)][[v]]
-        }
-        
-      }
-    }
+    veryVirtualNodes <- connectedToHub[connectedToHub == TRUE]$from
+    x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
+    storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
     
   }
   
-  # Manage production virtual nodes
+
+  for (vn in vnodes) {
+    
+    # get all nodes linked to the virtual node
+    links <- linkList[from == vn]
+    
+    # Total flow of the virtual node. Used when a single virtual node is
+    # connected to many real nodes in order to distribute costs between them
+    totalFlow <- x$links[J(links$link), .(totalFlow = sum(abs(`FLOW LIN.`))), keyby = timeId]
+    
+    totalFlow <- totalFlow[totalFlow == 0, totalFlow := 1] # To avoid divide by 0 errors
+    
+    # Loop over real nodes connected to the virtual node
+    for (i in 1:nrow(links)) {
+      if (! links$to[i] %in% nodeList) next
+      
+      tn <- links$to[i]
+      l <- links$link[i]
+      dir <- ifelse(links$direction[i] == "in", -1, 1)
+      
+      flow <- dir * x$links[J(l)]$`FLOW LIN.`
+      
+      # Correct balance
+      if (! is.null(x$nodes$BALANCE)) 
+        x$nodes[J(tn)]$BALANCE <- x$nodes[J(tn)]$BALANCE + flow
+      
+      # Correct costs and CO2
+      prop <- abs(flow / totalFlow$totalFlow)
+      
+      for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
+        if (! is.null(x$nodes[[v]]))
+          x$nodes[J(tn)][[v]] <- x$nodes[J(tn)][[v]] + prop * x$nodes[J(vn)][[v]]
+      }
+    }
+  }
+
+  
+  # Aggregate production of production virtual nodes
   if (!is.null(production)) {
     
-    linkList <- ldply(production, function(vn) {
-      ldply(getLinks(vn), function(x) {
-        xx <- strsplit(x, " - ")[[1]]
-        if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
-        else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
-      })
-    })
-    
-    linkList <- data.table(linkList)
+    linkList <- linkList[from %in% production]
     
     # Add virtual productions columns to x$nodes
     prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, "SPIL. ENRG"))
@@ -144,11 +134,12 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
     setnames(virtualProd, prodVars, paste0(prodVars, "_virtual"))
     
     # Merging with original data
-    # /!\ Undesired results if multiple virtual nodes are connected to a true
-    # and conversely
+    # /!\ Undesired results if multiple real nodes connected to the same
+    # virtual node.
     setnames(virtualProd, "node", "from")
     virtualProd <- merge(virtualProd, linkList[, .(from, node = to)], by = "from")
     virtualProd$from <- NULL
+    virtualProd <- virtualProd[, lapply(.SD, sum), by = .(node, timeId)]
     x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
     
   }
