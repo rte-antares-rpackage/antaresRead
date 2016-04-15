@@ -159,6 +159,9 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     virtualProd <- virtualProd[, lapply(.SD, sum), by = .(node, timeId)]
     x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
     
+    for (v in paste0(prodVars, "_virtual")) {
+      x[[v]][is.na(x[[v]])] <- 0
+    }
   }
   
   # Remove all data about virtual nodes in x
