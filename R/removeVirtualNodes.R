@@ -6,16 +6,28 @@
 #' 
 #' @param x
 #'   An object of class \code{antaresOutput} with at least components 
-#'   \code{nodes} and \code{links}
+#'   \code{nodes} and \code{links}.
 #' @param storageFlexibility
-#'   A vector containing the names of the virtual storage/flexibility nodes
+#'   A vector containing the names of the virtual storage/flexibility nodes.
 #' @param production
-#'   A vector containing the names of the virtual production nodes
+#'   A vector containing the names of the virtual production nodes.
+#' @param reassignCosts
+#'   If TRUE, the production costs of the virtual nodes are reallocated to the
+#'   real nodes they are connected to.If the virtual nodes are connected to a 
+#'   virtual hub, their costs are first reallocated to the hub and then the 
+#'   costs of the hub are reallocated to the real nodes.
+#'   
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' an \code{antaresOutput object} that has been corrected according to the
-#' specifications of spec. 
+#' an \code{antaresOutput object} in which virtual nodes have been removed and 
+#' data of the real has been corrected. See details for an explanation of the
+#' corrections.
+#' 
+#' @details 
+#' [Explain what is a storage/flexibility node and a production node]
+#' 
+#' [Explain the corrections the function makes]
 #' 
 #' @examples 
 #' \dontrun{
@@ -28,7 +40,8 @@
 #' 
 #' @export
 #' 
-removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, opts = getOption("antares")) {
+removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
+                               reassignCosts = TRUE, opts = getOption("antares")) {
   # check x is an antaresOutput object with elements nodes and links
   if (!is(x, "antaresOutput") || is.null(x$nodes) || is.null(x$links))
     stop("x has to be an 'antaresOutput' object with elements 'nodes' and 'links'")
@@ -76,7 +89,8 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
     
   }
   
-
+  # For all virtual nodes correct balance and costs of the real nodes they are
+  # connected to 
   for (vn in vnodes) {
     
     # get all nodes linked to the virtual node
@@ -103,17 +117,20 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
         x$nodes[J(tn)]$BALANCE <- x$nodes[J(tn)]$BALANCE + flow
       
       # Correct costs and CO2
-      prop <- abs(flow / totalFlow$totalFlow)
-      
-      for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
-        if (! is.null(x$nodes[[v]]))
-          x$nodes[J(tn)][[v]] <- x$nodes[J(tn)][[v]] + prop * x$nodes[J(vn)][[v]]
+      if (reassignCosts) {
+        prop <- abs(flow / totalFlow$totalFlow)
+        
+        for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
+          if (! is.null(x$nodes[[v]]))
+            x$nodes[J(tn)][[v]] <- x$nodes[J(tn)][[v]] + prop * x$nodes[J(vn)][[v]]
+        }
       }
     }
   }
 
   
-  # Aggregate production of production virtual nodes
+  # Aggregate production of production virtual nodes and add columns for each 
+  # type of production.
   if (!is.null(production)) {
     
     linkList <- linkList[from %in% production]
