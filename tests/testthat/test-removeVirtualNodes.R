@@ -19,10 +19,17 @@ test_that("Balance is corrected for not b, but not for the other nodes", {
   expect_equal(data$nodes[node %in% c("a", "c")]$BALANCE, 
                dataCorrected$nodes[node %in% c("a", "c")]$BALANCE)
   
-  correction <- - data$links[link %in% c("b - psp in", "b - psp out"), 
+  correction <- - data$links[link %in% getLinks(vnodes), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
   expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
                correction)
   
 })
+
+test_that("A column has been created for each storage/flexibility node", {
+  expect_true(all(vnodes %in% names(dataCorrected$nodes)))
+  expect_equal(data$links[link=="b - psp in"]$`FLOW LIN.`, 
+               - dataCorrected$nodes[node == "b"]$`psp in`)
+})
+

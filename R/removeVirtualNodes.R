@@ -102,6 +102,10 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     
     totalFlow <- totalFlow[totalFlow == 0, totalFlow := 1] # To avoid divide by 0 errors
     
+    # If the node is a flexibility-storage node, create a new column containing 
+    # the flows
+    if (vn %in% storageFlexibility) x$nodes[[vn]] <- 0
+    
     # Loop over real nodes connected to the virtual node
     for (i in 1:nrow(links)) {
       if (! links$to[i] %in% nodeList) next
@@ -115,6 +119,10 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
       # Correct balance
       if (! is.null(x$nodes$BALANCE)) 
         x$nodes[J(tn)]$BALANCE <- x$nodes[J(tn)]$BALANCE + flow
+      
+      # If the node is a flexibility node, stock the flow in a column with the
+      # name of the node
+      if (vn %in% storageFlexibility) x$nodes[J(tn)][[vn]] <- flow
       
       # Correct costs and CO2
       if (reassignCosts) {
@@ -133,7 +141,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   # type of production.
   if (!is.null(production)) {
     
-    linkList <- linkList[from %in% production]
+    linkListProd <- linkList[from %in% production]
     
     # Add virtual productions columns to x$nodes
     prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, "SPIL. ENRG"))
@@ -154,7 +162,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     # /!\ Undesired results if multiple real nodes connected to the same
     # virtual node.
     setnames(virtualProd, "node", "from")
-    virtualProd <- merge(virtualProd, linkList[, .(from, node = to)], by = "from")
+    virtualProd <- merge(virtualProd, linkListProd[, .(from, node = to)], by = "from")
     virtualProd$from <- NULL
     virtualProd <- virtualProd[, lapply(.SD, sum), by = .(node, timeId)]
     x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
@@ -162,6 +170,13 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     for (v in paste0(prodVars, "_virtual")) {
       x[[v]][is.na(x[[v]])] <- 0
     }
+  }
+  
+  # Add columns for storage/flexibility nodes
+  if (!is.null(storageFlexibility)) {
+    linkListStorage <- linkList[from %in% storageFlexibility]
+    storage <- merge(x$nodes, linkListStorage[, .(node = to, from)], by = "node")
+    storage
   }
   
   # Remove all data about virtual nodes in x
