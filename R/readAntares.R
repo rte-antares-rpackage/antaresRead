@@ -39,9 +39,11 @@
 #' @param reserve
 #'   Vector of node names for which to import reserve. 
 #'   If \code{NULL}, reserve is not imported
-#' @param LinkCapacity
+#' @param linkCapacity
 #'   Vector of link names for wich to import their capacity and hurdle cost.
 #'   If \code{NULL}, link capacity is not imported
+#' @param mustRun
+#'   Should mustRun and partialMustRun columns be added to the result ?
 #' @param select
 #'   Character vector containing the name of the columns to import. If this
 #'   argument is \code{NULL}, all variables are imported. Special names
@@ -118,7 +120,7 @@
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         sets = NULL, misc = NULL, thermalAvailabilities = NULL,
                         hydroStorage = NULL, hydroStorageMaxPower = NULL,
-                        reserve = NULL, linkCapacity = NULL,
+                        reserve = NULL, linkCapacity = NULL, mustRun = FALSE,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -129,7 +131,10 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
 
-  if (is.null(opts)) stop("Before using 'readAntares', you need to run once the function 'setSimulation'")
+  if (is.null(opts)) {
+    message("Please choose a directory containing an Antares simulation")
+    opts <- setSimulationPath()
+  }
   
   # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & 
