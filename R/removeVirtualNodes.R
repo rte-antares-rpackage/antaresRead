@@ -170,6 +170,15 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     }
   }
   
+  # Put clusters of the virtual nodes in the corresponding real ndoes
+  if (!is.null(x$clusters) & !is.null(x$production)) {
+    linkListProd <- linkList[from %in% production]
+    x$clusters <- merge(x$clusters, linkListProd[, .(node=from, to, timeId)],
+                        by = c("node", "timeId"), all.x = TRUE)
+    x$clusters[!is.na(to), node := to]
+    x$clusters$to <- NULL
+  }
+  
   # Remove all data about virtual nodes in x
   for (n in names(x)) {
     if (!is.null(x[[n]]$node)) x[[n]] <- x[[n]][!node %in% vnodes]
