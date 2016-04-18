@@ -53,7 +53,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Create a table containing all links that connect virtual nodes to other nodes
   linkList <- ldply(vnodes, function(vn) {
-    ldply(getLinks(vn, opts=opts), function(x) {
+    ldply(getLinks(vn, opts=opts, regexpSelect = FALSE), function(x) {
       xx <- strsplit(x, " - ")[[1]]
       if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
       else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
