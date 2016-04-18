@@ -129,6 +129,8 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
 
+  if (is.null(opts)) stop("Before using 'readAntares', you need to run once the function 'setSimulation'")
+  
   # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & 
       is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & 
