@@ -158,7 +158,9 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     # /!\ Undesired results if multiple real nodes connected to the same
     # virtual node.
     setnames(virtualProd, "node", "from")
-    virtualProd <- merge(virtualProd, linkListProd[, .(from, node = to)], by = "from")
+    virtualProd <- merge(virtualProd, 
+                         linkListProd[, .(from, node = to, timeId)], 
+                         by = c("from", "timeId"))
     virtualProd$from <- NULL
     virtualProd <- virtualProd[, lapply(.SD, sum), by = .(node, timeId)]
     x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
