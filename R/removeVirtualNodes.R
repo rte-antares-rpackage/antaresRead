@@ -66,6 +66,11 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   linkList <- data.table(linkList)
   
+  linkList <- merge(linkList, x$links[, .(link, timeId, `FLOW LIN.`)], by = "link")
+  
+  # Some flows may be inversed depending on how the links are created. Correct this
+  linkList$flow <- linkList[, `FLOW LIN.` * ifelse(direction == "in", -1, 1)]
+  
   # Treatment of hubs:
   #
   # If a virtual node is only connected to virtual nodes then it should be a
@@ -89,50 +94,37 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     
   }
   
-  # For all virtual nodes correct balance and costs of the real nodes they are
+  # For each virtual node, correct balance and costs of the real nodes they are
   # connected to 
   for (vn in vnodes) {
     
     # get all nodes linked to the virtual node
     links <- linkList[from == vn]
+
+    # Correct balance
+    if (! is.null(x$nodes$BALANCE)) 
+      x$nodes[J(links$to, links$timeId)]$BALANCE <- x$nodes[J(links$to, links$timeId)]$BALANCE + links$flow
     
-    # Total flow of the virtual node. Used when a single virtual node is
-    # connected to many real nodes in order to distribute costs between them
-    totalFlow <- x$links[J(links$link), .(totalFlow = sum(abs(`FLOW LIN.`))), keyby = timeId]
-    
-    totalFlow <- totalFlow[totalFlow == 0, totalFlow := 1] # To avoid divide by 0 errors
+    # Correct costs and CO2
+    if (reassignCosts) {
+      # Total flow of the virtual node. Used when a single virtual node is
+      # connected to many real nodes in order to distribute costs between them.
+      # If the flow is 0, we set it to 0 in order to avoid "divide by 0" errors
+      links[, totalFlow := max(1, sum(abs(`FLOW LIN.`))), by = timeId]
+      
+      links$prop <- abs(links$flow / links$totalFlow)
+      
+      for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
+        if (! is.null(x$nodes[[v]]))
+          x$nodes[J(links$to, links$timeId)][[v]] <- x$nodes[J(links$to, links$timeId)][[v]] + links$prop * x$nodes[J(vn)][[v]]
+      }
+    }
     
     # If the node is a flexibility-storage node, create a new column containing 
     # the flows
-    if (vn %in% storageFlexibility) x$nodes[[vn]] <- 0
-    
-    # Loop over real nodes connected to the virtual node
-    for (i in 1:nrow(links)) {
-      if (! links$to[i] %in% nodeList) next
-      
-      tn <- links$to[i]
-      l <- links$link[i]
-      dir <- ifelse(links$direction[i] == "in", -1, 1)
-      
-      flow <- dir * x$links[J(l)]$`FLOW LIN.`
-      
-      # Correct balance
-      if (! is.null(x$nodes$BALANCE)) 
-        x$nodes[J(tn)]$BALANCE <- x$nodes[J(tn)]$BALANCE + flow
-      
-      # If the node is a flexibility node, stock the flow in a column with the
-      # name of the node
-      if (vn %in% storageFlexibility) x$nodes[J(tn)][[vn]] <- flow
-      
-      # Correct costs and CO2
-      if (reassignCosts) {
-        prop <- abs(flow / totalFlow$totalFlow)
-        
-        for (v in c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")) {
-          if (! is.null(x$nodes[[v]]))
-            x$nodes[J(tn)][[v]] <- x$nodes[J(tn)][[v]] + prop * x$nodes[J(vn)][[v]]
-        }
-      }
+    if (vn %in% storageFlexibility) {
+      x$nodes[[vn]] <- 0
+      x$nodes[J(links$to, links$timeId)][[vn]] <- links$flow
     }
   }
 
@@ -170,13 +162,6 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     for (v in paste0(prodVars, "_virtual")) {
       x[[v]][is.na(x[[v]])] <- 0
     }
-  }
-  
-  # Add columns for storage/flexibility nodes
-  if (!is.null(storageFlexibility)) {
-    linkListStorage <- linkList[from %in% storageFlexibility]
-    storage <- merge(x$nodes, linkListStorage[, .(node = to, from)], by = "node")
-    storage
   }
   
   # Remove all data about virtual nodes in x
