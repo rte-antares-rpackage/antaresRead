@@ -89,9 +89,14 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   if (any(connectedToHub$connectedToHub)) {
     
     veryVirtualNodes <- connectedToHub[connectedToHub == TRUE]$from
-    x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
-    storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
     
+    # Correct data
+    x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
+    
+    # Update parameters
+    storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
+    vnodes <- c(storageFlexibility, production) 
+    linkList <- linkList[from %in% vnodes]
   }
   
   # For each virtual node, correct balance and costs of the real nodes they are
