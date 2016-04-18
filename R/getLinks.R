@@ -8,14 +8,15 @@
 #' if TRUE, only links that connect two nodes from the list are returned. 
 #' If not, the function may return links that connect a node from the list with 
 #' a node outside the list.
+#' @inheritParams readAntares
 #'
 #' @return
 #' character vector containing link names.
 #'
 #' @export
 #'
-getLinks <- function(nodes, internalOnly=FALSE) {
-  l <- getOption("antares")$linkList
+getLinks <- function(nodes, internalOnly=FALSE, opts = getOption("antares")) {
+  l <- opts$linkList
   lsplit <- tstrsplit(l, " - ")
 
   if(internalOnly) idx <- lsplit[[1]] %in% nodes & lsplit[[2]] %in% nodes
