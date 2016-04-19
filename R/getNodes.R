@@ -42,7 +42,7 @@ getNodes <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
         nodes <- union(nodes, selectedNodes)
       }
     } else {
-      nodes <- nodes[nodes %in% select]
+      nodes <- allNodes[allNodes %in% select]
     }
   }
   
