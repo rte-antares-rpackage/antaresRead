@@ -59,6 +59,30 @@
   res
 }
 
+.importMustRunModulation <- function(node, opts, ...) {
+  if (!node %in% opts$nodesWithClusters) return(NULL)
+  if (opts$antaresVersion < 500) return(NULL)
+  
+  path <- file.path(opts$path, "../../input/thermal/prepro", node)
+  
+  clusters <- list.files(path)
+  
+  res <- ldply(clusters, function(cl) {
+    modulation <- fread(file.path(path, cl, "modulation.txt"), select = 4, colClasses = "numeric")
+    
+    setnames(modulation, names(modulation), "mustRunModulation")
+    
+    if (all(modulation$mustRunModulation == 0)) 
+      return(data.table(mustRunModulation=numeric(), cluster = factor(), timeId=integer()))
+    
+    modulation$cluster <- cl
+    modulation <- modulation[1:(24*12*52)]
+    modulation$timeId <- 1:(24*12*52)
+    
+    modulation
+  })
+}
+
 .importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
   if (synthesis) mcYears <- 1:opts$mcYears
   

@@ -239,6 +239,62 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("reserve", reserve, .importReserves, NA)
   .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity, NA)
   
+  # construct mustRun and mustRunPartial columns
+  if (mustRun) {
+    if (is.null(res$clusters) | timeStep != "hourly") {
+      local({
+        timeStep <- "hourly"
+        nodes <- intersect(opts$nodesWithClusters, union(nodes, clusters))
+        .addOutputToRes("mustRun", nodes, .importOutputForClusters, NULL)
+      })
+    } else res$mustRun <- res$clusters
+    
+    clusterDesc <- readClusterDesc(opts)
+    if (is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
+    else clusterDesc[is.na(must.run), must.run := FALSE]
+    
+    clusterDesc <- clusterDesc[, .(cluster,
+                                   capacity = nominalcapacity * unitcount,
+                                   must.run)]
+    
+    .addOutputToRes("mustRunModulation", nodes, .importMustRunModulation, NULL)
+    
+    res$mustRun <- merge(res$mustRun, clusterDesc, by = "cluster")
+    res$mustRun <- merge(res$mustRun, res$mustRunModulation, 
+                         by = c("cluster", "timeId"), all.x = TRUE)
+    
+    res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
+    res$mustRun$mustRunPartial <- 0
+    res$mustRun[!is.na(mustRunModulation), 
+                c("mustRun", "mustRunPartial") := list(0, mustRun * mustRunModulation)]
+    
+    res$mustRun[mustRun > MWh, mustRun := MWh]
+    res$mustRun[mustRunPartial > MWh, mustRunPartial := MWh]
+    
+    res$mustRun <- res$mustRun[, .(node, cluster, timeId, mustRun, mustRunPartial)]
+    
+    res$mustRun <- changeTimeStep(res$mustRun, timeStep, "hourly", opts = opts)
+    
+    if (!is.null(res$clusters)) {
+      res$clusters <- merge(res$clusters, res$mustRun, by = c("node", "cluster", "timeId"))
+      attr(res$clusters, "type") <- "clusters"
+      attr(res$clusters, "timeStep") <- timeStep
+      attr(res$clusters, "synthesis") <- synthesis
+    }
+    
+    if (!is.null(res$nodes)) {
+      res$mustRun <- res$mustRun[,.(mustRun = sum(mustRun), mustRunPartial = sum(mustRunPartial)), 
+                                 keyby = .(node, timeId)]
+      res$nodes <- merge(res$nodes, res$mustRun, by = c("node", "timeId"))
+      attr(res$nodes, "type") <- "nodes"
+      attr(res$nodes, "timeStep") <- timeStep
+      attr(res$nodes, "synthesis") <- synthesis
+    }
+    
+    res$mustRun <- NULL
+    res$mustRunModulation <- NULL
+  }
+  
   # Class and attributes
   class(res) <- append("antaresOutput", class(res))
   attr(res, "timeStep") <- timeStep
