@@ -73,8 +73,9 @@
     setnames(modulation, names(modulation), "mustRunModulation")
     
     if (all(modulation$mustRunModulation == 0)) 
-      return(data.table(mustRunModulation=numeric(), cluster = factor(), timeId=integer()))
+      return(data.table(mustRunModulation=numeric(), node = factor(), cluster = factor(), timeId=integer()))
     
+    modulation$node <- node
     modulation$cluster <- cl
     modulation <- modulation[1:(24*12*52)]
     modulation$timeId <- 1:(24*12*52)
