@@ -145,7 +145,7 @@
 
     # reshape data
     x <- data.table::melt(x, id.vars = intersect(pkgEnv$idVars, names(x)))
-    x$cluster <- as.factor(gsub("\\|.*$", "", x$variable))
+    x$cluster <- as.factor(tolower(gsub("\\|.*$", "", x$variable)))
     x$unit <- gsub("^.*\\|", "", x$variable)
     x$variable <- NULL
     data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
