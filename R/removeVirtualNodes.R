@@ -51,6 +51,17 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   vnodes <- c(storageFlexibility, production) # list of virtual nodes that need to be removed at the end
   if (is.null(vnodes)) stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
+  if (attr(x, "synthesis")) {
+    
+    by <- c("timeId")
+  } else {
+    by <- c("mcYear", "timeId")
+  }
+  
+  bylink <- c("link", by)
+  bynode <- c("node", by)
+  setkeyv(x$nodes, bynode)
+  
   # Create a table containing all links that connect virtual nodes to other nodes
   linkList <- ldply(vnodes, function(vn) {
     ldply(getLinks(vn, opts=opts, regexpSelect = FALSE), function(x) {
@@ -62,7 +73,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   linkList <- data.table(linkList)
   
-  linkList <- merge(linkList, x$links[, .(link, timeId, `FLOW LIN.`)], by = "link")
+  linkList <- merge(linkList, x$links[, mget(c(bylink, "FLOW LIN."))], by = "link")
   
   # Some flows may be inversed depending on how the links are created. Correct this
   linkList$flow <- linkList[, `FLOW LIN.` * ifelse(direction == "in", -1, 1)]
@@ -97,8 +108,10 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Correct balance
   if (! is.null(x$nodes$BALANCE)) {
-    corrections <- linkList[, .(correction = sum(flow)), keyby = .(node = to, timeId)]
-    x$nodes <- merge(x$nodes, corrections, by = c("node", "timeId"), all.x = TRUE)
+    x$nodes$BALANCE <- as.numeric(x$nodes$BALANCE)
+    linkList$node <- linkList$to
+    corrections <- linkList[, .(correction = sum(flow)), keyby = mget(bynode)]
+    x$nodes <- merge(x$nodes, corrections, by = bynode, all.x = TRUE)
     x$nodes[!is.na(correction), BALANCE := BALANCE + correction]
     x$nodes$correction <- NULL
   }
@@ -107,26 +120,31 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   if (reassignCosts) {
     varCost <- intersect(names(x$nodes), c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"))
     
-    costs <- x$nodes[node %in% vnodes, mget(c("node", "timeId", varCost))]
-    setnames(costs, "node", "from")
-    costs <- merge(linkList[, .(from, to, timeId, flow)], costs, by = c("from", "timeId"))
+    costs <- x$nodes[node %in% vnodes, mget(c(bynode, varCost))]
+    linkList$node <- linkList$from
+    costs <- merge(linkList[, mget(c(bynode, "to", "flow"))], costs, by = bynode)
+    linkList$node <- NULL
     
     # Compute the proportion of the cost to repercute on each real node
-    costs[, totalFlow := max(1, sum(abs(flow))), by = .(from, timeId)]
+    costs[, totalFlow := max(1, sum(abs(flow))), by = mget(bynode)]
     costs$prop <- abs(costs$flow / costs$totalFlow)
     
-    setkey(x$nodes, node, timeId)
     for (v in varCost) {
-      x$nodes[costs[,.(node, timeId)]][[v]] <- x$nodes[costs[,.(node, timeId)]][[v]] + costs$prop * costs[[v]]
+      x$nodes[[v]] <- as.numeric(x$nodes[[v]])
+      x$nodes[costs[, mget(bynode)]][[v]] <- x$nodes[costs[, mget(bynode)]][[v]] + costs$prop * costs[[v]]
     }
   }
   
   # Add a column for each storage/flexibility node
   if (!is.null(storageFlexibility)) {
-    tmp <- dcast(linkList[from %in% storageFlexibility, .(from, node = to, timeId, flow)], 
-                 node + timeId ~ from, value.var = "flow")
+    linkList$node <- linkList$to
     
-    x$nodes <- merge(x$nodes, tmp, by = c("node", "timeId"), all.x = TRUE)
+    formula <- sprintf("%s ~ from", paste(bynode, collapse = " + "))
+    
+    tmp <- dcast(linkList[from %in% storageFlexibility, mget(c("from", bynode, "flow"))], 
+                 as.formula(formula), value.var = "flow")
+    
+    x$nodes <- merge(x$nodes, tmp, by = bynode, all.x = TRUE)
     
     for (v in storageFlexibility) {
       x$nodes[[v]][is.na(x$nodes[[v]])] <- 0
@@ -141,7 +159,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     
     # Add virtual productions columns to x$nodes
     prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, "SPIL. ENRG"))
-    vars <- c("node", "timeId", prodVars)
+    vars <- c(bynode, prodVars)
     
     virtualProd <- x$nodes[node %in% production, mget(vars)]
     
@@ -158,12 +176,13 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     # /!\ Undesired results if multiple real nodes connected to the same
     # virtual node.
     setnames(virtualProd, "node", "from")
+    linkListProd$node <- linkListProd$to
     virtualProd <- merge(virtualProd, 
-                         linkListProd[, .(from, node = to, timeId)], 
-                         by = c("from", "timeId"))
+                         linkListProd[, mget(c("from", bynode))], 
+                         by = c("from", by))
     virtualProd$from <- NULL
-    virtualProd <- virtualProd[, lapply(.SD, sum), by = .(node, timeId)]
-    x$nodes <- merge(x$nodes, virtualProd, by = c("node", "timeId"), all.x = TRUE)
+    virtualProd <- virtualProd[, lapply(.SD, sum), by = mget(bynode)]
+    x$nodes <- merge(x$nodes, virtualProd, by = bynode, all.x = TRUE)
     
     for (v in paste0(prodVars, "_virtual")) {
       x$nodes[[v]][is.na(x$nodes[[v]])] <- 0
@@ -173,8 +192,9 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   # Put clusters of the virtual nodes in the corresponding real ndoes
   if (!is.null(x$clusters) & !is.null(x$production)) {
     linkListProd <- linkList[from %in% production]
-    x$clusters <- merge(x$clusters, linkListProd[, .(node=from, to, timeId)],
-                        by = c("node", "timeId"), all.x = TRUE)
+    linkListProd$node <- linkListProd$from
+    x$clusters <- merge(x$clusters, linkListProd[, mget(c(bynode, "to"))],
+                        by = bynode, all.x = TRUE)
     x$clusters[!is.na(to), node := to]
     x$clusters$to <- NULL
   }
