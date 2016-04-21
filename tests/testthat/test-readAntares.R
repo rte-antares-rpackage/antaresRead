@@ -26,42 +26,42 @@ test_that("Clusters importation is ok", {
 })
 
 test_that("Misc importation is ok", {
-  misc <- readAntares(misc = opts$nodeList, showProgress = FALSE)
+  misc <- readAntares(nodes="all", misc = TRUE, showProgress = FALSE)
   expect_is(misc, "data.table")
   expect_false(is.null(misc$node))
   expect_equal(nrow(misc), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 test_that("Thermal availability importation is ok", {
-  output <- readAntares(thermalAvailabilities = opts$nodesWithClusters, showProgress = FALSE)
+  output <- readAntares(clusters = "all", thermalAvailabilities = TRUE, showProgress = FALSE)
   expect_is(output, "data.table")
   expect_false(is.null(output$node))
   expect_equal(nrow(output), 24 * 7 * 52 * nrow(readClusterDesc()))
 })
 
 test_that("Hydro storage importation is ok", {
-  output <- readAntares(hydroStorage = "all", showProgress = FALSE)
+  output <- readAntares(nodes="all", hydroStorage = TRUE, showProgress = FALSE)
   expect_is(output, "data.table")
   expect_false(is.null(output$node))
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 test_that("Hydro storage maximum power is ok", {
-  output <- readAntares(hydroStorageMaxPower = "all", showProgress = FALSE)
+  output <- readAntares(nodes="all", hydroStorageMaxPower = TRUE, showProgress = FALSE)
   expect_is(output, "data.table")
   expect_false(is.null(output$node))
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 test_that("Reserve is ok", {
-  output <- readAntares(reserve = "all", showProgress = FALSE)
+  output <- readAntares(nodes="all", reserve = TRUE, showProgress = FALSE)
   expect_is(output, "data.table")
   expect_false(is.null(output$node))
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$nodeList))
 })
 
 test_that("Link capacity is ok", {
-  output <- readAntares(linkCapacity = "all", showProgress = FALSE)
+  output <- readAntares(links="all", linkCapacity = TRUE, showProgress = FALSE)
   expect_is(output, "data.table")
   expect_false(is.null(output$link))
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$linkList))
@@ -96,7 +96,7 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   })
 
   test_that(sprintf("one can import %s Misc input", timeStep), {
-    misc <- readAntares(misc = opts$nodeList, showProgress = FALSE, timeStep = timeStep)
+    misc <- readAntares(misc = TRUE, showProgress = FALSE, timeStep = timeStep)
     expect_equal(nrow(misc), expected_rows * length(opts$nodeList))
   })
 }

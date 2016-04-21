@@ -118,9 +118,9 @@
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
-                        sets = NULL, misc = NULL, thermalAvailabilities = NULL,
-                        hydroStorage = NULL, hydroStorageMaxPower = NULL,
-                        reserve = NULL, linkCapacity = NULL, mustRun = FALSE,
+                        sets = NULL, misc = FALSE, thermalAvailabilities = FALSE,
+                        hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
+                        reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         select = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
@@ -137,16 +137,14 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   }
   
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(sets) & 
-      is.null(misc) & is.null( thermalAvailabilities) & is.null(hydroStorage) & 
-      is.null(hydroStorageMaxPower) & is.null(reserve) & is.null(linkCapacity)) {
+  if (is.null(nodes) & is.null(links) & is.null(clusters)) {
     nodes <- "all"
   }
   
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
   # not the case, throw a warning.
-  if (!is.null(thermalAvailabilities)) {
+  if (thermalAvailabilities) {
     if (! opts$scenarios) {
       stop("Cannot import thermal availabilities because Monte Carlo scenarii have not been stored in output.")
     }
@@ -155,7 +153,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  if (!is.null(hydroStorage)) {
+  if (hydroStorage) {
     if (! opts$scenarios) {
       stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
     }
@@ -164,7 +162,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  if (!is.null(misc) | !is.null(hydroStorageMaxPower) | !is.null(reserve) | !is.null(linkCapacity)) {
+  if (misc | hydroStorageMaxPower | reserve | linkCapacity) {
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
 
@@ -215,11 +213,6 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     
     tmp <- rbindlist(tmp)
     
-    class(tmp) <- append("antaresTable", class(tmp))
-    attr(tmp, "type") <- name
-    attr(tmp, "timeStep") <- timeStep
-    attr(tmp, "synthesis") <- synthesis
-    
     res[[name]] <<- tmp
     gc() # Ensures R frees unused memory
   }
@@ -232,12 +225,44 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
   
   # Add inputs
-  .addOutputToRes("misc", misc, .importMisc, NA)
-  .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermal, NA)
-  .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorage, NA)
-  .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower, NA)
-  .addOutputToRes("reserve", reserve, .importReserves, NA)
-  .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity, NA)
+  if (misc) {
+    .addOutputToRes("misc", nodes, .importMisc, NA)
+    res$nodes <- merge(res$nodes, res$misc, by=c("node", "timeId"))
+    res$misc <- NULL
+  }
+  if (thermalAvailabilities) {
+    .addOutputToRes("thermalAvailabilities", clusters, .importThermal, NA)
+    
+    by <- c("node", "cluster", "timeId")
+    if (!synthesis) by <- append(by, "mcYear")
+    
+    res$clusters <- merge(res$clusters, res$thermalAvailabilities, by = by)
+    res$thermalAvailabilities <- NULL
+  }
+  if (hydroStorage) {
+    .addOutputToRes("hydroStorage", nodes, .importHydroStorage, NA)
+    by <- c("node", "timeId")
+    if (!synthesis) by <- append(by, "mcYear")
+    res$nodes <- merge(res$nodes, res$hydroStorage, by = by)
+    res$hydroStorage <- NULL
+  }
+  if (hydroStorageMaxPower) {
+    .addOutputToRes("hydroStorageMaxPower", nodes, .importHydroStorageMaxPower, NA)
+    res$nodes <- merge(res$nodes, res$hydroStorageMaxPower, by=c("node", "timeId"))
+    res$hydroStorageMaxPower <- NULL
+  }
+  
+  if (reserve) {
+    .addOutputToRes("reserve", nodes, .importReserves, NA)
+    res$nodes <- merge(res$nodes, res$reserve, by=c("node", "timeId"))
+    res$reserve <- NULL
+  }
+
+  if (linkCapacity) {
+    .addOutputToRes("linkCapacity", links, .importLinkCapacity, NA)
+    res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
+    res$linkCapacity <- NULL
+  }
   
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
@@ -279,9 +304,6 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     
     if (!is.null(res$clusters)) {
       res$clusters <- merge(res$clusters, res$mustRun, by = c("node", "cluster", "timeId"))
-      attr(res$clusters, "type") <- "clusters"
-      attr(res$clusters, "timeStep") <- timeStep
-      attr(res$clusters, "synthesis") <- synthesis
     }
     
     if (!is.null(res$nodes)) {
@@ -293,9 +315,6 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
       
       res$nodes[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
       
-      attr(res$nodes, "type") <- "nodes"
-      attr(res$nodes, "timeStep") <- timeStep
-      attr(res$nodes, "synthesis") <- synthesis
     }
     
     res$mustRun <- NULL
@@ -303,6 +322,13 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   }
   
   # Class and attributes
+  for (n in names(res)) {
+    class(res[[n]]) <- append("antaresTable", class(res[[n]]))
+    attr(res[[n]], "type") <- n
+    attr(res[[n]], "timeStep") <- timeStep
+    attr(res[[n]], "synthesis") <- synthesis
+  }
+  
   class(res) <- append("antaresOutput", class(res))
   attr(res, "timeStep") <- timeStep
   attr(res, "synthesis") <- synthesis
