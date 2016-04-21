@@ -67,6 +67,20 @@ test_that("Link capacity is ok", {
   expect_equal(nrow(output), 24 * 7 * 52 * length(opts$linkList))
 })
 
+test_that("mustRun and mustRunPartial are ok", {
+  output <- readAntares(nodes = "all", clusters = "all", mustRun = TRUE, showProgress = FALSE)
+  
+  # Check columns mustRun(..) have been added
+  expect_false(is.null(output$nodes$mustRun))
+  expect_false(is.null(output$nodes$mustRunPartial))
+  expect_equal(output$nodes$mustRun + output$nodes$mustRunPartial, output$nodes$mustRunTotal)
+  expect_false(is.null(output$clusters$mustRun))
+  expect_false(is.null(output$clusters$mustRunPartial))
+  expect_equal(output$clusters$mustRun + output$clusters$mustRunPartial, output$clusters$mustRunTotal)
+  
+  expect_equal(nrow(output$nodes), 24 * 7 * 52 * length(opts$nodeList))
+})
+
 # Test that importation works for all time resolutions.
 for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   expected_rows = switch(timeStep,
