@@ -104,7 +104,7 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
 test_that("importation of different objects works", {
   out <- readAntares(nodes = opts$nodeList, links=opts$linkList,
                     clusters=opts$nodesWithClusters, showProgress= FALSE, timeStep = "annual")
-  expect_is(out, "antaresOutput")
+  expect_is(out, "antaresData")
   expect_equal(names(out), c("nodes", "links", "clusters"))
 })
 

@@ -7,7 +7,7 @@
 #' of the node containing the production of this cluster.
 #'
 #' @param x
-#'   object of class "antaresOutput" or data.table created by the function
+#'   object of class "antaresData" or data.table created by the function
 #'   \code{\link{readAntares}}
 #' @param nodes
 #'   character vector containing the name of nodes to keep in the

@@ -1,10 +1,10 @@
 #' Change the timestep of an output
 #' 
-#' This function changes the timestep of a table or an antaresOutput object
+#' This function changes the timestep of a table or an antaresData object
 #' and performs the required aggregation or desaggregation.
 #' 
 #' @param x
-#'   data.table with a column "timeId" or an object of class "antaresOutput"
+#'   data.table with a column "timeId" or an object of class "antaresData"
 #' @param newTimeStep
 #'   Desired time step.The possible values are hourly, daily, weekly, 
 #'   monthly and annual.
@@ -17,7 +17,7 @@
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' Either a data.table or an object of class "antaresOutput" depending on the 
+#' Either a data.table or an object of class "antaresData" depending on the 
 #' class of \code{x}
 #' 
 #' @examples 
@@ -39,7 +39,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
   
   if (newTimeStep == oldTimeStep) return(x)
   
-  if (is(x, "antaresOutput")) {
+  if (is(x, "antaresData")) {
     for (i in 1:length(x)) {
       x[[i]] <- changeTimeStep(x[[i]], newTimeStep, oldTimeStep, fun, opts)
     }

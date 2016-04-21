@@ -42,9 +42,9 @@
 #' 
 removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
                                reassignCosts = TRUE, opts = getOption("antares")) {
-  # check x is an antaresOutput object with elements nodes and links
-  if (!is(x, "antaresOutput") || is.null(x$nodes) || is.null(x$links))
-    stop("x has to be an 'antaresOutput' object with elements 'nodes' and 'links'")
+  # check x is an antaresData object with elements nodes and links
+  if (!is(x, "antaresData") || is.null(x$nodes) || is.null(x$links))
+    stop("x has to be an 'antaresData' object with elements 'nodes' and 'links'")
   
   nodeList <- unique(x$nodes$node)
   

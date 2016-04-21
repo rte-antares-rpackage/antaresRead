@@ -28,20 +28,15 @@
 #'   Vector containing the name of the nodes for which you want to
 #'   import misc.
 #' @param  thermalAvailabilities
-#'   Vector of node names for which to import thermal capacity. If \code{NULL},
-#'   thermal capacity is not imported.
+#'   Should thermal availabilities of clusters be imported ?
 #' @param hydroStorage
-#'   Vector of node names for which to import hydro storage. 
-#'   If \code{NULL}, hydro storage is not imported
+#'   Should hydro storage be imported ?
 #' @param hydroStorageMaxPoser
-#'   Vector of node names for which to import hydro storage maximum power. 
-#'   If \code{NULL}, hydro storage maximum power is not imported
+#'   Should hydro storage maximum power be imported ? 
 #' @param reserve
-#'   Vector of node names for which to import reserve. 
-#'   If \code{NULL}, reserve is not imported
+#'   Should reserve be imported
 #' @param linkCapacity
-#'   Vector of link names for wich to import their capacity and hurdle cost.
-#'   If \code{NULL}, link capacity is not imported
+#'   Should link capacities be imported ?
 #' @param mustRun
 #'   Should mustRun and partialMustRun columns be added to the result ?
 #' @param select
@@ -69,7 +64,7 @@
 #' @param simplify
 #'   If TRUE and only one type of output is imported then a
 #'   data.table is returned. If FALSE, the result will always be a list of class
-#'   "antaresOutput".
+#'   "antaresData".
 #' @param showProgress
 #'   If TRUE the function displays information about the progress of the
 #'   importation.
@@ -94,7 +89,7 @@
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
 #'
-#' Else an object of class "antaresOutput" is returned. It is a list of
+#' Else an object of class "antaresData" is returned. It is a list of
 #' data.tables, each element representing one type of element (nodes, links,
 #' clusters)
 #'
@@ -329,7 +324,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     attr(res[[n]], "synthesis") <- synthesis
   }
   
-  class(res) <- append("antaresOutput", class(res))
+  class(res) <- append("antaresData", class(res))
   attr(res, "timeStep") <- timeStep
   attr(res, "synthesis") <- synthesis
 
@@ -341,7 +336,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 
 #' Read output for a list of nodes
 #' 
-#' This a function is a wrapper for "antaresOutput" that reads all data for a
+#' This a function is a wrapper for "antaresData" that reads all data for a
 #' list of nodes.
 #' 
 #' @param links
@@ -367,7 +362,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
 #'
-#' Else an object of class "antaresOutput" is returned. It is a list of
+#' Else an object of class "antaresData" is returned. It is a list of
 #' data.tables, each element representing one type of element (nodes, links,
 #' clusters)
 #'  
