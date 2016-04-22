@@ -41,7 +41,7 @@
 #' @export
 #' 
 removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
-                               reassignCosts = TRUE, opts = getOption("antares")) {
+                               reassignCosts = FALSE, opts = getOption("antares")) {
   # check x is an antaresData object with elements nodes and links
   if (!is(x, "antaresData") || is.null(x$nodes) || is.null(x$links))
     stop("x has to be an 'antaresData' object with elements 'nodes' and 'links'")
@@ -73,11 +73,6 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   linkList <- data.table(linkList)
   
-  linkList <- merge(linkList, x$links[, mget(c(bylink, "FLOW LIN."))], by = "link")
-  
-  # Some flows may be inversed depending on how the links are created. Correct this
-  linkList$flow <- linkList[, `FLOW LIN.` * ifelse(direction == "in", -1, 1)]
-  
   # Treatment of hubs:
   #
   # If a virtual node is only connected to virtual nodes then it should be a
@@ -104,7 +99,15 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
     vnodes <- c(storageFlexibility, production) 
     linkList <- linkList[from %in% vnodes]
+    
+    # Remove columns added for very virtual nodes
+    for (v in veryVirtualNodes) x$nodes[[v]] <- NULL
   }
+  
+  linkList <- merge(linkList, x$links[, mget(c(bylink, "FLOW LIN."))], by = "link")
+  
+  # Some flows may be inversed depending on how the links are created. Correct this
+  linkList$flow <- linkList[, `FLOW LIN.` * ifelse(direction == "in", -1, 1)]
   
   # Correct balance
   if (! is.null(x$nodes$BALANCE)) {
@@ -126,12 +129,16 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     linkList$node <- NULL
     
     # Compute the proportion of the cost to repercute on each real node
-    costs[, totalFlow := max(1, sum(abs(flow))), by = mget(bynode)]
-    costs$prop <- abs(costs$flow / costs$totalFlow)
+    costs[, totalFlow := sum(abs(flow)), by = mget(bynode)]
+    costs$prop <- ifelse(costs$totalFlow == 0, 1, abs(costs$flow / costs$totalFlow))
+    
+    # Aggregate corrections by real node
+    costs$node <- costs$to
+    costs <- costs[, lapply(.SD, function(x) sum(x * prop)), by = bynode, .SDcols = c(varCost, "prop")]
     
     for (v in varCost) {
       x$nodes[[v]] <- as.numeric(x$nodes[[v]])
-      x$nodes[costs[, mget(bynode)]][[v]] <- x$nodes[costs[, mget(bynode)]][[v]] + costs$prop * costs[[v]]
+      x$nodes[costs[, mget(bynode)]][[v]] <- x$nodes[costs[, mget(bynode)]][[v]] + costs[[v]]
     }
   }
   
