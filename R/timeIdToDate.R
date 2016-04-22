@@ -14,7 +14,7 @@
 #' @noRd
 #'   
 .timeIdToDate <- function(timeId, timeStep=c("hourly", "daily", "weekly", "monthly", "annual"), 
-                          opts=getOption("antares")) {
+                          opts=simOptions()) {
   timeStep <- match.arg(timeStep)
   
   if (timeStep == "hourly") {

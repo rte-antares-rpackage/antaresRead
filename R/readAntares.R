@@ -120,7 +120,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         synthesis = getOption("antares")$synthesis,
                         mcYears = 1:getOption("antares")$mcYears,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                        opts = getOption("antares"),
+                        opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
@@ -316,11 +316,13 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     attr(res[[n]], "type") <- n
     attr(res[[n]], "timeStep") <- timeStep
     attr(res[[n]], "synthesis") <- synthesis
+    attr(res[[n]], "opts") <- opts
   }
   
   class(res) <- append("antaresData", class(res))
   attr(res, "timeStep") <- timeStep
   attr(res, "synthesis") <- synthesis
+  attr(res, "opts") <- opts
 
   # Simplify the result if possible
   if (simplify & length(res) == 1) res <- res[[1]]

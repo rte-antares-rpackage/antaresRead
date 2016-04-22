@@ -18,7 +18,7 @@
 #'
 #' @export
 #'
-readLayout <- function(opts = getOption("antares")) {
+readLayout <- function(opts = simOptions()) {
   
   # nodes
   path <- file.path(opts$path, "../../input/areas")

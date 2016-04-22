@@ -41,7 +41,10 @@
 #' @export
 #' 
 removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
-                               reassignCosts = FALSE, opts = getOption("antares")) {
+                               reassignCosts = FALSE) {
+  
+  opts <- simOptions(x)
+  
   # check x is an antaresData object with elements nodes and links
   if (!is(x, "antaresData") || is.null(x$nodes) || is.null(x$links))
     stop("x has to be an 'antaresData' object with elements 'nodes' and 'links'")

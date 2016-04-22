@@ -8,7 +8,7 @@
 #' A list with an element per binding constraint. 
 #' 
 #' @export
-readBindingContraints <- function(opts=getOption("antares")) {
+readBindingContraints <- function(opts=simOptions()) {
   
   path <- file.path(opts$path, "../../input/bindingConstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

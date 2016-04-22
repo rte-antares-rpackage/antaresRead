@@ -27,7 +27,7 @@
 #' @export
 #' 
 getNodes <- function(select = NULL, exclude = NULL, regexpSelect = TRUE, 
-                     regexpExclude = TRUE, opts = getOption("antares"),
+                     regexpExclude = TRUE, opts = simOptions(),
                      ignore.case = TRUE) {
   
   allNodes <- opts$nodeList

@@ -16,7 +16,7 @@
 #'
 getLinks <- function(select = NULL, exclude = NULL, regexpSelect = TRUE, 
                      regexpExclude = TRUE, internalOnly=FALSE, 
-                     opts = getOption("antares"), ignore.case = TRUE) {
+                     opts = simOptions(), ignore.case = TRUE) {
   l <- opts$linkList
   lsplit <- tstrsplit(l, " - ")
 

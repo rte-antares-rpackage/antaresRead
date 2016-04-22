@@ -7,7 +7,7 @@
 #' of the node containing the production of this cluster.
 #'
 #' @param x
-#'   object of class "antaresData" or data.table created by the function
+#'   object of class "antaresData" or "antaresTable" created by the function
 #'   \code{\link{readAntares}}
 #' @param nodes
 #'   character vector containing the name of nodes to keep in the
@@ -21,12 +21,16 @@
 #'
 #' @export
 #'
-extractDataList <- function(x, nodes=NULL, opts = getOption("antares")) {
+extractDataList <- function(x, nodes=NULL, opts = simOptions()) {
   # Check arguments
-  if (is.data.frame(x) && !is.null(x$node)) x <- list(nodes = x)
+  opts <- simOptions(x)
+  
+  if (is(x, "antaresTable") && !is.null(x$node)) x <- list(nodes = x)
 
   if (is.null(x$nodes)) stop("'x' does not contain nodes data.")
-
+  
+  
+  
   if (!is.null(nodes)) {
     missingNodes <- nodes[! nodes %in% x$nodes$node]
     for (m in missingNodes) warning("Node '", m, "' missing in 'x'")

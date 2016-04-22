@@ -32,10 +32,13 @@
 #' 
 #' @export
 #' 
-changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), opts=getOption("antares")) {
+changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), opts=simOptions()) {
   fun <- match.arg(fun)
   
-  if (!is.null(attr(x, "timeStep"))) oldTimeStep <- attr(x, "timeStep")
+  if (is(x, "antaresTable") | is(x, "antaresData")) {
+    opts <- simOptions(x)
+    oldTimeStep <- attr(x, "timeStep")
+  }
   
   if (newTimeStep == oldTimeStep) return(x)
   

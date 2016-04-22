@@ -16,7 +16,7 @@
 #'
 #' @export
 #'
-readClusterDesc <- function(opts = getOption("antares")) {
+readClusterDesc <- function(opts = simOptions()) {
   path <- file.path(opts$path, "../../input/thermal/clusters")
 
   nodes <- list.files(path)
