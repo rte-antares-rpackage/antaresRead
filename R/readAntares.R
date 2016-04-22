@@ -20,10 +20,10 @@
 #'   import results at cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import clusters from all
 #'   nodes.
-#' @param sets
-#'   Vector containing the names of the set of nodes to import. If \code{NULL},
-#'   no is importer. The special value \code{"all"} tells the function to import all
-#'   sets.
+#' @param districts
+#'   Vector containing the names of the districts to import. If \code{NULL},
+#'   no district is imported. The special value \code{"all"} tells the function to import all
+#'   districts.
 #' @param misc
 #'   Vector containing the name of the nodes for which you want to
 #'   import misc.
@@ -113,7 +113,7 @@
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
-                        sets = NULL, misc = FALSE, thermalAvailabilities = FALSE,
+                        districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         select = NULL,
@@ -124,7 +124,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
-  if (!is.list(select)) select <- list(nodes = select, links = select, sets = select)
+  if (!is.list(select)) select <- list(nodes = select, links = select, districts = select)
 
   if (is.null(opts)) {
     message("Please choose a directory containing an Antares simulation")
@@ -132,7 +132,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   }
   
   # If all arguments are NULL, import all nodes
-  if (is.null(nodes) & is.null(links) & is.null(clusters)) {
+  if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(districts)) {
     nodes <- "all"
   }
   
@@ -165,13 +165,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   if (identical(nodes, "all")) nodes <- opts$nodeList
   if (identical(links, "all")) links <- opts$linkList
   if (identical(clusters, "all")) clusters <- opts$nodesWithClusters
-  if (identical(sets, "all")) sets <- opts$setList
-  if (identical(misc, "all")) misc <- opts$nodeList
-  if (identical(thermalAvailabilities, "all"))  thermalAvailabilities <- opts$nodesWithClusters
-  if (identical(hydroStorage, "all"))  hydroStorage <- opts$nodeList
-  if (identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$nodeList
-  if (identical(reserve, "all")) reserve <- opts$nodeList
-  if (identical(linkCapacity, "all")) linkCapacity <- opts$linkList
+  if (identical(districts, "all")) districts <- opts$setList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -217,7 +211,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("nodes", nodes, .importOutputForNode, select$nodes)
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
-  .addOutputToRes("sets", sets, .importOutputForNode, select$sets)
+  .addOutputToRes("districts", districts, .importOutputForNode, select$districts)
   
   # Add inputs
   if (misc) {

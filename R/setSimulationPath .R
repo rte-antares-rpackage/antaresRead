@@ -152,7 +152,7 @@ printInfo <- function(res, trace) {
     cat(sprintf("Antares simulation '%s'\nMode %s\n", res$name, res$mode))
     cat(sprintf("\nContent:\n - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
                 res$synthesis, res$yearByYear, res$scenarios))
-    cat(sprintf(" - Number of nodes: %s\n - Number of sets: %s\n - Number of links: %s\n",
+    cat(sprintf(" - Number of nodes: %s\n - Number of districts: %s\n - Number of links: %s\n",
                 length(res$nodeList), length(res$setList), length(res$linkList)))
 
     if (res$yearByYear) cat(sprintf(" - Number of Monte-Carlo years: %s\n", res$mcYears))
