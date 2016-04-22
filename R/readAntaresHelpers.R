@@ -135,12 +135,17 @@
   if (is.null(res)) return(NULL)
 
   .reshapeData <- function(x) {
-    # For each cluster, there are two columns with same name but different content.
-    # Fix that.
+    # For each cluster, there are two or three columns with same name but 
+    #different content. Fix that.
 
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    n[idx] <- paste0(n[idx] , ifelse(duplicated(n[idx]), "|NP Cost", "|MWh"))
+    
+    clusterNames <- unique(n[idx])
+    colnames <- c(paste0(clusterNames, "|MWh"), paste0(clusterNames, "|NP Cost"))
+    if (sum(idx) / length(clusterNames) == 3) colnames <- c(colnames, paste0(clusterNames, "|NODU"))
+    n[idx] <- colnames
+    
     setnames(x, 1:ncol(x), n)
 
     # reshape data
