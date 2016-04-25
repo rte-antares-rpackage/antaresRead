@@ -2,7 +2,7 @@ context("Function changeTimeStep")
 
 source("setup_test_case.R")
 
-opts <- setSimulationPath(studyPath, trace=0)
+opts <- setSimulationPath(studyPath)
 
 nodes <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE)
 nodes$day <- nodes$month <- nodes$hour <- NULL

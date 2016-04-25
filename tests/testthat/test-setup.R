@@ -19,18 +19,19 @@ trueOpts <- list(
   linkList = c("a - b", "b - c", "b - psp in", "b - psp out"),
   nodesWithClusters = c("a", "b", "c")
 )
+class(trueOpts) <- "simOptions"
 
 test_that("setSimulationPath reads correct values", {
-  opts <- setSimulationPath(studyPath, trace = 0)
+  opts <- setSimulationPath(studyPath)
   opts$variables <- opts$path <- opts$parameters <- NULL
   expect_equal(opts, trueOpts)
 })
 
 test_that("R option 'antares' is set", {
-  opts <- setSimulationPath(studyPath, trace = 0)
+  opts <- setSimulationPath(studyPath)
   expect_identical(opts, getOption("antares"))
 })
 
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
-  expect_error(setSimulationPath(file.path(studyPath, ..), trace=0))
+  expect_error(setSimulationPath(file.path(studyPath, "..")))
 })

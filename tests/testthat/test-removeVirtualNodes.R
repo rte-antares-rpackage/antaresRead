@@ -2,7 +2,7 @@ context("removeVirtualNodes function")
 
 source("setup_test_case.R")
 
-opts <- setSimulationPath(studyPath, trace=0)
+opts <- setSimulationPath(studyPath)
 
 data <- readAntares("all", "all", showProgress = FALSE)
 

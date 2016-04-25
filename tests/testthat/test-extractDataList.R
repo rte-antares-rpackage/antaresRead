@@ -2,7 +2,7 @@ context("Function extractDataList")
 
 source("setup_test_case.R")
 
-opts <- setSimulationPath(studyPath, trace=0)
+opts <- setSimulationPath(studyPath)
 
 nodes <- readAntares("all", showProgress=FALSE)
 

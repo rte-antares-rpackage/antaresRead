@@ -2,7 +2,7 @@ context("Function readAntares")
 
 source("setup_test_case.R")
 
-opts <- setSimulationPath(studyPath, trace=0)
+opts <- setSimulationPath(studyPath)
 
 test_that("Nodes importation is ok", {
   nodes <- readAntares(nodes = opts$nodeList, showProgress = FALSE)
