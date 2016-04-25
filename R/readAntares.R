@@ -339,21 +339,10 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'   should links connected to the nodes be imported ?
 #' @param clusters
 #'   should the clusters of the nodes be imported ?
-#' @param misc
-#'   should misc generation of the nodes be imported ?
-#' @param thermalAvailabilities
-#'   Should the thermal availabilities of the nodes be imported ?
-#' @param hydroStorage
-#'   Should hydro storage of the nodes be imported ?
-#' @param hydroStorageMaxPower
-#'   Should the max power of hydro storage of the nodes be imported ?
-#' @param reserve
-#'   Should the reserve of the nodes be imported ?
-#' @param linkCapacity
-#'   Should the capacity of the links connected to the nodes be imported ?
 #' @param ...
 #'   Other arguments passed to the function \code{\link{readAntares}}
 #' @inheritParams getLinks
+#' @inheritParams readAntares
 #'   
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
@@ -364,7 +353,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 #'  
 #' @examples 
 #' \dontrun{
-#' mynode <- getOption("antares")$nodeList[1]
+#' mynode <- simOptions()$nodeList[1]
 #' data <- readAntaresNodes(mynode)
 #' 
 #' # Equivalent but more concise than:
@@ -374,25 +363,18 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
 #' } 
 #'  
 #' @export
-readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, misc = FALSE, 
-                             thermalAvailabilities = FALSE, 
-                             hydroStorage = FALSE,
-                             hydroStorageMaxPower = FALSE,
-                             reserve = FALSE,
-                             linkCapacity = FALSE,
-                             internalOnly = FALSE, ...) {
+readAntaresNodes <- function(nodes, links=TRUE, clusters = TRUE, internalOnly = FALSE, opts = simOptions(), ...) {
   
-  links <- if (links) getLinks(nodes, internalOnly) else NULL
+  if (missing(nodes)) stop("The function 'readAntaresNodes' expects a vector of node names as argument. You can use 'getNodes' to build such a vector.")
+  
+  if (is.null(opts)) {
+    message("Please choose a directory containing an Antares simulation")
+    opts <- setSimulationPath()
+  }
+  
+  links <- if (links) getLinks(nodes, regexpSelect = FALSE, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) nodes else NULL
-  misc <- if(misc) nodes else NULL
-  thermalAvailabilities <- if(thermalAvailabilities) nodes else NULL
-  hydroStorage <- if(hydroStorage) nodes else NULL
-  hydroStorageMaxPower <- if(hydroStorageMaxPower) nodes else NULL
-  reserve <- if(reserve) nodes else NULL
-  linkCapacity <- if (linkCapacity) getLinks(nodes, internalOnly) else NULL
   
-  readAntares(nodes, links, clusters, misc, thermalAvailabilities=thermalAvailabilities,
-              hydroStorage=hydroStorage, hydroStorageMaxPower=hydroStorageMaxPower, 
-              reserve=reserve, linkCapacity = linkCapacity, ...)
+  readAntares(nodes, links, clusters, opts = opts, ...)
   
 }
