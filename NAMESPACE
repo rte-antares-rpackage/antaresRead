@@ -2,6 +2,7 @@
 
 S3method(print,antaresDataList)
 S3method(print,antaresDataTable)
+S3method(print,simOptions)
 S3method(viewAntares,antaresDataList)
 S3method(viewAntares,default)
 export(changeTimeStep)

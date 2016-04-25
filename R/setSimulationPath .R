@@ -15,7 +15,7 @@
 #'
 #' @export
 #'
-setSimulationPath <- function(path, trace=1) {
+setSimulationPath <- function(path) {
   if (missing(path)) {
     # /!\ MAY WORK ONLY ON WINDOWS
     path <- choose.dir(getwd(), "Select an Antares simulation directory")
@@ -135,35 +135,14 @@ setSimulationPath <- function(path, trace=1) {
     variables = variables,
     parameters = parameters
   )
+  
+  class(res) <- c("simOptions")
 
   options(antares=res)
 
-  printInfo(res, trace)
-
   setwd(oldwd)
 
-  invisible(res)
-}
-
-# Private function that prints info about the simulation
-printInfo <- function(res, trace) {
-  if (trace == 0) return()
-  if (trace >= 1) {
-    cat(sprintf("Antares simulation '%s'\nMode %s\n", res$name, res$mode))
-    cat(sprintf("\nContent:\n - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
-                res$synthesis, res$yearByYear, res$scenarios))
-    cat(sprintf(" - Number of nodes: %s\n - Number of districts: %s\n - Number of links: %s\n",
-                length(res$nodeList), length(res$setList), length(res$linkList)))
-
-    if (res$yearByYear) cat(sprintf(" - Number of Monte-Carlo years: %s\n", res$mcYears))
-  }
-  if (trace == 2) {
-    cat("\nNodes:\n")
-    print(res$nodeList)
-    cat("\nLinks:\n")
-    print(res$linkList)
-  }
-  cat('\nuse getOption("antares")$variables to see the list of available variables.\n')
+  res
 }
 
 .getStartDate <- function(params) {
