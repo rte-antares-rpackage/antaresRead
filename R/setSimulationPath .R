@@ -3,10 +3,17 @@
 #' This function has to be used before the import functions. It sets the path to
 #' the Antares simulation and displays information about the simulation
 #'
-#' @param path (optional) Path to the simulation. If missing, a window opens and
-#' lets the user choose the directory of the simulation interactively
-#' @param trace Level of information to print: 0 for no output, 1 for basic output, 2
-#' for list of nodes and links
+#' @param path (optional) 
+#'   Path to the simulation. It can either be the path to a directory containing
+#'   an antares project or directly to the directory containing the output of a
+#'   simulation.  If missing, a window opens and lets the user choose the
+#'   directory of the simulation interactively
+#' @param simulation
+#'   (optional) Only used if "path" represents the path of a study and not of the
+#'   output of a simulation. It can be either the name of the simulation or a
+#'   number indicating which simulation to use. It is possible to use negative 
+#'   values to select a simulation from the last one: for instance -1 will
+#'   select the most recent simulation, -2 will the penultimate one, etc.
 #'
 #' @return A list containing various information about the simulation
 #'
@@ -15,7 +22,7 @@
 #'
 #' @export
 #'
-setSimulationPath <- function(path) {
+setSimulationPath <- function(path, simulation) {
   if (missing(path)) {
     # /!\ MAY WORK ONLY ON WINDOWS
     path <- choose.dir(getwd(), "Select an Antares simulation directory")
@@ -27,24 +34,34 @@ setSimulationPath <- function(path) {
   # Check that the path id an Antares simulation
   if (!file.exists("info.antares-output")) {
     # So the path is not a simulation but maybe it is the path to a study.
-    # If it is the case, either choose the unique simulation or ask the user to
-    # choose the results of a simulation if there are several simulations.
+    # If it is the case, there are three scenarii:
+    # - 1. asks the user to interactively choose one simulation
+    # - 2. use the value of parameter "simulation" if it is set
+    # - 3. there is only one study in the output. Select it
     if (file.exists("study.antares")) {
       if (!dir.exists("output") || length(list.dirs("output", recursive = FALSE)) == 0)
         stop("Cannot find any simulation result")
 
       f <- list.dirs("output", recursive = FALSE)
-      if (length(f) == 1) {
-
-        path <- file.path(path, f)
-
+      
+      if (missing(simulation)) {
+        if (length(f) == 1) {
+          simulation <- 1
+        } else { # Case 3
+          cat("Please, choose a simulation\n")
+          for (i in 1:length(f)) cat(sprintf("   %s - %s\n", i, f[i]))
+          simulation <- type.convert(scan(what = character(), nmax = 1), as.is = TRUE)
+        }
+      }
+        
+      if (is.numeric(simulation)) {
+        if (simulation > 0) path <- file.path(path, f[simulation])
+        else path <- file.path(path, rev(f)[abs(simulation)])
       } else {
-
-        cat("Please, choose a simulation\n")
-        for (i in 1:length(f)) cat(sprintf("   %s - %s\n", i, f[i]))
-        i <- scan(what = numeric(), nmax = 1)
-        path <- file.path(path, f[i])
-
+        f <- f[grep(paste0("-", simulation, "$"), f, ignore.case = TRUE)]
+        if (length(f) == 0) stop ("Cannot find the simulation called ", simulation)
+        
+        path <- file.path(path, f[1])
       }
 
       setwd(path)
