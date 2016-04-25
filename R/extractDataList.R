@@ -21,7 +21,7 @@
 #'
 #' @export
 #'
-extractDataList <- function(x, nodes=NULL, opts = simOptions()) {
+extractDataList <- function(x, nodes=NULL) {
   # Check arguments
   opts <- simOptions(x)
   
