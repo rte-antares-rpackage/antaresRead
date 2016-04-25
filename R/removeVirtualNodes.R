@@ -1,11 +1,11 @@
 #' Remove virtual nodes
 #' 
-#' This function removes virtual nodes from an \code{antaresOutput} object and
-#' corrects the data for the real nodes. The \code{antaresOutput} object should
+#' This function removes virtual nodes from an \code{antaresDataList} object and
+#' corrects the data for the real nodes. The \code{antaresDataList} object should
 #' contain node and link data to function correctly. 
 #' 
 #' @param x
-#'   An object of class \code{antaresOutput} with at least components 
+#'   An object of class \code{antaresDataList} with at least components 
 #'   \code{nodes} and \code{links}.
 #' @param storageFlexibility
 #'   A vector containing the names of the virtual storage/flexibility nodes.
@@ -20,7 +20,7 @@
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' an \code{antaresOutput object} in which virtual nodes have been removed and 
+#' an \code{antaresDataList object} in which virtual nodes have been removed and 
 #' data of the real has been corrected. See details for an explanation of the
 #' corrections.
 #' 
@@ -46,8 +46,8 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   opts <- simOptions(x)
   
   # check x is an antaresData object with elements nodes and links
-  if (!is(x, "antaresData") || is.null(x$nodes) || is.null(x$links))
-    stop("x has to be an 'antaresData' object with elements 'nodes' and 'links'")
+  if (!is(x, "antaresDataList") || is.null(x$nodes) || is.null(x$links))
+    stop("x has to be an 'antaresDataList' object with elements 'nodes' and 'links'")
   
   nodeList <- unique(x$nodes$node)
   

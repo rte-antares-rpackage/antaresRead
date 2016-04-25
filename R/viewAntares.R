@@ -25,7 +25,7 @@ viewAntares.default <- function(x, ...) {
 }
 
 #' @export
-viewAntares.antaresData <- function(x, ...) {
+viewAntares.antaresDataList <- function(x, ...) {
 
   for (k in names(x)) {
     if (is.data.frame(x[[k]])) View(x[[k]], k)

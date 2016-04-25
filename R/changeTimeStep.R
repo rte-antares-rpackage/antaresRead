@@ -35,14 +35,14 @@
 changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), opts=simOptions()) {
   fun <- match.arg(fun)
   
-  if (is(x, "antaresTable") | is(x, "antaresData")) {
+  if (is(x, "antaresData")) {
     opts <- simOptions(x)
     oldTimeStep <- attr(x, "timeStep")
   }
   
   if (newTimeStep == oldTimeStep) return(x)
   
-  if (is(x, "antaresData")) {
+  if (is(x, "antaresDataList")) {
     for (i in 1:length(x)) {
       x[[i]] <- changeTimeStep(x[[i]], newTimeStep, oldTimeStep, fun, opts)
     }
@@ -102,7 +102,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
     else x <- x[, lapply(.SD, mean), keyby=eval(by)]
   }
   
-  class(x) <- append("antaresTable", class(x))
+  class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
   attr(x, "type") <- type
   attr(x, "timeStep") <- newTimeStep
   attr(x, "synthesis") <- synthesis

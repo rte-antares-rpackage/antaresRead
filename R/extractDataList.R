@@ -25,7 +25,7 @@ extractDataList <- function(x, nodes=NULL) {
   # Check arguments
   opts <- simOptions(x)
   
-  if (is(x, "antaresTable") && !is.null(x$node)) x <- list(nodes = x)
+  if (is(x, "antaresDataTable") && !is.null(x$node)) x <- list(nodes = x)
 
   if (is.null(x$nodes)) stop("'x' does not contain nodes data.")
   
