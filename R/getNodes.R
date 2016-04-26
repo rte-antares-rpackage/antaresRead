@@ -1,7 +1,8 @@
 #' Select and exclude nodes
 #' 
-#' \code{getNodes} is a utility function that builds a list of nodes by using 
-#' regular expressions to select and/or exclude nodes
+#' \code{getNodes} and \code{getDistricts} are utility functions that builds 
+#' list of nodes or districts by using regular expressions to select and/or 
+#' exclude nodes/districts
 #' 
 #' @param select 
 #'   Character vector. If \code{regexpSelect} is TRUE, this vector is
@@ -21,8 +22,10 @@
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' A character vector containg the name of the nodes satisfying the rules
-#' defined by the parameters.
+#' A character vector containg the name of the nodes/districts satisfying the 
+#' rules defined by the parameters.
+#' 
+#' @seealso \code{\link{getLinks}}
 #' 
 #' @export
 #' 
@@ -31,6 +34,23 @@ getNodes <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
                      ignore.case = TRUE) {
   
   allNodes <- opts$nodeList
+  
+  .getNodes(select, exclude, regexpSelect, regexpExclude, ignore.case, allNodes)
+  
+}
+
+#' @rdname getNodes
+#' @export
+getDistricts <- function(select = NULL, exclude = NULL, regexpSelect = TRUE, 
+                     regexpExclude = TRUE, opts = simOptions(),
+                     ignore.case = TRUE) {
+  
+  .getNodes(select, exclude, regexpSelect, regexpExclude, ignore.case, opts$setList)
+  
+}
+
+.getNodes <- function(select, exclude, regexpSelect, regexpExclude,
+                      ignore.case, allNodes) {
   nodes <- c()
   
   if (is.null(select) | identical(select, "all")) {
