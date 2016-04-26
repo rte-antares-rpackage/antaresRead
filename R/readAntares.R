@@ -274,8 +274,11 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     .addOutputToRes("mustRunModulation", nodes, .importMustRunModulation, NULL)
     
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("node", "cluster"))
-    res$mustRun <- merge(res$mustRun, res$mustRunModulation, 
-                         by = c("node","cluster", "timeId"), all.x = TRUE)
+    if (nrow(res$mustRunModulation) > 0) {
+      res$mustRun <- merge(res$mustRun, res$mustRunModulation, 
+                           by = c("node","cluster", "timeId"), all.x = TRUE)
+    } else res$mustRun$mustRunModulation <- NA_real_
+    
     
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
