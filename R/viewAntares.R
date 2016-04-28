@@ -16,19 +16,20 @@
 #'
 #'
 viewAntares <- function(x, ...) {
-  UseMethod("viewAntares")
+  UseMethod("viewAntares", x)
 }
 
 #' @export
 viewAntares.default <- function(x, ...) {
-  View(x, ...)
+  title <- deparse(substitute(x))
+  View(x, title)
 }
 
 #' @export
 viewAntares.antaresDataList <- function(x, ...) {
-
+  title <- deparse(substitute(x))
   for (k in names(x)) {
-    if (is.data.frame(x[[k]])) View(x[[k]], k)
+    if (is.data.frame(x[[k]])) View(x[[k]], paste(title, k, sep = "$"))
   }
 
   invisible(NULL)
