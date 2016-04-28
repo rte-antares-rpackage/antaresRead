@@ -39,7 +39,11 @@
 #' @export
 #' 
 simOptions <- function(x = NULL) {
-  if (is.null(x)) return(getOption("antares")) 
+  if (is.null(x)) {
+    opts <- getOption("antares")
+    if (is.null(opts)) stop("Default antares options are not set. You need to run 'setSimulationPath()' to set them.")
+    else return(opts)
+  }
   
   if (!is(x, "antaresTable") & !is(x, "antaresData"))
     stop ("x should be an object of class 'antaresTable' or 'antaresData'")

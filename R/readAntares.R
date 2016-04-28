@@ -1,10 +1,54 @@
 #' Read the data of an Antares simulation
 #'
-#' This function reads the data of a antares simulation for a set of nodes,
-#' links and/or clusters at a desired resolution (hourly, daily, weekly,
-#' monthly, annual). It can import synthetic results or Monte-Carlo simulations.
+#' \code{readAntares} is a swiss-army-knife function used to read almost every 
+#' possible time series of an antares Project at any desired time resolution 
+#' (hourly, daily, weekly, monthly or annual). It was first designed to read 
+#' output time series, but it can also read input time series. The input time
+#' series are processed by the function to fit the query of the user (timeStep,
+#' synthetic results or Monte-Carlo simulation, etc.). The few data that are not
+#' read by \code{readAntares} can generally by read with other functions of the
+#' package starting with "read" (\code{\link{readClusterDesc}},
+#' \code{\link{readLayout}}, \code{\link{readBindingConstraints}})
+#' 
+#' @details 
+#' If parameters \code{nodes}, \code{links}, \code{clusters} and \code{districts}
+#' are all \code{NULL}, \code{readAntares} will read output for all nodes.
+#' By default the function reads synthetic results if they are available.
+#' 
+#' \code{readAntares} is able to read input time series, but when they are not 
+#' stored in output, these time series may have changed since a simulation has
+#' been run. In such a case the function will remind you this danger with a
+#' warning.
+#' 
+#' When individual Monte-Carlo simulations are read, the function may crash
+#' because of insufficient memory. In such a case, it is necessary to reduce
+#' size of the output. Different strategies are available depending on your
+#' objective:
+#' 
+#' \itemize{
+#'   \item Use a larger time step (parameter \code{timeStep})
+#'   \item Filter the elements to import (parameters \code{nodes},\code{links},
+#'     \code{clusters} and \code{districts})
+#'   \item Select only a few columns (parameter \code{select})
+#'   \item read only a subset of Monte-Carlo simulations (parameter 
+#'     \code{mcYears}). For instance one can import a random sample of
+#'     100 simulations with \code{mcYears = sample(simOptions()$mcYears, 100)}
+#' }
+#' 
+#' @section Parallelization:
+#' 
+#' If you import several elements of the same type (nodes, links, clusters), you
+#' can use parallelized importation to improve performance. Setting the
+#' parameter \code{parallel = TRUE} is not enough to parallelize the
+#' importation, you also have to install the package
+#' \href{https://cran.r-project.org/web/packages/foreach/index.html}{foreach}
+#' and a package that provides a parallel backend (for instance the package
+#' \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}).
 #'
-#' @aliases readOutput
+#' Before running the function with argument \code{parallel=TRUE}, you need to
+#' register your parallel backend. For instance, if you use package "doParallel"
+#' you need to use the function \code{\link{registerDoParallel}} once per
+#' session.
 #'
 #' @param nodes
 #'   Vector containing the names of the nodes to import. If
@@ -70,46 +114,50 @@
 #'   importation.
 #'
 #'
-#' @details If all arguments are unspecified, the default behavior of the
-#' function is to return the synthetized output for all nodes.
-#'
-#' If you import several elements of the same type (nodes, links, clusters), you
-#' can use parallelized importation to improve performance. Setting the
-#' parameter \code{parallel = TRUE} is not enough to parallelize the
-#' importation, you also have to install the package
-#' \href{https://cran.r-project.org/web/packages/foreach/index.html}{foreach}
-#' and a package that provides a parallel backend (for instance the package
-#' \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}).
-#'
-#' Before running the function with argument \code{parallel=TRUE}, you need to
-#' register your parallel backend. For instance, if you use package "doParallel"
-#' you need to use the function \code{\link{registerDoParallel}} once per
-#' session.
-#'
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
 #'
 #' Else an object of class "antaresData" is returned. It is a list of
 #' data.tables, each element representing one type of element (nodes, links,
 #' clusters)
+#' 
+#' @seealso 
+#' \code{\link{setSimulationPath}}, \code{\link{getNodes}},
+#' \code{\link{getLinks}}, \code{\link{getDistricts}}
 #'
 #' @examples
-#' if (is.null(getOption("antares"))) setSimulationPath()
-#'
+#' \dontrun{
 #' # Import nodes and links separately
-#' nodes <- readAntares()
+#' 
+#' nodes <- readAntares() # equivalent to readAntares(nodes="all")
 #' links <- readAntares(links="all")
 #'
 #' # Import nodes and links at same time
+#' 
 #' output <- readAntares(nodes = "all", links = "all")
 #'
 #' # Get all output for one node
-#' myNode <- sample(getOption("antares")$nodeList, 1)
+#' 
+#' myNode <- sample(simOptions()$nodeList, 1)
 #' myNode
 #'
-#' myNodeOutput <- readAntares(node = myNode, links = getLinks(myNode),
-#'                            clusters = myNode)
-#'
+#' myNodeOutput <- readAntares(node = myNode, 
+#'                             links = getLinks(myNode, regexpSelect=FALSE),
+#'                             clusters = myNode)
+#'                            
+#' # Or equivalently:
+#' myNodeOutput <- readAntaresNodes(myNode)
+#' 
+#' # Use parameter "select" to read only some columns
+#' 
+#' nodes <- readAntares(select = c("LOAD", "OV. COST"))
+#' 
+#' # Aliases can be used to select frequent groups of columns. use showAliases()
+#' # to view a list of available aliases
+#' 
+#' nodes <- readAntares(select="economy")
+#' 
+#' }
 #' @export
 #'
 readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
@@ -117,19 +165,14 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         select = NULL,
-                        synthesis = getOption("antares")$synthesis,
-                        mcYears = 1:getOption("antares")$mcYears,
+                        synthesis = simOptions()$synthesis,
+                        mcYears = 1:simOptions()$mcYears,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, districts = select)
-
-  if (is.null(opts)) {
-    message("Please choose a directory containing an Antares simulation")
-    opts <- setSimulationPath()
-  }
   
   # If all arguments are NULL, import all nodes
   if (is.null(nodes) & is.null(links) & is.null(clusters) & is.null(districts)) {
