@@ -20,7 +20,7 @@ getLinks <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
   l <- opts$linkList
   lsplit <- tstrsplit(l, " - ")
 
-  nodes <- getNodes(select, exclude, regexpSelect, regExpExclude, opts)
+  nodes <- getNodes(select, exclude, regexpSelect, regexpExclude, opts)
   
   if(internalOnly) idx <- lsplit[[1]] %in% nodes & lsplit[[2]] %in% nodes
   else idx <- lsplit[[1]] %in% nodes | lsplit[[2]] %in% nodes
