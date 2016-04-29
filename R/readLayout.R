@@ -1,21 +1,39 @@
-#' Read nodes layout from the HMI
+#' Read nodes layout
 #'
-#' This function imports the current node layout from the human machine interface (HMI).
-#' It is useful for plotting the network.
-#'
+#' @description 
+#' This function reads in the input files of an antares study the current nodes
+#' layout, ie. the position of the nodes It may be useful for plotting the
+#' network. 
+#' 
+#' Be aware that the layout is read in the input files so they may have
+#' changed since a simulation has been run.
+#' 
 #' @inheritParams readAntares
 #'
-#' @return A list with two elements
-#' \itemize{
-#'    \item{nodes: }{A data.frame containing the name, the color and the coordinate
-#'                 of the nodes}
-#'    \item{links: }{A data.frame containing the name, the coordinates of the origin
-#'                 and the destination of the link}
-#' }
+#' @return A list with two elements:
+#' \item{nodes: }{A data.frame containing the name, the color and the coordinate
+#'    of each node}
+#' \item{links: }{A data.frame containing the name, the coordinates of the origin
+#'    and the destination of each link}
+#'    
+#' By default, \code{readLayout} reads the layout for the current default
+#' antares study. It is possible to specify another study with the parameter
+#' \code{opts}.
 #'
 #' @examples
+#' \dontrun{
 #' readLayout()
+#' 
+#' # By default, the function reads layout for the default study,
+#' # but it is possible to specify another study with parameter "opts"
+#' sim1 <- setSimulationPath()
+#' 
+#' #[... code that modifies the default antares study]
+#' 
+#' readLayout(sim1)
 #'
+#' }
+#' 
 #' @export
 #'
 readLayout <- function(opts = simOptions()) {

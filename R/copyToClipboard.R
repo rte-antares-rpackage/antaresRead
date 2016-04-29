@@ -37,7 +37,7 @@ copyToClipboard <- function(x, ...) {
 }
 
 #' @rdname copyToClipboard
-#' @export
+#' @export 
 copyToClipboard.antaresDataList <- function(x, what, ...) {
   if (length(x) == 1) copyToClipboard(x[[1]])
   else {
@@ -50,7 +50,6 @@ copyToClipboard.antaresDataList <- function(x, what, ...) {
   }
 }
 
-#' @rdname copyToClipboard
 #' @export
 copyToClipboard.data.frame <- function(x, ...) {
   if (nrow(x) > 50000) {
@@ -62,7 +61,6 @@ copyToClipboard.data.frame <- function(x, ...) {
   writeClipboard("txt")
 }
 
-#' @rdname copyToClipboard
 #' @export
 copyToClipboard.matrix <- function(x, ...) {
   if (nrow(x) > 50000) {
@@ -74,7 +72,6 @@ copyToClipboard.matrix <- function(x, ...) {
   writeClipboard("txt")
 }
 
-#' @rdname copyToClipboard
 #' @export
 copyToClipboard.default <- function(x, ...) {
   copyToClipboard(as.matrix(x), ...)

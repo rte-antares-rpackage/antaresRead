@@ -2,7 +2,14 @@
 #'
 #' This function shows aliases for groups of variables.These aliases can be used
 #' in the \code{\link{readOutput}} function in the \code{select} argument
-#'
+#' 
+#' @return
+#' A named list. The names of the list correspond to the aliases and each element
+#' is a vector of variable names.
+#' 
+#' @examples 
+#' showAliases()
+#' 
 #' @export
 #'
 showAliases <- function() {

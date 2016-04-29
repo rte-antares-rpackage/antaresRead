@@ -1,8 +1,11 @@
 #' Read the data of an Antares simulation
 #'
+#' @description 
 #' \code{readAntares} is a swiss-army-knife function used to read almost every 
 #' possible time series of an antares Project at any desired time resolution 
-#' (hourly, daily, weekly, monthly or annual). It was first designed to read 
+#' (hourly, daily, weekly, monthly or annual). 
+#' 
+#' It was first designed to read 
 #' output time series, but it can also read input time series. The input time
 #' series are processed by the function to fit the query of the user (timeStep,
 #' synthetic results or Monte-Carlo simulation, etc.). The few data that are not
@@ -78,7 +81,7 @@
 #' @param hydroStorageMaxPoser
 #'   Should hydro storage maximum power be imported ? 
 #' @param reserve
-#'   Should reserve be imported
+#'   Should reserve be imported ?
 #' @param linkCapacity
 #'   Should link capacities be imported ?
 #' @param mustRun
@@ -135,6 +138,9 @@
 #' # Import nodes and links at same time
 #' 
 #' output <- readAntares(nodes = "all", links = "all")
+#' 
+#' # Add input time series to the object returned by the function
+#' nodes <- readAntares(nodes = "all", misc = TRUE, reserve = TRUE)
 #'
 #' # Get all output for one node
 #' 
@@ -148,7 +154,7 @@
 #' # Or equivalently:
 #' myNodeOutput <- readAntaresNodes(myNode)
 #' 
-#' # Use parameter "select" to read only some columns
+#' # Use parameter "select" to read only some columns.
 #' 
 #' nodes <- readAntares(select = c("LOAD", "OV. COST"))
 #' 

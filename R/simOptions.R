@@ -26,10 +26,14 @@
 #' \dontrun{
 #'   setSimulationPath(study1)
 #'   
+#'   simOptions() # returns the options for study 1
+#'   
 #'   data <- readAntares()
 #'   
 #'   # Choose a different study
 #'   setSimulationPath(study2)
+#'   
+#'   simOptions() # returns the options for study 2
 #'   
 #'   getNodes() # returns the nodes of the secund study
 #'   getNodes(opts = simOptions(data)) # returns the nodes of the first study
