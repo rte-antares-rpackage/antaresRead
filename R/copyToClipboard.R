@@ -58,7 +58,7 @@ copyToClipboard.data.frame <- function(x, ...) {
   }
   write.table(x, file = textConnection(".txt", "w", local=TRUE), 
               sep="\t", row.names = FALSE, ...)
-  writeClipboard("txt")
+  writeClipboard(.txt)
 }
 
 #' @export
