@@ -60,7 +60,7 @@ readLayout <- function(opts = simOptions()) {
 
     if (length(to) == 0) return(NULL)
 
-    data.frame(from = f, to = to)
+    data.frame(link = paste(f, "-", to), from = f, to = to)
   })
 
   links <- merge(links, nodes[,c("node", "x", "y")], by.x = "from", by.y="node")
