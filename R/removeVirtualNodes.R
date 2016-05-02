@@ -234,7 +234,8 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     linkListProd <- linkList[from %in% production]
     
     # Add virtual productions columns to x$nodes
-    prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, "SPIL. ENRG"))
+    prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, pkgEnv$varAliases$`net load`, "SPIL. ENRG"))
+    prodVars <- prodVars[prodVars != "LOAD"]
     vars <- c(bynode, prodVars)
     
     virtualProd <- x$nodes[node %in% production, mget(vars)]
