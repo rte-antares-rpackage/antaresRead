@@ -4,16 +4,49 @@
 \alias{readBindingContraints}
 \title{Read binding constraints}
 \usage{
-readBindingContraints(opts = getOption("antares"))
+readBindingContraints(opts = simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
 }
 \value{
-A list with an element per binding constraint.
+A list containing one element per constraint. Each element is a list with the
+following content:
+\item{name}{name of the constraint}
+\item{id}{id of the constraint}
+\item{enabled}{is the constraint enabled ?}
+\item{type}{time step the constraint applies to}
+\item{operator}{type of constraint: equality, inequality on one side or both sides}
+\item{coefficients}{elements containing the coefficients used by the constraint}
+\item{values}{values used by the constraint. It contains one line per time step
+  and three columns "less", "greate" and "equal"}
 }
 \description{
-This function reads the binding constraints of an Antares project.
+This function reads the binding constraints of an Antares project. 
+
+Be aware
+that binding constraints are read in the input files of a study. So they may
+have changed since a simulation has been run.
+}
+\examples{
+\dontrun{
+setSimulationPath()
+
+# Read the constraints of the default antares study
+readBindingConstraints()
+
+#Equivalent to:
+readBindingConstraints(simOptions())
+
+# Read the constraints of a given antares study
+nodesSimulation1 <- readAntares()
+
+# [... code that change the default antares study]
+
+readBindingConstraints(simOptions(nodesSimulation1))
+
+}
+
 }
 

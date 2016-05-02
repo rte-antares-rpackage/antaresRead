@@ -4,33 +4,24 @@
 \alias{readAntaresNodes}
 \title{Read output for a list of nodes}
 \usage{
-readAntaresNodes(nodes, links = TRUE, clusters = TRUE, misc = FALSE,
-  thermalAvailabilities = FALSE, hydroStorage = FALSE,
-  hydroStorageMaxPower = FALSE, reserve = FALSE, linkCapacity = FALSE,
-  internalOnly = FALSE, ...)
+readAntaresNodes(nodes, links = TRUE, clusters = TRUE,
+  internalOnly = FALSE, opts = simOptions(), ...)
 }
 \arguments{
-\item{nodes}{vector containing node names.}
+\item{nodes}{Vector containing the names of the nodes to import. If
+\code{NULL} no node is imported. The special value \code{"all"} tells the
+function to import all nodes. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.}
 
 \item{links}{should links connected to the nodes be imported ?}
 
 \item{clusters}{should the clusters of the nodes be imported ?}
 
-\item{misc}{should misc generation of the nodes be imported ?}
-
-\item{thermalAvailabilities}{Should the thermal availabilities of the nodes be imported ?}
-
-\item{hydroStorage}{Should hydro storage of the nodes be imported ?}
-
-\item{hydroStorageMaxPower}{Should the max power of hydro storage of the nodes be imported ?}
-
-\item{reserve}{Should the reserve of the nodes be imported ?}
-
-\item{linkCapacity}{Should the capacity of the links connected to the nodes be imported ?}
-
 \item{internalOnly}{if TRUE, only links that connect two nodes from the list are returned. 
 If not, the function may return links that connect a node from the list with 
 a node outside the list.}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
 
 \item{...}{Other arguments passed to the function \code{\link{readAntares}}}
 }
@@ -38,17 +29,17 @@ a node outside the list.}
 If \code{simplify = TRUE} and only one type of output is imported
 then the result is a data.table.
 
-Else an object of class "antaresOutput" is returned. It is a list of
+Else an object of class "antaresData" is returned. It is a list of
 data.tables, each element representing one type of element (nodes, links,
 clusters)
 }
 \description{
-This a function is a wrapper for "antaresOutput" that reads all data for a
+This a function is a wrapper for "antaresData" that reads all data for a
 list of nodes.
 }
 \examples{
 \dontrun{
-mynode <- getOption("antares")$nodeList[1]
+mynode <- simOptions()$nodeList[1]
 data <- readAntaresNodes(mynode)
 
 # Equivalent but more concise than:

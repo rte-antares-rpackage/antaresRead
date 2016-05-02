@@ -6,8 +6,16 @@
 \usage{
 showAliases()
 }
+\value{
+A named list. The names of the list correspond to the aliases and each element
+is a vector of variable names.
+}
 \description{
 This function shows aliases for groups of variables.These aliases can be used
 in the \code{\link{readOutput}} function in the \code{select} argument
+}
+\examples{
+showAliases()
+
 }
 

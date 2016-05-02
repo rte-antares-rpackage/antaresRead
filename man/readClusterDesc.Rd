@@ -4,7 +4,7 @@
 \alias{readClusterDesc}
 \title{Import clusters description}
 \usage{
-readClusterDesc(opts = getOption("antares"))
+readClusterDesc(opts = simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function 
@@ -12,16 +12,43 @@ readClusterDesc(opts = getOption("antares"))
 }
 \value{
 A data.table with one line per cluster. The columns of the data.table may
-change between different projects, but there will always be a column
-"cluster" containing the name of the cluster and a column "node" containing the
-name of the node it belongs to.
+change between different projects, but there will always be the following 
+columns:
+
+\item{node}{Name of the node containing the cluster}
+\item{cluster}{Name of the cluster}
+\item{group}{Type of cluster (gaz, nuclear, etc.)}
+\item{unitcount}{number of production units}
+\item{nominalcapacity}{production capacity of each unit}
+
+The other present columns depends on the version of antares and the options
+that have been set: if an option is unset for all clusters, it will not 
+appear in the table.
+
+By default, the function reads the cluster description of the default antares
+study. You can use the argument \code{opts} to specify another study
 }
 \description{
-This function creates a table containing description of the clusters of an
-antares study: type, capacity, marginal cost, etc.
+This function reads in the input files of an antares study the
+characteristics of each cluster. 
+
+Be aware that clusters descriptions are read
+in the input files so they may have changed since a simulation has been run.
 }
 \examples{
-# readClusterDesc()
+
+\dontrun{
+readClusterDesc()
+
+# By default, the function reads cluster descriptions for the default study,
+# but it is possible to specify another study with parameter "opts"
+sim1 <- setSimulationPath()
+
+#[... code that modifies the default antares study]
+
+readClusterDesc(sim1)
+
+}
 
 }
 

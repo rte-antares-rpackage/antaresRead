@@ -4,24 +4,113 @@
 \alias{setSimulationPath}
 \title{Set Path to an Antares simulation}
 \usage{
-setSimulationPath(path, trace = 1)
+setSimulationPath(path, simulation)
 }
 \arguments{
-\item{path}{(optional) Path to the simulation. If missing, a window opens and
-lets the user choose the directory of the simulation interactively}
+\item{path}{(optional) 
+Path to the simulation. It can either be the path to a directory containing
+an antares project or directly to the directory containing the output of a
+simulation.  If missing, a window opens and lets the user choose the
+directory of the simulation interactively}
 
-\item{trace}{Level of information to print: 0 for no output, 1 for basic output, 2
-for list of nodes and links}
+\item{simulation}{(optional) Only used if "path" represents the path of a study and not of the
+output of a simulation. It can be either the name of the simulation or a
+number indicating which simulation to use. It is possible to use negative 
+values to select a simulation from the last one: for instance -1 will
+select the most recent simulation, -2 will the penultimate one, etc.}
 }
 \value{
-A list containing various information about the simulation
+A list containing various information about the simulation, in particular:
+  \item{path}{path of the simulation}
+  \item{name}{name if the study}
+  \item{synthesis}{Are synthetic results available ?}
+  \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
+  \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
+    important to reconstruct some input time series that have been used in 
+    each Monte-Carlo simulation.}
+  \item{mcYears}{Number of Monte-Carlo scenarii}
+  \item{start}{Date of the first day of the year in the simulation.}
+  \item{nodeList}{Vector of the available nodes}
+  \item{setList}{Vector of the available clusters}
+  \item{linkList}{Vector of the available links}
+  \item{nodesWithClusters}{Vector of nodes containing clusters}
+  \item{variables}{available variables for nodes, districts and links}
+  \item{parameters}{Other parameters of the simulation.}
 }
 \description{
-This function has to be used before the import functions. It sets the path to
-the Antares simulation and displays information about the simulation
+This function has to be used before the \code{read} functions. It sets the path to
+the Antares simulation to work on and other useful options (list of nodes,
+links, nodes with clusters, variables, etc.).
+}
+\details{
+The simulation choosen with \code{setSimulationPath} becomes the default
+simulation for all functions of the package. This behavior is fine when
+working on only one simulation, but it may become problematic when working
+on multiple simulations at same time.
+
+In such case, you can store the object returned by the function in a variable
+and pass this variable to the functions of the package (see examples).
 }
 \examples{
-opts <- setSimulationPath()
 
+\dontrun{
+# Select interactively a study. This only works on windows.
+
+setSimulationPath()
+
+# Specify path of the study. Note: if there are more than one simulation
+# output in the study, the function will asks the user to interactively choose
+# one simulation.
+
+setSimulationPath("path_of_the_folder_of_the_study")
+
+# Select the first simulation of a study
+
+setSimulationPath("path_of_the_folder_of_the_study", 1)
+
+# Select the last simulation of a study
+
+setSimulationPath("path_of_the_folder_of_the_study", -1)
+
+# Select a simulation by name
+
+setSimulationPath("path_of_the_folder_of_the_study", "name of the simulation")
+
+
+# WORKING WITH MULTIPLE SIMULATIONS
+#----------------------------------
+# Let us assume ten simulations have been run and we want to collect the
+# variable "LOAD" for each node. We can create a list containing options
+# for each simulation and iterate through this list.
+
+opts <- lapply(1:10, function(i) {
+   setSimulationPath("path_of_the_folder_of_the_study", i)
+})
+
+output <- lapply(opts, function(o) {
+  res <- readAntares(nodes = "all", select = "LOAD", timeStep = "monthly", opts = o)
+  # Add a column "simulation" containing the name of the simulation
+  res$simulation <- o$name
+  res
+})
+
+# Concatenate all the tables in one super table
+output <- rbindlist(output)
+
+# Reshape output for easier comparisons: one line per timeId and one column
+# per simulation
+output <- dcast(output, timeId + nodeId ~ simulation, value.var = "LOAD")
+
+output
+
+# Quick visualization
+matplot(output[node == node[1], !c("node", "timeId"), with = FALSE], 
+        type = "l")
+}
+
+}
+\seealso{
+\code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
+  \code{\link{readClusterDesc}}, \code{\link{readBindingConstraints}}
 }
 

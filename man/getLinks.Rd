@@ -4,14 +4,33 @@
 \alias{getLinks}
 \title{Retrieve links connected to a set of nodes}
 \usage{
-getLinks(nodes, internalOnly = FALSE)
+getLinks(select = NULL, exclude = NULL, regexpSelect = TRUE,
+  regexpExclude = TRUE, internalOnly = FALSE, opts = simOptions(),
+  ignore.case = TRUE)
 }
 \arguments{
-\item{nodes}{vector containing node names.}
+\item{select}{Character vector. If \code{regexpSelect} is TRUE, this vector is
+interpreted as a list of regular expressions. Else it is interpreted as a
+list of node names. If \code{NULL}, all nodes are selected}
+
+\item{exclude}{Character vector. If \code{regexpExclude} is TRUE, this vector is
+interpreted as a list of regular expressions and each node validating one
+of them is excluded. Else it is interpreted as list of node names to 
+exclude. If \code{NULL}, not any node is excluded.}
+
+\item{regexpSelect}{Is \code{select} a list of regular expressions ?}
+
+\item{regexpExclude}{Is \code{exclude} a list of regular expressions ?}
 
 \item{internalOnly}{if TRUE, only links that connect two nodes from the list are returned. 
 If not, the function may return links that connect a node from the list with 
 a node outside the list.}
+
+\item{opts}{list of simulation parameters returned by the function 
+\code{\link{setSimulationPath}}}
+
+\item{ignore.case}{Should the case be ignored when evaluating the regular
+expressions ?}
 }
 \value{
 character vector containing link names.

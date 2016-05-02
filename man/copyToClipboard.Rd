@@ -3,20 +3,11 @@
 \name{copyToClipboard}
 \alias{copyToClipboard}
 \alias{copyToClipboard.antaresDataList}
-\alias{copyToClipboard.data.frame}
-\alias{copyToClipboard.default}
-\alias{copyToClipboard.matrix}
 \title{Copy data to the clipboard}
 \usage{
 copyToClipboard(x, ...)
 
 \method{copyToClipboard}{antaresDataList}(x, what, ...)
-
-\method{copyToClipboard}{data.frame}(x, ...)
-
-\method{copyToClipboard}{matrix}(x, ...)
-
-\method{copyToClipboard}{default}(x, ...)
 }
 \arguments{
 \item{x}{an object used to select a method.}

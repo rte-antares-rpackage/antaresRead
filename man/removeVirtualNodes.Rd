@@ -5,35 +5,113 @@
 \title{Remove virtual nodes}
 \usage{
 removeVirtualNodes(x, storageFlexibility = NULL, production = NULL,
-  opts = getOption("antares"))
+  reassignCosts = FALSE)
 }
 \arguments{
-\item{x}{An object of class \code{antaresOutput} with at least components 
-\code{nodes} and \code{links}}
+\item{x}{An object of class \code{antaresDataList} with at least components 
+\code{nodes} and \code{links}.}
 
-\item{storageFlexibility}{A vector containing the names of the virtual storage/flexibility nodes}
+\item{storageFlexibility}{A vector containing the names of the virtual 
+storage/flexibility nodes.}
 
-\item{production}{A vector containing the names of the virtual production nodes}
+\item{production}{A vector containing the names of the virtual production 
+nodes.}
 
-\item{opts}{list of simulation parameters returned by the function 
-\code{\link{setSimulationPath}}}
+\item{reassignCosts}{If TRUE, the production costs of the virtual nodes are 
+reallocated to the real nodes they are connected to. If the virtual nodes 
+are connected to a virtual hub, their costs are first reallocated to the 
+hub and then the costs of the hub are reallocated to the real nodes.}
 }
 \value{
-an \code{antaresOutput object} that has been corrected according to the
-specifications of spec.
+An \code{antaresDataList} object in which virtual nodes have been removed and
+data of the real has been corrected. See details for an explanation of the
+corrections.
 }
 \description{
-This function removes virtual nodes from an \code{antaresOutput} object and
-corrects the data for the real nodes. The \code{antaresOutput} object should
-contain node and link data to function correctly.
+This function removes virtual nodes from an \code{antaresDataList} object and
+corrects the data for the real nodes. The \code{antaresDataList} object 
+should contain node and link data to function correctly.
+}
+\details{
+Two types of virtual nodes have been defined corresponding to different types
+of modeling in Antares and different types of post-treatment to do:
+  
+\itemize{ 
+  \item Flexibility/storage nodes are nodes created to model 
+    pumping unit or any other flexibility that behave as a storage. For those 
+    virtual nodes, the important results are flows on the links. 
+  \item Production nodes are nodes created to isolate some generation from 
+    the “real” nodes. They can be isolate for several reasons: to distinguish 
+    time-series (for example wind onshore/offshore), to select some specific 
+    unit to participate to day-ahead reserve, etc.
+}
+  
+\code{removeVirtualNodes} performs different corrections:
+  
+\itemize{ 
+  \item Correct the balance of the real nodes by removing the flows
+    to or from virtual nodes.
+  
+  \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
+    virtual nodes are reassigned to the real nodes they are connected to. The
+    affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
+    and \code{NP COST}. If a virtual node is connected to a single real node,
+    all its costs are attributed to the real node. If it is connected to
+    several real nodes, then costs at a given time step are divided between
+    them proportionally to the flows between them and the virtual node.
+  
+  \item For each storage/flexibility node, a column named like the node is 
+    created. It contains the values of the flow between the virtual node and 
+    the real nodes. This column is interpreted as a production of
+    electricity: it is positive if the flow from the virtual node to the real
+    node is positive and negative otherwise.
+  
+  \item If the parameter \code{production} is specified, the functions
+    creates new columns names \code{*_virtual} where "\code{*}" is a type of 
+    production (wind, solar, nuclear, ...). For a given node, these columns 
+    contain the production of the virtual production nodes connected to it.
+    If a column contains only zeros, then it is removed in the returned
+    object.
+  
+  \item Finally, virtual nodes and the links connected to them are removed
+    from the data. 
+}
+  
+The functions makes a few assumptions about the network. if they are
+violated it will not act correctly: 
+  
+\itemize{ 
+  \item storage/flexibility
+    nodes can be connected to other storage/flexibility nodes (hubs), but at 
+    least one of them is connected to a real node. That means that there is
+    no group of virtual nodes disconnected from the real network. If such a
+    group exists, you can either remove them manually or simply not import
+    them.
+  \item production nodes are connected to one and only one real node. They
+    cannot be connected to virtual nodes. But a real node may by connected to
+    several production nodes.
+}
 }
 \examples{
 \dontrun{
+
+# Assume we have a network with two virtual nodes acting as pump storage and
+# a node representing offshore production
+#
+#  offshore
+#     |
+# real node - psp in
+#           \\
+#             psp out
+#
+
 data <- readAntares(nodes="all", links="all")
 
-# Remove pumped storage virtual nodes
+# Remove pump storage virtual nodes
 
-correctedData <- removeVirtualNodes(data, storageFlexibility = c("psp in", "psp out"))
+correctedData <- removeVirtualNodes(data, 
+                                    storageFlexibility = c("psp in", "psp out"),
+                                    production = "offshore")
 }
 
 }

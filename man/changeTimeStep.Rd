@@ -5,33 +5,42 @@
 \title{Change the timestep of an output}
 \usage{
 changeTimeStep(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"),
-  opts = getOption("antares"))
+  opts = simOptions())
 }
 \arguments{
-\item{x}{data.table with a column "timeId" or an object of class "antaresOutput"}
+\item{x}{data.table with a column "timeId" or an object of class "antaresDataList"}
 
 \item{newTimeStep}{Desired time step.The possible values are hourly, daily, weekly, 
 monthly and annual.}
 
-\item{oldTimeStep}{Current time step of the data. If the data has not been manipulated, this 
-argument is optional since the time step is stored in an attribute of the
-data.}
+\item{oldTimeStep}{Current time step of the data. This argument is optional for an object of
+class \code{antaresData} because the time step of the data is stored inside
+the object}
 
-\item{fun}{function to use for aggregation. Either "sum" or "mean"}
+\item{fun}{function to use for aggregation. Either "sum" or "mean". Notice that this
+function will be used on all the numeric columns of the table. Check that
+this is effectively what you want to do !}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
 }
 \value{
-Either a data.table or an object of class "antaresOutput" depending on the 
+Either a data.table or an object of class "antaresDataList" depending on the 
 class of \code{x}
 }
 \description{
-This function changes the timestep of a table or an antaresOutput object
-and performs the required aggregation or desaggregation.
+This function changes the timestep of a table or an \code{antaresData} object
+and performs the required aggregation or desaggregation.Notice that
+currently, the function performs the same operation on all the columns of a
+table (either sum or mean). Check that this is effectively what you want to
+do. If it is not the case, either select only the columns on which yo uwant
+to perform the same operation or do not use it at all ! In future versions,
+this function may have a smarter behavior.
 }
 \examples{
 \dontrun{
+setSimulationPath()
+
 nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
 nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 

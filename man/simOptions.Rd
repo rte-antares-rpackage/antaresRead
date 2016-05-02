@@ -2,15 +2,17 @@
 % Please edit documentation in R/simOptions.R
 \name{simOptions}
 \alias{simOptions}
-\title{Extract the simulation options from an object}
+\title{Extract simulation options}
 \usage{
-simOptions(x)
+simOptions(x = NULL)
 }
 \arguments{
 \item{x}{object of class \code{antaresTable} or \code{antaresData}}
 }
 \value{
-list of options used to read the data contained in an object.
+list of options used to read the data contained in an object or the last
+simulation options read by \code{\link{setSimulationPath}} if \code{x} is
+\code{NULL}
 }
 \description{
 The function \code{\link{readAntares}} stores in its output the options used
@@ -23,15 +25,23 @@ etc.).
 multiple simulations, either to check how some object has been created or to
 use it in some functions like \code{\link{getNodes}} or
 \code{\link{getLinks}}
+
+If the parameter of the function is \code{NULL}, it returns the default
+simulation options, that is the options set by \code{\link{setSimulationPath}}
+the last time it was run.
 }
 \examples{
 \dontrun{
   setSimulationPath(study1)
   
+  simOptions() # returns the options for study 1
+  
   data <- readAntares()
   
   # Choose a different study
   setSimulationPath(study2)
+  
+  simOptions() # returns the options for study 2
   
   getNodes() # returns the nodes of the secund study
   getNodes(opts = simOptions(data)) # returns the nodes of the first study

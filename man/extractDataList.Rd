@@ -4,17 +4,14 @@
 \alias{extractDataList}
 \title{Format data PPSE-style}
 \usage{
-extractDataList(x, nodes = NULL, opts = getOption("antares"))
+extractDataList(x, nodes = NULL)
 }
 \arguments{
-\item{x}{object of class "antaresOutput" or data.table created by the function
+\item{x}{object of class "antaresData" or "antaresTable" created by the function
 \code{\link{readAntares}}}
 
 \item{nodes}{character vector containing the name of nodes to keep in the
 final object. If \code{NULL}, all nodes are kept in the final object.}
-
-\item{opts}{list of simulation parameters returned by the function 
-\code{\link{setSimulationPath}}}
 }
 \value{
 a list of data.tables with one element per node. The list also
