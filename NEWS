@@ -1,13 +1,19 @@
-Changes in version 0.4 (2016-04-26)
+Changes in version 0.4 (2016-04-29)
 
-USER-VISIBLE CHANGES:
+BREAKING CHANGES:
 * The parameters and the output of "readAntares" have been modified. The output has now only three components: nodes, links and clusters. If the user asks other information like hydro storage or links capacities, they are added to the corresponding component. The corresponding parameters now expect TRUE/ FALSE instead of a vector of node or link names.
 * "getLinks" has now same parameters and behavior than "getNodes" 
+* Parameter "trace" has been removed in "setSimulationPath".
 
 NEW FEATURES:
 * "readAntares" has a new argument "mustRun"
 * "removeVirtualNodes" has been finalised
+* New function "simOptions" to get either global simulation options or simulation options used by "readAntares" to create a given object
 * New alias "nosum" to remove "min", "max", and "std" columns when "synthesis=TRUE" in "readAntares"
+* "setSimulationPath" has a new argument "simulation" to choose a simulation by name or by order inside an antares project
+* New function "getDistricts"
+* New function "copyToClipboard"
+* Added package vignette
 
 Changes in version 0.3 (2016-04-14)
 
@@ -24,7 +30,7 @@ NEW FEATURES:
 
 Changes in version 0.2 (2016-04-05)
 
-USER-VISIBLE CHANGES:
+BREAKING CHANGES:
 * "readOutput" has been renamed "readAntares"
 
 NEW FEATURES:
