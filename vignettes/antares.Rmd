@@ -1,0 +1,268 @@
+---
+title: "The 'antares' Package"
+author: "François Guillem"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+css: vignette.css
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+This document describes a typical use of the `antares` package. 
+
+This `antares` package has been designed to read the results of an Antares simulation in an easy and convivial way. It can of course read any output files of a simulation at any desired time step, read synthetic results or detailed Monte Carlo scenarios but it can also add input time series to the results and perform some basic treatments like removing virtual nodes.
+
+## Installation
+
+The `antares` package depends on the packages `data.table`, `plyr` and `lubridate`. If you have not already got them you can install them with the following command:
+
+```r
+install.packages(c("data.table", "plyr", "lubridate"))
+```
+  
+Then you can install the `antares` package either with the Rstudio assistant in the "Packages" tab or with the following command:
+
+```r
+install.packages("path_to_the_package/antares_***.zip")
+```
+
+## Before reading data
+
+First, when you start a new R session, you need to load the package:
+
+```r
+library(antares)
+```
+
+To display the list of all the functions of the package and access their help pages, type in the R console:
+
+```r
+help(package = "antares")
+```
+
+Then you can start using the package. The first function to use is `setSimulationPath`.
+
+This function needs to be called at least once during each R session. It stores important informations that are used by most of the functions of the package. While it has not been run, these functions will not work.
+
+Without any argument, `setSimulationPath` asks interactively to choose a directory containing an antares study. If the study contains multiple simulation results, it will also asks the user to choose one of them. This function stores the path to the output and reads some useful information about the simulation: type of output available, list of nodes, links and clusters in the simulation, variables present in the output files, etc. 
+
+`setSimulationPath` can also be used in a non-interactive way with one of these syntaxes:
+
+```r
+# Specify full path
+setSimulationPath("study_path/output/simulation_name")
+
+# Specify the name of the simulation
+setSimulationPath("study_path", simulation_name)
+
+# Select a simulation by order
+setSimulationPath("study_path", 1) # first simulation
+
+# Select a simulation by reverse order
+setSimulationPath("study_path", -1) # last simulation
+
+# It is possible to store in a variable the result of the function
+opts <- setSimulationPath("study_path", 1)
+```
+
+The function returns an object containing informations about the selected simulation. You can store this object in a variable for later use but this is not necessary because at any moment you can retrieve these informations.
+
+## Reading time series
+
+Once `setSimulationPath` has been run, you can start reading data. Function `readAntares` is there for that !
+
+`readAntares` is the main function of the package. It is used to read every possible time series and it performs a few treatments on them to make your life easier. The result of the function will have the simplest structure possible: either a simple table or a list of tables if you asks data for differents elements (for instance links and nodes)
+
+It has a huge number of parameters to control exactly what you get, but all of them are optional. Without any argument the function will still works and it will read the synthetic results for all the nodes. But you can import other kind of output. here are some examples:
+
+```r
+# Synthetic results for all links
+readAntares(links="all")
+
+#Synthetic results for all clusters
+readAntares(clusters="all")
+
+# Nodes and links at the same time
+readAntares(nodes="all", links="all")
+
+# Select only a few columns. 
+readAntares(select = c("OV. COST", "OP. COST", "LOAD"))
+```
+
+You can also choose what elements to import and what level of details you want. For instance, the following command reads the first 10 Monte-Carlo scenarii data at monthly time step for the nodes named "node1", "node2" and "node3".
+
+```r
+readAntares(nodes=c("node1", "node2", "node3"), timeStep="monthly",
+            synthesis=FALSE, mcYears = 1:10)
+```
+
+Finally many arguments of `readAntares` can be used to add input time series to the object returned by the function. For instance, `misc=TRUE` will add columns containing miscelaneous productions for the imported nodes. 
+
+## Manipulating data
+
+`readAntares` returns either a single table or a list of tables depending on the query of the user. More precisely the tables are `data.table` objects. It is then possible to use the powerful syntax offered by the package `data.table`.
+
+The general syntax is like:
+
+```r
+name_of_the_table[filter_rows, select_columns, group_by]
+```
+
+For instance, `nodes[node == "08_fr", .(timeId, LOAD)]` will return a table containing columns `timeId` and `LOAD` for the node names "08_fr". In the select statement, it is also possible to calculate new columns. For instance, one can compute the net load like this:
+
+```r
+nodes[, .(node, timeId, netLoad = LOAD - `ROW BAL.` - PSP - MISC. - NDG -
+                                    H. ROR - WIND - SOLAR)]
+```
+
+One can also compute agregated statistics. For instance, the following code will compute the total load of all nodes per `timeId`:
+
+```r
+nodes[, .(totalLoad = sum(LOAD)), by = .(timeId)]
+```
+
+Of course, agregation also works with filters. For instance to compute the total load only for french nodes (assuming their names contain "fr"):
+
+```r
+nodes[node %in% getNodes("fr"), .(totalLoad = sum(LOAD)), by = .(timeId)]
+```
+
+If you are not familiar with package `data.table`, you should have a look at the documentation and especially at the vignettes of the package:
+
+```r
+help(package="data.table")
+```
+
+## Other useful functions
+
+`readAntares` can import almost everything but not everything because some data is not time series. Other functions exist to read this specific data: `readBindingConstraints` to read binding constraints, `readClusterDesc` to read cluster characteristics and `readLayout` to get the coordinates of the nodes in the user interface of Antares.
+
+Some parameters in `readAntares` and other functions wait for vectors of node names or link names. On large projects with lots of nodes. It may be painful to specify by hand a long list of nodes or links. Hopefully, the functions `getNodes`and `getLinks` can be used to select or exclude nodes using regular expressions. For instance, let us assume that the name of all nodes located in France start with the characters"fr", then the following command returns the list of all french nodes:
+
+```r
+getNodes("fr")
+```
+
+To exclude offshore production nodes (assuming their name contains the word "offshore") one can use:
+
+```r
+getNodes("fr", exclude="offshore")
+```
+
+A few other functions are provided by the package. To see a list of them, type in the console:
+
+```r
+help(package = "antares")
+```
+
+## Use case: Visualizing congestion problems in a network
+
+Let us consider the following antares study. It contains a network with 72 nodes and 120 links representing the european network. Let assume that we want to visualize the problems of congestion: more precisely, we want to see the proportion of hour when each link was congestioned. 
+
+<img src="network.png" width="100%" />
+
+First we use `setSimulationPath` to tell R where is the study. In this study, several simulations have been run, but for now, we will only use the first one.
+
+```r
+opts <- setSimulationPath("path_to_the_study", 1)
+```
+
+Now we read hourly data for all Monte-Carlo scenarii and for all links. We are only interested by the columns indicating if a link is congestioned at some time step.
+
+```r
+links <- readAntares(links="all", synthesis=FALSE,
+                     select = c("CONG. PROB +", "CONG. PROB -"))
+```
+
+To compute the proportion of time each link was congestioned, we used the powerful syntax of `data.table` to compute agregated statistics.
+
+```r
+congestion <- links[, .(propTime = mean(`CONG. PROB -` + `CONG. PROB +` > 0)), 
+                    by = link]
+```
+
+To plot the network, we read the nodes layout and add the coordinates of the origin and destination of each link.
+
+```r
+layout <- readLayout()
+congestion <- merge(congestion, layout$links, by = "link")
+```
+
+Finally we do some nice plotting:
+
+```r
+par(mar = c(1,1,3,1))
+
+# First we create an empty plot. Then we superpose on it the links and
+# the nodes
+plot(layout$nodes$x, layout$nodes$y, type = "n", xaxt = "n", yaxt = "n", 
+     xlab = "", ylab = "", fg = gray(0.5),asp=1)
+
+# Adding the links. The line width is proportional to the proportion of
+# congestion. If this proportion is greate than 1%, we color the link in
+# red.
+segments(congestion$x0, congestion$y0, congestion$x1, congestion$y1, 
+         col = ifelse(congestion$propTime >= 0.01, "#CC2222", grey(0.8)), 
+         lwd = congestion$propTime * 5)
+
+# Adding the nodes
+points(layout$nodes$x, layout$nodes$y, cex = 1.5, pch = 21, bg = "white")
+
+# Adding the name of the simulation as a title  
+title(opts$name)
+
+```
+
+And here is the result:
+
+<img src="congestion_basic.png" width="100%" />
+
+## Working with multiple simulations
+
+The hard part is to design the first graphic, but now it is super easy to write a function and a loop to generate one graphic per simulation and see how the different hypotheses impacted the congestion of the network. We first write a function with the number of the simulation as parameter. The code of the function is the same as the one of the previous section.
+
+```r
+plotCongestion <- function(simulationId) {
+  opts <- setSimulationPath("~/Projets Antares/test_package_import_renf/", 
+                            simulationId)
+  
+  layout <- readLayout()
+  
+  links <- readAntares(links = "all",
+                       select = c("CONG. PROB +", "CONG. PROB -"), synthesis = FALSE)
+  
+  congestion <- links[, .(propTime = mean(`CONG. PROB -` + `CONG. PROB +` > 0)), by = link]
+  
+  congestion <- merge(congestion, layout$links, by = "link")
+  
+  par(mar = c(1,1,3,1))
+  
+  plot(layout$nodes$x, layout$nodes$y, type = "n", xaxt = "n", yaxt = "n", 
+       xlab = "", ylab = "", fg = gray(0.5),asp=1)
+  
+  segments(congestion$x0, congestion$y0, congestion$x1, congestion$y1, 
+           col = ifelse(congestion$propTime >= 0.01, "#CC2222", grey(0.8)), 
+           lwd = congestion$propTime * 5)
+  
+  points(layout$nodes$x, layout$nodes$y, cex = 1.5, pch = 21, bg = "white")
+  
+  title(opts$name)
+}
+
+```
+
+We can use the function `lapply` to loop over all the simulations of the study:
+
+```r
+par(mfrow = c(2, 3), oma = c(1,1,3,1))
+lapply(1:5, f)
+title("Congestion of the network for different scenarii", outer = TRUE, cex.main = 2)
+
+```
+
+And here is the result:
+
+<img src="congestion.png" width="100%" />
+
