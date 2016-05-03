@@ -185,6 +185,14 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     nodes <- "all"
   }
   
+  # Check that when a user wants to import input time series, the corresponding
+  # output is also imported
+  if (is.null(nodes) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
+    stop("When misc, hydroStorage, hydroStorageMaxPower or reserve is TRUE, argument 'nodes' needs to be specified.")
+  }
+  if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
+  if (is.null(clusters) & thermalAvailabilities) stop("When 'thermalAvailabilities' is TRUE, argument 'clusters' needs to be specified.")
+  
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
   # not the case, throw a warning.
