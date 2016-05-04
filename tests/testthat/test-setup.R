@@ -4,6 +4,7 @@ context("Setup functions")
 source("setup_test_case.R")
 
 trueOpts <- list(
+  studyName = "Test_packages_R",
   opath = "economy",
   name = "test",
   mode = "Economy",
@@ -23,7 +24,7 @@ class(trueOpts) <- "simOptions"
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath)
-  opts$variables <- opts$path <- opts$parameters <- NULL
+  opts$variables <- opts$path <- opts$parameters <- opts$inputPath <- opts$studyPath <- NULL
   expect_equal(opts, trueOpts)
 })
 

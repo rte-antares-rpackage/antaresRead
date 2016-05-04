@@ -177,6 +177,8 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
+  if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
+  
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(nodes = select, links = select, districts = select)
   

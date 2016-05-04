@@ -28,13 +28,14 @@ print.antaresDataList <- function(x, ...) {
 
 #' @export
 print.simOptions <- function(x, ...) {
-
-  cat(sprintf("Antares simulation '%s'\nMode %s\n", x$name, x$mode))
-  cat(sprintf("\nContent:\n - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
+  cat(sprintf("Antares project '%s' (%s)\n", x$studyName, x$studyPath))
+  cat(sprintf("Simulation '%s'\n", x$name))
+  cat(sprintf("Mode %s\n\nContent:\n", x$mode))
+  cat(sprintf(" - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
               x$synthesis, x$yearByYear, x$scenarios))
   cat(sprintf(" - Number of nodes: %s\n - Number of districts: %s\n - Number of links: %s\n",
               length(x$nodeList), length(x$setList), length(x$linkList)))
   
-  if (x$yearByYear) cat(sprintf(" - Number of Monte-Carlo years: %s\n", x$mcYears))
+  cat(sprintf(" - Number of Monte-Carlo years: %s\n", x$mcYears))
 
 }

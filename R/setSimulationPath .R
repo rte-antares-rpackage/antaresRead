@@ -23,11 +23,14 @@
 #'   output of a simulation. It can be either the name of the simulation or a
 #'   number indicating which simulation to use. It is possible to use negative 
 #'   values to select a simulation from the last one: for instance -1 will
-#'   select the most recent simulation, -2 will the penultimate one, etc.
+#'   select the most recent simulation, -2 will the penultimate one, etc. There 
+#'   are two special values 0 and "input" that tells the function that the user
+#'   is not interested by the results of any simulation, but only by the inputs.
+#'   In such a case, the function \code{\link{readAntares}} is anavailable. 
 #'
 #' @return A list containing various information about the simulation, in particular:
 #'   \item{path}{path of the simulation}
-#'   \item{name}{name if the study}
+#'   \item{name}{name of the study}
 #'   \item{synthesis}{Are synthetic results available ?}
 #'   \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
 #'   \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
@@ -139,9 +142,13 @@ setSimulationPath <- function(path, simulation) {
       }
         
       if (is.numeric(simulation)) {
+        if (simulation == 0) return(.inputSimOptions(path))
+        
         if (simulation > 0) path <- file.path(path, f[simulation])
         else path <- file.path(path, rev(f)[abs(simulation)])
       } else {
+        if (simulation == "input") return(.inputSimOptions(path))
+        
         f <- f[grep(paste0("-", simulation, "$"), f, ignore.case = TRUE)]
         if (length(f) == 0) stop ("Cannot find the simulation called ", simulation)
         
@@ -205,7 +212,7 @@ setSimulationPath <- function(path, simulation) {
     variables$nodes <- setdiff(v, pkgEnv$idVars)
   }
 
-  # Available variables for nodes
+  # Available variables for links
   d <- file.path(opath2, "links", linkList[1])
   f <- list.files(d)
   f <- f[grep("values", f)]
@@ -218,8 +225,11 @@ setSimulationPath <- function(path, simulation) {
   parameters <- readIniFile("about-the-study/parameters.ini")
 
   res <- list(
+    studyPath = normalizePath(file.path(path, "../..")),
+    studyName = readIniFile(file.path(path, "../../study.antares"))$antares$caption,
     path = path,
     opath = opath,
+    inputPath = file.path(path, "../../input"),
     name = as.character(info$name),
     mode = as.character(info$mode),
     synthesis = synthesis,
@@ -243,6 +253,47 @@ setSimulationPath <- function(path, simulation) {
 
   setwd(oldwd)
 
+  res
+}
+
+# Private function called when the user just wants to read input time series.
+# It returns a "simOptions" object with less parameters.
+.inputSimOptions <- function(path) {
+  study <- readIniFile(file.path(path, "study.antares"))
+  params <- readIniFile(file.path(path, "settings/generaldata.ini"))
+  
+  nodeList <- tolower(readLines(file.path(path, "input/areas/list.txt")))
+  setList <- names(readIniFile(file.path(path, "input/areas/sets.ini")))
+  
+  linkList <- unlist(llply(list.files(file.path(path, "input/links")), function(f) {
+    if (!dir.exists(file.path(path, "input/links", f))) return(NULL)
+    to <- list.files(file.path(path, "input/links", f))
+    to <- to[to != "properties.ini"]
+    to <- gsub(".txt", "", to)
+    
+    if (length(to) == 0) return(NULL)
+    
+    paste(f, "-", to)
+  }))
+  
+  res <- list(
+    studyPath = normalizePath(path),
+    studyName = study$antares$caption,
+    inputPath = file.path(path, "input"),
+    mode = "Input",
+    antaresVersion = study$antares$version,
+    start = .getStartDate(params),
+    firstWeekday = as.character(params$general$first.weekday),
+    nodeList = nodeList,
+    setList = setList,
+    linkList = linkList,
+    nodesWithClusters = NA
+  )
+  
+  class(res) <- c("simOptions")
+  
+  options(antares=res)
+  
   res
 }
 
