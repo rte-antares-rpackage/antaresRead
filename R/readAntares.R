@@ -373,23 +373,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
   }
   
   # Class and attributes
-  for (n in names(res)) {
-    class(res[[n]]) <- append(c("antaresDataTable", "antaresData"), class(res[[n]]))
-    attr(res[[n]], "type") <- n
-    attr(res[[n]], "timeStep") <- timeStep
-    attr(res[[n]], "synthesis") <- synthesis
-    attr(res[[n]], "opts") <- opts
-  }
-  
-  class(res) <- append(c("antaresDataList", "antaresData"), class(res))
-  attr(res, "timeStep") <- timeStep
-  attr(res, "synthesis") <- synthesis
-  attr(res, "opts") <- opts
-
-  # Simplify the result if possible
-  if (simplify & length(res) == 1) res <- res[[1]]
-
-  res
+  .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
 }
 
 #' Read output for a list of nodes

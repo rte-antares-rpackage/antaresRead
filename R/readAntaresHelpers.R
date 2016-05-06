@@ -183,3 +183,130 @@
 
   res
 }
+
+# The two following functions read input time series that are eventually
+# stored in output and rebuild the actual time series used in each Monte-Carlo
+# simulation
+
+.importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+  if (!node %in% opts$nodesWithClusters) return(NULL)
+  if (synthesis) mcYears <- 1:opts$mcYears
+  
+  # Path to the files containing the IDs of the time series used for each
+  # Monte-Carlo years.
+  pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
+  
+  # Path to the time series. Ideally, time series are stored in output. If it is
+  # not the case, read the series in the input.
+  pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
+  
+  if (dir.exists(pathInput)) {
+    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, node)
+  } else {
+    pathInput <- file.path(opts$path, "../../input/thermal/series")
+    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, node)
+  }
+  
+  # Read the Ids of the time series used in each Monte-Carlo Scenario.
+  cls <- list.files(file.path(pathTSNumbers, node))
+  if (length(cls) == 0) return(NULL)
+  
+  nameCls <- gsub(".txt", "", cls)
+  
+  tsIds <- llply(cls, function(cl) {
+    as.numeric(readLines(file.path(pathTSNumbers, node, cl))[-1])
+  })
+  
+  names(tsIds) <- nameCls
+  
+  # Two nested loops: clusters, Monte Carlo simulations.
+  series <- ldply(nameCls, function(cl) {
+    ids <- tsIds[[cl]][mcYears]
+    colToRead <- sort(unique(ids)) # Columns to read in the ts file
+    colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
+    
+    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)[1:(24*7*52),]
+    
+    ldply(1:length(ids), function(i) {
+      data.frame(
+        node = node, 
+        cluster = cl, 
+        mcYear = mcYears[i],
+        timeId = 1:nrow(ts),
+        thermalAvailability = ts[[ colIds[i] ]]
+      )
+    })
+  })
+  
+  series <- data.table(series)
+  
+  res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
+  
+  if (synthesis) {
+    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(node, cluster, timeId)]
+  }
+  
+  res
+}
+
+.importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+  if (synthesis) mcYears <- 1:opts$mcYears
+  
+  pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
+  
+  
+  # Read the Ids of the time series used in each Monte-Carlo Scenario.
+  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
+  tsIds <- tsIds[mcYears]
+  
+  # Input time series
+  pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
+  
+  if (dir.exists(pathInput)) {
+    f <- file.path(pathInput, node, "storage.txt")
+  } else {
+    pathInput <- file.path(opts$path, "../../input/hydro/series")
+    f <- file.path(pathInput, node, "mod.txt")
+  }
+  
+  if (file.size(f) == 0) {
+    series <- ldply(1:length(tsIds), function(i) {
+      data.frame(
+        node = node, 
+        mcYear = mcYears[i],
+        timeId = 1:12,
+        hydroStorage = rep(0L, 12)
+      )
+    })
+  } else {
+    colToRead <- sort(unique(tsIds)) # Columns to read in the ts file
+    colIds <- sapply(tsIds, function(i) which(colToRead == i)) # link between the initial ids and the columns in the generated table
+    
+    
+    ts <- fread(f, integer64 = "numeric", select = colToRead)
+    
+    N <- nrow(ts)
+    
+    series <- ldply(1:length(tsIds), function(i) {
+      data.frame(
+        node = node, 
+        mcYear = mcYears[i],
+        timeId = 1:nrow(ts),
+        hydroStorage = ts[[ colIds[i] ]]
+      )
+    })
+  }
+  
+  series <- data.table(series)
+  
+  
+  res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
+  
+  if (synthesis) {
+    res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(node, timeId)]
+  }
+  
+  res
+  
+}
+

@@ -1,69 +1,152 @@
-.importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
-  if (!node %in% opts$nodesWithClusters) return(NULL)
-  if (synthesis) mcYears <- 1:opts$mcYears
+#' .importInputTS
+#' 
+#' Private function that reads input time series for a given node
+#' 
+#' @param node
+#'   single node name.
+#' @param timeStep
+#'   desired time step.
+#' @param opts 
+#'   object of class "simOptions"
+#' @param fileNamePattern
+#'   string representing the path where the time series are located. Must
+#'   contain one and only one "%s". This sequence will be replaced by the node
+#'   name when the function is executed.
+#' @param colnames
+#'   (optionnal) name of the columns of the file. Useful only for simple time
+#'   series (ie time series that does not change between scenarii) because we
+#'   know in advance the number of columns of the file.
+#' @param inputTimeStep
+#'   actual time step of the input series.
+#' @param fun
+#'   function to use when changing time step of the data.
+#'   
+#' @return
+#' If colnames is missing or empty and the file to read is also missing or
+#' empty, then the function returns NULL. In all other cases, it returns
+#' a data.table with one line per timeId. The table contains at least
+#' columns "node" and "timeId".
+#' 
+#' @noRd
+#' 
+.importInputTS <- function(node, timeStep, opts, fileNamePattern, 
+                                 colnames, inputTimeStep, fun = "sum", ...) {
   
-  # Path to the files containing the IDs of the time series used for each
-  # Monte-Carlo years.
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
+  path <- file.path(opts$inputPath, sprintf(fileNamePattern, node))
   
-  # Path to the time series. Ideally, time series are stored in output. If it is
-  # not the case, read the series in the input.
-  pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
+  # If file does not exists or is empty, but we know the columns, then we
+  # create a table filled with 0. Else we return NULL
+  expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
   
-  if (dir.exists(pathInput)) {
-    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, node)
+  if (!file.exists(path) || file.size(path) == 0) {
+    if (missing(colnames) || length(colnames) == 0) return(NULL)
+    inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
   } else {
-    pathInput <- file.path(opts$path, "../../input/thermal/series")
-    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, node)
+    inputTS <- fread(path, integer64 = "numeric", header = FALSE)
+    inputTS <- inputTS[1:expectedRows]
   }
   
-  # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  cls <- list.files(file.path(pathTSNumbers, node))
-  if (length(cls) == 0) return(NULL)
-  
-  nameCls <- gsub(".txt", "", cls)
-    
-  tsIds <- llply(cls, function(cl) {
-    as.numeric(readLines(file.path(pathTSNumbers, node, cl))[-1])
-  })
-  
-  names(tsIds) <- nameCls
-  
-  # Two nested loops: clusters, Monte Carlo simulations.
-  series <- ldply(nameCls, function(cl) {
-    ids <- tsIds[[cl]][mcYears]
-    colToRead <- sort(unique(ids)) # Columns to read in the ts file
-    colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
-    
-    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)[1:(24*7*52),]
-    
-    ldply(1:length(ids), function(i) {
-      data.frame(
-        node = node, 
-        cluster = cl, 
-        mcYear = mcYears[i],
-        timeId = 1:nrow(ts),
-        thermalAvailability = ts[[ colIds[i] ]]
-      )
-    })
-  })
-  
-  series <- data.table(series)
-  
-  res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
-  
-  if (synthesis) {
-    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(node, cluster, timeId)]
+  # Colnames
+  if (!missing(colnames) && length(colnames) > 0) {
+    setnames(inputTS, names(inputTS)[1:length(colnames)], colnames)
   }
+  colnames <- names(inputTS)
   
-  res
+  # Add node and timeId columns and put it at the begining of the table
+  inputTS$node <- node
+  inputTS$timeId <- 1:nrow(inputTS)
+  setcolorder(inputTS, c("node", "timeId", colnames))
+  
+  changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
+  
+}
+
+.importLoad <- function(node, timeStep, opts, ...) {
+  .importInputTS(node, timeStep, opts, "load/series/load_%s.txt", inputTimeStep = "hourly")
+}
+
+.importThermalAvailabilities <- function(node, timeStep, opts, ...) {
+  if (!node %in% opts$nodesWithClusters) return(NULL)
+  
+  clusters <- list.files(file.path(opts$inputPath, "thermal/series", node))
+  
+  ldply(clusters, function(cl) {
+    filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", node)
+    res <- .importInputTS(cl, timeStep, opts, filePattern, inputTimeStep = "hourly")
+    
+    res$node <- node
+    res$cluster <- cl
+    
+    setcolorder(res, c("node", "cluster", "timeId", setdiff(names(res), c("node", "cluster", "timeId"))))
+  })
+  
+}
+
+.importROR <- function(node, timeStep, opts, ...) {
+  .importInputTS(node, timeStep, opts, "hydro/series/%s/ror.txt", inputTimeStep = "hourly")
+}
+
+.importHydroStorageInput <- function(node, timeStep, opts, ...) {
+  .importInputTS(node, timeStep, opts, "hydro/series/%s/mod.txt", inputTimeStep = "monthly")
+}
+  
+.importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
+  
+  .importInputTS(node, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
+                 colnames=c("low", "avg", "high"),
+                 inputTimeStep = "daily")
+  
+}
+
+.importWind <- function(node, timeStep, opts, ...) {
+  .importInputTS(node, timeStep, opts, "wind/series/wind_%s.txt", inputTimeStep = "hourly")
+}
+
+.importSolar <- function(node, timeStep, opts, ...) {
+  .importInputTS(node, timeStep, opts, "solar/series/solar_%s.txt", inputTimeStep = "hourly")
+}
+
+.importMisc <- function(node, timeStep, opts, ...) {
+  
+  .importInputTS(node, timeStep, opts, "misc-gen/miscgen-%s.txt", 
+                 colnames=pkgEnv$miscNames,
+                 inputTimeStep = "hourly")
+  
+}
+
+.importReserves <- function(node, timeStep, opts, ...) {
+  
+  .importInputTS(node, timeStep, opts, "reserves/%s.txt", 
+                 colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
+                 inputTimeStep = "hourly")
+  
+}
+
+.importLinkCapacity <- function(link, timeStep, opts, ...) {
+  
+  nodes <- strsplit(link, " - ")[[1]]
+  
+  colnames <- c("transCapacityDirect", "transCapacityIndirect",
+                "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  
+  # A bit hacky, but it works !
+  res <- .importInputTS(nodes[2], timeStep, opts, 
+                        sprintf("%s/%%s.txt", file.path("links", nodes[1])), 
+                        colnames=colnames,
+                        inputTimeStep = "hourly")
+  
+  res$node <- NULL
+  res$link <- link
+  
+  setcolorder(res, c("link", "timeId", colnames))
+  
 }
 
 .importMustRunModulation <- function(node, opts, ...) {
   if (!node %in% opts$nodesWithClusters) return(NULL)
   if (opts$antaresVersion < 500) return(NULL)
   
-  path <- file.path(opts$path, "../../input/thermal/prepro", node)
+  path <- file.path(opts$inputPath, "thermal/prepro", node)
   
   clusters <- list.files(path)
   
@@ -82,141 +165,4 @@
     
     modulation
   })
-}
-
-.importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
-  if (synthesis) mcYears <- 1:opts$mcYears
-  
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
-  
-  
-  # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
-  tsIds <- tsIds[mcYears]
-  
-  # Input time series
-  pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
-  
-  if (dir.exists(pathInput)) {
-    f <- file.path(pathInput, node, "storage.txt")
-  } else {
-    pathInput <- file.path(opts$path, "../../input/hydro/series")
-    f <- file.path(pathInput, node, "mod.txt")
-  }
-  
-  if (file.size(f) == 0) {
-    series <- ldply(1:length(tsIds), function(i) {
-      data.frame(
-        node = node, 
-        mcYear = mcYears[i],
-        timeId = 1:12,
-        hydroStorage = rep(0L, 12)
-      )
-    })
-  } else {
-    colToRead <- sort(unique(tsIds)) # Columns to read in the ts file
-    colIds <- sapply(tsIds, function(i) which(colToRead == i)) # link between the initial ids and the columns in the generated table
-    
-    
-    ts <- fread(f, integer64 = "numeric", select = colToRead)
-    
-    N <- nrow(ts)
-    
-    series <- ldply(1:length(tsIds), function(i) {
-      data.frame(
-        node = node, 
-        mcYear = mcYears[i],
-        timeId = 1:nrow(ts),
-        hydroStorage = ts[[ colIds[i] ]]
-      )
-    })
-  }
-  
-  series <- data.table(series)
-  
-  
-  res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
-  
-  if (synthesis) {
-    res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(node, timeId)]
-  }
-  
-  res
-
-}
-
-#' .importSimpleInputTS
-#' 
-#' This private function is used to read input time series that do not vary 
-#' between Monte-Carlo scenarios: misc production, reserve, hydro storage
-#' max power.
-#' 
-#' @noRd
-#' 
-.importSimpleInputTS <- function(node, timeStep, opts, path, fileNamePattern, 
-                                 colnames, inputTimeStep, fun = "sum", ...) {
-  
-  path <- file.path(opts$path, path, sprintf(fileNamePattern, node))
-  
-  expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
-  
-  if (file.size(path) == 0) {
-    inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
-    setnames(inputTS, names(inputTS), colnames)
-  } else {
-    inputTS <- fread(path, integer64 = "numeric", header = FALSE, col.names = colnames)
-    inputTS <- inputTS[1:expectedRows]
-  }
-  
-  inputTS$node <- node
-  inputTS$timeId <- 1:nrow(inputTS)
-  
-  setcolorder(inputTS, c("node", "timeId", colnames))
-  
-  changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
-  
-}
-
-.importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
-  
-  .importSimpleInputTS(node, timeStep, opts, "../../input/hydro/common/capacity",
-                       "maxpower_%s.txt", colnames=c("low", "avg", "high"),
-                       inputTimeStep = "daily")
-  
-}
-
-.importMisc <- function(node, timeStep, opts, ...) {
-  
-  .importSimpleInputTS(node, timeStep, opts, "../../input/misc-gen",
-                       "miscgen-%s.txt", colnames=pkgEnv$miscNames,
-                       inputTimeStep = "hourly")
-  
-}
-
-.importReserves <- function(node, timeStep, opts, ...) {
-  
-  .importSimpleInputTS(node, timeStep, opts, "../../input/reserves",
-                       "%s.txt", colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
-                       inputTimeStep = "hourly")
-  
-}
-
-.importLinkCapacity <- function(link, timeStep, opts, ...) {
-  
-  nodes <- strsplit(link, " - ")[[1]]
-  
-  colnames <- c("transCapacityDirect", "transCapacityIndirect",
-                "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
-  
-  # A bit hacky, but it works !
-  res <- .importSimpleInputTS(nodes[2], timeStep, opts, 
-                              file.path("../../input/links", nodes[1]), "%s.txt", 
-                              colnames=colnames,
-                              inputTimeStep = "hourly")
-  
-  res$node <- NULL
-  res$link <- link
-  
-  setcolorder(res, c("link", "timeId", colnames))
-  
 }

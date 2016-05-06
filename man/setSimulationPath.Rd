@@ -17,12 +17,15 @@ directory of the simulation interactively}
 output of a simulation. It can be either the name of the simulation or a
 number indicating which simulation to use. It is possible to use negative 
 values to select a simulation from the last one: for instance -1 will
-select the most recent simulation, -2 will the penultimate one, etc.}
+select the most recent simulation, -2 will the penultimate one, etc. There 
+are two special values 0 and "input" that tells the function that the user
+is not interested by the results of any simulation, but only by the inputs.
+In such a case, the function \code{\link{readAntares}} is anavailable.}
 }
 \value{
 A list containing various information about the simulation, in particular:
   \item{path}{path of the simulation}
-  \item{name}{name if the study}
+  \item{name}{name of the study}
   \item{synthesis}{Are synthetic results available ?}
   \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
   \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
