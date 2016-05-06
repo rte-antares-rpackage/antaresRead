@@ -54,7 +54,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("load", load, .importLoad)
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermalAvailabilities)
   .addOutputToRes("ror", ror, .importROR)
-  .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorage)
+  .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorageInput)
   .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower)
   .addOutputToRes("wind", wind, .importWind)
   .addOutputToRes("solar", solar, .importSolar)
