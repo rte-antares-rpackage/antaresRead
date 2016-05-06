@@ -120,7 +120,7 @@
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
 #'
-#' Else an object of class "antaresData" is returned. It is a list of
+#' Else an object of class "antaresDataList" is returned. It is a list of
 #' data.tables, each element representing one type of element (nodes, links,
 #' clusters)
 #' 

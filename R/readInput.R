@@ -1,5 +1,71 @@
 #' Read Input time series
 #' 
+#' @description 
+#' \code{readInputTS} is a function that reads time series from an antares 
+#' project. But contrary to \code{\link{readAntares}}, it only reads time series
+#' stored in the input folder, so it can work in "input" mode. 
+#' 
+#' @param load
+#'   vector of nodes names for which load time series must be read.
+#' @param thermalAvailabilities
+#'   vector of nodes names for which thermal availabilities of clusters must be read.
+#' @param ror
+#'   vector of nodes names for which run of river time series must be read.
+#' @param hydroStorage
+#'   vector of nodes names for which hydrolic storage time series must be read.
+#' @param hydroStorageMaxPower
+#'   vector of nodes names for which hydrolic storage maximum power time series must be read.
+#' @param wind
+#'   vector of nodes names for which wind time series must be read
+#' @param solar
+#'   vector of nodes names for which solar time series must be read
+#' @param misc
+#'   vector of nodes names for which misc time series must be read
+#' @param reserve
+#'   vector of nodes names for which reserve time series must be read
+#' @param linkCapacity
+#'   vector of links names for which links characteristics time series must be read
+#' @inheritParams readAntares
+#' 
+#' @return 
+#' If \code{simplify = TRUE} and only one type of inpuàt is imported
+#' then the result is a data.table with class "antaresDataTable".
+#' 
+#' Else an object of class "antaresDataList" is returned. It is a list of
+#' data.tables, each element representing one type of element (load, wind,
+#' solar, etc.).
+#' 
+#' @note 
+#' All parameters expecting a vector of nodes or links names also accept the
+#' special value "all". It indicates the function to read the desired time 
+#' series for all nodes or links.
+#' 
+#' @seealso 
+#' \code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
+#' \code{\link{getNodes}}, \code{\link{getLinks}}
+#' 
+#' @examples 
+#' \dontrun{
+#' # Set an antares study in "input" mode. This is useful when one want to
+#' # inspect input time series before running a simulation.
+#' # Note that readAntares do not function in input mode, but readInputTS
+#' # works with any mode.
+#' 
+#' setSimulationPath("path_to_the_study", "input")
+#' 
+#' # Read load time series
+#' readInputTS(load = "all")
+#' 
+#' # Read hydrolic storage and maximum power in the same call:
+#' readInputTS(hydroStorage = "all", hydroStorageMaxPower = "all")
+#' 
+#' # Use a different time step
+#' myNode <- readInputTS(load= "myNode", timeStep = "monthly")
+#' 
+#' # Quick plot to visualize the variability of the series
+#' matplot(myNode[, - (1:2), with = FALSE], type = "l")
+#' }
+#' 
 #' @export
 readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL, 
                         hydroStorage = NULL, hydroStorageMaxPower = NULL, 
