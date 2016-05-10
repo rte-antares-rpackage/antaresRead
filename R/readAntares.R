@@ -330,7 +330,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                                    capacity = nominalcapacity * unitcount,
                                    must.run)]
     
-    .addOutputToRes("mustRunModulation", nodes, .importMustRunModulation, NULL)
+    .addOutputToRes("mustRunModulation", union(nodes, clusters), .importMustRunModulation, NULL)
     
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("node", "cluster"))
     if (nrow(res$mustRunModulation) > 0) {
@@ -342,7 +342,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
     res$mustRun[!is.na(mustRunModulation), 
-                c("mustRun", "mustRunPartial") := list(0, mustRun * mustRunModulation)]
+                c("mustRun", "mustRunPartial") := list(0, capacity * mustRunModulation)]
     
     res$mustRun[mustRun > MWh, mustRun := as.numeric(MWh)]
     res$mustRun[mustRunPartial > MWh, mustRunPartial := as.numeric(MWh)]

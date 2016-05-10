@@ -18,9 +18,9 @@
 #'   class \code{antaresData} because the time step of the data is stored inside
 #'   the object
 #' @param fun
-#'   function to use for aggregation. Either "sum" or "mean". Notice that this
-#'   function will be used on all the numeric columns of the table. Check that
-#'   this is effectively what you want to do ! 
+#'   Character vector with one element per column to (des)agregate indicating
+#'   the function to use ("sum" or "mean") for this column. It can be a single
+#'   element, in that case the same function is applied to  
 #' @inheritParams readAntares
 #'   
 #' @return 
@@ -41,8 +41,14 @@
 #' 
 #' @export
 #' 
-changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), opts=simOptions()) {
-  fun <- match.arg(fun)
+changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOptions()) {
+  fun <- match.arg(fun, c("sum", "mean"), several.ok = TRUE)
+  
+  # Agregation function
+  funs <- list(sum = sum, mean = mean)
+  #desagregation function
+  ifuns <- list(sum = function(x, n) {x / n},
+                mean = function(x, n) {x})
   
   if (is(x, "antaresData")) {
     opts <- simOptions(x)
@@ -82,7 +88,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
   x <- merge(x, refTime, by = "oldTimeId", allow.cartesian=TRUE)
   
   # Desagregation
-  if (oldTimeStep != "hourly" & fun == "sum") {
+  if (oldTimeStep != "hourly") {
     idVars <- intersect(names(x), c(pkgEnv$idVars, "oldTimeId"))
     idVars  <- idVars[idVars != "timeId"]
     by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
@@ -95,7 +101,9 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
     timeId <- x$timeId
     x$timeId <- NULL
     
-    x <- x[, lapply(.SD, function(x) x / .N), by = eval(by)]
+    if (length(fun) == 1) fun <- rep(fun, ncol(x) - length(idVars))
+    
+    x <- x[, mapply(function(x, f) {f(x, .N)}, x = .SD, f = ifuns[fun], SIMPLIFY=FALSE), by = eval(by)]
     
     x$timeId <- timeId
   }
@@ -107,8 +115,9 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"), 
     idVars <- intersect(names(x), pkgEnv$idVars)
     by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
     
-    if (fun == "sum") x <- x[, lapply(.SD, sum), keyby=eval(by)]
-    else x <- x[, lapply(.SD, mean), keyby=eval(by)]
+    if (length(fun) == 1) fun <- rep(fun, ncol(x) - length(idVars))
+    
+    x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=eval(by)]
   }
   
   class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
