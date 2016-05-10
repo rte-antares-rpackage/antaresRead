@@ -128,6 +128,8 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("reserve", reserve, .importReserves)
   .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity)
   
+  if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
+  
   # Class and attributes
   .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
 }
