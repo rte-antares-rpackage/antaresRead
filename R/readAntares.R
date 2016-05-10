@@ -330,7 +330,7 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
                                    capacity = nominalcapacity * unitcount,
                                    must.run)]
     
-    .addOutputToRes("mustRunModulation", nodes, .importMustRunModulation, NULL)
+    .addOutputToRes("mustRunModulation", union(nodes, clusters), .importMustRunModulation, NULL)
     
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("node", "cluster"))
     if (nrow(res$mustRunModulation) > 0) {
