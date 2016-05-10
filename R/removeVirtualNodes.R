@@ -185,7 +185,7 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     corrections <- linkList[, .(correction = sum(flow)), keyby = mget(bynode)]
     x$nodes <- merge(x$nodes, corrections, by = bynode, all.x = TRUE)
     x$nodes[!is.na(correction), BALANCE := BALANCE + correction]
-    x$nodes$correction <- NULL
+    x$nodes[, correction := NULL]
   }
   
   # Correct costs and CO2
