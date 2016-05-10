@@ -15,11 +15,11 @@ test_that("removeVirtualNodes effectively removes virtual nodes", {
   expect_false(any(dataCorrected$nodes$link %in% getLinks(vnodes)))
 })
 
-test_that("Balance is corrected for not b, but not for the other nodes", {
+test_that("Balance is corrected for b, but not for the other nodes", {
   expect_equal(data$nodes[node %in% c("a", "c")]$BALANCE, 
                dataCorrected$nodes[node %in% c("a", "c")]$BALANCE)
   
-  correction <- - data$links[link %in% getLinks(vnodes), 
+  correction <- - data$links[link %in% getLinks(vnodes, regexpSelect = FALSE), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
   expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
@@ -41,12 +41,12 @@ test_that("RemoveVirtualNodes corrects column 'node' in the table 'clusters'", {
 })
 
 test_that("RemoveVirtualNodes removes production nodes", {
-  dataCorrected <- removeVirtualNodes(data, production = "c", reassignCosts = TRUE)
+  dataCorrected <- removeVirtualNodes(data, production = "a_offshore", reassignCosts = TRUE)
   
-  expect_equal(dataCorrected$nodes[node == "b", `OP. COST`], 
-               data$nodes[node == "b", `OP. COST`] + data$nodes[node == "c", `OP. COST`])
+  expect_equal(dataCorrected$nodes[node == "a", `OP. COST`], 
+               data$nodes[node == "a", `OP. COST`] + data$nodes[node == "a_offshore", `OP. COST`])
   
-  expect_false(is.null(dataCorrected$nodes$OIL_virtual))
+  expect_false(is.null(dataCorrected$nodes$WIND_virtual))
   expect_null(dataCorrected$nodes$GAS_virtual)
 })
 
@@ -62,11 +62,11 @@ test_that("Hub management works", {
   expect_null(dataCorrected$nodes$`psp in`)
 })
 
-test_that("RemoveVirtualNodes also work on non-synthesis results", {
+test_that("RemoveVirtualNodes also works on non-synthesis results", {
   data <- readAntares("all", "all", showProgress = FALSE, synthesis = FALSE)
-  dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes, production = "c")
+  dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes)
   
-  correction <- - data$links[link %in% getLinks(c(vnodes, "c")), 
+  correction <- - data$links[link %in% getLinks(vnodes, regexpSelect = FALSE), 
                              sum(`FLOW LIN.`), keyby = .(mcYear, timeId)]$V1
   
   setkey(data$nodes, mcYear, timeId)
