@@ -106,6 +106,8 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     x <- x[, mapply(function(x, f) {f(x, .N)}, x = .SD, f = ifuns[fun], SIMPLIFY=FALSE), by = eval(by)]
     
     x$timeId <- timeId
+    
+    .setcolorder(x, c(idVars, "timeId"))
   }
   
   x$oldTimeId <- NULL
