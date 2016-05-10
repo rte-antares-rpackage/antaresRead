@@ -63,6 +63,8 @@ readClusterDesc <- function(opts = simOptions()) {
 
   res <- as.data.table(res)
   setnames(res, "name", "cluster")
+  
+  res$cluster <- as.factor(tolower(res$cluster))
 
   res
 }
