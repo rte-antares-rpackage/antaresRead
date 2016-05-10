@@ -1,5 +1,8 @@
 A
 B
 C
+Hub
 PSP IN
+PSP IN-2
 PSP OUT
+PSP OUT-2
