@@ -162,6 +162,8 @@
     res <- llply(res, .reshapeData)
     res <- rbindlist(res)
   }
+  
+  setnames(res, "MWh", "production")
 
   res
 }

@@ -85,10 +85,10 @@ test_that("mustRun and mustRunPartial are ok", {
   expect_gt(sum(clusters$mustRun), 0)
   expect_gt(sum(clusters$mustRunPartial), 0)
   
-  expect_true(clusters[cluster == "base_must_run", all(MWh == mustRun)])
+  expect_true(clusters[cluster == "base_must_run", all(production == mustRun)])
   expect_true(clusters[cluster != "base_must_run", all(mustRun == 0)])
   
-  expect_true(clusters[cluster == "peak_must_run_partial", all(MWh >= mustRunPartial)])
+  expect_true(clusters[cluster == "peak_must_run_partial", all(production >= mustRunPartial)])
   expect_true(clusters[cluster != "peak_must_run_partial", all(mustRunPartial == 0)])
 })
 

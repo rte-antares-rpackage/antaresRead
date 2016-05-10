@@ -344,8 +344,8 @@ readAntares <- function(nodes = NULL, links = NULL, clusters = NULL,
     res$mustRun[!is.na(mustRunModulation), 
                 c("mustRun", "mustRunPartial") := list(0, capacity * mustRunModulation)]
     
-    res$mustRun[mustRun > MWh, mustRun := as.numeric(MWh)]
-    res$mustRun[mustRunPartial > MWh, mustRunPartial := as.numeric(MWh)]
+    res$mustRun[mustRun > production, mustRun := as.numeric(production)]
+    res$mustRun[mustRunPartial > production, mustRunPartial := as.numeric(production)]
     
     res$mustRun$mustRunTotal <- res$mustRun$mustRun + res$mustRun$mustRunPartial
     
