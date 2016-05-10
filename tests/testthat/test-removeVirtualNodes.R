@@ -6,7 +6,7 @@ opts <- setSimulationPath(studyPath)
 
 data <- readAntares("all", "all", showProgress = FALSE)
 
-vnodes <- c("psp in", "psp out")
+vnodes <- c("psp in-2", "psp out-2")
 
 dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes)
 
@@ -15,22 +15,22 @@ test_that("removeVirtualNodes effectively removes virtual nodes", {
   expect_false(any(dataCorrected$nodes$link %in% getLinks(vnodes)))
 })
 
-test_that("Balance is corrected for b, but not for the other nodes", {
-  expect_equal(data$nodes[node %in% c("a", "c")]$BALANCE, 
-               dataCorrected$nodes[node %in% c("a", "c")]$BALANCE)
+test_that("Balance is corrected for 'Hub', but not for the other nodes", {
+  expect_equal(data$nodes[! node %in% c("hub", vnodes)]$BALANCE, 
+               dataCorrected$nodes[! node %in% c("hub", vnodes)]$BALANCE)
   
   correction <- - data$links[link %in% getLinks(vnodes, regexpSelect = FALSE), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
-  expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
+  expect_equal(dataCorrected$nodes[node=="hub"]$BALANCE - data$nodes[node=="hub"]$BALANCE,
                correction)
   
 })
 
 test_that("A column has been created for each storage/flexibility node", {
   expect_true(all(vnodes %in% names(dataCorrected$nodes)))
-  expect_equal(data$links[link=="b - psp in"]$`FLOW LIN.`, 
-               - dataCorrected$nodes[node == "b"]$`psp in`)
+  expect_equal(data$links[link=="hub - psp in-2"]$`FLOW LIN.`, 
+               - dataCorrected$nodes[node == "hub"]$`psp in-2`)
 })
 
 test_that("RemoveVirtualNodes corrects column 'node' in the table 'clusters'", {
@@ -51,10 +51,10 @@ test_that("RemoveVirtualNodes removes production nodes", {
 })
 
 test_that("Hub management works", {
-  dataCorrected <- removeVirtualNodes(data, storageFlexibility = c("b", vnodes))
+  dataCorrected <- removeVirtualNodes(data, storageFlexibility = c("hub", vnodes))
   
   dataCorrected2 <- removeVirtualNodes(data, storageFlexibility = c(vnodes))
-  dataCorrected2 <- removeVirtualNodes(dataCorrected2, storageFlexibility = "b")
+  dataCorrected2 <- removeVirtualNodes(dataCorrected2, storageFlexibility = "hub")
   
   expect_equal(dataCorrected$nodes$BALANCE, dataCorrected2$nodes$BALANCE)
   expect_equal(dataCorrected$nodes$`OP. COST`, dataCorrected2$nodes$`OP. COST`)
@@ -71,7 +71,7 @@ test_that("RemoveVirtualNodes also works on non-synthesis results", {
   
   setkey(data$nodes, mcYear, timeId)
   setkey(dataCorrected$nodes, mcYear, timeId)
-  expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
+  expect_equal(dataCorrected$nodes[node=="hub"]$BALANCE - data$nodes[node=="hub"]$BALANCE,
                correction)
 })
 
