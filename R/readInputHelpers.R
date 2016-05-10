@@ -13,13 +13,14 @@
 #'   contain one and only one "%s". This sequence will be replaced by the node
 #'   name when the function is executed.
 #' @param colnames
-#'   (optionnal) name of the columns of the file. Useful only for simple time
-#'   series (ie time series that does not change between scenarii) because we
-#'   know in advance the number of columns of the file.
+#'   name of the columns of the file.
 #' @param inputTimeStep
 #'   actual time step of the input series.
 #' @param fun
 #'   function to use when changing time step of the data.
+#' @param type
+#'   "simple" or "matrix" if the data to import is a matrix of time series
+#'   representing the same variable
 #'   
 #' @return
 #' If colnames is missing or empty and the file to read is also missing or
@@ -29,8 +30,8 @@
 #' 
 #' @noRd
 #' 
-.importInputTS <- function(node, timeStep, opts, fileNamePattern, 
-                                 colnames, inputTimeStep, fun = "sum", ...) {
+.importInputTS <- function(node, timeStep, opts, fileNamePattern, colnames, 
+                           inputTimeStep, fun = "sum", type = "simple", ...) {
   
   path <- file.path(opts$inputPath, sprintf(fileNamePattern, node))
   
@@ -39,30 +40,35 @@
   expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
   
   if (!file.exists(path) || file.size(path) == 0) {
-    if (missing(colnames) || length(colnames) == 0) return(NULL)
+    if (type == "matrix") return(NULL)
     inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
   } else {
     inputTS <- fread(path, integer64 = "numeric", header = FALSE)
     inputTS <- inputTS[1:expectedRows]
   }
   
-  # Colnames
-  if (!missing(colnames) && length(colnames) > 0) {
-    setnames(inputTS, names(inputTS)[1:length(colnames)], colnames)
-  }
-  colnames <- names(inputTS)
-  
   # Add node and timeId columns and put it at the begining of the table
   inputTS$node <- node
   inputTS$timeId <- 1:nrow(inputTS)
-  setcolorder(inputTS, c("node", "timeId", colnames))
+  .setcolorder(inputTS, c("node", "timeId"))
   
-  changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
+  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
   
+  # If the data is a matrix of time series melt the data
+  if (type == "matrix") {
+    colnames <- c("tsId", colnames)
+    inputTS <- melt(inputTS, id.vars = c("node", "timeId"))
+    inputTS$variable <- as.integer(substring(inputTS$variable, 2))
+  }
+  
+  setnames(inputTS, names(inputTS), c("node", "timeId", colnames))
+  
+  inputTS
 }
 
 .importLoad <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "load/series/load_%s.txt", inputTimeStep = "hourly")
+  .importInputTS(node, timeStep, opts, "load/series/load_%s.txt", "load", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
 .importThermalAvailabilities <- function(node, timeStep, opts, ...) {
@@ -72,7 +78,8 @@
   
   ldply(clusters, function(cl) {
     filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", node)
-    res <- .importInputTS(cl, timeStep, opts, filePattern, inputTimeStep = "hourly")
+    res <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
+                          inputTimeStep = "hourly", type = "matrix")
     
     res$node <- node
     res$cluster <- cl
@@ -83,11 +90,13 @@
 }
 
 .importROR <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "hydro/series/%s/ror.txt", inputTimeStep = "hourly")
+  .importInputTS(node, timeStep, opts, "hydro/series/%s/ror.txt", "ror", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
 .importHydroStorageInput <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "hydro/series/%s/mod.txt", inputTimeStep = "monthly")
+  .importInputTS(node, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
+                 inputTimeStep = "monthly", type = "matrix")
 }
   
 .importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
@@ -99,11 +108,13 @@
 }
 
 .importWind <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "wind/series/wind_%s.txt", inputTimeStep = "hourly")
+  .importInputTS(node, timeStep, opts, "wind/series/wind_%s.txt", "wind", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
 .importSolar <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "solar/series/solar_%s.txt", inputTimeStep = "hourly")
+  .importInputTS(node, timeStep, opts, "solar/series/solar_%s.txt", "solar", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
 .importMisc <- function(node, timeStep, opts, ...) {
@@ -133,7 +144,8 @@
   res <- .importInputTS(nodes[2], timeStep, opts, 
                         sprintf("%s/%%s.txt", file.path("links", nodes[1])), 
                         colnames=colnames,
-                        inputTimeStep = "hourly")
+                        inputTimeStep = "hourly", 
+                        fun = c("sum", "sum", "mean", "mean", "mean"))
   
   res$node <- NULL
   res$link <- link
