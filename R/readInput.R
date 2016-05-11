@@ -6,23 +6,23 @@
 #' stored in the input folder, so it can work in "input" mode. 
 #' 
 #' @param load
-#'   vector of nodes names for which load time series must be read.
+#'   vector of areas names for which load time series must be read.
 #' @param thermalAvailabilities
-#'   vector of nodes names for which thermal availabilities of clusters must be read.
+#'   vector of areas names for which thermal availabilities of clusters must be read.
 #' @param ror
-#'   vector of nodes names for which run of river time series must be read.
+#'   vector of areas names for which run of river time series must be read.
 #' @param hydroStorage
-#'   vector of nodes names for which hydrolic storage time series must be read.
+#'   vector of areas names for which hydrolic storage time series must be read.
 #' @param hydroStorageMaxPower
-#'   vector of nodes names for which hydrolic storage maximum power time series must be read.
+#'   vector of areas names for which hydrolic storage maximum power time series must be read.
 #' @param wind
-#'   vector of nodes names for which wind time series must be read
+#'   vector of areas names for which wind time series must be read
 #' @param solar
-#'   vector of nodes names for which solar time series must be read
+#'   vector of areas names for which solar time series must be read
 #' @param misc
-#'   vector of nodes names for which misc time series must be read
+#'   vector of areas names for which misc time series must be read
 #' @param reserve
-#'   vector of nodes names for which reserve time series must be read
+#'   vector of areas names for which reserve time series must be read
 #' @param linkCapacity
 #'   vector of links names for which links characteristics time series must be read
 #' @inheritParams readAntares
@@ -36,13 +36,13 @@
 #' solar, etc.).
 #' 
 #' @note 
-#' All parameters expecting a vector of nodes or links names also accept the
+#' All parameters expecting a vector of areas or links names also accept the
 #' special value "all". It indicates the function to read the desired time 
-#' series for all nodes or links.
+#' series for all areas or links.
 #' 
 #' @seealso 
 #' \code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
-#' \code{\link{getNodes}}, \code{\link{getLinks}}
+#' \code{\link{getAreas}}, \code{\link{getLinks}}
 #' 
 #' @examples 
 #' \dontrun{
@@ -60,10 +60,10 @@
 #' readInputTS(hydroStorage = "all", hydroStorageMaxPower = "all")
 #' 
 #' # Use a different time step
-#' myNode <- readInputTS(load= "myNode", timeStep = "monthly")
+#' myArea <- readInputTS(load= "myArea", timeStep = "monthly")
 #' 
 #' # Quick plot to visualize the variability of the series
-#' matplot(myNode[, - (1:2), with = FALSE], type = "l")
+#' matplot(myArea[, - (1:2), with = FALSE], type = "l")
 #' }
 #' 
 #' @export
@@ -84,15 +84,15 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   }
   
   # Manage special value "all"
-  if(identical(load, "all")) load <- opts$nodeList
-  if(identical(thermalAvailabilities, "all")) thermalAvailabilities <- opts$nodesWithClusters
-  if(identical(ror, "all")) ror <- opts$nodeList
-  if(identical(hydroStorage, "all")) hydroStorage <- opts$nodeList
-  if(identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$nodeList
-  if(identical(wind, "all")) wind <- opts$nodeList
-  if(identical(solar, "all")) solar <- opts$nodeList
-  if(identical(misc, "all")) misc <- opts$nodeList
-  if(identical(reserve, "all")) reserve <- opts$nodeList
+  if(identical(load, "all")) load <- opts$areaList
+  if(identical(thermalAvailabilities, "all")) thermalAvailabilities <- opts$areasWithClusters
+  if(identical(ror, "all")) ror <- opts$areaList
+  if(identical(hydroStorage, "all")) hydroStorage <- opts$areaList
+  if(identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$areaList
+  if(identical(wind, "all")) wind <- opts$areaList
+  if(identical(solar, "all")) solar <- opts$areaList
+  if(identical(misc, "all")) misc <- opts$areaList
+  if(identical(reserve, "all")) reserve <- opts$areaList
   if(identical(linkCapacity, "all")) linkCapacity <- opts$linkList
   
   res <- list() # Object the function will return

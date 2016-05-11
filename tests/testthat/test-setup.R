@@ -15,13 +15,13 @@ trueOpts <- list(
   antaresVersion = 500L,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
   firstWeekday = "Monday",
-  nodeList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 
+  areaList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 
                "psp out-2"),
   setList = "@ a and b together",
   linkList = c("a - a_offshore", "a - b", "a - psp in", "a - psp out", "b - c", 
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
-  nodesWithClusters = c("a", "b", "c", "psp in", "psp out")
+  areasWithClusters = c("a", "b", "c", "psp in", "psp out")
 )
 class(trueOpts) <- "simOptions"
 

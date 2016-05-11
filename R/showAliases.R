@@ -17,7 +17,7 @@ showAliases <- function() {
     cat(sprintf("\"%s\":\n   ", x))
     cat(paste(pkgEnv$varAliases[[x]], collapse = ", "), "\n")
   })
-  cat('"allNode" : all node variables\n')
+  cat('"allArea" : all area variables\n')
   cat('"allLink" : all link variables\n')
 
   invisible(pkgEnv$varAliases)

@@ -31,12 +31,12 @@
 #' \dontrun{
 #' setSimulationPath()
 #' 
-#' nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
-#' nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
+#' areasH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
+#' areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 #' 
-#' nodesDAgg <- changeTimeStep(nodesH, "daily")
+#' areasDAgg <- changeTimeStep(areasH, "daily")
 #' 
-#' all.equal(nodesDAgg$LOAD, nodesD$LOAD)
+#' all.equal(areasDAgg$LOAD, areasD$LOAD)
 #' }
 #' 
 #' @export

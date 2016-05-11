@@ -1,8 +1,8 @@
 #' Set Path to an Antares simulation
 #'
 #' This function has to be used before the \code{read} functions. It sets the path to
-#' the Antares simulation to work on and other useful options (list of nodes,
-#' links, nodes with clusters, variables, etc.). 
+#' the Antares simulation to work on and other useful options (list of areas,
+#' links, areas with clusters, variables, etc.). 
 #' 
 #' @details 
 #' The simulation choosen with \code{setSimulationPath} becomes the default
@@ -38,11 +38,11 @@
 #'     each Monte-Carlo simulation.}
 #'   \item{mcYears}{Number of Monte-Carlo scenarii}
 #'   \item{start}{Date of the first day of the year in the simulation.}
-#'   \item{nodeList}{Vector of the available nodes}
+#'   \item{areaList}{Vector of the available areas}
 #'   \item{setList}{Vector of the available clusters}
 #'   \item{linkList}{Vector of the available links}
-#'   \item{nodesWithClusters}{Vector of nodes containing clusters}
-#'   \item{variables}{available variables for nodes, districts and links}
+#'   \item{areasWithClusters}{Vector of areas containing clusters}
+#'   \item{variables}{available variables for areas, districts and links}
 #'   \item{parameters}{Other parameters of the simulation.}
 #' 
 #' @seealso 
@@ -78,7 +78,7 @@
 #' # WORKING WITH MULTIPLE SIMULATIONS
 #' #----------------------------------
 #' # Let us assume ten simulations have been run and we want to collect the
-#' # variable "LOAD" for each node. We can create a list containing options
+#' # variable "LOAD" for each area. We can create a list containing options
 #' # for each simulation and iterate through this list.
 #' 
 #' opts <- lapply(1:10, function(i) {
@@ -86,7 +86,7 @@
 #' })
 #' 
 #' output <- lapply(opts, function(o) {
-#'   res <- readAntares(nodes = "all", select = "LOAD", timeStep = "monthly", opts = o)
+#'   res <- readAntares(areas = "all", select = "LOAD", timeStep = "monthly", opts = o)
 #'   # Add a column "simulation" containing the name of the simulation
 #'   res$simulation <- o$name
 #'   res
@@ -97,12 +97,12 @@
 #' 
 #' # Reshape output for easier comparisons: one line per timeId and one column
 #' # per simulation
-#' output <- dcast(output, timeId + nodeId ~ simulation, value.var = "LOAD")
+#' output <- dcast(output, timeId + areaId ~ simulation, value.var = "LOAD")
 #' 
 #' output
 #' 
 #' # Quick visualization
-#' matplot(output[node == node[1], !c("node", "timeId"), with = FALSE], 
+#' matplot(output[area == area[1], !c("area", "timeId"), with = FALSE], 
 #'         type = "l")
 #' }
 #' 
@@ -183,33 +183,33 @@ setSimulationPath <- function(path, simulation) {
 
   if (!synthesis & !yearByYear) stop("No results found")
 
-  # List of available nodes and links
+  # List of available areas and links
   opath2 <- file.path(opath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
 
-  nodeList <- list.files(file.path(opath2, "areas"))
-  setList <- nodeList[nodeList %like% "^@"]
-  nodeList <- nodeList[!nodeList %like% "^@"]
+  areaList <- list.files(file.path(opath2, "areas"))
+  setList <- areaList[areaList %like% "^@"]
+  areaList <- areaList[!areaList %like% "^@"]
 
   linkList <- list.files(file.path(opath2, "links"))
 
-  # Nodes containing clusters
-  hasClusters <- laply(file.path(opath2, "areas", nodeList), function(x) {
+  # Areas containing clusters
+  hasClusters <- laply(file.path(opath2, "areas", areaList), function(x) {
     f <- list.files(x)
     any(grepl("details", f))
   })
 
-  nodesWithClusters <- nodeList[hasClusters]
+  areasWithClusters <- areaList[hasClusters]
 
   # Available variables
   variables <- list()
 
-  # Available variables for nodes
-  d <- file.path(opath2, "areas", nodeList[1])
+  # Available variables for areas
+  d <- file.path(opath2, "areas", areaList[1])
   f <- list.files(d)
   f <- f[grep("values", f)]
   if (length(f) > 0) {
-    v <- .getOutputHeader(file.path(d, f[1]), "node")
-    variables$nodes <- setdiff(v, pkgEnv$idVars)
+    v <- .getOutputHeader(file.path(d, f[1]), "area")
+    variables$areas <- setdiff(v, pkgEnv$idVars)
   }
 
   # Available variables for links
@@ -239,10 +239,10 @@ setSimulationPath <- function(path, simulation) {
     antaresVersion = info$version,
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
-    nodeList = nodeList,
+    areaList = areaList,
     setList = setList,
     linkList = linkList,
-    nodesWithClusters = nodesWithClusters,
+    areasWithClusters = areasWithClusters,
     variables = variables,
     parameters = parameters
   )
@@ -262,7 +262,7 @@ setSimulationPath <- function(path, simulation) {
   study <- readIniFile(file.path(path, "study.antares"))
   params <- readIniFile(file.path(path, "settings/generaldata.ini"))
   
-  nodeList <- tolower(readLines(file.path(path, "input/areas/list.txt")))
+  areaList <- tolower(readLines(file.path(path, "input/areas/list.txt")))
   setList <- names(readIniFile(file.path(path, "input/areas/sets.ini")))
   
   linkList <- unlist(llply(list.files(file.path(path, "input/links")), function(f) {
@@ -284,10 +284,10 @@ setSimulationPath <- function(path, simulation) {
     antaresVersion = study$antares$version,
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
-    nodeList = nodeList,
+    areaList = areaList,
     setList = setList,
     linkList = linkList,
-    nodesWithClusters = NA
+    areasWithClusters = NA
   )
   
   class(res) <- c("simOptions")

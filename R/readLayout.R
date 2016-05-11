@@ -1,8 +1,8 @@
-#' Read nodes layout
+#' Read areas layout
 #'
 #' @description 
-#' This function reads in the input files of an antares study the current nodes
-#' layout, ie. the position of the nodes It may be useful for plotting the
+#' This function reads in the input files of an antares study the current areas
+#' layout, ie. the position of the areas It may be useful for plotting the
 #' network. 
 #' 
 #' Be aware that the layout is read in the input files so they may have
@@ -11,8 +11,8 @@
 #' @inheritParams readAntares
 #'
 #' @return A list with two elements:
-#' \item{nodes: }{A data.frame containing the name, the color and the coordinate
-#'    of each node}
+#' \item{areas: }{A data.frame containing the name, the color and the coordinate
+#'    of each area}
 #' \item{links: }{A data.frame containing the name, the coordinates of the origin
 #'    and the destination of each link}
 #'    
@@ -38,16 +38,16 @@
 #'
 readLayout <- function(opts = simOptions()) {
   
-  # nodes
+  # areas
   path <- file.path(opts$path, "../../input/areas")
-  nodes <- ldply(list.files(path), function(f) {
+  areas <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
 
     res <- as.data.frame(readIniFile(file.path(path, f, "ui.ini"))$ui)
-    res$node <- f
+    res$area <- f
     res$color <- rgb(res$color_r, res$color_g, res$color_b, maxColorValue = 255)
 
-    res[, c("node", "x", "y", "color")]
+    res[, c("area", "x", "y", "color")]
   })
 
   # liens
@@ -63,19 +63,19 @@ readLayout <- function(opts = simOptions()) {
     data.frame(link = paste(f, "-", to), from = f, to = to)
   })
 
-  links <- merge(links, nodes[,c("node", "x", "y")], by.x = "from", by.y="node")
-  links <- merge(links, nodes[,c("node", "x", "y")], by.x = "to", by.y="node",
+  links <- merge(links, areas[,c("area", "x", "y")], by.x = "from", by.y="area")
+  links <- merge(links, areas[,c("area", "x", "y")], by.x = "to", by.y="area",
                  suffixes = c("0", "1"))
 
-  list(nodes = nodes, links=links)
+  list(areas = areas, links=links)
 }
 
 # Fonction pour vérifier visuellement qu'importLayout fonctionne
 plotLayout <- function(layout) {
   if (missing(layout)) layout <- importLayout()
-  plot(layout$nodes$x, layout$nodes$y, type="n",xaxt='n',yaxt='n',pch='',ylab='',xlab='')
+  plot(layout$areas$x, layout$areas$y, type="n",xaxt='n',yaxt='n',pch='',ylab='',xlab='')
 
   with(layout$links, segments(x0, y0, x1, y1, col = gray(0.85)))
 
-  with(layout$nodes, points(x, y, pch=21, col=gray(0.6), bg = color, cex = 2))
+  with(layout$areas, points(x, y, pch=21, col=gray(0.6), bg = color, cex = 2))
 }

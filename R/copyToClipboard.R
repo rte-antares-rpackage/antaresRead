@@ -13,7 +13,7 @@
 #' an object used to select a method.
 #' 
 #' @param what
-#' character or numeric indicating which element to copy to clipboard (nodes,
+#' character or numeric indicating which element to copy to clipboard (areas,
 #' links, clusters or districts)
 #' 
 #' @param ... 

@@ -16,10 +16,10 @@
 #' \dontrun{
 #' setSimulationPath()
 #' 
-#' nodes <-readAntares()
-#' viewAntares(nodes)
+#' areas <-readAntares()
+#' viewAntares(areas)
 #' 
-#' output <- studyAntares(nodes="all", links = "all", clusters = "all")
+#' output <- studyAntares(areas="all", links = "all", clusters = "all")
 #' viewAntares(output) # Opens three data viewers for each element of output
 #' }
 #' 
