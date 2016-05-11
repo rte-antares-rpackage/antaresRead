@@ -205,10 +205,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     costs$area <- costs$to
     costs <- costs[, lapply(.SD, function(x) sum(x * prop)), by = byarea, .SDcols = c(varCost, "prop")]
     
-    for (v in varCost) {
-      x$areas[[v]] <- as.numeric(x$areas[[v]])
-      x$areas[costs[, mget(byarea)]][[v]] <- x$areas[costs[, mget(byarea)]][[v]] + costs[[v]]
-    }
+    x$areas[, `:=`(c(varCost), lapply(mget(varCost), as.numeric))]
+    x$areas[costs[, mget(byarea)], 
+            `:=`(c(varCost), as.data.table(mget(varCost)) + costs[, mget(varCost)])]
   }
   
   # Add a column for each storage/flexibility area

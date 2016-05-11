@@ -20,7 +20,8 @@ getLinks <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
   l <- opts$linkList
   lsplit <- tstrsplit(l, " - ")
 
-  areas <- getAreas(select, exclude, regexpSelect, regexpExclude, opts)
+  areas <- getAreas(select, exclude, regexpSelect = regexpSelect, 
+                    regexpExclude = regexpExclude, opts=opts)
   
   if(internalOnly) idx <- lsplit[[1]] %in% areas & lsplit[[2]] %in% areas
   else idx <- lsplit[[1]] %in% areas | lsplit[[2]] %in% areas
