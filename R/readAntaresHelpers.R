@@ -121,6 +121,16 @@
   res
 }
 
+.importOutputForDistrict <- function(district, synthesis, ...) {
+  res <- .importOutputForArea(paste("@", district), synthesis, ...)
+  if (is.null(res)) return(NULL)
+  
+  setnames(res, "area", "district")
+  res[, district := as.factor(gsub("^@ ", "", district))]
+  
+  res
+}
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the clusters of one area

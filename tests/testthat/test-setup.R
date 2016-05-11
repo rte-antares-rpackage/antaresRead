@@ -17,11 +17,12 @@ trueOpts <- list(
   firstWeekday = "Monday",
   areaList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 
                "psp out-2"),
-  setList = "@ a and b together",
+  setList = "a and b together",
   linkList = c("a - a_offshore", "a - b", "a - psp in", "a - psp out", "b - c", 
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
-  areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2")
+  areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2"),
+  districtsDef = data.table(district = as.factor("a and b together"), area = as.factor(c("a", "b")))
 )
 class(trueOpts) <- "simOptions"
 

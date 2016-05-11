@@ -189,8 +189,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
-  if (is.null(areas) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
-    stop("When misc, hydroStorage, hydroStorageMaxPower or reserve is TRUE, argument 'areas' needs to be specified.")
+  if ((is.null(areas) & is.null(districts)) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
+    stop("When misc, hydroStorage, hydroStorageMaxPower or reserve is TRUE, arguments 'areas' or 'districts' need to be specified.")
   }
   if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
   if (is.null(clusters) & thermalAvailabilities) stop("When 'thermalAvailabilities' is TRUE, argument 'clusters' needs to be specified.")
@@ -270,14 +270,28 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   .addOutputToRes("areas", areas, .importOutputForArea, select$areas)
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
-  .addOutputToRes("districts", districts, .importOutputForArea, select$districts)
+  .addOutputToRes("districts", districts, .importOutputForDistrict, select$districts)
   
-  # Add inputs
+  # Add inputs to the results.
+  # If the user asks districts, we import input for the areas of the districts
+  # Then we agregate by district.
+  if (!is.null(districts)) {
+    districts <- opts$districtsDef[district %in% districts]
+    areas <- union(areas, districts$area)
+  }
+  
   if (misc) {
     .addOutputToRes("misc", areas, .importMisc, NA)
-    res$areas <- merge(res$areas, res$misc, by=c("area", "timeId"))
+    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$misc, by=c("area", "timeId"))
+    if (!is.null(districts)) {
+      res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
+      res$misc[, area := NULL]
+      res$misc <- res$misc[, lapply(.SD, sum), by = .(district, timeId)]
+      res$districts <- merge(res$districts, res$misc, by = c("district", "timeId"))
+    }
     res$misc <- NULL
   }
+  
   if (thermalAvailabilities) {
     .addOutputToRes("thermalAvailabilities", clusters, .importThermal, NA)
     
@@ -287,22 +301,46 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$clusters <- merge(res$clusters, res$thermalAvailabilities, by = by)
     res$thermalAvailabilities <- NULL
   }
+  
   if (hydroStorage) {
     .addOutputToRes("hydroStorage", areas, .importHydroStorage, NA)
     by <- c("area", "timeId")
     if (!synthesis) by <- append(by, "mcYear")
-    res$areas <- merge(res$areas, res$hydroStorage, by = by)
+    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$hydroStorage, by = by)
+    
+    if (!is.null(districts)) {
+      by <- c("district", "timeId")
+      if (!synthesis) by <- append(by, "mcYear")
+      res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
+      res$hydroStorage[, area := NULL]
+      res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = mget(by)]
+      res$districts <- merge(res$districts, res$hydroStorage, by = by)
+    }
+    
     res$hydroStorage <- NULL
   }
+  
   if (hydroStorageMaxPower) {
     .addOutputToRes("hydroStorageMaxPower", areas, .importHydroStorageMaxPower, NA)
-    res$areas <- merge(res$areas, res$hydroStorageMaxPower, by=c("area", "timeId"))
+    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$hydroStorageMaxPower, by=c("area", "timeId"))
+    if (!is.null(districts)) {
+      res$hydroStorageMaxPower <- merge(res$hydroStorageMaxPower, districts, by = "area", allow.cartesian = TRUE)
+      res$hydroStorageMaxPower[, area := NULL]
+      res$hydroStorageMaxPower <- res$hydroStorageMaxPower[, lapply(.SD, sum), by = .(district, timeId)]
+      res$districts <- merge(res$districts, res$hydroStorageMaxPower, by = c("district", "timeId"))
+    }
     res$hydroStorageMaxPower <- NULL
   }
   
   if (reserve) {
     .addOutputToRes("reserve", areas, .importReserves, NA)
-    res$areas <- merge(res$areas, res$reserve, by=c("area", "timeId"))
+    if(!is.null(res$areas)) res$areas <- merge(res$areas, res$reserve, by=c("area", "timeId"))
+    if (!is.null(districts)) {
+      res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)
+      res$reserve[, area := NULL]
+      res$reserve <- res$reserve[, lapply(.SD, sum), by = .(district, timeId)]
+      res$districts <- merge(res$districts, res$reserve, by = c("district", "timeId"))
+    }
     res$reserve <- NULL
   }
 
@@ -366,6 +404,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       
       res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
       
+    }
+    
+    if (!is.null(districts)) {
+      res$mustRun <- merge(res$mustRun, districts, by = "area", allow.cartesian = TRUE)
+      res$mustRun[, area := NULL]
+      if (!is.null(res$mustRun$cluster)) res$mustRun[, cluster := NULL]
+      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = .(district, timeId)]
+      res$districts <- merge(res$districts, res$mustRun, by = c("district", "timeId"))
     }
     
     res$mustRun <- NULL

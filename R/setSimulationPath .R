@@ -240,9 +240,10 @@ setSimulationPath <- function(path, simulation) {
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
     areaList = areaList,
-    setList = setList,
+    setList = gsub("^@ ?", "", setList),
     linkList = linkList,
     areasWithClusters = areasWithClusters,
+    districtsDef = .readDistrictsDef(file.path(path, "../../input")),
     variables = variables,
     parameters = parameters
   )
@@ -287,7 +288,8 @@ setSimulationPath <- function(path, simulation) {
     areaList = areaList,
     setList = setList,
     linkList = linkList,
-    areasWithClusters = NA
+    areasWithClusters = NA,
+    districtsDef = .readDistrictsDef(file.path(path, "input"))
   )
   
   class(res) <- c("simOptions")
@@ -327,3 +329,18 @@ setSimulationPath <- function(path, simulation) {
   lubridate::month(start) <-  which(mNames == p$`first-month-in-year`)
   as.POSIXlt(start, tz = "UTC")
 }
+
+
+# Private function that reads the defenition of the districts
+.readDistrictsDef <- function(inputPath) {
+  districts <- readIniFile(file.path(inputPath, "areas/sets.ini"))
+  res <- ldply(names(districts), function(n) {
+    x <- districts[[n]]
+    areas <- unlist(x[names(x) == "+"], use.names = FALSE)
+    if (length(areas) == 0) return(NULL)
+    
+    data.frame(district = n, area = areas)
+  })
+  data.table(res)
+}
+
