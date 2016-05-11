@@ -387,31 +387,43 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     
     res$mustRun$mustRunTotal <- res$mustRun$mustRun + res$mustRun$mustRunPartial
     
-    res$mustRun <- res$mustRun[, .(area, cluster, timeId, mustRun, mustRunPartial, mustRunTotal)]
+    if (synthesis) {
+      res$mustRun <- res$mustRun[, .(area, cluster, timeId, mustRun, mustRunPartial, mustRunTotal)]
+    } else {
+      res$mustRun <- res$mustRun[, .(area, cluster, timeId, mcYear, mustRun, mustRunPartial, mustRunTotal)]
+    }
+    
     
     res$mustRun <- changeTimeStep(res$mustRun, timeStep, "hourly", opts = opts)
     
     if (!is.null(res$clusters)) {
-      res$clusters <- merge(res$clusters, res$mustRun, by = c("area", "cluster", "timeId"))
+      by <- c("area", "cluster", "timeId")
+      if (!synthesis) by <- c(by, "mcYear")
+      res$clusters <- merge(res$clusters, res$mustRun, by = by)
     }
     
     if (!is.null(res$areas)) {
+      by <- c("area", "timeId")
+      if (!synthesis) by <- c(by, "mcYear")
       res$mustRun <- res$mustRun[,.(mustRun = sum(mustRun), 
                                     mustRunPartial = sum(mustRunPartial),
                                     mustRunTotal = sum(mustRunTotal)), 
-                                 keyby = .(area, timeId)]
-      res$areas <- merge(res$areas, res$mustRun, by = c("area", "timeId"), all.x = TRUE)
+                                 keyby = mget(by)]
+      res$areas <- merge(res$areas, res$mustRun, by = by, all.x = TRUE)
       
       res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
       
     }
     
     if (!is.null(districts)) {
+      by <- c("district", "timeId")
+      if (!synthesis) by <- c(by, "mcYear")
       res$mustRun <- merge(res$mustRun, districts, by = "area", allow.cartesian = TRUE)
       res$mustRun[, area := NULL]
       if (!is.null(res$mustRun$cluster)) res$mustRun[, cluster := NULL]
-      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = .(district, timeId)]
-      res$districts <- merge(res$districts, res$mustRun, by = c("district", "timeId"))
+      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = mget(by)]
+      res$districts <- merge(res$districts, res$mustRun, by = by, all.x = TRUE)
+      res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
     
     res$mustRun <- NULL
