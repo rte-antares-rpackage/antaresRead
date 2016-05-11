@@ -2,7 +2,7 @@
 % Please edit documentation in R/readLayout.R
 \name{readLayout}
 \alias{readLayout}
-\title{Read nodes layout}
+\title{Read areas layout}
 \usage{
 readLayout(opts = simOptions())
 }
@@ -12,8 +12,8 @@ readLayout(opts = simOptions())
 }
 \value{
 A list with two elements:
-\item{nodes: }{A data.frame containing the name, the color and the coordinate
-   of each node}
+\item{areas: }{A data.frame containing the name, the color and the coordinate
+   of each area}
 \item{links: }{A data.frame containing the name, the coordinates of the origin
    and the destination of each link}
    
@@ -22,8 +22,8 @@ antares study. It is possible to specify another study with the parameter
 \code{opts}.
 }
 \description{
-This function reads in the input files of an antares study the current nodes
-layout, ie. the position of the nodes It may be useful for plotting the
+This function reads in the input files of an antares study the current areas
+layout, ie. the position of the areas It may be useful for plotting the
 network. 
 
 Be aware that the layout is read in the input files so they may have

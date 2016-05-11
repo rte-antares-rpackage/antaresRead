@@ -1,3 +1,21 @@
+Changes in version 0.5 (2016-05-11)
+
+BREAKING CHANGES:
+* To be consistent with Antares, 'node' has been replaced by 'area' everywhere in the package.
+* Column 'MWh' is now named 'production' when reading clusters output.
+
+NEW FEATURES:
+* new function 'readInputTS' to read input time series (without output time series)
+* 'setSimulationPath' now accepts two new values for the argument "simulation": 0 and "input". These values indicate that the user is not interested by the results of any simulation and only wants to read input data.
+* changeTimeStep now accepts for parameter 'fun' a vector of function names that indicate how to aggregate/disagregate each column.
+* getAreas has a new argument "withClustersOnly" to select areas containing clusters
+* readAntares can now also add input time series to districts like it does for areas
+
+BUGFIXES:
+* 'copyToClipboard' was copying the word "txt" instead of copying data
+* 'removeVirtualNodes' was not creating some columns for production virtual nodes.
+* The option 'mustRun' in readAntares was not functionning correctly
+
 Changes in version 0.4 (2016-04-29)
 
 BREAKING CHANGES:

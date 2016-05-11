@@ -15,7 +15,7 @@ A data.table with one line per cluster. The columns of the data.table may
 change between different projects, but there will always be the following 
 columns:
 
-\item{node}{Name of the node containing the cluster}
+\item{area}{Name of the area containing the cluster}
 \item{cluster}{Name of the cluster}
 \item{group}{Type of cluster (gaz, nuclear, etc.)}
 \item{unitcount}{number of production units}
