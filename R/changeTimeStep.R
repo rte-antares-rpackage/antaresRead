@@ -31,12 +31,12 @@
 #' \dontrun{
 #' setSimulationPath()
 #' 
-#' nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
-#' nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
+#' areasH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
+#' areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 #' 
-#' nodesDAgg <- changeTimeStep(nodesH, "daily")
+#' areasDAgg <- changeTimeStep(areasH, "daily")
 #' 
-#' all.equal(nodesDAgg$LOAD, nodesD$LOAD)
+#' all.equal(areasDAgg$LOAD, areasD$LOAD)
 #' }
 #' 
 #' @export
@@ -106,6 +106,8 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     x <- x[, mapply(function(x, f) {f(x, .N)}, x = .SD, f = ifuns[fun], SIMPLIFY=FALSE), by = eval(by)]
     
     x$timeId <- timeId
+    
+    .setcolorder(x, c(idVars, "timeId"))
   }
   
   x$oldTimeId <- NULL

@@ -1,69 +1,69 @@
-#' Remove virtual nodes
+#' Remove virtual areas
 #' 
-#' This function removes virtual nodes from an \code{antaresDataList} object and
-#' corrects the data for the real nodes. The \code{antaresDataList} object 
-#' should contain node and link data to function correctly.
+#' This function removes virtual areas from an \code{antaresDataList} object and
+#' corrects the data for the real areas. The \code{antaresDataList} object 
+#' should contain area and link data to function correctly.
 #' 
 #' @param x An object of class \code{antaresDataList} with at least components 
-#'   \code{nodes} and \code{links}.
+#'   \code{areas} and \code{links}.
 #' @param storageFlexibility A vector containing the names of the virtual 
-#'   storage/flexibility nodes.
+#'   storage/flexibility areas.
 #' @param production A vector containing the names of the virtual production 
-#'   nodes.
-#' @param reassignCosts If TRUE, the production costs of the virtual nodes are 
-#'   reallocated to the real nodes they are connected to. If the virtual nodes 
+#'   areas.
+#' @param reassignCosts If TRUE, the production costs of the virtual areas are 
+#'   reallocated to the real areas they are connected to. If the virtual areas 
 #'   are connected to a virtual hub, their costs are first reallocated to the 
-#'   hub and then the costs of the hub are reallocated to the real nodes.
+#'   hub and then the costs of the hub are reallocated to the real areas.
 #'   
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' An \code{antaresDataList} object in which virtual nodes have been removed and
+#' An \code{antaresDataList} object in which virtual areas have been removed and
 #' data of the real has been corrected. See details for an explanation of the
 #' corrections.
 #'   
 #' @details 
-#' Two types of virtual nodes have been defined corresponding to different types
+#' Two types of virtual areas have been defined corresponding to different types
 #' of modeling in Antares and different types of post-treatment to do:
 #'   
 #' \itemize{ 
-#'   \item Flexibility/storage nodes are nodes created to model 
+#'   \item Flexibility/storage areas are areas created to model 
 #'     pumping unit or any other flexibility that behave as a storage. For those 
-#'     virtual nodes, the important results are flows on the links. 
-#'   \item Production nodes are nodes created to isolate some generation from 
-#'     the “real” nodes. They can be isolate for several reasons: to distinguish 
+#'     virtual areas, the important results are flows on the links. 
+#'   \item Production areas are areas created to isolate some generation from 
+#'     the “real” areas. They can be isolate for several reasons: to distinguish 
 #'     time-series (for example wind onshore/offshore), to select some specific 
 #'     unit to participate to day-ahead reserve, etc.
 #' }
 #'   
-#' \code{removeVirtualNodes} performs different corrections:
+#' \code{removeVirtualAreas} performs different corrections:
 #'   
 #' \itemize{ 
-#'   \item Correct the balance of the real nodes by removing the flows
-#'     to or from virtual nodes.
+#'   \item Correct the balance of the real areas by removing the flows
+#'     to or from virtual areas.
 #'   
 #'   \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
-#'     virtual nodes are reassigned to the real nodes they are connected to. The
+#'     virtual areas are reassigned to the real areas they are connected to. The
 #'     affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
-#'     and \code{NP COST}. If a virtual node is connected to a single real node,
-#'     all its costs are attributed to the real node. If it is connected to
-#'     several real nodes, then costs at a given time step are divided between
-#'     them proportionally to the flows between them and the virtual node.
+#'     and \code{NP COST}. If a virtual area is connected to a single real area,
+#'     all its costs are attributed to the real area. If it is connected to
+#'     several real areas, then costs at a given time step are divided between
+#'     them proportionally to the flows between them and the virtual area.
 #'   
-#'   \item For each storage/flexibility node, a column named like the node is 
-#'     created. It contains the values of the flow between the virtual node and 
-#'     the real nodes. This column is interpreted as a production of
-#'     electricity: it is positive if the flow from the virtual node to the real
-#'     node is positive and negative otherwise.
+#'   \item For each storage/flexibility area, a column named like the area is 
+#'     created. It contains the values of the flow between the virtual area and 
+#'     the real areas. This column is interpreted as a production of
+#'     electricity: it is positive if the flow from the virtual area to the real
+#'     area is positive and negative otherwise.
 #'   
 #'   \item If the parameter \code{production} is specified, the functions
 #'     creates new columns names \code{*_virtual} where "\code{*}" is a type of 
-#'     production (wind, solar, nuclear, ...). For a given node, these columns 
-#'     contain the production of the virtual production nodes connected to it.
+#'     production (wind, solar, nuclear, ...). For a given area, these columns 
+#'     contain the production of the virtual production areas connected to it.
 #'     If a column contains only zeros, then it is removed in the returned
 #'     object.
 #'   
-#'   \item Finally, virtual nodes and the links connected to them are removed
+#'   \item Finally, virtual areas and the links connected to them are removed
 #'     from the data. 
 #' }
 #'   
@@ -72,53 +72,53 @@
 #'   
 #' \itemize{ 
 #'   \item storage/flexibility
-#'     nodes can be connected to other storage/flexibility nodes (hubs), but at 
-#'     least one of them is connected to a real node. That means that there is
-#'     no group of virtual nodes disconnected from the real network. If such a
+#'     areas can be connected to other storage/flexibility areas (hubs), but at 
+#'     least one of them is connected to a real area. That means that there is
+#'     no group of virtual areas disconnected from the real network. If such a
 #'     group exists, you can either remove them manually or simply not import
 #'     them.
-#'   \item production nodes are connected to one and only one real node. They
-#'     cannot be connected to virtual nodes. But a real node may by connected to
-#'     several production nodes.
+#'   \item production areas are connected to one and only one real area. They
+#'     cannot be connected to virtual areas. But a real area may by connected to
+#'     several production areas.
 #' }
 #'   
 #' @examples 
 #' \dontrun{
 #' 
-#' # Assume we have a network with two virtual nodes acting as pump storage and
-#' # a node representing offshore production
+#' # Assume we have a network with two virtual areas acting as pump storage and
+#' # an area representing offshore production
 #' #
 #' #  offshore
 #' #     |
-#' # real node - psp in
+#' # real area - psp in
 #' #           \
 #' #             psp out
 #' #
 #' 
-#' data <- readAntares(nodes="all", links="all")
+#' data <- readAntares(areas="all", links="all")
 #' 
-#' # Remove pump storage virtual nodes
+#' # Remove pump storage virtual areas
 #' 
-#' correctedData <- removeVirtualNodes(data, 
+#' correctedData <- removeVirtualAreas(data, 
 #'                                     storageFlexibility = c("psp in", "psp out"),
 #'                                     production = "offshore")
 #' }
 #' 
 #' @export
 #' 
-removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL, 
+removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL, 
                                reassignCosts = FALSE) {
   
   opts <- simOptions(x)
   
-  # check x is an antaresData object with elements nodes and links
-  if (!is(x, "antaresDataList") || is.null(x$nodes) || is.null(x$links))
-    stop("x has to be an 'antaresDataList' object with elements 'nodes' and 'links'")
+  # check x is an antaresData object with elements areas and links
+  if (!is(x, "antaresDataList") || is.null(x$areas) || is.null(x$links))
+    stop("x has to be an 'antaresDataList' object with elements 'areas' and 'links'")
   
-  nodeList <- unique(x$nodes$node)
+  areaList <- unique(x$areas$area)
   
-  vnodes <- c(storageFlexibility, production) # list of virtual nodes that need to be removed at the end
-  if (is.null(vnodes)) stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
+  vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
+  if (is.null(vareas)) stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
   if (attr(x, "synthesis")) {
     
@@ -128,11 +128,11 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   }
   
   bylink <- c("link", by)
-  bynode <- c("node", by)
-  setkeyv(x$nodes, bynode)
+  byarea <- c("area", by)
+  setkeyv(x$areas, byarea)
   
-  # Create a table containing all links that connect virtual nodes to other nodes
-  linkList <- ldply(vnodes, function(vn) {
+  # Create a table containing all links that connect virtual areas to other areas
+  linkList <- ldply(vareas, function(vn) {
     ldply(getLinks(vn, opts=opts, regexpSelect = FALSE), function(x) {
       xx <- strsplit(x, " - ")[[1]]
       if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
@@ -144,33 +144,33 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Treatment of hubs:
   #
-  # If a virtual node is only connected to virtual nodes then it should be a
-  # "very virtual" node and the nodes it is connected to should be hubs. 
-  # (by assumption there are only two levels of virtual nodes)
-  # In such case we remove the "very virtual" nodes by using removeVirtualNodes
-  # and treating the hubs as real nodes. This way, the costs of the very
-  # virtual nodes are agregated in the hubs.
-  # Finally we run treat the hubs as normal virtual nodes and continue the
+  # If a virtual area is only connected to virtual areas then it should be a
+  # "very virtual" area and the areas it is connected to should be hubs. 
+  # (by assumption there are only two levels of virtual areas)
+  # In such case we remove the "very virtual" areas by using removeVirtualAreas
+  # and treating the hubs as real areas. This way, the costs of the very
+  # virtual areas are agregated in the hubs.
+  # Finally we run treat the hubs as normal virtual areas and continue the
   # execution of the function.
-  linkList$connectedToVirtualNode <- linkList$to %in% storageFlexibility
+  linkList$connectedToVirtualArea <- linkList$to %in% storageFlexibility
   
-  connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualNode)), 
+  connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualArea)), 
                              by = from]
   
   if (any(connectedToHub$connectedToHub)) {
     
-    veryVirtualNodes <- connectedToHub[connectedToHub == TRUE]$from
+    veryVirtualAreas <- connectedToHub[connectedToHub == TRUE]$from
     
-    # Remove very virtual nodes from data
-    x <- removeVirtualNodes(x, storageFlexibility = veryVirtualNodes)
+    # Remove very virtual areas from data
+    x <- removeVirtualAreas(x, storageFlexibility = veryVirtualAreas)
     
     # Update parameters
     storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
-    vnodes <- c(storageFlexibility, production) 
-    linkList <- linkList[from %in% vnodes]
+    vareas <- c(storageFlexibility, production) 
+    linkList <- linkList[from %in% vareas]
     
-    # Remove columns added for very virtual nodes
-    for (v in veryVirtualNodes) x$nodes[[v]] <- NULL
+    # Remove columns added for very virtual areas
+    for (v in veryVirtualAreas) x$areas[[v]] <- NULL
   }
   
   linkList <- merge(linkList, x$links[, mget(c(bylink, "FLOW LIN."))], by = "link")
@@ -179,66 +179,65 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
   linkList$flow <- linkList[, `FLOW LIN.` * ifelse(direction == "in", -1, 1)]
   
   # Correct balance
-  if (! is.null(x$nodes$BALANCE)) {
-    x$nodes$BALANCE <- as.numeric(x$nodes$BALANCE)
-    linkList$node <- linkList$to
-    corrections <- linkList[, .(correction = sum(flow)), keyby = mget(bynode)]
-    x$nodes <- merge(x$nodes, corrections, by = bynode, all.x = TRUE)
-    x$nodes[!is.na(correction), BALANCE := BALANCE + correction]
-    x$nodes$correction <- NULL
+  if (! is.null(x$areas$BALANCE)) {
+    x$areas$BALANCE <- as.numeric(x$areas$BALANCE)
+    linkList$area <- linkList$to
+    corrections <- linkList[, .(correction = sum(flow)), keyby = mget(byarea)]
+    x$areas <- merge(x$areas, corrections, by = byarea, all.x = TRUE)
+    x$areas[!is.na(correction), BALANCE := BALANCE + correction]
+    x$areas[, correction := NULL]
   }
   
   # Correct costs and CO2
   if (reassignCosts) {
-    varCost <- intersect(names(x$nodes), c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"))
+    varCost <- intersect(names(x$areas), c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"))
     
-    costs <- x$nodes[node %in% vnodes, mget(c(bynode, varCost))]
-    linkList$node <- linkList$from
-    costs <- merge(linkList[, mget(c(bynode, "to", "flow"))], costs, by = bynode)
-    linkList$node <- NULL
+    costs <- x$areas[area %in% vareas, mget(c(byarea, varCost))]
+    linkList$area <- linkList$from
+    costs <- merge(linkList[, mget(c(byarea, "to", "flow"))], costs, by = byarea)
+    linkList$area <- NULL
     
-    # Compute the proportion of the cost to repercute on each real node
-    costs[, totalFlow := sum(abs(flow)), by = mget(bynode)]
+    # Compute the proportion of the cost to repercute on each real area
+    costs[, totalFlow := sum(abs(flow)), by = mget(byarea)]
     costs$prop <- ifelse(costs$totalFlow == 0, 1, abs(costs$flow / costs$totalFlow))
     
-    # Aggregate corrections by real node
-    costs$node <- costs$to
-    costs <- costs[, lapply(.SD, function(x) sum(x * prop)), by = bynode, .SDcols = c(varCost, "prop")]
+    # Aggregate corrections by real area
+    costs$area <- costs$to
+    costs <- costs[, lapply(.SD, function(x) sum(x * prop)), by = byarea, .SDcols = c(varCost, "prop")]
     
-    for (v in varCost) {
-      x$nodes[[v]] <- as.numeric(x$nodes[[v]])
-      x$nodes[costs[, mget(bynode)]][[v]] <- x$nodes[costs[, mget(bynode)]][[v]] + costs[[v]]
-    }
+    x$areas[, `:=`(c(varCost), lapply(mget(varCost), as.numeric))]
+    x$areas[costs[, mget(byarea)], 
+            `:=`(c(varCost), as.data.table(mget(varCost)) + costs[, mget(varCost)])]
   }
   
-  # Add a column for each storage/flexibility node
+  # Add a column for each storage/flexibility area
   if (!is.null(storageFlexibility)) {
-    linkList$node <- linkList$to
+    linkList$area <- linkList$to
     
-    formula <- sprintf("%s ~ from", paste(bynode, collapse = " + "))
+    formula <- sprintf("%s ~ from", paste(byarea, collapse = " + "))
     
-    tmp <- dcast(linkList[from %in% storageFlexibility, mget(c("from", bynode, "flow"))], 
+    tmp <- dcast(linkList[from %in% storageFlexibility, mget(c("from", byarea, "flow"))], 
                  as.formula(formula), value.var = "flow")
     
-    x$nodes <- merge(x$nodes, tmp, by = bynode, all.x = TRUE)
+    x$areas <- merge(x$areas, tmp, by = byarea, all.x = TRUE)
     
     for (v in storageFlexibility) {
-      x$nodes[[v]][is.na(x$nodes[[v]])] <- 0
+      x$areas[[v]][is.na(x$areas[[v]])] <- 0
     }
   }
   
-  # Aggregate production of production virtual nodes and add columns for each 
+  # Aggregate production of production virtual areas and add columns for each 
   # type of production.
   if (!is.null(production)) {
     
     linkListProd <- linkList[from %in% production]
     
-    # Add virtual productions columns to x$nodes
-    prodVars <- intersect(names(x$nodes), c(pkgEnv$varAliases$generation, pkgEnv$varAliases$`net load`, "SPIL. ENRG"))
+    # Add virtual productions columns to x$areas
+    prodVars <- intersect(names(x$areas), c(pkgEnv$varAliases$generation, pkgEnv$varAliases$`net load`, "SPIL. ENRG"))
     prodVars <- prodVars[prodVars != "LOAD"]
-    vars <- c(bynode, prodVars)
+    vars <- c(byarea, prodVars)
     
-    virtualProd <- x$nodes[node %in% production, mget(vars)]
+    virtualProd <- x$areas[area %in% production, mget(vars)]
     
     # Remove columns containing only zeros
     for (v in prodVars) {
@@ -250,36 +249,36 @@ removeVirtualNodes <- function(x, storageFlexibility = NULL, production = NULL,
     setnames(virtualProd, prodVars, paste0(prodVars, "_virtual"))
     
     # Merging with original data
-    # /!\ Undesired results if multiple real nodes connected to the same
-    # virtual node.
-    setnames(virtualProd, "node", "from")
-    linkListProd$node <- linkListProd$to
+    # /!\ Undesired results if multiple real areas connected to the same
+    # virtual area.
+    setnames(virtualProd, "area", "from")
+    linkListProd$area <- linkListProd$to
     virtualProd <- merge(virtualProd, 
-                         linkListProd[, mget(c("from", bynode))], 
+                         linkListProd[, mget(c("from", byarea))], 
                          by = c("from", by))
     virtualProd$from <- NULL
-    virtualProd <- virtualProd[, lapply(.SD, sum), by = mget(bynode)]
-    x$nodes <- merge(x$nodes, virtualProd, by = bynode, all.x = TRUE)
+    virtualProd <- virtualProd[, lapply(.SD, sum), by = mget(byarea)]
+    x$areas <- merge(x$areas, virtualProd, by = byarea, all.x = TRUE)
     
     for (v in paste0(prodVars, "_virtual")) {
-      x$nodes[[v]][is.na(x$nodes[[v]])] <- 0
+      x$areas[[v]][is.na(x$areas[[v]])] <- 0
     }
   }
   
-  # Put clusters of the virtual nodes in the corresponding real ndoes
+  # Put clusters of the virtual areas in the corresponding real ndoes
   if (!is.null(x$clusters) & !is.null(x$production)) {
     linkListProd <- linkList[from %in% production]
-    linkListProd$node <- linkListProd$from
-    x$clusters <- merge(x$clusters, linkListProd[, mget(c(bynode, "to"))],
-                        by = bynode, all.x = TRUE)
-    x$clusters[!is.na(to), node := to]
+    linkListProd$area <- linkListProd$from
+    x$clusters <- merge(x$clusters, linkListProd[, mget(c(byarea, "to"))],
+                        by = byarea, all.x = TRUE)
+    x$clusters[!is.na(to), area := to]
     x$clusters$to <- NULL
   }
   
-  # Remove all data about virtual nodes in x
+  # Remove all data about virtual areas in x
   for (n in names(x)) {
-    if (!is.null(x[[n]]$node)) x[[n]] <- x[[n]][!node %in% vnodes]
-    if (!is.null(x[[n]]$link)) x[[n]] <- x[[n]][!link %in% getLinks(vnodes)]
+    if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
+    if (!is.null(x[[n]]$link)) x[[n]] <- x[[n]][!link %in% getLinks(vareas)]
   }
   
   x

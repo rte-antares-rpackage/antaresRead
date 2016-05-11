@@ -14,7 +14,7 @@ copyToClipboard(x, ...)
 
 \item{...}{arguments passed to \code{\link{write.table}}}
 
-\item{what}{character or numeric indicating which element to copy to clipboard (nodes,
+\item{what}{character or numeric indicating which element to copy to clipboard (areas,
 links, clusters or districts)}
 }
 \value{

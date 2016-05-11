@@ -11,23 +11,23 @@ readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   "annual"), simplify = TRUE, parallel = FALSE, showProgress = TRUE)
 }
 \arguments{
-\item{load}{vector of nodes names for which load time series must be read.}
+\item{load}{vector of areas names for which load time series must be read.}
 
-\item{thermalAvailabilities}{vector of nodes names for which thermal availabilities of clusters must be read.}
+\item{thermalAvailabilities}{vector of areas names for which thermal availabilities of clusters must be read.}
 
-\item{ror}{vector of nodes names for which run of river time series must be read.}
+\item{ror}{vector of areas names for which run of river time series must be read.}
 
-\item{hydroStorage}{vector of nodes names for which hydrolic storage time series must be read.}
+\item{hydroStorage}{vector of areas names for which hydrolic storage time series must be read.}
 
-\item{hydroStorageMaxPower}{vector of nodes names for which hydrolic storage maximum power time series must be read.}
+\item{hydroStorageMaxPower}{vector of areas names for which hydrolic storage maximum power time series must be read.}
 
-\item{wind}{vector of nodes names for which wind time series must be read}
+\item{wind}{vector of areas names for which wind time series must be read}
 
-\item{solar}{vector of nodes names for which solar time series must be read}
+\item{solar}{vector of areas names for which solar time series must be read}
 
-\item{misc}{vector of nodes names for which misc time series must be read}
+\item{misc}{vector of areas names for which misc time series must be read}
 
-\item{reserve}{vector of nodes names for which reserve time series must be read}
+\item{reserve}{vector of areas names for which reserve time series must be read}
 
 \item{linkCapacity}{vector of links names for which links characteristics time series must be read}
 
@@ -60,9 +60,9 @@ project. But contrary to \code{\link{readAntares}}, it only reads time series
 stored in the input folder, so it can work in "input" mode.
 }
 \note{
-All parameters expecting a vector of nodes or links names also accept the
+All parameters expecting a vector of areas or links names also accept the
 special value "all". It indicates the function to read the desired time 
-series for all nodes or links.
+series for all areas or links.
 }
 \examples{
 \dontrun{
@@ -76,19 +76,19 @@ setSimulationPath("path_to_the_study", "input")
 # Read load time series
 readInputTS(load = "all")
 
-# Read hydrolic storage and maximum power:
+# Read hydrolic storage and maximum power in the same call:
 readInputTS(hydroStorage = "all", hydroStorageMaxPower = "all")
 
-# Change time step
-myNode <- readInputTS(load= "myNode", timeStep = "monthly")
+# Use a different time step
+myArea <- readInputTS(load= "myArea", timeStep = "monthly")
 
 # Quick plot to visualize the variability of the series
-matplot(myNode[, - (1:2), with = FALSE], type = "l")
+matplot(myArea[, - (1:2), with = FALSE], type = "l")
 }
 
 }
 \seealso{
 \code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
-\code{\link{getNodes}}, \code{\link{getLinks}}
+\code{\link{getAreas}}, \code{\link{getLinks}}
 }
 

@@ -14,7 +14,7 @@
 #' change between different projects, but there will always be the following 
 #' columns:
 #' 
-#' \item{node}{Name of the node containing the cluster}
+#' \item{area}{Name of the area containing the cluster}
 #' \item{cluster}{Name of the cluster}
 #' \item{group}{Type of cluster (gaz, nuclear, etc.)}
 #' \item{unitcount}{number of production units}
@@ -47,16 +47,16 @@
 readClusterDesc <- function(opts = simOptions()) {
   path <- file.path(opts$path, "../../input/thermal/clusters")
 
-  nodes <- list.files(path)
+  areas <- list.files(path)
 
-  res <- ldply(nodes, function(x) {
+  res <- ldply(areas, function(x) {
     clusters <- readIniFile(file.path(path, x, "list.ini"))
 
     if (length(clusters) == 0) return(NULL)
 
     clusters <- ldply(clusters, as.data.frame)
     clusters$.id <- NULL
-    clusters$node <- x
+    clusters$area <- x
 
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })

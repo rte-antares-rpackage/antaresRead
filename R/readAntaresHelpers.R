@@ -6,7 +6,7 @@
 #' @param path
 #' Path of the output file
 #' @param objectName
-#' (character) object type represented in the file (node ou link)
+#' (character) object type represented in the file (area ou link)
 #'
 #' @return
 #' Vector containing the generated column names.
@@ -25,7 +25,7 @@
 #'
 #' Private function used to import the results of a simulation. The type of result
 #' is determined by the arguments "folder" and "file"
-#' - "areas", "values"  => nodes
+#' - "areas", "values"  => areas
 #' - "areas", "details" => clusters
 #' - "links", "values"  => links
 #'
@@ -103,17 +103,17 @@
   res
 }
 
-#' .importOutputForNode
+#' .importOutputForArea
 #'
-#' Private function used to import the output for one node.
+#' Private function used to import the output for one area.
 #'
 #' @return
 #' a data.table
 #'
 #' @noRd
 #'
-.importOutputForNode <- function(node, synthesis, ...) {
-  res <- .importOutput("areas", "values", node, "node", synthesis, ...)
+.importOutputForArea <- function(area, synthesis, ...) {
+  res <- .importOutput("areas", "values", area, "area", synthesis, ...)
   if (is.null(res)) return (NULL)
 
   if (!synthesis)  res <- rbindlist(res)
@@ -121,17 +121,27 @@
   res
 }
 
+.importOutputForDistrict <- function(district, synthesis, ...) {
+  res <- .importOutputForArea(paste("@", district), synthesis, ...)
+  if (is.null(res)) return(NULL)
+  
+  setnames(res, "area", "district")
+  res[, district := as.factor(gsub("^@ ", "", district))]
+  
+  res
+}
+
 #' .importOutputForClusters
 #'
-#' Private function used to import the output for the clusters of one node
+#' Private function used to import the output for the clusters of one area
 #'
 #' @return
 #' a data.table
 #'
 #' @noRd
 #'
-.importOutputForClusters <- function(node, synthesis, ...) {
-  res <- .importOutput("areas", "details", node, "node", synthesis, ...)
+.importOutputForClusters <- function(area, synthesis, ...) {
+  res <- .importOutput("areas", "details", area, "area", synthesis, ...)
   if (is.null(res)) return(NULL)
 
   .reshapeData <- function(x) {
@@ -162,6 +172,8 @@
     res <- llply(res, .reshapeData)
     res <- rbindlist(res)
   }
+  
+  setnames(res, "MWh", "production")
 
   res
 }
@@ -188,8 +200,8 @@
 # stored in output and rebuild the actual time series used in each Monte-Carlo
 # simulation
 
-.importThermal <- function(node, synthesis, timeStep, mcYears, opts, ...) {
-  if (!node %in% opts$nodesWithClusters) return(NULL)
+.importThermal <- function(area, synthesis, timeStep, mcYears, opts, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
   if (synthesis) mcYears <- 1:opts$mcYears
   
   # Path to the files containing the IDs of the time series used for each
@@ -201,20 +213,20 @@
   pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
   
   if (dir.exists(pathInput)) {
-    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, node)
+    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
   } else {
     pathInput <- file.path(opts$path, "../../input/thermal/series")
-    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, node)
+    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
   }
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  cls <- list.files(file.path(pathTSNumbers, node))
+  cls <- list.files(file.path(pathTSNumbers, area))
   if (length(cls) == 0) return(NULL)
   
   nameCls <- gsub(".txt", "", cls)
   
   tsIds <- llply(cls, function(cl) {
-    as.numeric(readLines(file.path(pathTSNumbers, node, cl))[-1])
+    as.numeric(readLines(file.path(pathTSNumbers, area, cl))[-1])
   })
   
   names(tsIds) <- nameCls
@@ -229,7 +241,7 @@
     
     ldply(1:length(ids), function(i) {
       data.frame(
-        node = node, 
+        area = area, 
         cluster = cl, 
         mcYear = mcYears[i],
         timeId = 1:nrow(ts),
@@ -243,36 +255,36 @@
   res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
   
   if (synthesis) {
-    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(node, cluster, timeId)]
+    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(area, cluster, timeId)]
   }
   
   res
 }
 
-.importHydroStorage <- function(node, synthesis, timeStep, mcYears, opts, ...) {
+.importHydroStorage <- function(area, synthesis, timeStep, mcYears, opts, ...) {
   if (synthesis) mcYears <- 1:opts$mcYears
   
   pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
   
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(node, ".txt")))[-1])
+  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
   tsIds <- tsIds[mcYears]
   
   # Input time series
   pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
   
   if (dir.exists(pathInput)) {
-    f <- file.path(pathInput, node, "storage.txt")
+    f <- file.path(pathInput, area, "storage.txt")
   } else {
     pathInput <- file.path(opts$path, "../../input/hydro/series")
-    f <- file.path(pathInput, node, "mod.txt")
+    f <- file.path(pathInput, area, "mod.txt")
   }
   
   if (file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
-        node = node, 
+        area = area, 
         mcYear = mcYears[i],
         timeId = 1:12,
         hydroStorage = rep(0L, 12)
@@ -289,7 +301,7 @@
     
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
-        node = node, 
+        area = area, 
         mcYear = mcYears[i],
         timeId = 1:nrow(ts),
         hydroStorage = ts[[ colIds[i] ]]
@@ -303,7 +315,7 @@
   res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
   
   if (synthesis) {
-    res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(node, timeId)]
+    res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(area, timeId)]
   }
   
   res

@@ -1,122 +1,133 @@
 #' .importInputTS
 #' 
-#' Private function that reads input time series for a given node
+#' Private function that reads input time series for a given area
 #' 
-#' @param node
-#'   single node name.
+#' @param area
+#'   single area name.
 #' @param timeStep
 #'   desired time step.
 #' @param opts 
 #'   object of class "simOptions"
 #' @param fileNamePattern
 #'   string representing the path where the time series are located. Must
-#'   contain one and only one "%s". This sequence will be replaced by the node
+#'   contain one and only one "%s". This sequence will be replaced by the area
 #'   name when the function is executed.
 #' @param colnames
-#'   (optionnal) name of the columns of the file. Useful only for simple time
-#'   series (ie time series that does not change between scenarii) because we
-#'   know in advance the number of columns of the file.
+#'   name of the columns of the file.
 #' @param inputTimeStep
 #'   actual time step of the input series.
 #' @param fun
 #'   function to use when changing time step of the data.
+#' @param type
+#'   "simple" or "matrix" if the data to import is a matrix of time series
+#'   representing the same variable
 #'   
 #' @return
 #' If colnames is missing or empty and the file to read is also missing or
 #' empty, then the function returns NULL. In all other cases, it returns
 #' a data.table with one line per timeId. The table contains at least
-#' columns "node" and "timeId".
+#' columns "area" and "timeId".
 #' 
 #' @noRd
 #' 
-.importInputTS <- function(node, timeStep, opts, fileNamePattern, 
-                                 colnames, inputTimeStep, fun = "sum", ...) {
+.importInputTS <- function(area, timeStep, opts, fileNamePattern, colnames, 
+                           inputTimeStep, fun = "sum", type = "simple", ...) {
   
-  path <- file.path(opts$inputPath, sprintf(fileNamePattern, node))
+  path <- file.path(opts$inputPath, sprintf(fileNamePattern, area))
   
   # If file does not exists or is empty, but we know the columns, then we
   # create a table filled with 0. Else we return NULL
   expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
   
   if (!file.exists(path) || file.size(path) == 0) {
-    if (missing(colnames) || length(colnames) == 0) return(NULL)
+    if (type == "matrix") return(NULL)
     inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
   } else {
     inputTS <- fread(path, integer64 = "numeric", header = FALSE)
     inputTS <- inputTS[1:expectedRows]
   }
   
-  # Colnames
-  if (!missing(colnames) && length(colnames) > 0) {
-    setnames(inputTS, names(inputTS)[1:length(colnames)], colnames)
-  }
-  colnames <- names(inputTS)
-  
-  # Add node and timeId columns and put it at the begining of the table
-  inputTS$node <- node
+  # Add area and timeId columns and put it at the begining of the table
+  inputTS$area <- area
   inputTS$timeId <- 1:nrow(inputTS)
-  setcolorder(inputTS, c("node", "timeId", colnames))
+  .setcolorder(inputTS, c("area", "timeId"))
   
-  changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
+  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
   
+  # If the data is a matrix of time series melt the data
+  if (type == "matrix") {
+    colnames <- c("tsId", colnames)
+    inputTS <- melt(inputTS, id.vars = c("area", "timeId"))
+    inputTS$variable <- as.integer(substring(inputTS$variable, 2))
+  }
+  
+  setnames(inputTS, names(inputTS), c("area", "timeId", colnames))
+  
+  inputTS
 }
 
-.importLoad <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "load/series/load_%s.txt", inputTimeStep = "hourly")
+.importLoad <- function(area, timeStep, opts, ...) {
+  .importInputTS(area, timeStep, opts, "load/series/load_%s.txt", "load", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
-.importThermalAvailabilities <- function(node, timeStep, opts, ...) {
-  if (!node %in% opts$nodesWithClusters) return(NULL)
+.importThermalAvailabilities <- function(area, timeStep, opts, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
   
-  clusters <- list.files(file.path(opts$inputPath, "thermal/series", node))
+  clusters <- list.files(file.path(opts$inputPath, "thermal/series", area))
   
   ldply(clusters, function(cl) {
-    filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", node)
-    res <- .importInputTS(cl, timeStep, opts, filePattern, inputTimeStep = "hourly")
+    filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", area)
+    res <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
+                          inputTimeStep = "hourly", type = "matrix")
     
-    res$node <- node
+    res$area <- area
     res$cluster <- cl
     
-    setcolorder(res, c("node", "cluster", "timeId", setdiff(names(res), c("node", "cluster", "timeId"))))
+    setcolorder(res, c("area", "cluster", "timeId", setdiff(names(res), c("area", "cluster", "timeId"))))
   })
   
 }
 
-.importROR <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "hydro/series/%s/ror.txt", inputTimeStep = "hourly")
+.importROR <- function(area, timeStep, opts, ...) {
+  .importInputTS(area, timeStep, opts, "hydro/series/%s/ror.txt", "ror", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
-.importHydroStorageInput <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "hydro/series/%s/mod.txt", inputTimeStep = "monthly")
+.importHydroStorageInput <- function(area, timeStep, opts, ...) {
+  .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
+                 inputTimeStep = "monthly", type = "matrix")
 }
   
-.importHydroStorageMaxPower <- function(node, timeStep, opts, ...) {
+.importHydroStorageMaxPower <- function(area, timeStep, opts, ...) {
   
-  .importInputTS(node, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
+  .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
                  colnames=c("low", "avg", "high"),
                  inputTimeStep = "daily")
   
 }
 
-.importWind <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "wind/series/wind_%s.txt", inputTimeStep = "hourly")
+.importWind <- function(area, timeStep, opts, ...) {
+  .importInputTS(area, timeStep, opts, "wind/series/wind_%s.txt", "wind", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
-.importSolar <- function(node, timeStep, opts, ...) {
-  .importInputTS(node, timeStep, opts, "solar/series/solar_%s.txt", inputTimeStep = "hourly")
+.importSolar <- function(area, timeStep, opts, ...) {
+  .importInputTS(area, timeStep, opts, "solar/series/solar_%s.txt", "solar", 
+                 inputTimeStep = "hourly", type = "matrix")
 }
 
-.importMisc <- function(node, timeStep, opts, ...) {
+.importMisc <- function(area, timeStep, opts, ...) {
   
-  .importInputTS(node, timeStep, opts, "misc-gen/miscgen-%s.txt", 
+  .importInputTS(area, timeStep, opts, "misc-gen/miscgen-%s.txt", 
                  colnames=pkgEnv$miscNames,
                  inputTimeStep = "hourly")
   
 }
 
-.importReserves <- function(node, timeStep, opts, ...) {
+.importReserves <- function(area, timeStep, opts, ...) {
   
-  .importInputTS(node, timeStep, opts, "reserves/%s.txt", 
+  .importInputTS(area, timeStep, opts, "reserves/%s.txt", 
                  colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
                  inputTimeStep = "hourly")
   
@@ -124,29 +135,30 @@
 
 .importLinkCapacity <- function(link, timeStep, opts, ...) {
   
-  nodes <- strsplit(link, " - ")[[1]]
+  areas <- strsplit(link, " - ")[[1]]
   
   colnames <- c("transCapacityDirect", "transCapacityIndirect",
                 "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
   
   # A bit hacky, but it works !
-  res <- .importInputTS(nodes[2], timeStep, opts, 
-                        sprintf("%s/%%s.txt", file.path("links", nodes[1])), 
+  res <- .importInputTS(areas[2], timeStep, opts, 
+                        sprintf("%s/%%s.txt", file.path("links", areas[1])), 
                         colnames=colnames,
-                        inputTimeStep = "hourly")
+                        inputTimeStep = "hourly", 
+                        fun = c("sum", "sum", "mean", "mean", "mean"))
   
-  res$node <- NULL
+  res$area <- NULL
   res$link <- link
   
   setcolorder(res, c("link", "timeId", colnames))
   
 }
 
-.importMustRunModulation <- function(node, opts, ...) {
-  if (!node %in% opts$nodesWithClusters) return(NULL)
+.importMustRunModulation <- function(area, opts, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
   if (opts$antaresVersion < 500) return(NULL)
   
-  path <- file.path(opts$inputPath, "thermal/prepro", node)
+  path <- file.path(opts$inputPath, "thermal/prepro", area)
   
   clusters <- list.files(path)
   
@@ -156,9 +168,9 @@
     setnames(modulation, names(modulation), "mustRunModulation")
     
     if (all(modulation$mustRunModulation == 0)) 
-      return(data.table(mustRunModulation=numeric(), node = factor(), cluster = factor(), timeId=integer()))
+      return(data.table(mustRunModulation=numeric(), area = factor(), cluster = factor(), timeId=integer()))
     
-    modulation$node <- node
+    modulation$area <- area
     modulation$cluster <- cl
     modulation <- modulation[1:(24*12*52)]
     modulation$timeId <- 1:(24*12*52)

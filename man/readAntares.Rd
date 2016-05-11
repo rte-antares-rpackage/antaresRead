@@ -4,7 +4,7 @@
 \alias{readAntares}
 \title{Read the data of an Antares simulation}
 \usage{
-readAntares(nodes = NULL, links = NULL, clusters = NULL,
+readAntares(areas = NULL, links = NULL, clusters = NULL,
   districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
   linkCapacity = FALSE, mustRun = FALSE, select = NULL,
@@ -14,25 +14,25 @@ readAntares(nodes = NULL, links = NULL, clusters = NULL,
   showProgress = TRUE)
 }
 \arguments{
-\item{nodes}{Vector containing the names of the nodes to import. If
-\code{NULL} no node is imported. The special value \code{"all"} tells the
-function to import all nodes. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.}
+\item{areas}{Vector containing the names of the areas to import. If
+\code{NULL} no area is imported. The special value \code{"all"} tells the
+function to import all areas. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.}
 
 \item{links}{Vector containing the name of links to import. If \code{NULL} no
-node is imported. The special value \code{"all"} tells the function to
-import all nodes. Use function \code{\link{getLinks}} to import all links
-connected to some nodes.}
+area is imported. The special value \code{"all"} tells the function to
+import all areas. Use function \code{\link{getLinks}} to import all links
+connected to some areas.}
 
-\item{clusters}{Vector containing the name of the nodes for which you want to
+\item{clusters}{Vector containing the name of the areas for which you want to
 import results at cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import clusters from all
-nodes.}
+areas.}
 
 \item{districts}{Vector containing the names of the districts to import. If \code{NULL},
 no district is imported. The special value \code{"all"} tells the function to import all
 districts.}
 
-\item{misc}{Vector containing the name of the nodes for which you want to
+\item{misc}{Vector containing the name of the areas for which you want to
 import misc.}
 
 \item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ?}
@@ -47,10 +47,10 @@ import misc.}
 
 \item{select}{Character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
-\code{"allNodes"} and \code{"allLinks"} indicate to the function to import
-all variables for nodes or for links. The list of available variables can
+\code{"allAreas"} and \code{"allLinks"} indicate to the function to import
+all variables for areas or for links. The list of available variables can
 be seen with the command \code{getOption("antares")$variables}.  Id
-variables like \code{node}, \code{link} or \code{timeId} are automatically
+variables like \code{area}, \code{link} or \code{timeId} are automatically
 imported.}
 
 \item{synthesis}{TRUE if you want to import the synthetic results. FALSE if
@@ -81,7 +81,7 @@ If \code{simplify = TRUE} and only one type of output is imported
 then the result is a data.table.
 
 Else an object of class "antaresDataList" is returned. It is a list of
-data.tables, each element representing one type of element (nodes, links,
+data.tables, each element representing one type of element (areas, links,
 clusters)
 }
 \description{
@@ -98,8 +98,8 @@ package starting with "read" (\code{\link{readClusterDesc}},
 \code{\link{readLayout}}, \code{\link{readBindingConstraints}})
 }
 \details{
-If parameters \code{nodes}, \code{links}, \code{clusters} and \code{districts}
-are all \code{NULL}, \code{readAntares} will read output for all nodes.
+If parameters \code{areas}, \code{links}, \code{clusters} and \code{districts}
+are all \code{NULL}, \code{readAntares} will read output for all areas.
 By default the function reads synthetic results if they are available.
 
 \code{readAntares} is able to read input time series, but when they are not 
@@ -114,7 +114,7 @@ objective:
 
 \itemize{
   \item Use a larger time step (parameter \code{timeStep})
-  \item Filter the elements to import (parameters \code{nodes},\code{links},
+  \item Filter the elements to import (parameters \code{areas},\code{links},
     \code{clusters} and \code{districts})
   \item Select only a few columns (parameter \code{select})
   \item read only a subset of Monte-Carlo simulations (parameter 
@@ -125,7 +125,7 @@ objective:
 \section{Parallelization}{
 
 
-If you import several elements of the same type (nodes, links, clusters), you
+If you import several elements of the same type (areas, links, clusters), you
 can use parallelized importation to improve performance. Setting the
 parameter \code{parallel = TRUE} is not enough to parallelize the
 importation, you also have to install the package
@@ -140,43 +140,43 @@ session.
 }
 \examples{
 \dontrun{
-# Import nodes and links separately
+# Import areas and links separately
 
-nodes <- readAntares() # equivalent to readAntares(nodes="all")
+areas <- readAntares() # equivalent to readAntares(areas="all")
 links <- readAntares(links="all")
 
-# Import nodes and links at same time
+# Import areas and links at same time
 
-output <- readAntares(nodes = "all", links = "all")
+output <- readAntares(areas = "all", links = "all")
 
 # Add input time series to the object returned by the function
-nodes <- readAntares(nodes = "all", misc = TRUE, reserve = TRUE)
+areas <- readAntares(areas = "all", misc = TRUE, reserve = TRUE)
 
-# Get all output for one node
+# Get all output for one area
 
-myNode <- sample(simOptions()$nodeList, 1)
-myNode
+myArea <- sample(simOptions()$areaList, 1)
+myArea
 
-myNodeOutput <- readAntares(node = myNode, 
-                            links = getLinks(myNode, regexpSelect=FALSE),
-                            clusters = myNode)
+myAreaOutput <- readAntares(area = myArea, 
+                            links = getLinks(myArea, regexpSelect=FALSE),
+                            clusters = myArea)
                            
 # Or equivalently:
-myNodeOutput <- readAntaresNodes(myNode)
+myAreaOutput <- readAntaresAreas(myArea)
 
 # Use parameter "select" to read only some columns.
 
-nodes <- readAntares(select = c("LOAD", "OV. COST"))
+areas <- readAntares(select = c("LOAD", "OV. COST"))
 
 # Aliases can be used to select frequent groups of columns. use showAliases()
 # to view a list of available aliases
 
-nodes <- readAntares(select="economy")
+areas <- readAntares(select="economy")
 
 }
 }
 \seealso{
-\code{\link{setSimulationPath}}, \code{\link{getNodes}},
+\code{\link{setSimulationPath}}, \code{\link{getAreas}},
 \code{\link{getLinks}}, \code{\link{getDistricts}}
 }
 

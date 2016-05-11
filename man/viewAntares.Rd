@@ -17,16 +17,16 @@ Invisible NULL.
 }
 \description{
 This function displays each element of an \code{antaresData} object in a
-spreadsheet-like viewer
+spreadsheet-like viewer.
 }
 \examples{
 \dontrun{
 setSimulationPath()
 
-nodes <-readAntares()
-viewAntares(nodes)
+areas <-readAntares()
+viewAntares(areas)
 
-output <- studyAntares(nodes="all", links = "all", clusters = "all")
+output <- studyAntares(areas="all", links = "all", clusters = "all")
 viewAntares(output) # Opens three data viewers for each element of output
 }
 

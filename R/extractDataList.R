@@ -1,84 +1,84 @@
 #' Format data PPSE-style
 #'
 #' This function converts an "readAntares" object in the data structure used
-#' by PPSE : instead of having one table for nodes, one for links and one for
-#' clusters, the function creates a list with one element per node. Each element
-#' is a data.table containing the data about the node and one column per cluster
-#' of the node containing the production of this cluster.
+#' by PPSE : instead of having one table for areas, one for links and one for
+#' clusters, the function creates a list with one element per area. Each element
+#' is a data.table containing the data about the area and one column per cluster
+#' of the area containing the production of this cluster.
 #'
 #' @param x
 #'   object of class "antaresData" or "antaresTable" created by the function
 #'   \code{\link{readAntares}}
-#' @param nodes
-#'   character vector containing the name of nodes to keep in the
-#'   final object. If \code{NULL}, all nodes are kept in the final object.
+#' @param areas
+#'   character vector containing the name of areas to keep in the
+#'   final object. If \code{NULL}, all areas are kept in the final object.
 #' @inheritParams readAntares
 #'
-#' @return a list of data.tables with one element per node. The list also
-#' contains an element named "nodeList" containing the name of nodes in the
-#' object and a table called "infos" that contains for each node the number
+#' @return a list of data.tables with one element per area. The list also
+#' contains an element named "areaList" containing the name of areas in the
+#' object and a table called "infos" that contains for each area the number
 #' of variables of différent type (values, details, link).
 #'
 #' @export
 #'
-extractDataList <- function(x, nodes=NULL) {
+extractDataList <- function(x, areas=NULL) {
   # Check arguments
   opts <- simOptions(x)
   
-  if (is(x, "antaresDataTable") && !is.null(x$node)) x <- list(nodes = x)
+  if (is(x, "antaresDataTable") && !is.null(x$area)) x <- list(areas = x)
 
-  if (is.null(x$nodes)) stop("'x' does not contain nodes data.")
+  if (is.null(x$areas)) stop("'x' does not contain areas data.")
   
   
   
-  if (!is.null(nodes)) {
-    missingNodes <- nodes[! nodes %in% x$nodes$node]
-    for (m in missingNodes) warning("Node '", m, "' missing in 'x'")
+  if (!is.null(areas)) {
+    missingAreas <- areas[! areas %in% x$areas$area]
+    for (m in missingAreas) warning("Area '", m, "' missing in 'x'")
     
-    x$nodes <- x$nodes[node %in% nodes]
+    x$areas <- x$areas[area %in% areas]
     
-    if (nrow(x$nodes) == 0) {
-      stop("Argument 'nodes' does not contain any node name present in 'x'")
+    if (nrow(x$areas) == 0) {
+      stop("Argument 'areas' does not contain any area name present in 'x'")
     }
   }
 
   # Create variable Scenario equal to 0 if synthesis or mcYear if not.
-  if (is.null(x$nodes$mcYear)) {
-    x$nodes$Scenario <- 0
+  if (is.null(x$areas$mcYear)) {
+    x$areas$Scenario <- 0
     if (!is.null(x$clusters)) x$clusters$Scenario <- 0
     if (!is.null(x$links)) x$links$Scenario <- 0
   } else {
-    x$nodes$Scenario <- x$nodes$mcYear
+    x$areas$Scenario <- x$areas$mcYear
     if (!is.null(x$clusters)) x$clusters$Scenario <- x$clusters$mcYear
     if (!is.null(x$links)) x$links$Scenario <- x$links$mcYear
-    x$nodes$mcYear <- NULL
+    x$areas$mcYear <- NULL
   }
   
   # Add time variable
-  x$nodes$Dtime <- .timeIdToDate(x$nodes$timeId, attr(x, "timeStep"), opts)
+  x$areas$Dtime <- .timeIdToDate(x$areas$timeId, attr(x, "timeStep"), opts)
 
-  # Base structure: one table per node
-  dataList <- dlply(x$nodes, .(node), data.table)
+  # Base structure: one table per area
+  dataList <- dlply(x$areas, .(area), data.table)
 
-  # Additional elements: list of nodes and info about the content of each table
-  nodeList <- names(dataList)
-  info <- data.table(node = nodeList,
-                     valuesLength = ncol(x$nodes),
+  # Additional elements: list of areas and info about the content of each table
+  areaList <- names(dataList)
+  info <- data.table(area = areaList,
+                     valuesLength = ncol(x$areas),
                      detailsLength = 0,
                      linkLength = 0)
 
   # Add cluster production and flows if available to each element of dataList
-  for (n in nodeList) {
+  for (n in areaList) {
 
     # Clusters
     if (!is.null(x$clusters)) {
-      cl <- x$clusters[node == n]
+      cl <- x$clusters[area == n]
 
       if (nrow(cl) > 0) {
         tmp <- dcast(cl, Scenario + timeId ~ cluster, value.var = "MWh")
         dataList[[n]] <- merge(dataList[[n]], tmp, by = c("Scenario", "timeId"))
 
-        info[node == n, detailsLength := ncol(tmp) - 2]
+        info[area == n, detailsLength := ncol(tmp) - 2]
       }
     }
 
@@ -90,12 +90,12 @@ extractDataList <- function(x, nodes=NULL) {
         tmp <- dcast(links, Scenario + timeId ~ link, value.var = "FLOW LIN.")
         dataList[[n]] <- merge(dataList[[n]], tmp, by = c("Scenario", "timeId"))
 
-        info[node == n, linkLength := ncol(tmp) - 2]
+        info[area == n, linkLength := ncol(tmp) - 2]
       }
     }
   }
 
-  dataList$nodeList <- nodeList
+  dataList$areaList <- areaList
   dataList$infos <- info
 
   dataList

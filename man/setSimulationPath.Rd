@@ -33,17 +33,17 @@ A list containing various information about the simulation, in particular:
     each Monte-Carlo simulation.}
   \item{mcYears}{Number of Monte-Carlo scenarii}
   \item{start}{Date of the first day of the year in the simulation.}
-  \item{nodeList}{Vector of the available nodes}
+  \item{areaList}{Vector of the available areas}
   \item{setList}{Vector of the available clusters}
   \item{linkList}{Vector of the available links}
-  \item{nodesWithClusters}{Vector of nodes containing clusters}
-  \item{variables}{available variables for nodes, districts and links}
+  \item{areasWithClusters}{Vector of areas containing clusters}
+  \item{variables}{available variables for areas, districts and links}
   \item{parameters}{Other parameters of the simulation.}
 }
 \description{
 This function has to be used before the \code{read} functions. It sets the path to
-the Antares simulation to work on and other useful options (list of nodes,
-links, nodes with clusters, variables, etc.).
+the Antares simulation to work on and other useful options (list of areas,
+links, areas with clusters, variables, etc.).
 }
 \details{
 The simulation choosen with \code{setSimulationPath} becomes the default
@@ -83,7 +83,7 @@ setSimulationPath("path_of_the_folder_of_the_study", "name of the simulation")
 # WORKING WITH MULTIPLE SIMULATIONS
 #----------------------------------
 # Let us assume ten simulations have been run and we want to collect the
-# variable "LOAD" for each node. We can create a list containing options
+# variable "LOAD" for each area. We can create a list containing options
 # for each simulation and iterate through this list.
 
 opts <- lapply(1:10, function(i) {
@@ -91,7 +91,7 @@ opts <- lapply(1:10, function(i) {
 })
 
 output <- lapply(opts, function(o) {
-  res <- readAntares(nodes = "all", select = "LOAD", timeStep = "monthly", opts = o)
+  res <- readAntares(areas = "all", select = "LOAD", timeStep = "monthly", opts = o)
   # Add a column "simulation" containing the name of the simulation
   res$simulation <- o$name
   res
@@ -102,12 +102,12 @@ output <- rbindlist(output)
 
 # Reshape output for easier comparisons: one line per timeId and one column
 # per simulation
-output <- dcast(output, timeId + nodeId ~ simulation, value.var = "LOAD")
+output <- dcast(output, timeId + areaId ~ simulation, value.var = "LOAD")
 
 output
 
 # Quick visualization
-matplot(output[node == node[1], !c("node", "timeId"), with = FALSE], 
+matplot(output[area == area[1], !c("area", "timeId"), with = FALSE], 
         type = "l")
 }
 

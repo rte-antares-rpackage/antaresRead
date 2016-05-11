@@ -33,8 +33,8 @@ print.simOptions <- function(x, ...) {
   cat(sprintf("Mode %s\n\nContent:\n", x$mode))
   cat(sprintf(" - synthesis: %s\n - year by year: %s\n - MC Scenarios: %s\n",
               x$synthesis, x$yearByYear, x$scenarios))
-  cat(sprintf(" - Number of nodes: %s\n - Number of districts: %s\n - Number of links: %s\n",
-              length(x$nodeList), length(x$setList), length(x$linkList)))
+  cat(sprintf(" - Number of areas: %s\n - Number of districts: %s\n - Number of links: %s\n",
+              length(x$areaList), length(x$setList), length(x$linkList)))
   
   cat(sprintf(" - Number of Monte-Carlo years: %s\n", x$mcYears))
 

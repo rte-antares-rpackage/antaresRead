@@ -4,17 +4,17 @@ source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-nodes <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE)
-nodes$day <- nodes$month <- nodes$hour <- NULL
+areas <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE)
+areas$day <- areas$month <- areas$hour <- NULL
 
 for (timeStep in c("daily", "weekly", "monthly", "annual")) {
   
   test_that(sprintf("changeTimeStep aggregates hourly data at %s timestep", timeStep), {
     
-    calc <- changeTimeStep(nodes, timeStep, "hourly", opts = opts)
+    calc <- changeTimeStep(areas, timeStep, "hourly", opts = opts)
     read <- readAntares(select = "LOAD", timeStep = timeStep, showProgress = FALSE, synthesis = FALSE)
     
-    tmp <- merge(calc, read[, .(node, timeId, mcYear, read = LOAD)], by = c("node", "timeId", "mcYear"))
+    tmp <- merge(calc, read[, .(area, timeId, mcYear, read = LOAD)], by = c("area", "timeId", "mcYear"))
     
     expect_true(tmp[, all(read - LOAD == 0)])
     
@@ -23,24 +23,24 @@ for (timeStep in c("daily", "weekly", "monthly", "annual")) {
 }
 
 test_that("changeTimeStep keeps attributes", {
-  nodesD <- changeTimeStep(nodes, "hourly", opts = opts)
-  expect_equal(attr(nodesD, "timeStep"), "hourly")
-  expect_equal(attr(nodesD, "synthesis"), attr(nodes, "synthesis"))
-  expect_equal(attr(nodesD, "type"), attr(nodes, "type"))
+  areasD <- changeTimeStep(areas, "hourly", opts = opts)
+  expect_equal(attr(areasD, "timeStep"), "hourly")
+  expect_equal(attr(areasD, "synthesis"), attr(areas, "synthesis"))
+  expect_equal(attr(areasD, "type"), attr(areas, "type"))
 })
 
 test_that("Aggregating desaggregated data should give the initial values.", {
-  nodesD <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE, timeStep = "daily")
-  nodesH <- changeTimeStep(nodesD, "hourly")
-  nodesD2 <- changeTimeStep(nodesH, "daily")
-  expect_equal(nodesD$LOAD, nodesD2$LOAD)
+  areasD <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE, timeStep = "daily")
+  areasH <- changeTimeStep(areasD, "hourly")
+  areasD2 <- changeTimeStep(areasH, "daily")
+  expect_equal(areasD$LOAD, areasD2$LOAD)
 })
 
 test_that("changeTimeStep works on antaresData objects", {
   mydata <- readAntares("all", "all", synthesis = FALSE, showProgress = FALSE)
   mydataAgg <- changeTimeStep(mydata, "daily")
   expect_equal(attr(mydataAgg, "timeStep"), "daily")
-  expect_equal(attr(mydataAgg$nodes, "timeStep"), "daily")
+  expect_equal(attr(mydataAgg$areas, "timeStep"), "daily")
   expect_equal(attr(mydataAgg$links, "timeStep"), "daily")
 })
 

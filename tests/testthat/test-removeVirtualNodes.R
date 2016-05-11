@@ -1,4 +1,4 @@
-context("removeVirtualNodes function")
+context("removeVirtualAreas function")
 
 source("setup_test_case.R")
 
@@ -6,72 +6,72 @@ opts <- setSimulationPath(studyPath)
 
 data <- readAntares("all", "all", showProgress = FALSE)
 
-vnodes <- c("psp in", "psp out")
+vareas <- c("psp in-2", "psp out-2")
 
-dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes)
+dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
 
-test_that("removeVirtualNodes effectively removes virtual nodes", {
-  expect_false(any(dataCorrected$nodes$node %in% vnodes))
-  expect_false(any(dataCorrected$nodes$link %in% getLinks(vnodes)))
+test_that("removeVirtualAreas effectively removes virtual areas", {
+  expect_false(any(dataCorrected$areas$area %in% vareas))
+  expect_false(any(dataCorrected$areas$link %in% getLinks(vareas)))
 })
 
-test_that("Balance is corrected for not b, but not for the other nodes", {
-  expect_equal(data$nodes[node %in% c("a", "c")]$BALANCE, 
-               dataCorrected$nodes[node %in% c("a", "c")]$BALANCE)
+test_that("Balance is corrected for 'Hub', but not for the other areas", {
+  expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
+               dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
-  correction <- - data$links[link %in% getLinks(vnodes), 
+  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
-  expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
+  expect_equal(dataCorrected$areas[area=="hub"]$BALANCE - data$areas[area=="hub"]$BALANCE,
                correction)
   
 })
 
-test_that("A column has been created for each storage/flexibility node", {
-  expect_true(all(vnodes %in% names(dataCorrected$nodes)))
-  expect_equal(data$links[link=="b - psp in"]$`FLOW LIN.`, 
-               - dataCorrected$nodes[node == "b"]$`psp in`)
+test_that("A column has been created for each storage/flexibility area", {
+  expect_true(all(vareas %in% names(dataCorrected$areas)))
+  expect_equal(data$links[link=="hub - psp in-2"]$`FLOW LIN.`, 
+               - dataCorrected$areas[area == "hub"]$`psp in-2`)
 })
 
-test_that("RemoveVirtualNodes corrects column 'node' in the table 'clusters'", {
+test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
   data <- readAntares("all", "all", "all", showProgress = FALSE, synthesis = FALSE)
-  dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes, production = "c")
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "c")
   
-  expect_false(any(dataCorrected$clusters$node == "c"))
+  expect_false(any(dataCorrected$clusters$area == "c"))
 })
 
-test_that("RemoveVirtualNodes removes production nodes", {
-  dataCorrected <- removeVirtualNodes(data, production = "c", reassignCosts = TRUE)
+test_that("RemoveVirtualAreas removes production areas", {
+  dataCorrected <- removeVirtualAreas(data, production = "a_offshore", reassignCosts = TRUE)
   
-  expect_equal(dataCorrected$nodes[node == "b", `OP. COST`], 
-               data$nodes[node == "b", `OP. COST`] + data$nodes[node == "c", `OP. COST`])
+  expect_equal(dataCorrected$areas[area == "a", `OP. COST`], 
+               data$areas[area == "a", `OP. COST`] + data$areas[area == "a_offshore", `OP. COST`])
   
-  expect_false(is.null(dataCorrected$nodes$OIL_virtual))
-  expect_null(dataCorrected$nodes$GAS_virtual)
+  expect_false(is.null(dataCorrected$areas$WIND_virtual))
+  expect_null(dataCorrected$areas$GAS_virtual)
 })
 
 test_that("Hub management works", {
-  dataCorrected <- removeVirtualNodes(data, storageFlexibility = c("b", vnodes))
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("hub", vareas))
   
-  dataCorrected2 <- removeVirtualNodes(data, storageFlexibility = c(vnodes))
-  dataCorrected2 <- removeVirtualNodes(dataCorrected2, storageFlexibility = "b")
+  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = c(vareas))
+  dataCorrected2 <- removeVirtualAreas(dataCorrected2, storageFlexibility = "hub")
   
-  expect_equal(dataCorrected$nodes$BALANCE, dataCorrected2$nodes$BALANCE)
-  expect_equal(dataCorrected$nodes$`OP. COST`, dataCorrected2$nodes$`OP. COST`)
+  expect_equal(dataCorrected$areas$BALANCE, dataCorrected2$areas$BALANCE)
+  expect_equal(dataCorrected$areas$`OP. COST`, dataCorrected2$areas$`OP. COST`)
   
-  expect_null(dataCorrected$nodes$`psp in`)
+  expect_null(dataCorrected$areas$`psp in`)
 })
 
-test_that("RemoveVirtualNodes also work on non-synthesis results", {
+test_that("RemoveVirtualAreas also works on non-synthesis results", {
   data <- readAntares("all", "all", showProgress = FALSE, synthesis = FALSE)
-  dataCorrected <- removeVirtualNodes(data, storageFlexibility = vnodes, production = "c")
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
   
-  correction <- - data$links[link %in% getLinks(c(vnodes, "c")), 
+  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
                              sum(`FLOW LIN.`), keyby = .(mcYear, timeId)]$V1
   
-  setkey(data$nodes, mcYear, timeId)
-  setkey(dataCorrected$nodes, mcYear, timeId)
-  expect_equal(dataCorrected$nodes[node=="b"]$BALANCE - data$nodes[node=="b"]$BALANCE,
+  setkey(data$areas, mcYear, timeId)
+  setkey(dataCorrected$areas, mcYear, timeId)
+  expect_equal(dataCorrected$areas[area=="hub"]$BALANCE - data$areas[area=="hub"]$BALANCE,
                correction)
 })
 

@@ -1,12 +1,12 @@
-#' Retrieve links connected to a set of nodes
+#' Retrieve links connected to a set of areas
 #'
-#' This function find the name of the links connected to a set of node.
+#' This function find the name of the links connected to a set of areas.
 #'
 #' @param internalOnly
-#' if TRUE, only links that connect two nodes from the list are returned. 
-#' If not, the function may return links that connect a node from the list with 
-#' a node outside the list.
-#' @inheritParams getNodes
+#' if TRUE, only links that connect two areas from the list are returned. 
+#' If not, the function may return links that connect a area from the list with 
+#' a area outside the list.
+#' @inheritParams getAreas
 #' @inheritParams readAntares
 #'
 #' @return
@@ -20,10 +20,11 @@ getLinks <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
   l <- opts$linkList
   lsplit <- tstrsplit(l, " - ")
 
-  nodes <- getNodes(select, exclude, regexpSelect, regexpExclude, opts)
+  areas <- getAreas(select, exclude, regexpSelect = regexpSelect, 
+                    regexpExclude = regexpExclude, opts=opts)
   
-  if(internalOnly) idx <- lsplit[[1]] %in% nodes & lsplit[[2]] %in% nodes
-  else idx <- lsplit[[1]] %in% nodes | lsplit[[2]] %in% nodes
+  if(internalOnly) idx <- lsplit[[1]] %in% areas & lsplit[[2]] %in% areas
+  else idx <- lsplit[[1]] %in% areas | lsplit[[2]] %in% areas
 
   l[idx]
 }

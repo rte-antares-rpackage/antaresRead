@@ -4,7 +4,7 @@
 \alias{changeTimeStep}
 \title{Change the timestep of an output}
 \usage{
-changeTimeStep(x, newTimeStep, oldTimeStep, fun = c("sum", "mean"),
+changeTimeStep(x, newTimeStep, oldTimeStep, fun = "sum",
   opts = simOptions())
 }
 \arguments{
@@ -17,9 +17,9 @@ monthly and annual.}
 class \code{antaresData} because the time step of the data is stored inside
 the object}
 
-\item{fun}{function to use for aggregation. Either "sum" or "mean". Notice that this
-function will be used on all the numeric columns of the table. Check that
-this is effectively what you want to do !}
+\item{fun}{Character vector with one element per column to (des)agregate indicating
+the function to use ("sum" or "mean") for this column. It can be a single
+element, in that case the same function is applied to}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
@@ -41,12 +41,12 @@ this function may have a smarter behavior.
 \dontrun{
 setSimulationPath()
 
-nodesH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
-nodesD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
+areasH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
+areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 
-nodesDAgg <- changeTimeStep(nodesH, "daily")
+areasDAgg <- changeTimeStep(areasH, "daily")
 
-all.equal(nodesDAgg$LOAD, nodesD$LOAD)
+all.equal(areasDAgg$LOAD, areasD$LOAD)
 }
 
 }

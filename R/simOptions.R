@@ -1,13 +1,13 @@
 #' Extract simulation options
 #' 
 #' The function \code{\link{readAntares}} stores in its output the options used
-#' to read some data (path of the study, node list, link list, start date,
+#' to read some data (path of the study, area list, link list, start date,
 #' etc.). 
 #' 
 #' \code{simOptions} extracts these options from an object of class 
 #' \code{antaresTable} or \code{antaresOutput}. It can be useful when working on
 #' multiple simulations, either to check how some object has been created or to
-#' use it in some functions like \code{\link{getNodes}} or
+#' use it in some functions like \code{\link{getAreas}} or
 #' \code{\link{getLinks}}
 #' 
 #' If the parameter of the function is \code{NULL}, it returns the default
@@ -35,8 +35,8 @@
 #'   
 #'   simOptions() # returns the options for study 2
 #'   
-#'   getNodes() # returns the nodes of the secund study
-#'   getNodes(opts = simOptions(data)) # returns the nodes of the first study
+#'   getAreas() # returns the areas of the secund study
+#'   getAreas(opts = simOptions(data)) # returns the areas of the first study
 #'   
 #' }
 #' 

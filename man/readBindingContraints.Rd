@@ -40,11 +40,11 @@ readBindingConstraints()
 readBindingConstraints(simOptions())
 
 # Read the constraints of a given antares study
-nodesSimulation1 <- readAntares()
+areasSimulation1 <- readAntares()
 
 # [... code that change the default antares study]
 
-readBindingConstraints(simOptions(nodesSimulation1))
+readBindingConstraints(simOptions(areasSimulation1))
 
 }
 

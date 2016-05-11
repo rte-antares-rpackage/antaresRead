@@ -4,26 +4,26 @@
 \alias{extractDataList}
 \title{Format data PPSE-style}
 \usage{
-extractDataList(x, nodes = NULL)
+extractDataList(x, areas = NULL)
 }
 \arguments{
 \item{x}{object of class "antaresData" or "antaresTable" created by the function
 \code{\link{readAntares}}}
 
-\item{nodes}{character vector containing the name of nodes to keep in the
-final object. If \code{NULL}, all nodes are kept in the final object.}
+\item{areas}{character vector containing the name of areas to keep in the
+final object. If \code{NULL}, all areas are kept in the final object.}
 }
 \value{
-a list of data.tables with one element per node. The list also
-contains an element named "nodeList" containing the name of nodes in the
-object and a table called "infos" that contains for each node the number
+a list of data.tables with one element per area. The list also
+contains an element named "areaList" containing the name of areas in the
+object and a table called "infos" that contains for each area the number
 of variables of différent type (values, details, link).
 }
 \description{
 This function converts an "readAntares" object in the data structure used
-by PPSE : instead of having one table for nodes, one for links and one for
-clusters, the function creates a list with one element per node. Each element
-is a data.table containing the data about the node and one column per cluster
-of the node containing the production of this cluster.
+by PPSE : instead of having one table for areas, one for links and one for
+clusters, the function creates a list with one element per area. Each element
+is a data.table containing the data about the area and one column per cluster
+of the area containing the production of this cluster.
 }
 
