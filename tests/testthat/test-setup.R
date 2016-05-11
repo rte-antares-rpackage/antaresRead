@@ -21,7 +21,7 @@ trueOpts <- list(
   linkList = c("a - a_offshore", "a - b", "a - psp in", "a - psp out", "b - c", 
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
-  areasWithClusters = c("a", "b", "c", "psp in", "psp out")
+  areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2")
 )
 class(trueOpts) <- "simOptions"
 
