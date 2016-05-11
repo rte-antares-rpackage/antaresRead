@@ -29,11 +29,12 @@
 #' 
 #' @export
 #' 
-getAreas <- function(select = NULL, exclude = NULL, regexpSelect = TRUE, 
+getAreas <- function(select = NULL, exclude = NULL, withClustersOnly = FALSE,
+                     regexpSelect = TRUE, 
                      regexpExclude = TRUE, opts = simOptions(),
                      ignore.case = TRUE) {
   
-  allAreas <- opts$areaList
+  allAreas <- if(withClustersOnly) opts$areasWithClusters else opts$areaList
   
   .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, allAreas)
   
