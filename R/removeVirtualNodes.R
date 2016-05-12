@@ -199,7 +199,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     
     # Compute the proportion of the cost to repercute on each real area
     costs[, totalFlow := sum(abs(flow)), by = mget(byarea)]
-    costs$prop <- ifelse(costs$totalFlow == 0, 1, abs(costs$flow / costs$totalFlow))
+    costs$prop <- ifelse(costs$totalFlow == 0, 0, abs(costs$flow / costs$totalFlow))
     
     # Aggregate corrections by real area
     costs$area <- costs$to
