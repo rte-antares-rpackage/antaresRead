@@ -5,8 +5,9 @@
 \alias{getDistricts}
 \title{Select and exclude areas}
 \usage{
-getAreas(select = NULL, exclude = NULL, regexpSelect = TRUE,
-  regexpExclude = TRUE, opts = simOptions(), ignore.case = TRUE)
+getAreas(select = NULL, exclude = NULL, withClustersOnly = FALSE,
+  regexpSelect = TRUE, regexpExclude = TRUE, opts = simOptions(),
+  ignore.case = TRUE)
 
 getDistricts(select = NULL, exclude = NULL, regexpSelect = TRUE,
   regexpExclude = TRUE, opts = simOptions(), ignore.case = TRUE)

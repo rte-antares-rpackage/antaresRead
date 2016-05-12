@@ -15,7 +15,7 @@ test_that("removeVirtualAreas effectively removes virtual areas", {
   expect_false(any(dataCorrected$areas$link %in% getLinks(vareas)))
 })
 
-test_that("Balance is corrected for 'Hub', but not for the other areas", {
+test_that("Balance is corrected for nodes connected to virtual nodes but not the others", {
   expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
                dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
@@ -74,5 +74,3 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
   expect_equal(dataCorrected$areas[area=="hub"]$BALANCE - data$areas[area=="hub"]$BALANCE,
                correction)
 })
-
-
