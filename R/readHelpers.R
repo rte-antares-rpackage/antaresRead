@@ -5,6 +5,11 @@
     attr(x[[n]], "timeStep") <- timeStep
     attr(x[[n]], "synthesis") <- synthesis
     attr(x[[n]], "opts") <- opts
+    
+    # Order columns: id columns first
+    idCols <- intersect(pkgEnv$idVars, names(x[[n]]))
+    .setcolorder(x[[n]], idCols)
+    
   }
   
   class(x) <- append(c("antaresDataList", "antaresData"), class(x))
