@@ -74,7 +74,7 @@
                     opts$path, opts$opath, folder, id, file, timeStep)
 
     # Check output is available.
-    if (!file.exists(sprintf(path, 1))) {
+    if (!file.exists(sprintf(path, mcYears[1]))) {
       message(timeStep,  " output not found for ", objectName, " ", id)
       return(NULL)
     }

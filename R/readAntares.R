@@ -172,7 +172,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         select = NULL,
                         synthesis = simOptions()$synthesis,
-                        mcYears = 1:simOptions()$mcYears,
+                        mcYears = simOptions()$mcYears,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {

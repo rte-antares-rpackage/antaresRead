@@ -49,7 +49,7 @@ test_that("mustRun also works when synthesis = FALSE", {
                         timeStep = "annual", synthesis = FALSE)
   
   # average mustRun should be very close to the one in the synthetic results
-  expect_lt(abs(sum(byYear$mustRunTotal)/opts$mcYears / totalMustRun - 1), 0.001)
+  expect_lt(abs(sum(byYear$mustRunTotal)/length(opts$mcYears) / totalMustRun - 1), 0.001)
   
   # mustRun should vary between Monte-Carlo scenarii
   expect_false(all(byYear[mcYear == 1]$mustRunTotal == byYear[mcYear == 2]$mustRunTotal))

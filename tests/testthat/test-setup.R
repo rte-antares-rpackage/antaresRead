@@ -11,7 +11,7 @@ trueOpts <- list(
   synthesis = TRUE,
   yearByYear = TRUE,
   scenarios = TRUE,
-  mcYears = 2,
+  mcYears = c(1,2),
   antaresVersion = 500L,
   timeIdMin = 1,
   timeIdMax = 24 * 7 * 52,

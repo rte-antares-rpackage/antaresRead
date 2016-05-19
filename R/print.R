@@ -36,6 +36,6 @@ print.simOptions <- function(x, ...) {
   cat(sprintf(" - Number of areas: %s\n - Number of districts: %s\n - Number of links: %s\n",
               length(x$areaList), length(x$setList), length(x$linkList)))
   
-  cat(sprintf(" - Number of Monte-Carlo years: %s\n", x$mcYears))
+  if (!is.null(x$mcYears)) cat(sprintf(" - Number of Monte-Carlo years: %s\n", length(x$mcYears)))
 
 }

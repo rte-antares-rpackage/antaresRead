@@ -177,9 +177,8 @@ setSimulationPath <- function(path, simulation) {
   yearByYear <- file.exists(file.path(opath, "mc-ind"))
   scenarios <- file.exists("ts-numbers")
 
-  mcYears <- ifelse(yearByYear,
-                    length(list.files(file.path(opath, "mc-ind"))),
-                    0)
+  mcYears <- if(yearByYear) as.numeric(list.files(file.path(opath, "mc-ind")))
+             else 0
 
   if (!synthesis & !yearByYear) stop("No results found")
 
