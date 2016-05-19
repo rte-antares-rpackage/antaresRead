@@ -35,7 +35,9 @@
 #' @noRd
 #'
 .importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts, select) {
-
+  
+  firstTimeId <- .getTimeId(opts$timeIdMin, timeStep, opts)
+    
   if (synthesis) { # Only get synthesis results ################################
 
     path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
@@ -60,6 +62,9 @@
     res <- fread(path, sep = "\t", header = F, skip = 7, select = selectCol,
                  stringsAsFactors = TRUE, integer64 = "numeric")
     setnames(res, names(res), colNames)
+    
+    # Fix timeId when timeStep is weekly
+    if (timeStep == "weekly") res$timeId <- firstTimeId + 1:nrow(res) - 1
 
     res[, objectName] <- as.factor(rep(id, nrow(res)))
 
@@ -96,6 +101,9 @@
 
       x[, objectName] <- as.factor(rep(id, nrow(x)))
 
+      # Fix timeId when timeStep is weekly
+      if (timeStep == "weekly") x$timeId <- firstTimeId + 1:nrow(x) - 1
+      
       x
     })
   }

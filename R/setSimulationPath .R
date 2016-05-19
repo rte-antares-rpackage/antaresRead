@@ -321,13 +321,27 @@ setSimulationPath <- function(path, simulation) {
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
   start <- as.Date(paste(year, "01 01"), format = "%Y %m %d")
   jan1 <- which(dNames == p$january.1st)
+  
+  # If the year does not begin in january, then "january.1st" corresponds to
+  # the first january of the second year
+  dateJan1 <- start
+  if (p$`first-month-in-year` != "january") lubridate::year(dateJan1) <- year(dateJan1) + 1
+  
+  # Similar problem with "leapyear"
+  dateLeapYear <- start
+  if (!p$`first-month-in-year` %in% c("january", "february")) 
+    lubridate::year(dateLeapYear) <- year(dateLeapYear) + 1
 
   # If inconsistency, then choose a year that restores consistency
-  if (jan1 != wday(start) | lubridate::leap_year(start) != p$leapyear) {
+  if (jan1 != wday(dateJan1) | lubridate::leap_year(dateLeapYear) != p$leapyear) {
 
-    if (p$leapyear) newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
-    else newYear <- switch(jan1, 2017, 2018, 2019, 2025, 2026, 2021, 2022)
-
+    if (p$leapyear & p$`first-month-in-year` == "february") {
+      newYear <- switch(jan1, 2045, 2029, 2041, 2025, 2037, 2021, 2031)
+    } else if (p$leapyear & p$`first-month-in-year` != "february") {
+      newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
+    } else newYear <- switch(jan1, 2017, 2018, 2019, 2025, 2026, 2021, 2022)
+    
+    if (p$`first-month-in-year` != "january") newYear <- newYear - 1
     lubridate::year(start) <- newYear
     message("Date parameters are inconsistent. Assume correct year is ", newYear)
 
