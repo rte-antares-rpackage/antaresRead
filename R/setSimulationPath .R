@@ -221,9 +221,9 @@ setSimulationPath <- function(path, simulation) {
     variables$links <- setdiff(v, pkgEnv$idVars)
   }
   
-  # Optimisation parameters
-  parameters <- readIniFile("about-the-study/parameters.ini")
-
+  tmin <- params$general$simulation.start
+  tmax <- params$general$simulation.end
+  
   res <- list(
     studyPath = normalizePath(file.path(path, "../..")),
     studyName = readIniFile(file.path(path, "../../study.antares"))$antares$caption,
@@ -237,6 +237,8 @@ setSimulationPath <- function(path, simulation) {
     scenarios = scenarios,
     mcYears = mcYears,
     antaresVersion = info$version,
+    timeIdMin = 1 + (tmin - 1) * 24,
+    timeIdMax = ((tmax - tmin + 1) %/% 7 * 7 + tmin - 1) * 24,
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
     areaList = areaList,
@@ -245,7 +247,7 @@ setSimulationPath <- function(path, simulation) {
     areasWithClusters = areasWithClusters,
     districtsDef = .readDistrictsDef(file.path(path, "../../input")),
     variables = variables,
-    parameters = parameters
+    parameters = params
   )
   
   class(res) <- c("simOptions")
@@ -277,12 +279,17 @@ setSimulationPath <- function(path, simulation) {
     paste(f, "-", to)
   }))
   
+  tmin <- params$general$simulation.start
+  tmax <- params$general$simulation.end
+  
   res <- list(
     studyPath = normalizePath(path),
     studyName = study$antares$caption,
     inputPath = file.path(path, "input"),
     mode = "Input",
     antaresVersion = study$antares$version,
+    timeIdMin = 1 + (tmin - 1) * 24,
+    timeIdMax = ((tmax - tmin + 1) %/% 7 * 7 + tmin - 1) * 24,
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
     areaList = areaList,

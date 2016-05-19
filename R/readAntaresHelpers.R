@@ -252,6 +252,8 @@
   
   series <- data.table(series)
   
+  series <- series[timeId %in% opts$timeIdMin:opts$timeIdMax]
+  
   res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
   
   if (synthesis) {
@@ -281,13 +283,15 @@
     f <- file.path(pathInput, area, "mod.txt")
   }
   
+  timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
+  
   if (file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         area = area, 
         mcYear = mcYears[i],
-        timeId = 1:12,
-        hydroStorage = rep(0L, 12)
+        timeId = timeRange[1]:timeRange[2],
+        hydroStorage = rep(0L, length(timeRange[1]:timeRange[2]))
       )
     })
   } else {
@@ -296,14 +300,13 @@
     
     
     ts <- fread(f, integer64 = "numeric", select = colToRead)
-    
-    N <- nrow(ts)
+    ts <- ts[timeRange[1]:timeRange[2]]
     
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         area = area, 
         mcYear = mcYears[i],
-        timeId = 1:nrow(ts),
+        timeId = timeRange[1]:timeRange[2],
         hydroStorage = ts[[ colIds[i] ]]
       )
     })

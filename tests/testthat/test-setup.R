@@ -13,6 +13,8 @@ trueOpts <- list(
   scenarios = TRUE,
   mcYears = 2,
   antaresVersion = 500L,
+  timeIdMin = 1,
+  timeIdMax = 24 * 7 * 52,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
   firstWeekday = "Monday",
   areaList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 

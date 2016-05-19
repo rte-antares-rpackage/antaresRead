@@ -37,19 +37,22 @@
   
   # If file does not exists or is empty, but we know the columns, then we
   # create a table filled with 0. Else we return NULL
-  expectedRows <- switch(inputTimeStep, hourly=24*7*52, daily=7*52, monthly=12)
+  timeRange <- switch(inputTimeStep, 
+                      hourly=c(opts$timeIdMin, opts$timeIdMax), 
+                      daily=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts)), 
+                      monthly=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts)))
   
   if (!file.exists(path) || file.size(path) == 0) {
     if (type == "matrix") return(NULL)
-    inputTS <- data.table(matrix(0L, expectedRows,length(colnames)))
+    inputTS <- data.table(matrix(0L, timeRange[2] - timeRange[1] + 1,length(colnames)))
   } else {
     inputTS <- fread(path, integer64 = "numeric", header = FALSE)
-    inputTS <- inputTS[1:expectedRows]
+    inputTS <- inputTS[timeRange[1]:timeRange[2]]
   }
   
   # Add area and timeId columns and put it at the begining of the table
   inputTS$area <- area
-  inputTS$timeId <- 1:nrow(inputTS)
+  inputTS$timeId <- timeRange[1]:timeRange[2]
   .setcolorder(inputTS, c("area", "timeId"))
   
   inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
@@ -172,8 +175,8 @@
     
     modulation$area <- area
     modulation$cluster <- cl
-    modulation <- modulation[1:(24*12*52)]
-    modulation$timeId <- 1:(24*12*52)
+    modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
+    modulation$timeId <- opts$timeIdMin:opts$timeIdMax
     
     modulation
   })

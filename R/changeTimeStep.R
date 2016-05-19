@@ -79,8 +79,8 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   # Strategy: if newTimeStep is not hourly, first desagregate data at hourly
   # level. Then, in all cases aggregate hourly data at the desired level.
   refTime <- data.table(
-    oldTimeId = .getTimeId(1:(24*7*52), oldTimeStep, opts),
-    timeId = .getTimeId(1:(24*7*52), newTimeStep, opts)
+    oldTimeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, oldTimeStep, opts),
+    timeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, newTimeStep, opts)
   )
   
   x <- copy(x)
@@ -126,6 +126,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   attr(x, "type") <- type
   attr(x, "timeStep") <- newTimeStep
   attr(x, "synthesis") <- synthesis
+  attr(x, "opts") <- opts
   
   x
 }
@@ -145,7 +146,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   # Hard cases
   # Create a correlation table between hourIds and actual dates and compute new 
   # timeIds based on the actual dates
-  timeRef <- data.table(hourId = 1:(24*7*52))
+  timeRef <- data.table(hourId = 1:(24*365))
   
   tmp <- as.POSIXct(opts$start)
   lubridate::hour(tmp) <- lubridate::hour(tmp) + timeRef$hourId - 1
