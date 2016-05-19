@@ -18,6 +18,20 @@
   x
 }
 
+.checkArg <- function(list, reference, msg) {
+  if (is.null(list) || length(list) == 0) return(NULL)
+  if (any(list == "all")) return(reference)
+  
+  res <- intersect(list, reference)
+  if (length(res) < length(list)) {
+    missingElements <- setdiff(list, reference)
+    warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
+    if (length(res) == 0) return(NULL)
+  }
+  
+  res
+}
+
 # Private function that reorder columns of a data.table. Contrary to 
 # setcolorder, the function does not need the name of all columns.
 .setcolorder <- function(x, neworder) {

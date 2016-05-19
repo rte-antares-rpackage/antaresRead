@@ -187,6 +187,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     areas <- "all"
   }
   
+  areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
+  links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
+  clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
+  districts <- .checkArg(districts, opts$districtsDef$district, "Districts %s do not exist in the simulation.")
+  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.")
+  
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
   if ((is.null(areas) & is.null(districts)) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
@@ -219,12 +225,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (misc | hydroStorageMaxPower | reserve | linkCapacity) {
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
-
-  # Manage special value "all"
-  if (identical(areas, "all")) areas <- opts$areaList
-  if (identical(links, "all")) links <- opts$linkList
-  if (identical(clusters, "all")) clusters <- opts$areasWithClusters
-  if (identical(districts, "all")) districts <- opts$setList
 
   # Aliases for groups of variables
   select <- llply(select, function(x) {
