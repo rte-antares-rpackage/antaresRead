@@ -71,9 +71,14 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   synthesis <- attr(x, "synthesis")
   type <- attr(x, "type")
   
+  # Should we had date-time columns ?
+  addDateTimeCol <- !is.null(x[["time"]])
+  
   # Suppress time variables
+  if (!is.null(x[["time"]])) x$time <- NULL
   if (!is.null(x$hour)) x$hour <- NULL
   if (!is.null(x$day)) x$day <- NULL
+  if (!is.null(x$week)) x$week <- NULL
   if (!is.null(x$month)) x$month <- NULL
   
   # Strategy: if newTimeStep is not hourly, first desagregate data at hourly
@@ -127,6 +132,8 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   attr(x, "timeStep") <- newTimeStep
   attr(x, "synthesis") <- synthesis
   attr(x, "opts") <- opts
+  
+  if(addDateTimeCol) x <- addDateTimeColumns(x)
   
   x
 }

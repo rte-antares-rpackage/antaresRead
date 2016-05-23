@@ -71,15 +71,15 @@ test_that("default behavior is fine", {
 test_that("It is possible to select only some columns", {
   out <- readAntares("all", "all", select = c("OP. COST", "FLOW LIN."),
                     timeStep = "annual", showProgress = FALSE)
-  expect_equal(names(out$areas), c("area", "timeId", "OP. COST"))
-  expect_equal(names(out$links), c("link", "timeId", "FLOW LIN."))
+  expect_equal(names(out$areas), c("area", "timeId", "time", "OP. COST"))
+  expect_equal(names(out$links), c("link", "timeId", "time", "FLOW LIN."))
 })
 
 test_that("Aliases for variables work", {
   out <- readAntares("all", select = c("economy"),
                     timeStep = "annual", showProgress = FALSE)
   expect_equal(names(out),
-               c("area", "timeId", "OV. COST", "OP. COST", "MRG. PRICE",
+               c("area", "timeId", "time", "OV. COST", "OP. COST", "MRG. PRICE",
                  "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
 })
 
@@ -87,6 +87,6 @@ test_that("Aliases are case incensitive", {
   out <- readAntares("all", select = c("Economy"),
                     timeStep = "annual", showProgress = FALSE)
   expect_equal(names(out),
-               c("area", "timeId", "OV. COST", "OP. COST", "MRG. PRICE",
+               c("area", "timeId", "time", "OV. COST", "OP. COST", "MRG. PRICE",
                  "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
 })

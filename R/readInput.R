@@ -131,5 +131,6 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   
   # Class and attributes
-  .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
+  res <- .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
+  addDateTimeColumns(res)
 }

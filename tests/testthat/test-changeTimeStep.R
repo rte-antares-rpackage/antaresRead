@@ -33,7 +33,9 @@ test_that("Aggregating desaggregated data should give the initial values.", {
   areasD <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE, timeStep = "daily")
   areasH <- changeTimeStep(areasD, "hourly")
   areasD2 <- changeTimeStep(areasH, "daily")
-  expect_equal(areasD$LOAD, areasD2$LOAD)
+  setorder(areasD, timeId, area, mcYear)
+  setorder(areasD2, timeId, area, mcYear)
+  expect_equal(areasD, areasD2)
 })
 
 test_that("changeTimeStep works on antaresData objects", {

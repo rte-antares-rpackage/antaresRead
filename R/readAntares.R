@@ -431,7 +431,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   
   # Class and attributes
-  .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
+  res <- .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
+  
+  # Add date/time columns
+  addDateTimeColumns(res)
 }
 
 #' Read output for a list of areas
