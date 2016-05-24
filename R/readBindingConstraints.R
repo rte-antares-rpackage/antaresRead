@@ -41,7 +41,7 @@
 #' }
 #' 
 #' @export
-readBindingContraints <- function(opts=simOptions()) {
+readBindingConstraints <- function(opts=simOptions()) {
   
   path <- file.path(opts$path, "../../input/bindingConstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

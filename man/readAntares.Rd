@@ -8,7 +8,7 @@ readAntares(areas = NULL, links = NULL, clusters = NULL,
   districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
   linkCapacity = FALSE, mustRun = FALSE, select = NULL,
-  synthesis = simOptions()$synthesis, mcYears = 1:simOptions()$mcYears,
+  synthesis = simOptions()$synthesis, mcYears = simOptions()$mcYears,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
   opts = simOptions(), parallel = FALSE, simplify = TRUE,
   showProgress = TRUE)
@@ -38,6 +38,8 @@ import misc.}
 \item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ?}
 
 \item{hydroStorage}{Should hydro storage be imported ?}
+
+\item{hydroStorageMaxPower}{Should hydro storage maximum power be imported ?}
 
 \item{reserve}{Should reserve be imported ?}
 
@@ -73,8 +75,6 @@ data.table is returned. If FALSE, the result will always be a list of class
 
 \item{showProgress}{If TRUE the function displays information about the progress of the
 importation.}
-
-\item{hydroStorageMaxPoser}{Should hydro storage maximum power be imported ?}
 }
 \value{
 If \code{simplify = TRUE} and only one type of output is imported
@@ -135,7 +135,7 @@ and a package that provides a parallel backend (for instance the package
 
 Before running the function with argument \code{parallel=TRUE}, you need to
 register your parallel backend. For instance, if you use package "doParallel"
-you need to use the function \code{\link{registerDoParallel}} once per
+you need to use the function \code{registerDoParallel} once per
 session.
 }
 \examples{

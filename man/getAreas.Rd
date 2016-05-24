@@ -22,6 +22,8 @@ interpreted as a list of regular expressions and each area validating one
 of them is excluded. Else it is interpreted as list of area names to 
 exclude. If \code{NULL}, not any area is excluded.}
 
+\item{withClustersOnly}{Should the function return only nodes containing clusters ?}
+
 \item{regexpSelect}{Is \code{select} a list of regular expressions ?}
 
 \item{regexpExclude}{Is \code{exclude} a list of regular expressions ?}

@@ -50,7 +50,7 @@
 #'
 #' Before running the function with argument \code{parallel=TRUE}, you need to
 #' register your parallel backend. For instance, if you use package "doParallel"
-#' you need to use the function \code{\link{registerDoParallel}} once per
+#' you need to use the function \code{registerDoParallel} once per
 #' session.
 #'
 #' @param areas
@@ -78,7 +78,7 @@
 #'   Should thermal availabilities of clusters be imported ?
 #' @param hydroStorage
 #'   Should hydro storage be imported ?
-#' @param hydroStorageMaxPoser
+#' @param hydroStorageMaxPower
 #'   Should hydro storage maximum power be imported ? 
 #' @param reserve
 #'   Should reserve be imported ?
@@ -240,8 +240,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   # Can the importation be parallelized ?
   if (parallel) {
-    if(!require(foreach)) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
-    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
+    if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
+    if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
 
   res <- list() # Object the function will return

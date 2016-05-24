@@ -27,4 +27,15 @@ pkgEnv$varAliases <- list(
 )
 
 # Column names in the misc input files.
-pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP", "ROW_Balance")
+pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
+
+# The goal of the following lines is only to remove many useless warnings in 
+# R CMD CHECK: "no visible binding for global variable 'XXX'".
+# They come from the use of the data.table syntax.
+utils::globalVariables(c("timeId", "area", "hydroStorage", "thermalAvailability",
+                         "cluster", "FLOW LIN.", "direction", "flow",
+                         "BALANCE", "totalFlow", "prop", "to", "link", "change",
+                         "district", "must.run", ".txt", "detailsLength",
+                         "linkLength", "connectedToVirtualArea", "from", "correction",
+                         "nominalcapacity", "unitcount", "capacity", "mustRunModulation",
+                         "production", "mustRunPartial", "mustRunTotal", "mcYear"))

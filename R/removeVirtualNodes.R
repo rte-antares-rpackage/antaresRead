@@ -31,7 +31,7 @@
 #'     pumping unit or any other flexibility that behave as a storage. For those 
 #'     virtual areas, the important results are flows on the links. 
 #'   \item Production areas are areas created to isolate some generation from 
-#'     the “real” areas. They can be isolate for several reasons: to distinguish 
+#'     the "real" areas. They can be isolate for several reasons: to distinguish 
 #'     time-series (for example wind onshore/offshore), to select some specific 
 #'     unit to participate to day-ahead reserve, etc.
 #' }

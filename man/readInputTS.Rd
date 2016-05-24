@@ -47,7 +47,7 @@ data.table is returned. If FALSE, the result will always be a list of class
 importation.}
 }
 \value{
-If \code{simplify = TRUE} and only one type of inpuàt is imported
+If \code{simplify = TRUE} and only one type of input is imported
 then the result is a data.table with class "antaresDataTable".
 
 Else an object of class "antaresDataList" is returned. It is a list of

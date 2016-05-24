@@ -72,7 +72,7 @@ readLayout <- function(opts = simOptions()) {
 
 # Fonction pour vérifier visuellement qu'importLayout fonctionne
 plotLayout <- function(layout) {
-  if (missing(layout)) layout <- importLayout()
+  if (missing(layout)) layout <- readLayout()
   plot(layout$areas$x, layout$areas$y, type="n",xaxt='n',yaxt='n',pch='',ylab='',xlab='')
 
   with(layout$links, segments(x0, y0, x1, y1, col = gray(0.85)))
