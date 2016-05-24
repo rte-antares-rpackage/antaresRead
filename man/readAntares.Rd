@@ -51,7 +51,7 @@ import misc.}
 argument is \code{NULL}, all variables are imported. Special names
 \code{"allAreas"} and \code{"allLinks"} indicate to the function to import
 all variables for areas or for links. The list of available variables can
-be seen with the command \code{getOption("antares")$variables}.  Id
+be seen with the command \code{simOptions()$variables}.  Id
 variables like \code{area}, \code{link} or \code{timeId} are automatically
 imported.}
 
