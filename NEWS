@@ -1,3 +1,15 @@
+Changes in version 0.6 (2016-05-27)
+
+NEW FEATURES:
+* readAntares and readInputTS always add time columns (time, day, month, hour). changeTimeStep now keeps them if they are present.
+
+BUGFIXES:
+* readAntares may not work when some MC years were not exported by Antares.
+* The construction of the weeks was wrong when a year did not start on january.
+* The import of inputs was wrong when the study was not conducted on a whole year but on a smaller period.
+* In removeVirtualNodes, option "reassignCosts" was not working correctly.
+
+
 Changes in version 0.5 (2016-05-11)
 
 BREAKING CHANGES:
@@ -16,6 +28,7 @@ BUGFIXES:
 * 'removeVirtualNodes' was not creating some columns for production virtual nodes.
 * The option 'mustRun' in readAntares was not functionning correctly
 
+
 Changes in version 0.4 (2016-04-29)
 
 BREAKING CHANGES:
@@ -33,6 +46,7 @@ NEW FEATURES:
 * New function "copyToClipboard"
 * Added package vignette
 
+
 Changes in version 0.3 (2016-04-14)
 
 NEW FEATURES:
@@ -45,6 +59,7 @@ NEW FEATURES:
 * Improved documentation
 * New function removeVirtualNodes (still experimental)
 * Added this NEWS file :)
+
 
 Changes in version 0.2 (2016-04-05)
 
