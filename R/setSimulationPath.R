@@ -314,7 +314,7 @@ setSimulationPath <- function(path, simulation) {
 
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
-  if (m == -1) year <- 2017
+  if (length(m) == 0 || m == -1) year <- 2017
   else year <- as.numeric(regmatches(p$horizon, m))
 
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
@@ -342,7 +342,7 @@ setSimulationPath <- function(path, simulation) {
     
     if (p$`first-month-in-year` != "january") newYear <- newYear - 1
     lubridate::year(start) <- newYear
-    message("Date parameters are inconsistent. Assume correct year is ", newYear)
+    message("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ", newYear)
 
   }
 
