@@ -210,7 +210,7 @@
 
 .importThermal <- function(area, synthesis, timeStep, mcYears, opts, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
-  if (synthesis) mcYears <- 1:opts$mcYears
+  if (synthesis) mcYears <- opts$mcYears
   
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
@@ -272,7 +272,7 @@
 }
 
 .importHydroStorage <- function(area, synthesis, timeStep, mcYears, opts, ...) {
-  if (synthesis) mcYears <- 1:opts$mcYears
+  if (synthesis) mcYears <- opts$mcYears
   
   pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
   
