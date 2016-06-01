@@ -165,7 +165,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     x <- removeVirtualAreas(x, storageFlexibility = veryVirtualAreas)
     
     # Update parameters
-    storageFlexibility <- connectedToHub[connectedToHub == FALSE]$from
+    storageFlexibility <- intersect(storageFlexibility, connectedToHub[connectedToHub == FALSE]$from)
     vareas <- c(storageFlexibility, production) 
     linkList <- linkList[from %in% vareas]
     
@@ -229,6 +229,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   # Aggregate production of production virtual areas and add columns for each 
   # type of production.
   if (!is.null(production)) {
+    .prodNodes <- production # Just to prevent name conflicts with columns of x$areas
     
     linkListProd <- linkList[from %in% production]
     
@@ -237,7 +238,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     prodVars <- prodVars[prodVars != "LOAD"]
     vars <- c(byarea, prodVars)
     
-    virtualProd <- x$areas[area %in% production, mget(vars)]
+    virtualProd <- x$areas[area %in% .prodNodes, mget(vars)]
     
     # Remove columns containing only zeros
     for (v in prodVars) {
@@ -265,7 +266,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     }
   }
   
-  # Put clusters of the virtual areas in the corresponding real ndoes
+  # Put clusters of the virtual areas in the corresponding real areas
   if (!is.null(x$clusters) & !is.null(x$production)) {
     linkListProd <- linkList[from %in% production]
     linkListProd$area <- linkListProd$from
@@ -280,6 +281,10 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
     if (!is.null(x[[n]]$link)) x[[n]] <- x[[n]][!link %in% getLinks(vareas)]
   }
+  
+  # Keep in attributes the name of the virtuals nodes
+  attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
+                                  production = production)
   
   x
 }
