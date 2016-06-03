@@ -149,8 +149,15 @@ setSimulationPath <- function(path, simulation) {
       } else {
         if (simulation == "input") return(.inputSimOptions(path))
         
-        f <- f[grep(paste0("-", simulation, "$"), f, ignore.case = TRUE)]
-        if (length(f) == 0) stop ("Cannot find the simulation called ", simulation)
+        if (any(f == simulation)) f <- simulation
+        else {
+          f <- f[grep(paste0("-", simulation, "$"), f, ignore.case = TRUE)]
+          if (length(f) == 0) stop ("Cannot find the simulation called ", simulation)
+          if (length(f) > 1) warning("Several simulations have the same name. The most recent will be used")
+          f <- last(f)
+        }
+        
+        
         
         path <- file.path(path, f[1])
       }
