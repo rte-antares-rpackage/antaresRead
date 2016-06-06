@@ -51,7 +51,7 @@ addDateTimeColumns <- function(x) {
     monthId <- .getTimeId(1:(24*7*52), "monthly", opts)
     month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
     
-    monthName <- tapply(timestamp, monthId, function(x) lubridate::month(min(x), TRUE, TRUE))
+    monthName <- tapply(timestamp, monthId, function(x) toupper(lubridate::month(min(x), TRUE, TRUE)))
     
     newCols <- data.table(time = month, 
                           month = as.factor(toupper(monthName)))
