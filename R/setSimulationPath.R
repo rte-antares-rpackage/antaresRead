@@ -251,7 +251,7 @@ setSimulationPath <- function(path, simulation) {
     setList = gsub("^@ ?", "", setList),
     linkList = linkList,
     areasWithClusters = areasWithClusters,
-    districtsDef = .readDistrictsDef(file.path(path, "../../input")),
+    districtsDef = .readDistrictsDef(file.path(path, "../../input"), areaList),
     variables = variables,
     parameters = params
   )
@@ -302,7 +302,7 @@ setSimulationPath <- function(path, simulation) {
     setList = setList,
     linkList = linkList,
     areasWithClusters = NA,
-    districtsDef = .readDistrictsDef(file.path(path, "input"))
+    districtsDef = .readDistrictsDef(file.path(path, "input"), areaList)
   )
   
   class(res) <- c("simOptions")
@@ -359,11 +359,16 @@ setSimulationPath <- function(path, simulation) {
 
 
 # Private function that reads the defenition of the districts
-.readDistrictsDef <- function(inputPath) {
+.readDistrictsDef <- function(inputPath, areas) {
   districts <- readIniFile(file.path(inputPath, "areas/sets.ini"))
   res <- ldply(names(districts), function(n) {
     x <- districts[[n]]
-    areas <- unlist(x[names(x) == "+"], use.names = FALSE)
+    if (any(unlist(x) == "add-all")) {
+      areasToRemove <- unlist(x[names(x) == "-"], use.names = FALSE)
+      areas <- setdiff(areas, areasToRemove)
+    } else {
+      areas <- unlist(x[names(x) == "+"], use.names = FALSE)
+    }
     if (length(areas) == 0) return(NULL)
     
     data.frame(district = n, area = areas)
