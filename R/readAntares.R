@@ -75,7 +75,9 @@
 #'   Vector containing the name of the areas for which you want to
 #'   import misc.
 #' @param  thermalAvailabilities
-#'   Should thermal availabilities of clusters be imported ?
+#'   Should thermal availabilities of clusters be imported ? If TRUE, the column
+#'   "thermalAvailability" is added to the result and a new column "availableUnits"
+#'   containing the number of available units in a cluster is created.
 #' @param hydroStorage
 #'   Should hydro storage be imported ?
 #' @param hydroStorageMaxPower

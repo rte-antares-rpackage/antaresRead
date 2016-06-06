@@ -262,10 +262,21 @@
   
   series <- series[timeId %in% opts$timeIdMin:opts$timeIdMax]
   
-  res <- changeTimeStep(series, timeStep, "hourly", opts=opts)
+  # Compute the number of available units
+  clusterDesc <- readClusterDesc(opts)
+  series <- merge(series, clusterDesc[, .(area, cluster, nominalcapacity)],
+                  by = c("area", "cluster"))
+  
+  series[, availableUnits :=  mean(thermalAvailability / nominalcapacity)]
+  series[, nominalcapacity := NULL]
+  
+  # Aggregation
+  res <- changeTimeStep(series, timeStep, "hourly", opts=opts, fun = c("sum", "mean"))
   
   if (synthesis) {
-    res <- res[, .(thermalAvailability=mean(thermalAvailability)), keyby = .(area, cluster, timeId)]
+    res <- res[, .(thermalAvailability=mean(thermalAvailability),
+                   availableUnits = mean(availableUnits)), 
+               keyby = .(area, cluster, timeId)]
   }
   
   res
