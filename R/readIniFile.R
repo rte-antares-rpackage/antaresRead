@@ -17,6 +17,7 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
   L <- vector(mode="list", length=length(sections))
   names(L) <- gsub("\\[|\\]", "", X[sections])
   for(i in seq(along = sections)){
+    if (starts[i] >= ends[i]) next
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
