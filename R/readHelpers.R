@@ -1,3 +1,5 @@
+# Add the class "antaresDataList" to a list of tables and attach attributes synthesis,
+# timeStep and opts.
 .addClassAndAttributes <- function(x, synthesis, timeStep, opts, simplify) {
   for (n in names(x)) {
     class(x[[n]]) <- append(c("antaresDataTable", "antaresData"), class(x[[n]]))
@@ -7,8 +9,7 @@
     attr(x[[n]], "opts") <- opts
     
     # Order columns: id columns first
-    idCols <- intersect(pkgEnv$idVars, names(x[[n]]))
-    .setcolorder(x[[n]], idCols)
+    .setcolorder(x[[n]], .idCols(x[[n]]))
     
   }
   
@@ -23,6 +24,29 @@
   x
 }
 
+# Private function that returns the name of de id columns of a table
+.idCols <- function(x) {
+  intersect(pkgEnv$idVars, names(x))
+}
+
+#' Function for preprocessing arguments areas, links, clusters and districts
+#' of readAntares.
+#'
+#' @param list
+#'   value of the argument areas, links, clusters or districts
+#' @param reference
+#'   vector containing the reference list of elements. For "areas", it is the list
+#'   of areas from the simulation, etc.
+#' @param msg
+#'   warning message to display when an element does not exist in the reference
+#'   list
+#' @return
+#' If the argument is empty it returns NULL.
+#' If it contains "all", it returns the reference list
+#' Else it returns the parameter "list" without the non-existent elements
+#' 
+#' @noRd
+#' 
 .checkArg <- function(list, reference, msg) {
   if (is.null(list) || length(list) == 0) return(NULL)
   if (any(list == "all")) return(reference)

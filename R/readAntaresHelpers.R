@@ -167,7 +167,7 @@
     setnames(x, 1:ncol(x), n)
 
     # reshape data
-    x <- data.table::melt(x, id.vars = intersect(pkgEnv$idVars, names(x)))
+    x <- data.table::melt(x, id.vars = .idCols(x))
     x$cluster <- as.factor(tolower(gsub("\\|.*$", "", x$variable)))
     x$unit <- gsub("^.*\\|", "", x$variable)
     x$variable <- NULL

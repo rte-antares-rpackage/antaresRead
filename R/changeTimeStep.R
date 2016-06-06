@@ -101,7 +101,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   # Desagregation
   if (oldTimeStep != "hourly") {
-    idVars <- intersect(names(x), c(pkgEnv$idVars, "oldTimeId"))
+    idVars <- c(.idCols(x), "oldTimeId")
     idVars  <- idVars[idVars != "timeId"]
     by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
     
@@ -126,12 +126,11 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   # Aggregation
   if (newTimeStep != "hourly") {
-    idVars <- intersect(names(x), pkgEnv$idVars)
-    by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
+    idVars <- .idCols(x)
     
     if (length(fun) == 1) fun <- rep(fun, ncol(x) - length(idVars))
     
-    x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=eval(by)]
+    x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=idVars]
   }
   
   class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
