@@ -1,3 +1,20 @@
+Changes in version 0.7 (2016-06-07)
+
+BREAKING CHANGES:
+* The package has been renamed "antaresRead".
+
+NEW FEATURES:
+* changeTimeStep accepts two new functions : min and max.
+* readAntares now computes the number of available units.
+
+BUGFIXES:
+* setSimulationPath was crashing if parameter "horizon" was not set in Antares.
+* setSimulationPath throws a warning when two simulations have same name and it uses the most recent one. 
+* In presence of hubs and production nodes, removeVirtualAreas treated production nodes two times.
+* Column "month" was sometimes numeric and other times character.
+* setSimulationPath was not recognising option "apply-filter = add-all" when retrieving district definition.
+
+
 Changes in version 0.6 (2016-05-27)
 
 NEW FEATURES:
