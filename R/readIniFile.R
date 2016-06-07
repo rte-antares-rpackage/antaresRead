@@ -35,3 +35,22 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
   }
   L
 }
+
+writeIniFile <- function(x, file, overwrite = FALSE) {
+  if (!overwrite & file.exists(file)) stop("File already exists.")
+  
+  file <- file(file, open = "w")
+  
+  for (n in names(x)) {
+    cat(paste0("[", n,"]\n"), file = file)
+    for (k in names(x[[n]])) {
+      v <- x[[n]][[k]]
+      if (is.na(v)) v <- ""
+      if (is.logical(v)) v <- ifelse(v, "true", "false")
+      cat(k, " = ", v, "\n", file = file, sep = "")
+    }
+    cat("\n", file = file)
+  }
+  
+  close(file)
+}
