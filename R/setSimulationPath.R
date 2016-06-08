@@ -253,7 +253,8 @@ setSimulationPath <- function(path, simulation) {
     areasWithClusters = areasWithClusters,
     districtsDef = .readDistrictsDef(file.path(path, "../../input"), areaList),
     variables = variables,
-    parameters = params
+    parameters = params,
+    energyCosts = .readEnergyCosts(file.path(path, "../.."))
   )
   
   class(res) <- c("simOptions")
@@ -358,7 +359,7 @@ setSimulationPath <- function(path, simulation) {
 }
 
 
-# Private function that reads the defenition of the districts
+# Private function that reads the definition of the districts
 .readDistrictsDef <- function(inputPath, areas) {
   districts <- readIniFile(file.path(inputPath, "areas/sets.ini"))
   res <- ldply(names(districts), function(n) {
@@ -376,3 +377,10 @@ setSimulationPath <- function(path, simulation) {
   data.table(res)
 }
 
+# Private function that reads costs of unsuplied and spilled energy
+.readEnergyCosts <- function(path) {
+  costs <- readIniFile(file.path(path, "input/thermal/areas.ini"))
+  
+  list(unserved  = unlist(costs$unserverdenergycost),
+       spilled = unlist(costs$spilledenergycost))
+}

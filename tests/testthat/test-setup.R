@@ -31,6 +31,7 @@ class(trueOpts) <- "simOptions"
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath)
   opts$variables <- opts$path <- opts$parameters <- opts$inputPath <- opts$studyPath <- NULL
+  opts$energyCosts <- NULL
   expect_equal(opts, trueOpts)
 })
 
