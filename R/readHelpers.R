@@ -1,15 +1,23 @@
 # Add the class "antaresDataList" to a list of tables and attach attributes synthesis,
 # timeStep and opts.
-.addClassAndAttributes <- function(x, synthesis, timeStep, opts, simplify) {
-  for (n in names(x)) {
-    class(x[[n]]) <- append(c("antaresDataTable", "antaresData"), class(x[[n]]))
-    attr(x[[n]], "type") <- n
-    attr(x[[n]], "timeStep") <- timeStep
-    attr(x[[n]], "synthesis") <- synthesis
-    attr(x[[n]], "opts") <- opts
+.addClassAndAttributes <- function(x, synthesis, timeStep, opts, simplify, type) {
+  
+  if (is(x, "data.table")) {
+    class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
+    attr(x, "type") <- type
+    attr(x, "timeStep") <- timeStep
+    attr(x, "synthesis") <- synthesis
+    attr(x, "opts") <- opts
     
     # Order columns: id columns first
-    .setcolorder(x[[n]], .idCols(x[[n]]))
+    .setcolorder(x, .idCols(x))
+    
+    return(x)
+  }
+  
+  for (n in names(x)) {
+    
+    x[[n]] <- .addClassAndAttributes(x[[n]], synthesis, timeStep, opts, type = n)
     
   }
   

@@ -267,7 +267,7 @@
   series <- merge(series, clusterDesc[, .(area, cluster, nominalcapacity)],
                   by = c("area", "cluster"))
   
-  series[, availableUnits :=  mean(thermalAvailability / nominalcapacity)]
+  series[, availableUnits :=  ceiling(thermalAvailability / nominalcapacity)]
   series[, nominalcapacity := NULL]
   
   # Aggregation

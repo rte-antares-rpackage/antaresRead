@@ -133,11 +133,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=idVars]
   }
   
-  class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
-  attr(x, "type") <- type
-  attr(x, "timeStep") <- newTimeStep
-  attr(x, "synthesis") <- synthesis
-  attr(x, "opts") <- opts
+  x <- .addClassAndAttributes(x, synthesis, newTimeStep, opts, type = type)
   
   if(addDateTimeCol) x <- addDateTimeColumns(x)
   
