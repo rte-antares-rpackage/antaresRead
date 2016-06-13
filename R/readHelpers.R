@@ -3,11 +3,11 @@
 .addClassAndAttributes <- function(x, synthesis, timeStep, opts, simplify, type) {
   
   if (is(x, "data.table")) {
-    class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
-    attr(x, "type") <- type
-    attr(x, "timeStep") <- timeStep
-    attr(x, "synthesis") <- synthesis
-    attr(x, "opts") <- opts
+    setattr(x, "class", c("antaresDataTable", "antaresData", "data.table", "data.frame"))
+    setattr(x, "type", type)
+    setattr(x, "timeStep", timeStep)
+    setattr(x, "synthesis", synthesis)
+    setattr(x, "opts", opts)
     
     # Order columns: id columns first
     .setcolorder(x, .idCols(x))
