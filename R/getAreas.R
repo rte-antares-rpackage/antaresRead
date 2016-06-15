@@ -21,6 +21,9 @@
 #'   Is \code{exclude} a list of regular expressions ?
 #' @param ignore.case Should the case be ignored when evaluating the regular
 #' expressions ?
+#' @param districts 
+#'   Names of districts. If this argument is not null, only areas belonging
+#'   to the specified districts are returned.
 #' @inheritParams readAntares
 #'   
 #' @return 
@@ -34,11 +37,11 @@
 getAreas <- function(select = NULL, exclude = NULL, withClustersOnly = FALSE,
                      regexpSelect = TRUE, 
                      regexpExclude = TRUE, opts = simOptions(),
-                     ignore.case = TRUE) {
+                     ignore.case = TRUE, districts = NULL) {
   
   allAreas <- if(withClustersOnly) opts$areasWithClusters else opts$areaList
   
-  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, allAreas)
+  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, allAreas, opts, districts)
   
 }
 
@@ -48,12 +51,12 @@ getDistricts <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
                      regexpExclude = TRUE, opts = simOptions(),
                      ignore.case = TRUE) {
   
-  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, opts$setList)
+  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, opts$setList, opts)
   
 }
 
 .getAreas <- function(select, exclude, regexpSelect, regexpExclude,
-                      ignore.case, allAreas) {
+                      ignore.case, allAreas, opts, districts = NULL) {
   areas <- c()
   
   if (is.null(select) | identical(select, "all")) {
@@ -77,6 +80,10 @@ getDistricts <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
     } else {
       areas <- areas[!areas %in% exclude]
     }
+  }
+  
+  if(!is.null(districts)) {
+    areas <- intersect(areas, opts$districtsDef[district %in% districts, area])
   }
   
   areas
