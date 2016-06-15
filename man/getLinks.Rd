@@ -4,33 +4,21 @@
 \alias{getLinks}
 \title{Retrieve links connected to a set of areas}
 \usage{
-getLinks(select = NULL, exclude = NULL, regexpSelect = TRUE,
-  regexpExclude = TRUE, internalOnly = FALSE, opts = simOptions(),
-  ignore.case = TRUE)
+getLinks(..., opts = simOptions(), internalOnly = FALSE, areas = NULL)
 }
 \arguments{
-\item{select}{Character vector. If \code{regexpSelect} is TRUE, this vector is
-interpreted as a list of regular expressions. Else it is interpreted as a
-list of area names. If \code{NULL}, all areas are selected}
-
-\item{exclude}{Character vector. If \code{regexpExclude} is TRUE, this vector is
-interpreted as a list of regular expressions and each area validating one
-of them is excluded. Else it is interpreted as list of area names to 
-exclude. If \code{NULL}, not any area is excluded.}
-
-\item{regexpSelect}{Is \code{select} a list of regular expressions ?}
-
-\item{regexpExclude}{Is \code{exclude} a list of regular expressions ?}
-
-\item{internalOnly}{if TRUE, only links that connect two areas from the list are returned. 
-If not, the function may return links that connect a area from the list with 
-a area outside the list.}
+\item{...}{parameters passed to \code{\link{getAreas}} to construct a set of nodes.
+These parameters are used only if argument \code{areas} is \code{NULL}.}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
 
-\item{ignore.case}{Should the case be ignored when evaluating the regular
-expressions ?}
+\item{internalOnly}{If TRUE, only links that connect two areas from the list are returned. 
+If not, the function may return links that connect a area from the list with 
+a area outside the list.}
+
+\item{areas}{Vector containing area names. It represents the set of areas we interested
+in. If \code{NULL}, \code{\link{getAreas}} to create the set of areas.}
 }
 \value{
 character vector containing link names.

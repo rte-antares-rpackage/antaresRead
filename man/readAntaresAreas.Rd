@@ -8,15 +8,14 @@ readAntaresAreas(areas, links = TRUE, clusters = TRUE,
   internalOnly = FALSE, opts = simOptions(), ...)
 }
 \arguments{
-\item{areas}{Vector containing the names of the areas to import. If
-\code{NULL} no area is imported. The special value \code{"all"} tells the
-function to import all areas. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.}
+\item{areas}{Vector containing area names. It represents the set of areas we interested
+in. If \code{NULL}, \code{\link{getAreas}} to create the set of areas.}
 
 \item{links}{should links connected to the areas be imported ?}
 
 \item{clusters}{should the clusters of the areas be imported ?}
 
-\item{internalOnly}{if TRUE, only links that connect two areas from the list are returned. 
+\item{internalOnly}{If TRUE, only links that connect two areas from the list are returned. 
 If not, the function may return links that connect a area from the list with 
 a area outside the list.}
 

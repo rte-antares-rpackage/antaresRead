@@ -7,7 +7,7 @@
 \usage{
 getAreas(select = NULL, exclude = NULL, withClustersOnly = FALSE,
   regexpSelect = TRUE, regexpExclude = TRUE, opts = simOptions(),
-  ignore.case = TRUE)
+  ignore.case = TRUE, districts = NULL)
 
 getDistricts(select = NULL, exclude = NULL, regexpSelect = TRUE,
   regexpExclude = TRUE, opts = simOptions(), ignore.case = TRUE)
@@ -33,6 +33,9 @@ exclude. If \code{NULL}, not any area is excluded.}
 
 \item{ignore.case}{Should the case be ignored when evaluating the regular
 expressions ?}
+
+\item{districts}{Names of districts. If this argument is not null, only areas belonging
+to the specified districts are returned.}
 }
 \value{
 A character vector containg the name of the areas/districts satisfying the 
