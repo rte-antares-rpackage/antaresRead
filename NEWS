@@ -1,3 +1,15 @@
+Changes in version 0.8 (2016-06-20)
+
+NEW FEATURES:
+* setSimulationPath nows reads costs of unsupplied et spilled energy.
+* ReadLayout computes coordinates for districts and link between them.
+* getAreas has a new parameter "district" to get areas in a set of districts.
+* getLinks has new parameter "areas" to get links connected to a set of areas.
+
+# BUGFIXES
+* Small bug fixes that avoid useless warning messages/
+
+
 Changes in version 0.7 (2016-06-07)
 
 BREAKING CHANGES:
