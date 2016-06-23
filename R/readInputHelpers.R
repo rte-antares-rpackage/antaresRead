@@ -105,7 +105,7 @@
 .importHydroStorageMaxPower <- function(area, timeStep, opts, ...) {
   
   .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
-                 colnames=c("low", "avg", "high"),
+                 colnames=c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh"),
                  inputTimeStep = "daily")
   
 }
