@@ -157,21 +157,25 @@
   
 }
 
-.importMustRunModulation <- function(area, opts, ...) {
+.importThermalModulation <- function(area, opts, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
-  if (opts$antaresVersion < 500) return(NULL)
   
   path <- file.path(opts$inputPath, "thermal/prepro", area)
   
   clusters <- list.files(path)
   
   res <- ldply(clusters, function(cl) {
-    modulation <- fread(file.path(path, cl, "modulation.txt"), select = 4, colClasses = "numeric")
+    modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
     
-    setnames(modulation, names(modulation), "mustRunModulation")
+    setnames(modulation, 
+             names(modulation), 
+             c("marginalCostModulation", "marketBidModulation", 
+               "capacityModulation", "mustRunModulation"))
+    
+    
     
     if (all(modulation$mustRunModulation == 0)) 
-      return(data.table(mustRunModulation=numeric(), area = factor(), cluster = factor(), timeId=integer()))
+      modulation[, mustRunModulation := NA_real_]
     
     modulation$area <- area
     modulation$cluster <- cl

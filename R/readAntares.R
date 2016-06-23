@@ -96,6 +96,10 @@
 #'   be seen with the command \code{simOptions()$variables}.  Id
 #'   variables like \code{area}, \code{link} or \code{timeId} are automatically
 #'   imported.
+#' @param thermalModulation
+#'   Should thermal modulation time series be imported ? If \code{TRUE}, the
+#'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
+#'   and "mustRunModulation" are added to the cluster data.
 #' @param synthesis
 #'   TRUE if you want to import the synthetic results. FALSE if
 #'   you prefer to import year by year results.
@@ -172,6 +176,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
+                        thermalModulation = FALSE,
                         select = NULL,
                         synthesis = simOptions()$synthesis,
                         mcYears = simOptions()$mcYears,
@@ -201,7 +206,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     stop("When misc, hydroStorage, hydroStorageMaxPower or reserve is TRUE, arguments 'areas' or 'districts' need to be specified.")
   }
   if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
-  if (is.null(clusters) & thermalAvailabilities) stop("When 'thermalAvailabilities' is TRUE, argument 'clusters' needs to be specified.")
+  if (is.null(clusters) & (thermalAvailabilities | thermalModulation)) stop("When 'thermalAvailabilities' or 'thermalModulation' is TRUE, argument 'clusters' needs to be specified.")
   
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
@@ -352,6 +357,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$linkCapacity <- NULL
   }
   
+  if (thermalModulation | mustRun) {
+    .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
+    
+    if (!is.null(res$clusters)) {
+      res$clusters <- merge(res$clusters, res$thermalModulation, 
+                            by=c("area", "cluster", "timeId"), all.x = TRUE)
+    }
+    
+    if (!mustRun) res$thermalModulation <- NULL
+  }
+  
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
     if (is.null(res$clusters) | timeStep != "hourly") {
@@ -359,6 +375,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
         timeStep <- "hourly"
         areas <- intersect(opts$areasWithClusters, union(areas, clusters))
         .addOutputToRes("mustRun", areas, .importOutputForClusters, NULL, "hourly")
+        .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
+        res$mustRun <<- merge(res$mustRun, res$thermalModulation, 
+                              by=c("area", "cluster", "timeId"), all.x = TRUE)
       })
     } else res$mustRun <- res$clusters
     
@@ -370,14 +389,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                    capacity = nominalcapacity * unitcount,
                                    must.run)]
     
-    .addOutputToRes("mustRunModulation", union(areas, clusters), .importMustRunModulation, NULL)
-    
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("area", "cluster"))
-    if (nrow(res$mustRunModulation) > 0) {
-      res$mustRun <- merge(res$mustRun, res$mustRunModulation, 
-                           by = c("area","cluster", "timeId"), all.x = TRUE)
-    } else res$mustRun$mustRunModulation <- NA_real_
     
+    if (is.null(res$mustRun$mustRunModulation)) res$mustRun$mustRunModulation <- NA_real_
     
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
@@ -429,7 +443,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     
     res$mustRun <- NULL
-    res$mustRunModulation <- NULL
+    res$thermalModulation <- NULL
   }
   
   # Class and attributes

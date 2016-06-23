@@ -7,11 +7,11 @@
 readAntares(areas = NULL, links = NULL, clusters = NULL,
   districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
-  linkCapacity = FALSE, mustRun = FALSE, select = NULL,
-  synthesis = simOptions()$synthesis, mcYears = simOptions()$mcYears,
-  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-  opts = simOptions(), parallel = FALSE, simplify = TRUE,
-  showProgress = TRUE)
+  linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
+  select = NULL, synthesis = simOptions()$synthesis,
+  mcYears = simOptions()$mcYears, timeStep = c("hourly", "daily", "weekly",
+  "monthly", "annual"), opts = simOptions(), parallel = FALSE,
+  simplify = TRUE, showProgress = TRUE)
 }
 \arguments{
 \item{areas}{Vector containing the names of the areas to import. If
@@ -48,6 +48,10 @@ containing the number of available units in a cluster is created.}
 \item{linkCapacity}{Should link capacities be imported ?}
 
 \item{mustRun}{Should mustRun and partialMustRun columns be added to the result ?}
+
+\item{thermalModulation}{Should thermal modulation time series be imported ? If \code{TRUE}, the
+columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
+and "mustRunModulation" are added to the cluster data.}
 
 \item{select}{Character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
