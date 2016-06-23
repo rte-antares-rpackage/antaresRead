@@ -8,7 +8,7 @@ pkgEnv <- new.env()
 # list of column names that are id variables in output files. When they are
 # present in an output file, they are automatically imported, whatever the value
 # of "select" is.
-pkgEnv$idVars <- c("area", "district", "cluster", "link", "timeId", "time", "day", "week", "month", "hour", "mcYear")
+pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "timeId", "time", "day", "week", "month", "hour", "mcYear")
 
 # Aliases used by the argument "select" of function readOutput.
 pkgEnv$varAliases <- list(
