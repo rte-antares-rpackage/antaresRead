@@ -279,7 +279,6 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   # Remove all data about virtual areas in x
   for (n in names(x)) {
     if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
-    if (!is.null(x[[n]]$link)) x[[n]] <- x[[n]][!link %in% getLinks(vareas)]
   }
   
   # Keep in attributes the name of the virtuals nodes
