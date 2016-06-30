@@ -37,7 +37,8 @@ import misc.}
 
 \item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ? If TRUE, the column
 "thermalAvailability" is added to the result and a new column "availableUnits"
-containing the number of available units in a cluster is created.}
+containing the number of available units in a cluster is created.If synthesis is set to TRUE then 
+"availableUnits" contain the mean of avaible units on all MC Years.}
 
 \item{hydroStorage}{Should hydro storage be imported ?}
 
