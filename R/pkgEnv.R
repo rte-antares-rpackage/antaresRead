@@ -18,6 +18,8 @@ pkgEnv$varAliases <- list(
   generation = c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", "H. STOR"),
   ren = c("WIND", "SOLAR", "H. ROR", "H. STOR"),
   thermal = c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG"),
+  production = c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
+                "MISC. DTG", "H. STOR", "H. ROR", "WIND", "SOLAR"),
   nostat = c("OV. COST", "OP. COST", 
             "MRG. PRICE", "CO2 EMIS.", "BALANCE", "ROW BAL.", "PSP", "MISC. NDG", 
             "LOAD", "H. ROR", "WIND", "SOLAR", "NUCLEAR", "LIGNITE", "COAL", 
@@ -40,6 +42,8 @@ pkgEnv$thermal <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MI
 # Column names for generation
 pkgEnv$generation <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", "H. STOR")
 
+pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
+              "MISC. DTG", "H. STOR", "H. ROR", "WIND", "SOLAR")
 
 # The goal of the following lines is only to remove many useless warnings in 
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
