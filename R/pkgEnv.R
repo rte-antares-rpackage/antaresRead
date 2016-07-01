@@ -42,6 +42,7 @@ pkgEnv$thermal <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MI
 # Column names for generation
 pkgEnv$generation <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", "H. STOR")
 
+# Column names for production
 pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
               "MISC. DTG", "H. STOR", "H. ROR", "WIND", "SOLAR")
 
