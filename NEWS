@@ -1,3 +1,13 @@
+Changes in version 0.9 (2016-07-04)
+
+BREAKING CHANGES:
+* The columns returned by readAntares when 'hydroStorageMaxPower = TRUE' have been renamed.
+
+NEW FEATURES:
+* readAntares has a new parameter "thermalModulation" to import modulation time series.
+* New aliases have been added. One can inspect them with "showAliases()".
+
+
 Changes in version 0.8 (2016-06-20)
 
 NEW FEATURES:
