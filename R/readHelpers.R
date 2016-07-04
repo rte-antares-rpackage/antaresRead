@@ -16,8 +16,11 @@
   }
   
   for (n in names(x)) {
+    # If an element has already a type, do not overwrite it.
+    eltype <- attr(x[[n]], "type")
+    if (is.null(eltype)) eltype <- "n"
     
-    x[[n]] <- .addClassAndAttributes(x[[n]], synthesis, timeStep, opts, type = n)
+    x[[n]] <- .addClassAndAttributes(x[[n]], synthesis, timeStep, opts, type = eltype)
     
   }
   
