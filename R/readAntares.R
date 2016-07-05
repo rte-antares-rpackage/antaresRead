@@ -1,3 +1,14 @@
+# NOTE FOR DEVELOPERS
+#--------------------
+#
+# The function readAntares defined below does not contain the code to import
+# data from an antares project. This code is located in files importOutput.R
+# and importInput.R. Every function nameds ".importXXX" is located in one of
+# these two files depending on what the function tries to import (input or
+# output).
+
+
+
 #' Read the data of an Antares simulation
 #'
 #' @description 
@@ -195,6 +206,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     areas <- "all"
   }
   
+  # Check arguments validity. The function .checkArgs is defined below
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
@@ -453,6 +465,42 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Add date/time columns
   addDateTimeColumns(res)
 }
+
+
+
+#' Function for preprocessing arguments areas, links, clusters and districts
+#' of readAntares.
+#'
+#' @param list
+#'   value of the argument areas, links, clusters or districts
+#' @param reference
+#'   vector containing the reference list of elements. For "areas", it is the list
+#'   of areas from the simulation, etc.
+#' @param msg
+#'   warning message to display when an element does not exist in the reference
+#'   list
+#' @return
+#' If the argument is empty it returns NULL.
+#' If it contains "all", it returns the reference list
+#' Else it returns the parameter "list" without the non-existent elements
+#' 
+#' @noRd
+#' 
+.checkArg <- function(list, reference, msg) {
+  if (is.null(list) || length(list) == 0) return(NULL)
+  if (any(list == "all")) return(reference)
+  
+  res <- intersect(list, reference)
+  if (length(res) < length(list)) {
+    missingElements <- setdiff(list, reference)
+    warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
+    if (length(res) == 0) return(NULL)
+  }
+  
+  res
+}
+
+
 
 #' Read output for a list of areas
 #' 
