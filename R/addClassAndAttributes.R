@@ -40,7 +40,7 @@
     setattr(x, "opts", opts)
     
     # Order columns: id columns first
-    .setcolorder(x, .idCols(x))
+    .reorderCols(x)
     
     return(x)
   }

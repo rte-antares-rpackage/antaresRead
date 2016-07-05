@@ -3,9 +3,15 @@
   intersect(pkgEnv$idVars, names(x))
 }
 
-# Private function that reorder columns of a data.table. Contrary to 
-# setcolorder, the function does not need the name of all columns.
-.setcolorder <- function(x, neworder) {
-  neworder <- c(neworder, setdiff(names(x), neworder))
+#' reorder the columns of a data table
+#' 
+#' This function puts the id columns in the order defined by variable pkgEnv$idVars,
+#' and then the other columns in the same order as in 'x'
+#' 
+#' @noRd
+#' 
+.reorderCols <- function(x) {
+  idCols <- .idCols(x)
+  neworder <- c(idCols, setdiff(names(x), idCols))
   setcolorder(x, neworder)
 }

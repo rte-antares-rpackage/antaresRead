@@ -119,7 +119,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     
     x$timeId <- timeId
     
-    .setcolorder(x, c(idVars, "timeId"))
+    .reorderCols(x)
   }
   
   x$oldTimeId <- NULL

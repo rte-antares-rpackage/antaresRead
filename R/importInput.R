@@ -53,7 +53,7 @@
   # Add area and timeId columns and put it at the begining of the table
   inputTS$area <- area
   inputTS$timeId <- timeRange[1]:timeRange[2]
-  .setcolorder(inputTS, c("area", "timeId"))
+  .reorderCols(inputTS)
   
   inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
   
