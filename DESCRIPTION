@@ -1,8 +1,8 @@
 Package: antaresRead
 Type: Package
 Title: Import, manipulate and explore the results of an Antares simulation
-Version: 0.9.0
-Date: 2016-07-04
+Version: 0.9.1
+Date: 2016-07-05
 Author: Francois Guillem <francois.guillem@rte-france.com>
 Maintainer: Francois Guillem <francois.guillem@rte-france.com>
 Description: Import, manipulate and explore the results of an Antares simulation.
