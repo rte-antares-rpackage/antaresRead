@@ -9,7 +9,7 @@ pkgEnv <- new.env()
 pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
 
 # Column names for ren
-pkgEnv$ren <- c("WIND", "SOLAR", "H. ROR", "H. STOR")
+pkgEnv$ren <- c("WIND", "SOLAR", "H. ROR", "H. STOR", "MISC. NDG")
 
 # Column names for thermal
 pkgEnv$thermal <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG")
@@ -31,7 +31,7 @@ pkgEnv$varAliases <- list(
   adequacy = c("UNSP. ENRG", "LOLD", "LOLP", "AVL DTG", "DTG MRG", "MAX MRG"),
   "net load" = c("ROW BAL.", "PSP", "MISC. NDG", "LOAD", "H. ROR", "WIND", "SOLAR"),
   generation = pkgEnv$generation,
-  ren = pkgEnv$ren,
+  renewable = pkgEnv$ren,
   thermal = pkgEnv$thermal,
   production = pkgEnv$production,
   nostat = c("OV. COST", "OP. COST", 
