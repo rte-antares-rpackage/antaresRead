@@ -52,5 +52,5 @@ utils::globalVariables(c("timeId", "area", "hydroStorage", "thermalAvailability"
                          "BALANCE", "totalFlow", "prop", "to", "link", "change",
                          "district", "must.run", ".txt", "detailsLength",
                          "linkLength", "connectedToVirtualArea", "from", "correction",
-                         "nominalcapacity", "unitcount", "capacity", "mustRunModulation",
+                         "nominalcapacity", "unitcount", "capacity", "minGenModulation",
                          "production", "mustRunPartial", "mustRunTotal", "mcYear"))

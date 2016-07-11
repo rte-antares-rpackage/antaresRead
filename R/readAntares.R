@@ -111,7 +111,7 @@
 #' @param thermalModulation
 #'   Should thermal modulation time series be imported ? If \code{TRUE}, the
 #'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
-#'   and "mustRunModulation" are added to the cluster data.
+#'   and "minGenModulation" are added to the cluster data.
 #' @param synthesis
 #'   TRUE if you want to import the synthetic results. FALSE if
 #'   you prefer to import year by year results.
@@ -404,12 +404,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("area", "cluster"))
     
-    if (is.null(res$mustRun$mustRunModulation)) res$mustRun$mustRunModulation <- NA_real_
+    if (is.null(res$mustRun$minGenModulation)) res$mustRun$minGenModulation <- NA_real_
     
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
-    res$mustRun[!is.na(mustRunModulation), 
-                c("mustRun", "mustRunPartial") := list(0, capacity * mustRunModulation)]
+    res$mustRun[!is.na(minGenModulation), 
+                c("mustRun", "mustRunPartial") := list(0, capacity * minGenModulation)]
     
     res$mustRun[mustRun > production, mustRun := as.numeric(production)]
     res$mustRun[mustRunPartial > production, mustRunPartial := as.numeric(production)]

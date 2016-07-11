@@ -170,12 +170,12 @@
     setnames(modulation, 
              names(modulation), 
              c("marginalCostModulation", "marketBidModulation", 
-               "capacityModulation", "mustRunModulation"))
+               "capacityModulation", "minGenModulation"))
     
     
     
-    if (all(modulation$mustRunModulation == 0)) 
-      modulation[, mustRunModulation := NA_real_]
+    if (all(modulation$minGenModulation == 0)) 
+      modulation[, minGenModulation := NA_real_]
     
     modulation$area <- area
     modulation$cluster <- cl
