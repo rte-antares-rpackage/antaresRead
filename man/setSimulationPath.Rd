@@ -34,7 +34,7 @@ A list containing various information about the simulation, in particular:
   \item{mcYears}{Number of Monte-Carlo scenarii}
   \item{start}{Date of the first day of the year in the simulation.}
   \item{areaList}{Vector of the available areas}
-  \item{setList}{Vector of the available clusters}
+  \item{districtList}{Vector of the available clusters}
   \item{linkList}{Vector of the available links}
   \item{areasWithClusters}{Vector of areas containing clusters}
   \item{variables}{available variables for areas, districts and links}

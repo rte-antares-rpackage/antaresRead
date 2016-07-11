@@ -210,7 +210,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
-  districts <- .checkArg(districts, opts$setList, "Districts %s do not exist in the simulation.")
+  districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
   mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.")
   
   # Check that when a user wants to import input time series, the corresponding

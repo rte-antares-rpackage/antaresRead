@@ -51,7 +51,7 @@ getDistricts <- function(select = NULL, exclude = NULL, regexpSelect = TRUE,
                      regexpExclude = TRUE, opts = simOptions(),
                      ignore.case = TRUE) {
   
-  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, opts$setList, opts)
+  .getAreas(select, exclude, regexpSelect, regexpExclude, ignore.case, opts$districtList, opts)
   
 }
 

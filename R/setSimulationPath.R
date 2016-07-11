@@ -39,7 +39,7 @@
 #'   \item{mcYears}{Number of Monte-Carlo scenarii}
 #'   \item{start}{Date of the first day of the year in the simulation.}
 #'   \item{areaList}{Vector of the available areas}
-#'   \item{setList}{Vector of the available clusters}
+#'   \item{districtList}{Vector of the available districts}
 #'   \item{linkList}{Vector of the available links}
 #'   \item{areasWithClusters}{Vector of areas containing clusters}
 #'   \item{variables}{available variables for areas, districts and links}
@@ -193,7 +193,7 @@ setSimulationPath <- function(path, simulation) {
   opath2 <- file.path(opath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
 
   areaList <- list.files(file.path(opath2, "areas"))
-  setList <- areaList[areaList %like% "^@"]
+  districtList <- areaList[areaList %like% "^@"]
   areaList <- areaList[!areaList %like% "^@"]
 
   linkList <- list.files(file.path(opath2, "links"))
@@ -248,7 +248,7 @@ setSimulationPath <- function(path, simulation) {
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
     areaList = areaList,
-    setList = gsub("^@ ?", "", setList),
+    districtList = gsub("^@ ?", "", districtList),
     linkList = linkList,
     areasWithClusters = areasWithClusters,
     districtsDef = .readDistrictsDef(file.path(path, "../../input"), areaList),
@@ -273,7 +273,7 @@ setSimulationPath <- function(path, simulation) {
   params <- readIniFile(file.path(path, "settings/generaldata.ini"))
   
   areaList <- tolower(readLines(file.path(path, "input/areas/list.txt")))
-  setList <- names(readIniFile(file.path(path, "input/areas/sets.ini")))
+  districtList <- names(readIniFile(file.path(path, "input/areas/sets.ini")))
   
   linkList <- unlist(llply(list.files(file.path(path, "input/links")), function(f) {
     if (!dir.exists(file.path(path, "input/links", f))) return(NULL)
@@ -300,7 +300,7 @@ setSimulationPath <- function(path, simulation) {
     start = .getStartDate(params),
     firstWeekday = as.character(params$general$first.weekday),
     areaList = areaList,
-    setList = setList,
+    districtList = districtList,
     linkList = linkList,
     areasWithClusters = NA,
     districtsDef = .readDistrictsDef(file.path(path, "input"), areaList)
