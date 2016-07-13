@@ -7,9 +7,8 @@
 #' A vector with same length than \code{timeId}. The vector class is determined
 #' by timeStep:
 #' For hourly time step, the function returns a timestamp 
-#' (\code{POSIXct}), for daily time step a date and for weekly and monthly 
-#' timestep a character string containing the year and the number of the week or 
-#' the month.
+#' (\code{POSIXct}), for daily time step a date and for weekly and monthly time step
+#' the first day of the month or the week in \code{Date} format
 #' 
 #' @noRd
 #'   
@@ -40,7 +39,7 @@
     date <- as.Date(tapply(timestamp, weekId, function(x) as.Date(min(x))), origin = "1970-1-1")
     date[1] <- date[2] - 7
     
-    week <- format(date, format = "%G-w%V")
+    week <- date #format(date, format = "%G-w%V")
     
     return(week[timeId])
     
@@ -50,7 +49,8 @@
     lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*7*52) - 1
     
     monthId <- .getTimeId(1:(24*7*52), "monthly", opts)
-    month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
+    month <- as.Date(tapply(timestamp, monthId, function(x) as.Date(min(x))), origin = "1970-1-1")
+    # month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
     
     return(month[timeId])
 
