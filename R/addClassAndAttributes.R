@@ -6,8 +6,11 @@
 #' @param x
 #'   data.table or list of data.tables
 #' @param synthesis
+#'   Does x contain synthetic results ?
 #' @param timeStep
+#'   time step of x
 #' @param opts
+#'   antares options used to create 'x'
 #' @param simplify
 #'   if x is a list with only one element, should the function return only this
 #'   element or a list ?

@@ -52,7 +52,7 @@ containing the number of available units in a cluster is created.If synthesis is
 
 \item{thermalModulation}{Should thermal modulation time series be imported ? If \code{TRUE}, the
 columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
-and "mustRunModulation" are added to the cluster data.}
+and "minGenModulation" are added to the cluster data.}
 
 \item{select}{Character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
