@@ -1,3 +1,13 @@
+Changes in version 0.10 (2016-07-18)
+
+BREAKING CHANGES:
+* Variable mustRunModuction has been renamed minGenModulation for consistency with Antares
+* Similarly in the object returned by setSimulationPath and simOptions, "setList" has been renamed "districtList"
+
+NEW FEATURES:
+* Now, when one filters, add, remove or update columns of an object of class 'antaresDataTable', the result is still of class 'antaresDataTable'.
+
+
 Changes in version 0.9.1 (2016-07-05)
 
 BUGFIXES:
