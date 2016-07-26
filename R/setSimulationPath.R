@@ -322,7 +322,7 @@ setSimulationPath <- function(path, simulation) {
 
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
-  if (length(m) == 0 || m == -1) year <- 2017
+  if (is.na(m) || length(m) == 0 || m == -1) year <- 2017
   else year <- as.numeric(regmatches(p$horizon, m))
 
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
