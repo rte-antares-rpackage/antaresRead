@@ -50,7 +50,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   fun <- match.arg(fun, c("sum", "mean", "min", "max"), several.ok = TRUE)
   
   # Agregation function
-  funs <- list(sum = sum, mean = mean, min = min, max = max)
+  funs <- list(sum = function(x) sum(as.numeric(x)), mean = mean, min = min, max = max)
   #desagregation function
   ifuns <- list(sum = function(x, n) {x / n},
                 mean = function(x, n) {x},
