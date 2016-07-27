@@ -53,7 +53,7 @@
   # Add area and timeId columns and put it at the begining of the table
   inputTS$area <- area
   inputTS$timeId <- timeRange[1]:timeRange[2]
-  .setcolorder(inputTS, c("area", "timeId"))
+  .reorderCols(inputTS)
   
   inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
   
@@ -170,12 +170,12 @@
     setnames(modulation, 
              names(modulation), 
              c("marginalCostModulation", "marketBidModulation", 
-               "capacityModulation", "mustRunModulation"))
+               "capacityModulation", "minGenModulation"))
     
     
     
-    if (all(modulation$mustRunModulation == 0)) 
-      modulation[, mustRunModulation := NA_real_]
+    if (all(modulation$minGenModulation == 0)) 
+      modulation[, minGenModulation := NA_real_]
     
     modulation$area <- area
     modulation$cluster <- cl

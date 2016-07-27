@@ -1,3 +1,14 @@
+# NOTE FOR DEVELOPERS
+#--------------------
+#
+# The function readAntares defined below does not contain the code to import
+# data from an antares project. This code is located in files importOutput.R
+# and importInput.R. Every function nameds ".importXXX" is located in one of
+# these two files depending on what the function tries to import (input or
+# output).
+
+
+
 #' Read the data of an Antares simulation
 #'
 #' @description 
@@ -100,7 +111,7 @@
 #' @param thermalModulation
 #'   Should thermal modulation time series be imported ? If \code{TRUE}, the
 #'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
-#'   and "mustRunModulation" are added to the cluster data.
+#'   and "minGenModulation" are added to the cluster data.
 #' @param synthesis
 #'   TRUE if you want to import the synthetic results. FALSE if
 #'   you prefer to import year by year results.
@@ -195,10 +206,11 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     areas <- "all"
   }
   
+  # Check arguments validity. The function .checkArgs is defined below
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
-  districts <- .checkArg(districts, opts$setList, "Districts %s do not exist in the simulation.")
+  districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
   mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.")
   
   # Check that when a user wants to import input time series, the corresponding
@@ -392,12 +404,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("area", "cluster"))
     
-    if (is.null(res$mustRun$mustRunModulation)) res$mustRun$mustRunModulation <- NA_real_
+    if (is.null(res$mustRun$minGenModulation)) res$mustRun$minGenModulation <- NA_real_
     
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
-    res$mustRun[!is.na(mustRunModulation), 
-                c("mustRun", "mustRunPartial") := list(0, capacity * mustRunModulation)]
+    res$mustRun[!is.na(minGenModulation), 
+                c("mustRun", "mustRunPartial") := list(0, capacity * minGenModulation)]
     
     res$mustRun[mustRun > production, mustRun := as.numeric(production)]
     res$mustRun[mustRunPartial > production, mustRunPartial := as.numeric(production)]
@@ -453,6 +465,42 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Add date/time columns
   addDateTimeColumns(res)
 }
+
+
+
+#' Function for preprocessing arguments areas, links, clusters and districts
+#' of readAntares.
+#'
+#' @param list
+#'   value of the argument areas, links, clusters or districts
+#' @param reference
+#'   vector containing the reference list of elements. For "areas", it is the list
+#'   of areas from the simulation, etc.
+#' @param msg
+#'   warning message to display when an element does not exist in the reference
+#'   list
+#' @return
+#' If the argument is empty it returns NULL.
+#' If it contains "all", it returns the reference list
+#' Else it returns the parameter "list" without the non-existent elements
+#' 
+#' @noRd
+#' 
+.checkArg <- function(list, reference, msg) {
+  if (is.null(list) || length(list) == 0) return(NULL)
+  if (any(list == "all")) return(reference)
+  
+  res <- intersect(list, reference)
+  if (length(res) < length(list)) {
+    missingElements <- setdiff(list, reference)
+    warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
+    if (length(res) == 0) return(NULL)
+  }
+  
+  res
+}
+
+
 
 #' Read output for a list of areas
 #' 
