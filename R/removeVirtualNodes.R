@@ -133,7 +133,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Create a table containing all links that connect virtual areas to other areas
   linkList <- ldply(vareas, function(vn) {
-    ldply(getLinks(vn, opts=opts, regexpSelect = FALSE), function(x) {
+    ldply(getLinks(vn, opts=opts), function(x) {
       xx <- strsplit(x, " - ")[[1]]
       if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
       else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))

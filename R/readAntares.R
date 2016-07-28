@@ -544,7 +544,7 @@ readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = 
     opts <- setSimulationPath()
   }
   
-  links <- if (links) getLinks(areas, regexpSelect = FALSE, internalOnly=internalOnly, opts = opts) else NULL
+  links <- if (links) getLinks(areas, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) areas else NULL
   
   readAntares(areas, links, clusters, opts = opts, ...)

@@ -4,26 +4,45 @@
 \alias{getLinks}
 \title{Retrieve links connected to a set of areas}
 \usage{
-getLinks(..., opts = simOptions(), internalOnly = FALSE, areas = NULL)
+getLinks(areas = NULL, exclude = NULL, opts = simOptions(),
+  internalOnly = FALSE)
 }
 \arguments{
-\item{...}{parameters passed to \code{\link{getAreas}} to construct a set of nodes.
-These parameters are used only if argument \code{areas} is \code{NULL}.}
+\item{areas}{Vector containing area names. It represents the set of areas we are interested
+in. If \code{NULL}, all areas of the study are used.}
+
+\item{exclude}{Vector containing area names. If not \code{NULL}, all links connected to 
+one of these areas are omited.}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
 
-\item{internalOnly}{If TRUE, only links that connect two areas from the list are returned. 
-If not, the function may return links that connect a area from the list with 
-a area outside the list.}
-
-\item{areas}{Vector containing area names. It represents the set of areas we interested
-in. If \code{NULL}, \code{\link{getAreas}} to create the set of areas.}
+\item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
+If not, the function may return links that connect an area from the list with 
+an area outside the list.}
 }
 \value{
 character vector containing link names.
 }
 \description{
 This function find the name of the links connected to a set of areas.
+}
+\examples{
+\dontrun{
+# Get all links of a study
+getLinks()
+
+# Get all links connected to french areas (assuming their name contains "fr")
+getLinks(getAreas("fr"))
+
+# Same but with only links connecting two french areas
+getLinks(getAreas("fr"), internalOnly = TRUE)
+
+# Exclude links connecting real areas with pumped storage virtual areas
+# (assuming their name contains "psp")
+getLinks(getAreas("fr"), exclude = getAreas("psp"))
+
+}
+
 }
 

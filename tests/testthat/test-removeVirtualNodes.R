@@ -19,7 +19,7 @@ test_that("Balance is corrected for nodes connected to virtual nodes but not the
   expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
                dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
-  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
+  correction <- - data$links[link %in% getLinks(vareas), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
   expect_equal(dataCorrected$areas[area=="hub"]$BALANCE - data$areas[area=="hub"]$BALANCE,
@@ -66,7 +66,7 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
   data <- readAntares("all", "all", showProgress = FALSE, synthesis = FALSE)
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
   
-  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
+  correction <- - data$links[link %in% getLinks(vareas), 
                              sum(`FLOW LIN.`), keyby = .(mcYear, timeId)]$V1
   
   setkey(data$areas, mcYear, timeId)
