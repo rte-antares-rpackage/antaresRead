@@ -1,3 +1,12 @@
+Changes in version 0.11 (2016-08-01)
+
+BREAKING CHANGES:
+* The parameters of 'getLinks' have been modified because they were unclear. Now user has to to explicitly specify areas to include and/or exclude.   
+
+BUGFIXES:
+* setSimulationPath was crashing if parameter 'horizon' was not set in Antares.
+* changeTimeStep sometimes generated NA values because of integer overflow.
+
 Changes in version 0.10 (2016-07-18)
 
 BREAKING CHANGES:
