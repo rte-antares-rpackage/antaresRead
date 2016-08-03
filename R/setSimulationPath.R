@@ -115,8 +115,8 @@ setSimulationPath <- function(path, simulation) {
     if (is.na(path)) stop("You have canceled the execution.")
   }
 
-  oldwd <- getwd()
-  setwd(path)
+  oldwd <- setwd(path)
+  on.exit(setwd(oldwd))
 
   # Check that the path id an Antares simulation
   if (!file.exists("info.antares-output")) {
@@ -260,8 +260,6 @@ setSimulationPath <- function(path, simulation) {
   class(res) <- c("simOptions")
 
   options(antares=res)
-
-  setwd(oldwd)
 
   res
 }
