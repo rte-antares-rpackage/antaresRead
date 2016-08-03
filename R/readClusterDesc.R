@@ -45,7 +45,7 @@
 #' @export
 #'
 readClusterDesc <- function(opts = simOptions()) {
-  path <- file.path(opts$path, "../../input/thermal/clusters")
+  path <- file.path(opts$inputPath, "thermal/clusters")
 
   areas <- list.files(path)
 
@@ -60,7 +60,9 @@ readClusterDesc <- function(opts = simOptions()) {
 
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })
-
+  
+  if(length(res) == 0) stop("Cannot find cluster description.")
+  
   res <- as.data.table(res)
   setnames(res, "name", "cluster")
   
