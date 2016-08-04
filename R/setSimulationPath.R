@@ -29,21 +29,38 @@
 #'   In such a case, the function \code{\link{readAntares}} is anavailable. 
 #'
 #' @return A list containing various information about the simulation, in particular:
-#'   \item{path}{path of the simulation}
-#'   \item{name}{name of the study}
+#'   \item{studyPath}{path of the Antares study}
+#'   \item{simPath}{path of the simulation}
+#'   \item{inputPath}{path of the input folder of the study}
+#'   \item{studyName}{Name of the study}
+#'   \item{simDataPath}{path of the folder containing the data of the simulation}
+#'   \item{name}{name of the simulation}
+#'   \item{mode}{type of simulation: economy, adequacy, draft or input}
 #'   \item{synthesis}{Are synthetic results available ?}
 #'   \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
 #'   \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
 #'     important to reconstruct some input time series that have been used in 
 #'     each Monte-Carlo simulation.}
-#'   \item{mcYears}{Number of Monte-Carlo scenarii}
-#'   \item{start}{Date of the first day of the year in the simulation.}
-#'   \item{areaList}{Vector of the available areas}
-#'   \item{districtList}{Vector of the available districts}
-#'   \item{linkList}{Vector of the available links}
-#'   \item{areasWithClusters}{Vector of areas containing clusters}
-#'   \item{variables}{available variables for areas, districts and links}
+#'   \item{mcYears}{Vector containing the number of the exported Monte-Carlo scenarios}
+#'   \item{antaresVersion}{Version of Antares used to run the simulation.}
+#'   \item{areaList}{Vector of the available areas.}
+#'   \item{districtList}{Vector of the available districts.}
+#'   \item{linkList}{Vector of the available links.}
+#'   \item{areasWithClusters}{Vector of areas containing clusters.}
+#'   \item{variables}{Available variables for areas, districts and links.}
 #'   \item{parameters}{Other parameters of the simulation.}
+#'   \item{timeIdMin}{
+#'     Minimum time id of the simulation. It is generally equal to one but can
+#'     be higher if working on a subperiod.
+#'   }
+#'   \item{timeIdMax}{maximum time id of the simulation.}
+#'   \item{start}{
+#'     Date of the first day of the year in the simulation. This date corresponds
+#'     to timeId = 1.
+#'   }
+#'   \item{firstWeekday}{First day of the week.}
+#'   \item{districtsDef}{data.table containing the specification of the districts.}
+#'   \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
 #' 
 #' @seealso 
 #'   \code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
@@ -52,7 +69,7 @@
 #' @examples
 #' 
 #' \dontrun{
-#' # Select interactively a study. This only works on windows.
+#' # Select interactively a study. It only works on windows.
 #' 
 #' setSimulationPath()
 #' 
@@ -73,6 +90,13 @@
 #' # Select a simulation by name
 #' 
 #' setSimulationPath("path_of_the_folder_of_the_study", "name of the simulation")
+#' 
+#' # Just need to read input data
+#' 
+#' setSimulationPath("path_of_the_folder_of_the_study", "input")
+#' # or
+#' setSimulationPath("path_of_the_folder_of_the_study", 0)
+#' 
 #' 
 #' 
 #' # WORKING WITH MULTIPLE SIMULATIONS
@@ -108,154 +132,44 @@
 #' 
 #' @export
 #'
-setSimulationPath <- function(path, simulation) {
+setSimulationPath <- function(path, simulation = NULL) {
+  
   if (missing(path)) {
-    # /!\ MAY WORK ONLY ON WINDOWS
-    path <- choose.dir(getwd(), "Select an Antares simulation directory")
-    if (is.na(path)) stop("You have canceled the execution.")
-  }
-
-  oldwd <- setwd(path)
-  on.exit(setwd(oldwd))
-
-  # Check that the path id an Antares simulation
-  if (!file.exists("info.antares-output")) {
-    # So the path is not a simulation but maybe it is the path to a study.
-    # If it is the case, there are three scenarii:
-    # - 1. asks the user to interactively choose one simulation
-    # - 2. use the value of parameter "simulation" if it is set
-    # - 3. there is only one study in the output. Select it
-    if (file.exists("study.antares")) {
-      if (!dir.exists("output") || length(list.dirs("output", recursive = FALSE)) == 0)
-        stop("Cannot find any simulation result")
-
-      f <- list.dirs("output", recursive = FALSE)
-      
-      if (missing(simulation)) {
-        if (length(f) == 1) {
-          simulation <- 1
-        } else { # Case 3
-          cat("Please, choose a simulation\n")
-          for (i in 1:length(f)) cat(sprintf("   %s - %s\n", i, f[i]))
-          simulation <- type.convert(scan(what = character(), nmax = 1), as.is = TRUE)
-        }
-      }
-        
-      if (is.numeric(simulation)) {
-        if (simulation == 0) return(.inputSimOptions(path))
-        
-        if (simulation > 0) path <- file.path(path, f[simulation])
-        else path <- file.path(path, rev(f)[abs(simulation)])
-      } else {
-        if (simulation == "input") return(.inputSimOptions(path))
-        
-        if (any(f == simulation)) f <- simulation
-        else {
-          f <- f[grep(paste0("-", simulation, "$"), f, ignore.case = TRUE)]
-          if (length(f) == 0) stop ("Cannot find the simulation called ", simulation)
-          if (length(f) > 1) warning("Several simulations have the same name. The most recent will be used")
-          f <- last(f)
-        }
-        
-        
-        
-        path <- file.path(path, f[1])
-      }
-
-      setwd(path)
-
+    if (exists("choose.dir")) {
+      # choose.dir is defined only on Windows
+      path <- choose.dir(getwd(), "Select an Antares simulation directory")
+      if (is.na(path)) stop("You have canceled the execution.")
     } else {
-      stop("Directory is not an Antares study.")
+      stop("Please specify a path to an Antares simulation")
     }
   }
-
-  # Get basic information about the simulation
-  info <- readIniFile("info.antares-output")$general
-  params <- readIniFile("about-the-study/parameters.ini")
-
-  # Where are located the results ?
-  opath <- switch(as.character(info$mode),
-                  "draft" = "adequacy-draft",
-                  "Economy" = "economy",
-                  "Adequacy" = "adequacy")
-
-  # Which results are available ? Synthesis ? Monte-Carlo years ?
-  synthesis <- file.exists(file.path(opath, "mc-all"))
-  yearByYear <- file.exists(file.path(opath, "mc-ind"))
-  scenarios <- file.exists("ts-numbers")
-
-  mcYears <- if(yearByYear) as.numeric(list.files(file.path(opath, "mc-ind")))
-             else 0
-
-  if (!synthesis & !yearByYear) stop("No results found")
-
-  # List of available areas and links
-  opath2 <- file.path(opath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
-
-  areaList <- list.files(file.path(opath2, "areas"))
-  districtList <- areaList[areaList %like% "^@"]
-  areaList <- areaList[!areaList %like% "^@"]
-
-  linkList <- list.files(file.path(opath2, "links"))
-
-  # Areas containing clusters
-  hasClusters <- laply(file.path(opath2, "areas", areaList), function(x) {
-    f <- list.files(x)
-    any(grepl("details", f))
-  })
-
-  areasWithClusters <- areaList[hasClusters]
-
-  # Available variables
-  variables <- list()
-
-  # Available variables for areas
-  d <- file.path(opath2, "areas", areaList[1])
-  f <- list.files(d)
-  f <- f[grep("values", f)]
-  if (length(f) > 0) {
-    v <- .getOutputHeader(file.path(d, f[1]), "area")
-    variables$areas <- setdiff(v, pkgEnv$idVars)
-  }
-
-  # Available variables for links
-  d <- file.path(opath2, "links", linkList[1])
-  f <- list.files(d)
-  f <- f[grep("values", f)]
-  if (length(f) > 0) {
-    v <- .getOutputHeader(file.path(d, f[1]), "link")
-    variables$links <- setdiff(v, pkgEnv$idVars)
+  
+  # Get study, simulation and input paths
+  res <- .getPaths(path, simulation)
+  
+  res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
+  
+  # If "input mode", read options from the input folder, else read them from
+  # the simulation folder.
+  if (is.null(res$simPath)) {
+    res <- append(res, .getInputOptions(res))
+  } else {
+    res <- append(res, .getSimOptions(res))
   }
   
-  tmin <- params$general$simulation.start
-  tmax <- params$general$simulation.end
+  # dates, TimeId min and max
+  tmin <- res$parameters$general$simulation.start
+  tmax <- res$parameters$general$simulation.end
   
-  res <- list(
-    studyPath = normalizePath(file.path(path, "../..")),
-    studyName = readIniFile(file.path(path, "../../study.antares"))$antares$caption,
-    path = path,
-    opath = opath,
-    inputPath = file.path(path, "../../input"),
-    name = as.character(info$name),
-    mode = as.character(info$mode),
-    synthesis = synthesis,
-    yearByYear = yearByYear,
-    scenarios = scenarios,
-    mcYears = mcYears,
-    antaresVersion = info$version,
-    timeIdMin = 1 + (tmin - 1) * 24,
-    timeIdMax = ((tmax - tmin + 1) %/% 7 * 7 + tmin - 1) * 24,
-    start = .getStartDate(params),
-    firstWeekday = as.character(params$general$first.weekday),
-    areaList = areaList,
-    districtList = gsub("^@ ?", "", districtList),
-    linkList = linkList,
-    areasWithClusters = areasWithClusters,
-    districtsDef = .readDistrictsDef(file.path(path, "../../input"), areaList),
-    variables = variables,
-    parameters = params,
-    energyCosts = .readEnergyCosts(file.path(path, "../.."))
-  )
+  res$timeIdMin <- 1 + (tmin - 1) * 24
+  res$timeIdMax <- ((tmax - tmin + 1) %/% 7 * 7 + tmin - 1) * 24
+  
+  res$start <- .getStartDate(res$parameters)
+  res$firstWeekday <- as.character(res$parameters$general$first.weekday)
+  
+  # Other informations that has to be read in input folder
+  res$districtsDef <- .readDistrictsDef(res$inputPath, res$areaList)
+  res$energyCosts <- .readEnergyCosts(res$inputPath)
   
   class(res) <- c("simOptions")
 
@@ -264,18 +178,96 @@ setSimulationPath <- function(path, simulation) {
   res
 }
 
-# Private function called when the user just wants to read input time series.
-# It returns a "simOptions" object with less parameters.
-.inputSimOptions <- function(path) {
-  study <- readIniFile(file.path(path, "study.antares"))
-  params <- readIniFile(file.path(path, "settings/generaldata.ini"))
+# Private function that extracts study, simulation and input paths from the
+# path specified by the user.
+.getPaths <- function(path, simulation) {
+  path <- gsub("[/\\]$", "", path)
+  path <- normalizePath(path, winslash = "/")
   
-  areaList <- tolower(readLines(file.path(path, "input/areas/list.txt")))
-  districtList <- names(readIniFile(file.path(path, "input/areas/sets.ini")))
+  # Check that the path is an Antares simulation
+  if (file.exists(file.path(path, "info.antares-output"))) {
+    
+    studyPath <- normalizePath(file.path(path, "../.."), winslash = "/")
+    simPath <- path
+    inputPath <- file.path(studyPath, "input")
+    
+  } else {
+    
+    # The path is not a simulation but maybe it is a whole Antares study.
+    # In this case, there are three scenarii:
+    # - 1. use the value of parameter "simulation" if it is set
+    # - 2. there is only one study in the output. Select it
+    # - 3. asks the user to interactively choose one simulation
+    
+    if (!file.exists(file.path(path, "study.antares"))) 
+      stop("Directory is not an Antares study.")
+    
+    outputPath <- file.path(path, "output")
+    simNames <- basename(list.dirs(outputPath, recursive = FALSE))
+    
+    if (length(simNames) == 0) {
+      stop("Cannot find any simulation result")
+    }
+    
+    if (is.null(simulation)) {
+      if (length(simNames) == 1) { # Case 2
+        simulation <- 1
+      } else { # Case 3
+        cat("Please, choose a simulation\n")
+        for (i in 1:length(simNames)) {
+          cat(sprintf("   %s - %s\n", i, simNames[i]))
+        }
+        simulation <- type.convert(scan(what = character(), nmax = 1), as.is = TRUE)
+      }
+    }
+    
+    if (simulation == 0 | simulation == "input") {
+      
+      studyPath <- path
+      simPath <- NULL
+      inputPath <- file.path(studyPath, "input")
+      
+    } else {
+      
+      if (is.numeric(simulation)) {
+        if (simulation > 0) sim <- simNames[simulation]
+        else sim <- rev(simNames)[abs(simulation)]
+      } else {
+        if (any(simNames == simulation)) sim <- simulation
+        else {
+          sim <- simNames[grep(paste0("-", simulation, "$"), simNames, ignore.case = TRUE)]
+          if (length(sim) == 0) stop ("Cannot find the simulation called ", simulation)
+          if (length(sim) > 1) warning("Several simulations have the same name. The most recent will be used")
+          sim <- last(sim)
+        }
+      }
+      
+      studyPath <- path
+      simPath <- file.path(path, "output", sim[1])
+      inputPath <- file.path(studyPath, "input")
+    }
+  }
   
-  linkList <- unlist(llply(list.files(file.path(path, "input/links")), function(f) {
-    if (!dir.exists(file.path(path, "input/links", f))) return(NULL)
-    to <- list.files(file.path(path, "input/links", f))
+  list(studyPath = studyPath,
+       simPath = simPath,
+       inputPath = inputPath)
+}
+
+# Read simulation options from the input folder. 
+# This function is called when the user only wants to read data in the input
+# folder.
+.getInputOptions <- function(paths) {
+  studyPath <- paths$studyPath
+  inputPath <- paths$inputPath
+  
+  # Lists of areas, links and districts existing in the study
+  areaList <- tolower(readLines(file.path(inputPath, "areas/list.txt")))
+  
+  districtList <- tolower(names(readIniFile(file.path(inputPath, "areas/sets.ini"))))
+  
+  linkList <- unlist(llply(list.files(file.path(inputPath, "links")), function(f) {
+    if (!dir.exists(file.path(inputPath, "links", f))) return(NULL)
+    to <- list.files(file.path(inputPath, "links", f))
     to <- to[to != "properties.ini"]
     to <- gsub(".txt", "", to)
     
@@ -284,33 +276,105 @@ setSimulationPath <- function(path, simulation) {
     paste(f, "-", to)
   }))
   
-  tmin <- params$general$simulation.start
-  tmax <- params$general$simulation.end
+  antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
   res <- list(
-    studyPath = normalizePath(path),
-    studyName = study$antares$caption,
-    inputPath = file.path(path, "input"),
     mode = "Input",
-    antaresVersion = study$antares$version,
-    timeIdMin = 1 + (tmin - 1) * 24,
-    timeIdMax = ((tmax - tmin + 1) %/% 7 * 7 + tmin - 1) * 24,
-    start = .getStartDate(params),
-    firstWeekday = as.character(params$general$first.weekday),
+    antaresVersion = antaresVersion,
     areaList = areaList,
     districtList = districtList,
     linkList = linkList,
     areasWithClusters = NA,
-    districtsDef = .readDistrictsDef(file.path(path, "input"), areaList)
+    parameters = params
   )
-  
-  class(res) <- c("simOptions")
-  
-  options(antares=res)
-  
+
   res
 }
 
+# Read simulation options from the simulation folder.
+.getSimOptions <- function(paths) {
+  
+  simPath <- paths$simPath
+  
+  # Get basic information about the simulation
+  info <- readIniFile(file.path(simPath, "info.antares-output"))$general
+  params <- readIniFile(file.path(simPath, "about-the-study/parameters.ini"))
+  
+  # Where are located the results ?
+  simDataPath <- switch(as.character(info$mode),
+                        "draft" = "adequacy-draft",
+                        "Economy" = "economy",
+                        "Adequacy" = "adequacy")
+  simDataPath <- file.path(simPath, simDataPath)
+  
+  # Which results are available ? Synthesis ? Monte-Carlo years ?
+  synthesis <- file.exists(file.path(simDataPath, "mc-all"))
+  yearByYear <- file.exists(file.path(simDataPath, "mc-ind"))
+  scenarios <- file.exists(file.path(simPath, "ts-numbers"))
+  
+  mcYears <- if(yearByYear) as.numeric(list.files(file.path(simDataPath, "mc-ind")))
+  else numeric()
+  
+  if (!synthesis & !yearByYear) stop("No results found")
+  
+  # List of available areas and links
+  dataPath <- file.path(simDataPath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
+  
+  areaList <- list.files(file.path(dataPath, "areas"))
+  districtList <- areaList[areaList %like% "^@"]
+  areaList <- areaList[!areaList %like% "^@"]
+  
+  linkList <- list.files(file.path(dataPath, "links"))
+  
+  # Areas containing clusters
+  hasClusters <- laply(file.path(dataPath, "areas", areaList), function(x) {
+    f <- list.files(x)
+    any(grepl("details", f))
+  })
+  
+  areasWithClusters <- areaList[hasClusters]
+  
+  # Available variables
+  variables <- list()
+  
+  # Available variables for areas
+  d <- file.path(dataPath, "areas", areaList[1])
+  f <- list.files(d)
+  f <- f[grep("values", f)]
+  if (length(f) > 0) {
+    v <- .getOutputHeader(file.path(d, f[1]), "area")
+    variables$areas <- setdiff(v, pkgEnv$idVars)
+  }
+  
+  # Available variables for links
+  d <- file.path(dataPath, "links", linkList[1])
+  f <- list.files(d)
+  f <- f[grep("values", f)]
+  if (length(f) > 0) {
+    v <- .getOutputHeader(file.path(d, f[1]), "link")
+    variables$links <- setdiff(v, pkgEnv$idVars)
+  }
+  
+  list(
+    simDataPath = simDataPath,
+    name = as.character(info$name),
+    mode = as.character(info$mode),
+    synthesis = synthesis,
+    yearByYear = yearByYear,
+    scenarios = scenarios,
+    mcYears = mcYears,
+    antaresVersion = info$version,
+    areaList = areaList,
+    districtList = gsub("^@ ?", "", districtList),
+    linkList = linkList,
+    areasWithClusters = areasWithClusters,
+    variables = variables,
+    parameters = params
+  )
+}
+
+# Get the first of the simulation, ie. the date corresponding to timeId == 1
 .getStartDate <- function(params) {
   mNames <- c("january", "february", "march", "april", "may", "june", "july",
               "september", "october", "november", "december")
@@ -376,8 +440,8 @@ setSimulationPath <- function(path, simulation) {
 }
 
 # Private function that reads costs of unsuplied and spilled energy
-.readEnergyCosts <- function(path) {
-  costs <- readIniFile(file.path(path, "input/thermal/areas.ini"))
+.readEnergyCosts <- function(inputPath) {
+  costs <- readIniFile(file.path(inputPath, "thermal/areas.ini"))
   
   list(unserved  = unlist(costs$unserverdenergycost),
        spilled = unlist(costs$spilledenergycost))

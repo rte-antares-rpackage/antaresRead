@@ -40,8 +40,8 @@
     
   if (synthesis) { # Only get synthesis results ################################
 
-    path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
-                    opts$path, opts$opath, folder, id, file, timeStep)
+    path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt",
+                    opts$simDataPath, folder, id, file, timeStep)
 
     # Check existence of the output file
     if (!file.exists(path)) {
@@ -70,8 +70,8 @@
 
   } else { # Get Monte Carlo scenarios #########################################
 
-    path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
-                    opts$path, opts$opath, folder, id, file, timeStep)
+    path <- sprintf("%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
+                    opts$simDataPath, folder, id, file, timeStep)
 
     # Check output is available.
     if (!file.exists(sprintf(path, mcYears[1]))) {
@@ -214,11 +214,11 @@
   
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
+  pathTSNumbers <- file.path(opts$simPath, "ts-numbers/thermal")
   
   # Path to the time series. Ideally, time series are stored in output. If it is
   # not the case, read the series in the input.
-  pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
+  pathInput <- file.path(opts$simPath, "ts-generator/thermal/mc-0")
   
   if (dir.exists(pathInput)) {
     filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
@@ -285,7 +285,7 @@
 .importHydroStorage <- function(area, synthesis, timeStep, mcYears, opts, ...) {
   if (synthesis) mcYears <- opts$mcYears
   
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
+  pathTSNumbers <- file.path(opts$simPath, "ts-numbers/hydro")
   
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
@@ -293,7 +293,7 @@
   tsIds <- tsIds[mcYears]
   
   # Input time series
-  pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
+  pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
   
   if (dir.exists(pathInput)) {
     f <- file.path(pathInput, area, "storage.txt")

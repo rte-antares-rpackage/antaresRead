@@ -5,7 +5,6 @@ source("setup_test_case.R")
 
 trueOpts <- list(
   studyName = "Test_packages_R",
-  opath = "economy",
   name = "test",
   mode = "Economy",
   synthesis = TRUE,
@@ -26,13 +25,10 @@ trueOpts <- list(
   areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2"),
   districtsDef = data.table(district = as.factor("a and b together"), area = as.factor(c("a", "b")))
 )
-class(trueOpts) <- "simOptions"
 
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath)
-  opts$variables <- opts$path <- opts$parameters <- opts$inputPath <- opts$studyPath <- NULL
-  opts$energyCosts <- NULL
-  expect_equal(opts, trueOpts)
+  expect_equal(opts[names(trueOpts)], trueOpts)
 })
 
 test_that("R option 'antares' is set", {
