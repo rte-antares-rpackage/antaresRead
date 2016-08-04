@@ -223,7 +223,7 @@
   if (dir.exists(pathInput)) {
     filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
   } else {
-    pathInput <- file.path(opts$path, "../../input/thermal/series")
+    pathInput <- file.path(opts$inputPath, "thermal/series")
     filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
   }
   
@@ -298,7 +298,7 @@
   if (dir.exists(pathInput)) {
     f <- file.path(pathInput, area, "storage.txt")
   } else {
-    pathInput <- file.path(opts$path, "../../input/hydro/series")
+    pathInput <- file.path(opts$inputPath, "hydro/series")
     f <- file.path(pathInput, area, "mod.txt")
   }
   

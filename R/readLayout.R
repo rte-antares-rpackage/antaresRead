@@ -41,7 +41,7 @@
 readLayout <- function(opts = simOptions()) {
   
   # areas
-  path <- file.path(opts$path, "../../input/areas")
+  path <- file.path(opts$inputPath, "areas")
   areas <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
 
@@ -63,7 +63,7 @@ readLayout <- function(opts = simOptions()) {
                          by = district]
 
   # links
-  path <- file.path(opts$path, "../../input/links")
+  path <- file.path(opts$inputPath, "links")
   links <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
     to <- list.files(file.path(path, f))
