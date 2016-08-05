@@ -63,23 +63,11 @@ readLayout <- function(opts = simOptions()) {
                          by = district]
 
   # links
-  path <- file.path(opts$inputPath, "links")
-  links <- ldply(list.files(path), function(f) {
-    if (!dir.exists(file.path(path, f))) return(NULL)
-    to <- list.files(file.path(path, f))
-    to <- to[to != "properties.ini"]
-    to <- gsub(".txt", "", to)
+  links <- copy(opts$linksDef)
+  # Merge with areas two times to add coordinates or origin and destination
+  links[areas, `:=`(x0=x, y0=y), on = c(from="area")]
+  links[areas, `:=`(x1=x, y1=y), on = c(to="area")]
 
-    if (length(to) == 0) return(NULL)
-
-    data.frame(link = paste(f, "-", to), from = f, to = to)
-  })
-  links <- data.table(links)
-
-  links <- merge(links, areas[,c("area", "x", "y"), with = FALSE], by.x = "to", by.y="area")
-  links <- merge(links, areas[,c("area", "x", "y"), with = FALSE], by.x = "from", by.y="area",
-                 suffixes = c("0", "1"))
-  
   # Links districts
   
   # Identify the connexions between two districts. If two areas in distincts 

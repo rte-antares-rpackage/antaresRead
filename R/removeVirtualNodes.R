@@ -132,15 +132,12 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   setkeyv(x$areas, byarea)
   
   # Create a table containing all links that connect virtual areas to other areas
-  linkList <- ldply(vareas, function(vn) {
-    ldply(getLinks(vn, opts=opts), function(x) {
-      xx <- strsplit(x, " - ")[[1]]
-      if (xx[1] == vn) return (data.table(link = x, from = vn, to = xx[2], direction = "out"))
-      else return (data.table(link = x, from = vn, to = xx[1], direction = "in"))
-    })
-  })
+  linkList <- rbind(
+    opts$linksDef[, .(link, from, to, direction = "out")],
+    opts$linksDef[, .(link, from=to, to=from, direction = "in")]
+  )
   
-  linkList <- data.table(linkList)
+  linkList <- linkList[from %in% vareas]
   
   # Treatment of hubs:
   #

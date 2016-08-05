@@ -265,7 +265,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   districtList <- tolower(names(readIniFile(file.path(inputPath, "areas/sets.ini"))))
   
-  linkList <- unlist(llply(list.files(file.path(inputPath, "links")), function(f) {
+  linksDef <- ldply(list.files(file.path(inputPath, "links")), function(f) {
     if (!dir.exists(file.path(inputPath, "links", f))) return(NULL)
     to <- list.files(file.path(inputPath, "links", f))
     to <- to[to != "properties.ini"]
@@ -273,8 +273,9 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     if (length(to) == 0) return(NULL)
     
-    paste(f, "-", to)
-  }))
+    data.frame(link = paste(f, "-", to), from = f, to = to)
+  })
+  linksDef <- data.table(linksDef)
   
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
@@ -284,7 +285,8 @@ setSimulationPath <- function(path, simulation = NULL) {
     antaresVersion = antaresVersion,
     areaList = areaList,
     districtList = districtList,
-    linkList = linkList,
+    linkList = linksDef$link,
+    linksDef = linksDef,
     areasWithClusters = NA,
     parameters = params
   )
@@ -368,6 +370,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     areaList = areaList,
     districtList = gsub("^@ ?", "", districtList),
     linkList = linkList,
+    linksDef = .readLinksDef(simPath),
     areasWithClusters = areasWithClusters,
     variables = variables,
     parameters = params
@@ -412,7 +415,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     if (p$`first-month-in-year` != "january") newYear <- newYear - 1
     lubridate::year(start) <- newYear
-    message("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ", newYear)
+    warning("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ", newYear, call. = FALSE)
 
   }
 
@@ -445,4 +448,26 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   list(unserved  = unlist(costs$unserverdenergycost),
        spilled = unlist(costs$spilledenergycost))
+}
+
+.readLinksDef <- function(simPath) {
+  lines <- readLines(file.path(simPath, "about-the-study/links.txt"))
+  
+  from <- character()
+  to <- character()
+  
+  currentFrom <- lines[1]
+  
+  for (l in lines[-1]) {
+    if (grepl("^\t", l)) {
+      from <- append(from, currentFrom)
+      to <- append(to, gsub("^\t", "", l))
+    } else {
+      currentFrom <- l
+    }
+  }
+  
+  data.table(link = paste(from, "-", to),
+             from = from,
+             to = to)
 }
