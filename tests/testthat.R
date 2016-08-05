@@ -1,4 +1,4 @@
 library(testthat)
-library(antares)
+library(antaresRead)
 
-test_check("antares")
+test_check("antaresRead")
