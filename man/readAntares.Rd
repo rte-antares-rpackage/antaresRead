@@ -7,11 +7,11 @@
 readAntares(areas = NULL, links = NULL, clusters = NULL,
   districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
-  linkCapacity = FALSE, mustRun = FALSE, select = NULL,
-  synthesis = simOptions()$synthesis, mcYears = 1:simOptions()$mcYears,
-  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-  opts = simOptions(), parallel = FALSE, simplify = TRUE,
-  showProgress = TRUE)
+  linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
+  select = NULL, synthesis = simOptions()$synthesis,
+  mcYears = simOptions()$mcYears, timeStep = c("hourly", "daily", "weekly",
+  "monthly", "annual"), opts = simOptions(), parallel = FALSE,
+  simplify = TRUE, showProgress = TRUE)
 }
 \arguments{
 \item{areas}{Vector containing the names of the areas to import. If
@@ -35,9 +35,14 @@ districts.}
 \item{misc}{Vector containing the name of the areas for which you want to
 import misc.}
 
-\item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ?}
+\item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ? If TRUE, the column
+"thermalAvailability" is added to the result and a new column "availableUnits"
+containing the number of available units in a cluster is created.If synthesis is set to TRUE then 
+"availableUnits" contain the mean of avaible units on all MC Years.}
 
 \item{hydroStorage}{Should hydro storage be imported ?}
+
+\item{hydroStorageMaxPower}{Should hydro storage maximum power be imported ?}
 
 \item{reserve}{Should reserve be imported ?}
 
@@ -45,11 +50,15 @@ import misc.}
 
 \item{mustRun}{Should mustRun and partialMustRun columns be added to the result ?}
 
+\item{thermalModulation}{Should thermal modulation time series be imported ? If \code{TRUE}, the
+columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
+and "minGenModulation" are added to the cluster data.}
+
 \item{select}{Character vector containing the name of the columns to import. If this
 argument is \code{NULL}, all variables are imported. Special names
 \code{"allAreas"} and \code{"allLinks"} indicate to the function to import
 all variables for areas or for links. The list of available variables can
-be seen with the command \code{getOption("antares")$variables}.  Id
+be seen with the command \code{simOptions()$variables}.  Id
 variables like \code{area}, \code{link} or \code{timeId} are automatically
 imported.}
 
@@ -73,8 +82,6 @@ data.table is returned. If FALSE, the result will always be a list of class
 
 \item{showProgress}{If TRUE the function displays information about the progress of the
 importation.}
-
-\item{hydroStorageMaxPoser}{Should hydro storage maximum power be imported ?}
 }
 \value{
 If \code{simplify = TRUE} and only one type of output is imported
@@ -135,7 +142,7 @@ and a package that provides a parallel backend (for instance the package
 
 Before running the function with argument \code{parallel=TRUE}, you need to
 register your parallel backend. For instance, if you use package "doParallel"
-you need to use the function \code{\link{registerDoParallel}} once per
+you need to use the function \code{registerDoParallel} once per
 session.
 }
 \examples{

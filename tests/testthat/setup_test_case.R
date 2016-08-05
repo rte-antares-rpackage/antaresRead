@@ -5,7 +5,7 @@ if (!exists("studyPath")) {
 
   path <- tempdir()
   
-  file.copy(system.file("test_case", package="antares"), path, recursive = TRUE, overwrite = TRUE)
+  file.copy(system.file("test_case", package="antaresRead"), path, recursive = TRUE, overwrite = TRUE)
   
   cmd <- '"C:/Program Files/RTE/Antares/5.0.0/bin/antares-5.0-solver.exe" "%s" -n "test"'
   

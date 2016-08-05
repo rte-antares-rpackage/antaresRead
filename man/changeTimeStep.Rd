@@ -17,9 +17,10 @@ monthly and annual.}
 class \code{antaresData} because the time step of the data is stored inside
 the object}
 
-\item{fun}{Character vector with one element per column to (des)agregate indicating
-the function to use ("sum" or "mean") for this column. It can be a single
-element, in that case the same function is applied to}
+\item{fun}{Character vector with one element per column to (des)agregate indicating 
+the function to use ("sum", "mean", "min" or "max") for this column. It can
+be a single element, in that case the same function is applied to every 
+columns.}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}
@@ -47,6 +48,10 @@ areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep 
 areasDAgg <- changeTimeStep(areasH, "daily")
 
 all.equal(areasDAgg$LOAD, areasD$LOAD)
+
+# Use different aggregation functions
+mydata <- readAntares(select = c("LOAD", "MRG. PRICE"), timeStep = "monthly")
+changeTimeStep(mydata, "annual", fun = c("sum", "mean"))
 }
 
 }

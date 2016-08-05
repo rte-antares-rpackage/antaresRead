@@ -17,6 +17,7 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
   L <- vector(mode="list", length=length(sections))
   names(L) <- gsub("\\[|\\]", "", X[sections])
   for(i in seq(along = sections)){
+    if (starts[i] >= ends[i]) next
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
@@ -33,4 +34,23 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
     names(L[[i]]) <- key
   }
   L
+}
+
+writeIniFile <- function(x, file, overwrite = FALSE) {
+  if (!overwrite & file.exists(file)) stop("File already exists.")
+  
+  file <- file(file, open = "w")
+  
+  for (n in names(x)) {
+    cat(paste0("[", n,"]\n"), file = file)
+    for (k in names(x[[n]])) {
+      v <- x[[n]][[k]]
+      if (is.na(v)) v <- ""
+      if (is.logical(v)) v <- ifelse(v, "true", "false")
+      cat(k, " = ", v, "\n", file = file, sep = "")
+    }
+    cat("\n", file = file)
+  }
+  
+  close(file)
 }

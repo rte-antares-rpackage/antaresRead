@@ -1,7 +1,7 @@
 #' show aliases for variables
 #'
 #' This function shows aliases for groups of variables.These aliases can be used
-#' in the \code{\link{readOutput}} function in the \code{select} argument
+#' in the \code{\link{readAntares}} function in the \code{select} argument
 #' 
 #' @return
 #' A named list. The names of the list correspond to the aliases and each element

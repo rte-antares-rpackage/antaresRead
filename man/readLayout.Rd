@@ -11,9 +11,11 @@ readLayout(opts = simOptions())
 \code{\link{setSimulationPath}}}
 }
 \value{
-A list with two elements:
+A list with three elements:
 \item{areas: }{A data.frame containing the name, the color and the coordinate
    of each area}
+\item{district: }{A data.frame containing the name, the color and the coordinate
+   of each district}
 \item{links: }{A data.frame containing the name, the coordinates of the origin
    and the destination of each link}
    

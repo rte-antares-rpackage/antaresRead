@@ -1,3 +1,14 @@
+# NOTE FOR DEVELOPERS
+#--------------------
+#
+# The function readAntares defined below does not contain the code to import
+# data from an antares project. This code is located in files importOutput.R
+# and importInput.R. Every function nameds ".importXXX" is located in one of
+# these two files depending on what the function tries to import (input or
+# output).
+
+
+
 #' Read the data of an Antares simulation
 #'
 #' @description 
@@ -50,7 +61,7 @@
 #'
 #' Before running the function with argument \code{parallel=TRUE}, you need to
 #' register your parallel backend. For instance, if you use package "doParallel"
-#' you need to use the function \code{\link{registerDoParallel}} once per
+#' you need to use the function \code{registerDoParallel} once per
 #' session.
 #'
 #' @param areas
@@ -75,10 +86,13 @@
 #'   Vector containing the name of the areas for which you want to
 #'   import misc.
 #' @param  thermalAvailabilities
-#'   Should thermal availabilities of clusters be imported ?
+#'   Should thermal availabilities of clusters be imported ? If TRUE, the column
+#'   "thermalAvailability" is added to the result and a new column "availableUnits"
+#'   containing the number of available units in a cluster is created.If synthesis is set to TRUE then 
+#'   "availableUnits" contain the mean of avaible units on all MC Years. 
 #' @param hydroStorage
 #'   Should hydro storage be imported ?
-#' @param hydroStorageMaxPoser
+#' @param hydroStorageMaxPower
 #'   Should hydro storage maximum power be imported ? 
 #' @param reserve
 #'   Should reserve be imported ?
@@ -91,9 +105,13 @@
 #'   argument is \code{NULL}, all variables are imported. Special names
 #'   \code{"allAreas"} and \code{"allLinks"} indicate to the function to import
 #'   all variables for areas or for links. The list of available variables can
-#'   be seen with the command \code{getOption("antares")$variables}.  Id
+#'   be seen with the command \code{simOptions()$variables}.  Id
 #'   variables like \code{area}, \code{link} or \code{timeId} are automatically
 #'   imported.
+#' @param thermalModulation
+#'   Should thermal modulation time series be imported ? If \code{TRUE}, the
+#'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
+#'   and "minGenModulation" are added to the cluster data.
 #' @param synthesis
 #'   TRUE if you want to import the synthetic results. FALSE if
 #'   you prefer to import year by year results.
@@ -170,9 +188,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
+                        thermalModulation = FALSE,
                         select = NULL,
                         synthesis = simOptions()$synthesis,
-                        mcYears = 1:simOptions()$mcYears,
+                        mcYears = simOptions()$mcYears,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
@@ -187,13 +206,20 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     areas <- "all"
   }
   
+  # Check arguments validity. The function .checkArgs is defined below
+  areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
+  links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
+  clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
+  districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
+  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.")
+  
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
   if ((is.null(areas) & is.null(districts)) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
     stop("When misc, hydroStorage, hydroStorageMaxPower or reserve is TRUE, arguments 'areas' or 'districts' need to be specified.")
   }
   if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
-  if (is.null(clusters) & thermalAvailabilities) stop("When 'thermalAvailabilities' is TRUE, argument 'clusters' needs to be specified.")
+  if (is.null(clusters) & (thermalAvailabilities | thermalModulation)) stop("When 'thermalAvailabilities' or 'thermalModulation' is TRUE, argument 'clusters' needs to be specified.")
   
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
@@ -220,12 +246,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
 
-  # Manage special value "all"
-  if (identical(areas, "all")) areas <- opts$areaList
-  if (identical(links, "all")) links <- opts$linkList
-  if (identical(clusters, "all")) clusters <- opts$areasWithClusters
-  if (identical(districts, "all")) districts <- opts$setList
-
   # Aliases for groups of variables
   select <- llply(select, function(x) {
     for (alias in names(pkgEnv$varAliases)) {
@@ -240,8 +260,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   # Can the importation be parallelized ?
   if (parallel) {
-    if(!require(foreach)) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
-    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
+    if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
+    if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
 
   res <- list() # Object the function will return
@@ -350,6 +370,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$linkCapacity <- NULL
   }
   
+  if (thermalModulation | mustRun) {
+    .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
+    
+    if (!is.null(res$clusters)) {
+      res$clusters <- merge(res$clusters, res$thermalModulation, 
+                            by=c("area", "cluster", "timeId"), all.x = TRUE)
+    }
+    
+    if (!mustRun) res$thermalModulation <- NULL
+  }
+  
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
     if (is.null(res$clusters) | timeStep != "hourly") {
@@ -357,6 +388,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
         timeStep <- "hourly"
         areas <- intersect(opts$areasWithClusters, union(areas, clusters))
         .addOutputToRes("mustRun", areas, .importOutputForClusters, NULL, "hourly")
+        .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
+        res$mustRun <<- merge(res$mustRun, res$thermalModulation, 
+                              by=c("area", "cluster", "timeId"), all.x = TRUE)
       })
     } else res$mustRun <- res$clusters
     
@@ -368,19 +402,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                    capacity = nominalcapacity * unitcount,
                                    must.run)]
     
-    .addOutputToRes("mustRunModulation", union(areas, clusters), .importMustRunModulation, NULL)
-    
     res$mustRun <- merge(res$mustRun, clusterDesc, by = c("area", "cluster"))
-    if (nrow(res$mustRunModulation) > 0) {
-      res$mustRun <- merge(res$mustRun, res$mustRunModulation, 
-                           by = c("area","cluster", "timeId"), all.x = TRUE)
-    } else res$mustRun$mustRunModulation <- NA_real_
     
+    if (is.null(res$mustRun$minGenModulation)) res$mustRun$minGenModulation <- NA_real_
     
     res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
     res$mustRun$mustRunPartial <- 0
-    res$mustRun[!is.na(mustRunModulation), 
-                c("mustRun", "mustRunPartial") := list(0, capacity * mustRunModulation)]
+    res$mustRun[!is.na(minGenModulation), 
+                c("mustRun", "mustRunPartial") := list(0, capacity * minGenModulation)]
     
     res$mustRun[mustRun > production, mustRun := as.numeric(production)]
     res$mustRun[mustRunPartial > production, mustRunPartial := as.numeric(production)]
@@ -427,12 +456,51 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     
     res$mustRun <- NULL
-    res$mustRunModulation <- NULL
+    res$thermalModulation <- NULL
   }
   
   # Class and attributes
-  .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
+  res <- .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
+  
+  # Add date/time columns
+  addDateTimeColumns(res)
 }
+
+
+
+#' Function for preprocessing arguments areas, links, clusters and districts
+#' of readAntares.
+#'
+#' @param list
+#'   value of the argument areas, links, clusters or districts
+#' @param reference
+#'   vector containing the reference list of elements. For "areas", it is the list
+#'   of areas from the simulation, etc.
+#' @param msg
+#'   warning message to display when an element does not exist in the reference
+#'   list
+#' @return
+#' If the argument is empty it returns NULL.
+#' If it contains "all", it returns the reference list
+#' Else it returns the parameter "list" without the non-existent elements
+#' 
+#' @noRd
+#' 
+.checkArg <- function(list, reference, msg) {
+  if (is.null(list) || length(list) == 0) return(NULL)
+  if (any(list == "all")) return(reference)
+  
+  res <- intersect(list, reference)
+  if (length(res) < length(list)) {
+    missingElements <- setdiff(list, reference)
+    warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
+    if (length(res) == 0) return(NULL)
+  }
+  
+  res
+}
+
+
 
 #' Read output for a list of areas
 #' 

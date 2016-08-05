@@ -11,13 +11,15 @@ trueOpts <- list(
   synthesis = TRUE,
   yearByYear = TRUE,
   scenarios = TRUE,
-  mcYears = 2,
+  mcYears = c(1,2),
   antaresVersion = 500L,
+  timeIdMin = 1,
+  timeIdMax = 24 * 7 * 52,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
   firstWeekday = "Monday",
   areaList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 
                "psp out-2"),
-  setList = "a and b together",
+  districtList = "a and b together",
   linkList = c("a - a_offshore", "a - b", "a - psp in", "a - psp out", "b - c", 
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
@@ -29,6 +31,7 @@ class(trueOpts) <- "simOptions"
 test_that("setSimulationPath reads correct values", {
   opts <- setSimulationPath(studyPath)
   opts$variables <- opts$path <- opts$parameters <- opts$inputPath <- opts$studyPath <- NULL
+  opts$energyCosts <- NULL
   expect_equal(opts, trueOpts)
 })
 

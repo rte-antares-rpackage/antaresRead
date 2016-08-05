@@ -18,9 +18,10 @@
 #'   class \code{antaresData} because the time step of the data is stored inside
 #'   the object
 #' @param fun
-#'   Character vector with one element per column to (des)agregate indicating
-#'   the function to use ("sum" or "mean") for this column. It can be a single
-#'   element, in that case the same function is applied to  
+#'   Character vector with one element per column to (des)agregate indicating 
+#'   the function to use ("sum", "mean", "min" or "max") for this column. It can
+#'   be a single element, in that case the same function is applied to every 
+#'   columns.
 #' @inheritParams readAntares
 #'   
 #' @return 
@@ -37,18 +38,24 @@
 #' areasDAgg <- changeTimeStep(areasH, "daily")
 #' 
 #' all.equal(areasDAgg$LOAD, areasD$LOAD)
+#' 
+#' # Use different aggregation functions
+#' mydata <- readAntares(select = c("LOAD", "MRG. PRICE"), timeStep = "monthly")
+#' changeTimeStep(mydata, "annual", fun = c("sum", "mean"))
 #' }
 #' 
 #' @export
 #' 
 changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOptions()) {
-  fun <- match.arg(fun, c("sum", "mean"), several.ok = TRUE)
+  fun <- match.arg(fun, c("sum", "mean", "min", "max"), several.ok = TRUE)
   
   # Agregation function
-  funs <- list(sum = sum, mean = mean)
+  funs <- list(sum = sum, mean = mean, min = min, max = max)
   #desagregation function
   ifuns <- list(sum = function(x, n) {x / n},
-                mean = function(x, n) {x})
+                mean = function(x, n) {x},
+                min = function(x, n) {x},
+                max = function(x, n) {x})
   
   if (is(x, "antaresData")) {
     opts <- simOptions(x)
@@ -71,16 +78,21 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   synthesis <- attr(x, "synthesis")
   type <- attr(x, "type")
   
+  # Should we had date-time columns ?
+  addDateTimeCol <- !is.null(x[["time"]])
+  
   # Suppress time variables
+  if (!is.null(x[["time"]])) x$time <- NULL
   if (!is.null(x$hour)) x$hour <- NULL
   if (!is.null(x$day)) x$day <- NULL
+  if (!is.null(x$week)) x$week <- NULL
   if (!is.null(x$month)) x$month <- NULL
   
   # Strategy: if newTimeStep is not hourly, first desagregate data at hourly
   # level. Then, in all cases aggregate hourly data at the desired level.
   refTime <- data.table(
-    oldTimeId = .getTimeId(1:(24*7*52), oldTimeStep, opts),
-    timeId = .getTimeId(1:(24*7*52), newTimeStep, opts)
+    oldTimeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, oldTimeStep, opts),
+    timeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, newTimeStep, opts)
   )
   
   x <- copy(x)
@@ -89,7 +101,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   # Desagregation
   if (oldTimeStep != "hourly") {
-    idVars <- intersect(names(x), c(pkgEnv$idVars, "oldTimeId"))
+    idVars <- c(.idCols(x), "oldTimeId")
     idVars  <- idVars[idVars != "timeId"]
     by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
     
@@ -107,25 +119,23 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     
     x$timeId <- timeId
     
-    .setcolorder(x, c(idVars, "timeId"))
+    .reorderCols(x)
   }
   
   x$oldTimeId <- NULL
   
   # Aggregation
   if (newTimeStep != "hourly") {
-    idVars <- intersect(names(x), pkgEnv$idVars)
-    by <- parse(text = sprintf("list(%s)", paste(idVars, collapse = ", ")))
+    idVars <- .idCols(x)
     
     if (length(fun) == 1) fun <- rep(fun, ncol(x) - length(idVars))
     
-    x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=eval(by)]
+    x <- x[, mapply(function(x, f) {f(x)}, x = .SD, f = funs[fun], SIMPLIFY=FALSE), keyby=idVars]
   }
   
-  class(x) <- append(c("antaresDataTable", "antaresData"), class(x))
-  attr(x, "type") <- type
-  attr(x, "timeStep") <- newTimeStep
-  attr(x, "synthesis") <- synthesis
+  x <- .addClassAndAttributes(x, synthesis, newTimeStep, opts, type = type)
+  
+  if(addDateTimeCol) x <- addDateTimeColumns(x)
   
   x
 }
@@ -145,7 +155,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   # Hard cases
   # Create a correlation table between hourIds and actual dates and compute new 
   # timeIds based on the actual dates
-  timeRef <- data.table(hourId = 1:(24*7*52))
+  timeRef <- data.table(hourId = 1:(24*365))
   
   tmp <- as.POSIXct(opts$start)
   lubridate::hour(tmp) <- lubridate::hour(tmp) + timeRef$hourId - 1

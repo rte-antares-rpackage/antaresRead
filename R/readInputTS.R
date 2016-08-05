@@ -28,7 +28,7 @@
 #' @inheritParams readAntares
 #' 
 #' @return 
-#' If \code{simplify = TRUE} and only one type of inpuàt is imported
+#' If \code{simplify = TRUE} and only one type of input is imported
 #' then the result is a data.table with class "antaresDataTable".
 #' 
 #' Else an object of class "antaresDataList" is returned. It is a list of
@@ -79,8 +79,8 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   
   # Can the importation be parallelized ?
   if (parallel) {
-    if(!require(foreach)) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
-    if (!getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
+    if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
+    if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
   
   # Manage special value "all"
@@ -103,8 +103,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
     if (showProgress) cat(sprintf("Importing %s\n", name))
     
     tmp <- llply(ids, function(x, ...) outputFun(x, ...),
-                 synthesis=synthesis, mcYears=mcYears,timeStep=ts,
-                 opts=opts, select = select,
+                 timeStep=ts, opts=opts,
                  .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
                  .paropts = list(.packages="antares"))
@@ -131,5 +130,6 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   
   # Class and attributes
-  .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
+  res <- .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
+  addDateTimeColumns(res)
 }

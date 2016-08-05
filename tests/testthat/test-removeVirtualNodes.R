@@ -15,7 +15,7 @@ test_that("removeVirtualAreas effectively removes virtual areas", {
   expect_false(any(dataCorrected$areas$link %in% getLinks(vareas)))
 })
 
-test_that("Balance is corrected for 'Hub', but not for the other areas", {
+test_that("Balance is corrected for nodes connected to virtual nodes but not the others", {
   expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
                dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
@@ -75,4 +75,27 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
                correction)
 })
 
+test_that("reassignCosts works correctly", {
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("psp out"),
+                                      reassignCosts = TRUE)
+  # NOTE: this test fails if flows at some timeId are equal to 0 but costs are 
+  # greater than 0
+  
+  
+  # Check that total cost is preserved
+  oldCosts <- data$areas[, .(cost = sum(as.numeric(`OV. COST`))), by = area]
+  newCosts <- dataCorrected$areas[, .(cost = sum(as.numeric(`OV. COST`))), by = area]
+  expect_equal(oldCosts[area %in% c("a", "b", "psp out"), sum(cost)],
+               newCosts[area %in% c("a", "b"), sum(cost)])
+  
+  # Check the repartition of the costs
+  prop <- data$links[link == "b - psp out", abs(`FLOW LIN.`)] / 
+    (data$links[link == "b - psp out", abs(`FLOW LIN.`)] + data$links[link == "a - psp out", abs(`FLOW LIN.`)])
+  prop[is.na(prop)] <- 0
+  
+  expect_equal(
+    data$areas[area == "a", `OV. COST`] + (1 - prop) * data$areas[area == "psp out", `OV. COST`],
+    dataCorrected$areas[area == "a", `OV. COST`]
+  )
+})
 

@@ -1,5 +1,5 @@
 ---
-title: "The 'antares' Package"
+title: "The 'antaresRead' Package"
 author: "François Guillem"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -10,22 +10,22 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-This document describes a typical use of the `antares` package. 
+This document describes a typical use of the `antaresRead` package. 
 
-This `antares` package has been designed to read the results of an Antares simulation in an easy and convivial way. It can of course read any output files of a simulation at any desired time step, read synthetic results or detailed Monte Carlo scenarios but it can also add input time series to the results and perform some basic treatments like removing virtual areas.
+This package has been designed to read the results of an Antares simulation in an easy and convivial way. It can of course read any output files of a simulation at any desired time step, read synthetic results or detailed Monte Carlo scenarios but it can also add input time series to the results and perform some basic treatments like removing virtual areas.
 
 ## Installation
 
-The `antares` package depends on the packages `data.table`, `plyr` and `lubridate`. If you have not already got them you can install them with the following command:
+The `antaresRead` package depends on the packages `data.table`, `plyr` and `lubridate`. If you have not already got them you can install them with the following command:
 
 ```r
 install.packages(c("data.table", "plyr", "lubridate"))
 ```
   
-Then you can install the `antares` package either with the Rstudio assistant in the "Packages" tab or with the following command:
+Then you can install the `antaresRead` package either with the Rstudio assistant in the "Packages" tab or with the following command:
 
 ```r
-install.packages("path_to_the_package/antares_***.zip")
+install.packages("path_to_the_package/antaresRead_***.zip")
 ```
 
 ## Before reading data
@@ -33,13 +33,13 @@ install.packages("path_to_the_package/antares_***.zip")
 First, when you start a new R session, you need to load the package:
 
 ```r
-library(antares)
+library(antaresRead)
 ```
 
 To display the list of all the functions of the package and access their help pages, type in the R console:
 
 ```r
-help(package = "antares")
+help(package = "antaresRead")
 ```
 
 Then you can start using the package. The first function to use is `setSimulationPath`.
@@ -154,7 +154,7 @@ getAreas("fr", exclude="offshore")
 A few other functions are provided by the package. To see a list of them, type in the console:
 
 ```r
-help(package = "antares")
+help(package = "antaresRead")
 ```
 
 ## Use case: Visualizing congestion problems in a network

@@ -11,5 +11,5 @@ test_that("extractDataList throws a warning if area does not exist", {
 })
 
 test_that("extractDataList throws an error if all areas do not exist", {
-  expect_error(extractDataList(areas, c("missingArea")), "area")
+  expect_error(suppressWarnings(extractDataList(areas, c("missingArea")), "area"))
 })

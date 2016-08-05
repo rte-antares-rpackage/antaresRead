@@ -1,3 +1,69 @@
+Changes in version 0.10 (2016-07-18)
+
+BREAKING CHANGES:
+* Variable mustRunModuction has been renamed minGenModulation for consistency with Antares
+* Similarly in the object returned by setSimulationPath and simOptions, "setList" has been renamed "districtList"
+
+NEW FEATURES:
+* Now, when one filters, add, remove or update columns of an object of class 'antaresDataTable', the result is still of class 'antaresDataTable'.
+
+
+Changes in version 0.9.1 (2016-07-05)
+
+BUGFIXES:
+* readAntares was incorrectly setting attributes of its ouput. This resulted in errors when using functions of the antaresProcessing package.
+
+Changes in version 0.9 (2016-07-04)
+
+BREAKING CHANGES:
+* The columns returned by readAntares when 'hydroStorageMaxPower = TRUE' have been renamed.
+
+NEW FEATURES:
+* readAntares has a new parameter "thermalModulation" to import modulation time series.
+* New aliases have been added. One can inspect them with "showAliases()".
+
+
+Changes in version 0.8 (2016-06-20)
+
+NEW FEATURES:
+* setSimulationPath nows reads costs of unsupplied et spilled energy.
+* ReadLayout computes coordinates for districts and link between them.
+* getAreas has a new parameter "district" to get areas in a set of districts.
+* getLinks has new parameter "areas" to get links connected to a set of areas.
+
+BUGFIXES:
+* Small bug fixes that avoid useless warning messages/
+
+
+Changes in version 0.7 (2016-06-07)
+
+BREAKING CHANGES:
+* The package has been renamed "antaresRead".
+
+NEW FEATURES:
+* changeTimeStep accepts two new functions : min and max.
+* readAntares now computes the number of available units.
+
+BUGFIXES:
+* setSimulationPath was crashing if parameter "horizon" was not set in Antares.
+* setSimulationPath throws a warning when two simulations have same name and it uses the most recent one. 
+* In presence of hubs and production nodes, removeVirtualAreas treated production nodes two times.
+* Column "month" was sometimes numeric and other times character.
+* setSimulationPath was not recognising option "apply-filter = add-all" when retrieving district definition.
+
+
+Changes in version 0.6 (2016-05-27)
+
+NEW FEATURES:
+* readAntares and readInputTS always add time columns (time, day, month, hour). changeTimeStep now keeps them if they are present.
+
+BUGFIXES:
+* readAntares may not work when some MC years were not exported by Antares.
+* The construction of the weeks was wrong when a year did not start on january.
+* The import of inputs was wrong when the study was not conducted on a whole year but on a smaller period.
+* In removeVirtualNodes, option "reassignCosts" was not working correctly.
+
+
 Changes in version 0.5 (2016-05-11)
 
 BREAKING CHANGES:
@@ -16,6 +82,7 @@ BUGFIXES:
 * 'removeVirtualNodes' was not creating some columns for production virtual nodes.
 * The option 'mustRun' in readAntares was not functionning correctly
 
+
 Changes in version 0.4 (2016-04-29)
 
 BREAKING CHANGES:
@@ -33,6 +100,7 @@ NEW FEATURES:
 * New function "copyToClipboard"
 * Added package vignette
 
+
 Changes in version 0.3 (2016-04-14)
 
 NEW FEATURES:
@@ -45,6 +113,7 @@ NEW FEATURES:
 * Improved documentation
 * New function removeVirtualNodes (still experimental)
 * Added this NEWS file :)
+
 
 Changes in version 0.2 (2016-04-05)
 

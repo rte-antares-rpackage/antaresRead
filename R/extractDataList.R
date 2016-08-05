@@ -17,7 +17,7 @@
 #' @return a list of data.tables with one element per area. The list also
 #' contains an element named "areaList" containing the name of areas in the
 #' object and a table called "infos" that contains for each area the number
-#' of variables of différent type (values, details, link).
+#' of variables of different type (values, details, link).
 #'
 #' @export
 #'

@@ -5,8 +5,9 @@
 \alias{getDistricts}
 \title{Select and exclude areas}
 \usage{
-getAreas(select = NULL, exclude = NULL, regexpSelect = TRUE,
-  regexpExclude = TRUE, opts = simOptions(), ignore.case = TRUE)
+getAreas(select = NULL, exclude = NULL, withClustersOnly = FALSE,
+  regexpSelect = TRUE, regexpExclude = TRUE, opts = simOptions(),
+  ignore.case = TRUE, districts = NULL)
 
 getDistricts(select = NULL, exclude = NULL, regexpSelect = TRUE,
   regexpExclude = TRUE, opts = simOptions(), ignore.case = TRUE)
@@ -21,6 +22,8 @@ interpreted as a list of regular expressions and each area validating one
 of them is excluded. Else it is interpreted as list of area names to 
 exclude. If \code{NULL}, not any area is excluded.}
 
+\item{withClustersOnly}{Should the function return only nodes containing clusters ?}
+
 \item{regexpSelect}{Is \code{select} a list of regular expressions ?}
 
 \item{regexpExclude}{Is \code{exclude} a list of regular expressions ?}
@@ -30,6 +33,9 @@ exclude. If \code{NULL}, not any area is excluded.}
 
 \item{ignore.case}{Should the case be ignored when evaluating the regular
 expressions ?}
+
+\item{districts}{Names of districts. If this argument is not null, only areas belonging
+to the specified districts are returned.}
 }
 \value{
 A character vector containg the name of the areas/districts satisfying the 

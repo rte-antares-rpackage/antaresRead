@@ -10,9 +10,11 @@
 #' 
 #' @inheritParams readAntares
 #'
-#' @return A list with two elements:
+#' @return A list with three elements:
 #' \item{areas: }{A data.frame containing the name, the color and the coordinate
 #'    of each area}
+#' \item{district: }{A data.frame containing the name, the color and the coordinate
+#'    of each district}
 #' \item{links: }{A data.frame containing the name, the coordinates of the origin
 #'    and the destination of each link}
 #'    
@@ -49,8 +51,18 @@ readLayout <- function(opts = simOptions()) {
 
     res[, c("area", "x", "y", "color")]
   })
+  areas <- data.table(areas)
+  
+  # districts
+  districts <- merge(areas, opts$districtsDef, by = "area", allow.cartesian=TRUE)
+  meanCol <- function(cols) {
+    meanrgb <- apply(col2rgb(c("#DF8848", "#DF8848")), 1, mean)
+    rgb(meanrgb[1], meanrgb[2], meanrgb[3], maxColorValue = 255)
+  }
+  districts <- districts[, .(x = mean(x), y = mean(y), color = meanCol(color)), 
+                         by = district]
 
-  # liens
+  # links
   path <- file.path(opts$path, "../../input/links")
   links <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
@@ -62,17 +74,39 @@ readLayout <- function(opts = simOptions()) {
 
     data.frame(link = paste(f, "-", to), from = f, to = to)
   })
+  links <- data.table(links)
 
-  links <- merge(links, areas[,c("area", "x", "y")], by.x = "from", by.y="area")
-  links <- merge(links, areas[,c("area", "x", "y")], by.x = "to", by.y="area",
+  links <- merge(links, areas[,c("area", "x", "y"), with = FALSE], by.x = "to", by.y="area")
+  links <- merge(links, areas[,c("area", "x", "y"), with = FALSE], by.x = "from", by.y="area",
                  suffixes = c("0", "1"))
+  
+  # Links districts
+  
+  # Identify the connexions between two districts. If two areas in distincts 
+  # districts are connected then the corresponding districts are connected too.
+  districtLinks <- merge(links[, .(to, from)], 
+                          opts$districtsDef[, .(to=area, toDistrict=district)],
+                          by = "to", allow.cartesian=TRUE)
+  districtLinks <- merge(districtLinks, 
+                          opts$districtsDef[, .(from=area, fromDistrict=district)],
+                          by = "from", allow.cartesian=TRUE)
+  districtLinks <- unique(districtLinks[fromDistrict != toDistrict,
+                                          .(fromDistrict, toDistrict)])
+  
+  # Add coordinates of origin and destination
+  districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                          by.x = "toDistrict", by.y = "district")
+  districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                          by.x = "fromDistrict", by.y = "district", 
+                          suffixes = c("0", "1"))
+  
 
-  list(areas = areas, links=links)
+  list(areas = areas, districts = districts, links=links, districtLinks = districtLinks)
 }
 
 # Fonction pour vérifier visuellement qu'importLayout fonctionne
 plotLayout <- function(layout) {
-  if (missing(layout)) layout <- importLayout()
+  if (missing(layout)) layout <- readLayout()
   plot(layout$areas$x, layout$areas$y, type="n",xaxt='n',yaxt='n',pch='',ylab='',xlab='')
 
   with(layout$links, segments(x0, y0, x1, y1, col = gray(0.85)))
