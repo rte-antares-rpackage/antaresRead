@@ -74,7 +74,7 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
   if (internalOnly) links <- opts$linksDef[from %in% areas & to %in% areas]
   else links <- opts$linksDef[from %in% areas | to %in% areas]
   
-  links <- links[!from %in% exclude & !from %in% exclude]
+  links <- links[!from %in% exclude & !to %in% exclude]
   
   if (namesOnly) return(links$link)
   if (!withDirection) return(links)
