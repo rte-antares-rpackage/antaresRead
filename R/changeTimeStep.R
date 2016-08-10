@@ -135,7 +135,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   x <- .addClassAndAttributes(x, synthesis, newTimeStep, opts, type = type)
   
-  if(addDateTimeCol) x <- addDateTimeColumns(x)
+  if(addDateTimeCol) addDateTimeColumns(x)
   
   x
 }

@@ -5,10 +5,9 @@ addDateTimeColumns <- function(x) {
   opts <- attr(x, "opts")
   synthesis <- attr(x, "synthesis")
   
-  if (is(x, "antaresDataTable")) {
-    type <- attr(x, "type")
-    x <- list(x)
-    names(x) <- type
+  if (is(x, "antaresDataList")) {
+    for (el in x) addDateTimeColumns(el)
+    return(invisible(x))
   }
   
   if (timeStep == "hourly") {
@@ -64,13 +63,13 @@ addDateTimeColumns <- function(x) {
     
   }
   
-  for (e in names(x)) {
-    tmp <- copy(newCols)
-    for (n in names(newCols)[-1]) if (n %in% names(x[[e]])) tmp[, c(n) := NULL]
-    if (timeStep != "annual") x[[e]] <- cbind(x[[e]], tmp[x[[e]]$timeId])
-    else x[[e]] <- cbind(x[[e]], tmp)
+  newCols$timeId <- 1:nrow(newCols)
+  if(timeStep == "annual") newCols$timeId <- "Annual"
+  
+  colsToAdd <- setdiff(names(newCols), names(x))
+  if (length(colsToAdd) > 0) {
+    .mergeByRef(x, newCols, "timeId", colsToAdd)
   }
   
-  .addClassAndAttributes(x, synthesis = synthesis, timeStep = timeStep, 
-                         opts = opts, simplify = TRUE)
+  .reorderCols(x)
 }

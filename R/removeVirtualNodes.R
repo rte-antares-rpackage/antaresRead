@@ -183,6 +183,8 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     x$areas$BALANCE <- as.numeric(x$areas$BALANCE)
     
     corrections <- flows[, .(correction = sum(flow)), keyby = byarea]
+    setkeyv(x$areas, byarea)
+    
     corrections <- corrections[x$areas, c(byarea, "correction"), with = FALSE]
     corrections[is.na(correction), correction := 0]
     

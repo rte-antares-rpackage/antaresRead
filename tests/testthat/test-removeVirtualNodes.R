@@ -16,6 +16,7 @@ test_that("removeVirtualAreas effectively removes virtual areas", {
 })
 
 test_that("Balance is corrected for nodes connected to virtual nodes but not the others", {
+  setkeyv(data$areas, .idCols(data$areas))
   expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
                dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
