@@ -211,7 +211,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
   districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
-  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.")
+  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
   
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
@@ -479,6 +479,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #' @param msg
 #'   warning message to display when an element does not exist in the reference
 #'   list
+#' @param allowDup
+#'   If FALSE, then duplicated values in "list" are filtered.
 #' @return
 #' If the argument is empty it returns NULL.
 #' If it contains "all", it returns the reference list
@@ -486,11 +488,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #' 
 #' @noRd
 #' 
-.checkArg <- function(list, reference, msg) {
+.checkArg <- function(list, reference, msg, allowDup = FALSE) {
   if (is.null(list) || length(list) == 0) return(NULL)
   if (any(list == "all")) return(reference)
   
-  res <- intersect(list, reference)
+  if (allowDup) res <- list[list %in% reference]
+  else res <- intersect(list, reference)
   if (length(res) < length(list)) {
     missingElements <- setdiff(list, reference)
     warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
