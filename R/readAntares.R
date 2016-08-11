@@ -302,39 +302,31 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if (misc) {
     .addOutputToRes("misc", areas, .importMisc, NA)
-    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$misc, by=c("area", "timeId"))
+    if (!is.null(res$areas)) .mergeByRef(res$areas, res$misc)
     if (!is.null(districts)) {
       res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
       res$misc[, area := NULL]
       res$misc <- res$misc[, lapply(.SD, sum), by = .(district, timeId)]
-      res$districts <- merge(res$districts, res$misc, by = c("district", "timeId"))
+      .mergeByRef(res$districts, res$misc)
     }
     res$misc <- NULL
   }
   
   if (thermalAvailabilities) {
     .addOutputToRes("thermalAvailabilities", clusters, .importThermal, NA)
-    
-    by <- c("area", "cluster", "timeId")
-    if (!synthesis) by <- append(by, "mcYear")
-    
-    res$clusters <- merge(res$clusters, res$thermalAvailabilities, by = by)
+    .mergeByRef(res$clusters, res$thermalAvailabilities)
     res$thermalAvailabilities <- NULL
   }
   
   if (hydroStorage) {
     .addOutputToRes("hydroStorage", areas, .importHydroStorage, NA)
-    by <- c("area", "timeId")
-    if (!synthesis) by <- append(by, "mcYear")
-    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$hydroStorage, by = by)
+    if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorage)
     
     if (!is.null(districts)) {
-      by <- c("district", "timeId")
-      if (!synthesis) by <- append(by, "mcYear")
       res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
       res$hydroStorage[, area := NULL]
-      res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = mget(by)]
-      res$districts <- merge(res$districts, res$hydroStorage, by = by)
+      res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = c(.idCols(res$hydroStorage))]
+      .mergeByRef(res$districts, res$hydroStorage)
     }
     
     res$hydroStorage <- NULL
@@ -342,24 +334,24 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if (hydroStorageMaxPower) {
     .addOutputToRes("hydroStorageMaxPower", areas, .importHydroStorageMaxPower, NA)
-    if (!is.null(res$areas)) res$areas <- merge(res$areas, res$hydroStorageMaxPower, by=c("area", "timeId"))
+    if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorageMaxPower)
     if (!is.null(districts)) {
       res$hydroStorageMaxPower <- merge(res$hydroStorageMaxPower, districts, by = "area", allow.cartesian = TRUE)
       res$hydroStorageMaxPower[, area := NULL]
       res$hydroStorageMaxPower <- res$hydroStorageMaxPower[, lapply(.SD, sum), by = .(district, timeId)]
-      res$districts <- merge(res$districts, res$hydroStorageMaxPower, by = c("district", "timeId"))
+      .mergeByRef(res$districts, res$hydroStorageMaxPower)
     }
     res$hydroStorageMaxPower <- NULL
   }
   
   if (reserve) {
     .addOutputToRes("reserve", areas, .importReserves, NA)
-    if(!is.null(res$areas)) res$areas <- merge(res$areas, res$reserve, by=c("area", "timeId"))
+    if(!is.null(res$areas)) .mergeByRef(res$areas, res$reserve)
     if (!is.null(districts)) {
       res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)
       res$reserve[, area := NULL]
       res$reserve <- res$reserve[, lapply(.SD, sum), by = .(district, timeId)]
-      res$districts <- merge(res$districts, res$reserve, by = c("district", "timeId"))
+      .mergeByRef(res$districts, res$reserve)
     }
     res$reserve <- NULL
   }
@@ -370,27 +362,27 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$linkCapacity <- NULL
   }
   
-  if (thermalModulation | mustRun) {
+  if (thermalModulation) {
     .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
     
     if (!is.null(res$clusters)) {
-      res$clusters <- merge(res$clusters, res$thermalModulation, 
-                            by=c("area", "cluster", "timeId"), all.x = TRUE)
+      .mergeByRef(res$clusters, res$thermalModulation)
     }
     
-    if (!mustRun) res$thermalModulation <- NULL
+    if (!mustRun | !timeStep == "hourly") res$thermalModulation <- NULL
   }
   
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
-    if (is.null(res$clusters) | timeStep != "hourly") {
+    if (TRUE) {
       local({
         timeStep <- "hourly"
         areas <- intersect(opts$areasWithClusters, union(areas, clusters))
         .addOutputToRes("mustRun", areas, .importOutputForClusters, NULL, "hourly")
-        .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
-        res$mustRun <<- merge(res$mustRun, res$thermalModulation, 
-                              by=c("area", "cluster", "timeId"), all.x = TRUE)
+        if (is.null(res$thermalModulation)) {
+          .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA, "hourly")
+        }
+        .mergeByRef(res$mustRun, res$thermalModulation)
       })
     } else res$mustRun <- res$clusters
     
@@ -402,7 +394,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                    capacity = nominalcapacity * unitcount,
                                    must.run)]
     
-    res$mustRun <- merge(res$mustRun, clusterDesc, by = c("area", "cluster"))
+    .mergeByRef(res$mustRun, clusterDesc)
     
     if (is.null(res$mustRun$minGenModulation)) res$mustRun$minGenModulation <- NA_real_
     
@@ -426,32 +418,27 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$mustRun <- changeTimeStep(res$mustRun, timeStep, "hourly", opts = opts)
     
     if (!is.null(res$clusters)) {
-      by <- c("area", "cluster", "timeId")
-      if (!synthesis) by <- c(by, "mcYear")
-      res$clusters <- merge(res$clusters, res$mustRun, by = by)
+      .mergeByRef(res$clusters, res$mustRun)
     }
     
     if (!is.null(res$areas)) {
-      by <- c("area", "timeId")
-      if (!synthesis) by <- c(by, "mcYear")
+      res$mustRun[, cluster := NULL]
       res$mustRun <- res$mustRun[,.(mustRun = sum(mustRun), 
                                     mustRunPartial = sum(mustRunPartial),
                                     mustRunTotal = sum(mustRunTotal)), 
-                                 keyby = mget(by)]
-      res$areas <- merge(res$areas, res$mustRun, by = by, all.x = TRUE)
+                                 keyby = c(.idCols(res$mustRun))]
+      res$areas <- .mergeByRef(res$areas, res$mustRun)
       
       res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
       
     }
     
     if (!is.null(districts)) {
-      by <- c("district", "timeId")
-      if (!synthesis) by <- c(by, "mcYear")
       res$mustRun <- merge(res$mustRun, districts, by = "area", allow.cartesian = TRUE)
       res$mustRun[, area := NULL]
       if (!is.null(res$mustRun$cluster)) res$mustRun[, cluster := NULL]
-      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = mget(by)]
-      res$districts <- merge(res$districts, res$mustRun, by = by, all.x = TRUE)
+      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = c(.idCols(res$mustRun))]
+      res$districts <- .mergeByRef(res$districts, res$mustRun)
       res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
     

@@ -157,7 +157,7 @@
   
 }
 
-.importThermalModulation <- function(area, opts, ...) {
+.importThermalModulation <- function(area, opts, timeStep, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
   
   path <- file.path(opts$inputPath, "thermal/prepro", area)
@@ -182,6 +182,6 @@
     modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
     modulation$timeId <- opts$timeIdMin:opts$timeIdMax
     
-    modulation
+    changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
   })
 }

@@ -64,7 +64,7 @@ addDateTimeColumns <- function(x) {
   }
   
   newCols$timeId <- 1:nrow(newCols)
-  if(timeStep == "annual") newCols$timeId <- "Annual"
+  if(timeStep == "annual") newCols$timeId <- as.factor("Annual")
   
   colsToAdd <- setdiff(names(newCols), names(x))
   if (length(colsToAdd) > 0) {

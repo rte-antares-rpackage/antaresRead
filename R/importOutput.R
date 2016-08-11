@@ -266,6 +266,7 @@
   clusterDesc <- readClusterDesc(opts)
   series <- merge(series, clusterDesc[, .(area, cluster, nominalcapacity)],
                   by = c("area", "cluster"))
+  .mergeByRef(series, clusterDesc, on = c("area", "cluster"), "nominalcapacity")
   
   series[, availableUnits :=  ceiling(thermalAvailability / nominalcapacity)]
   series[, nominalcapacity := NULL]
