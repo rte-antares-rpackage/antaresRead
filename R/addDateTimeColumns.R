@@ -63,12 +63,11 @@ addDateTimeColumns <- function(x) {
     
   }
   
-  newCols$timeId <- 1:nrow(newCols)
-  if(timeStep == "annual") newCols$timeId <- as.factor("Annual")
-  
   colsToAdd <- setdiff(names(newCols), names(x))
-  if (length(colsToAdd) > 0) {
-    .mergeByRef(x, newCols, "timeId", colsToAdd)
+  if (timeStep != "annual") {
+    x[, c(colsToAdd) := newCols[x$timeId, colsToAdd, with = FALSE]]
+  } else {
+    x[, c(colsToAdd) := newCols[, colsToAdd, with = FALSE]]
   }
   
   .reorderCols(x)
