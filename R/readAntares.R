@@ -374,17 +374,24 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
-    if (TRUE) {
+    if (is.null(res$clusters) | timeStep != "hourly") {
       local({
         timeStep <- "hourly"
         areas <- intersect(opts$areasWithClusters, union(areas, clusters))
         .addOutputToRes("mustRun", areas, .importOutputForClusters, NULL, "hourly")
-        if (is.null(res$thermalModulation)) {
-          .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA, "hourly")
-        }
-        .mergeByRef(res$mustRun, res$thermalModulation)
       })
     } else res$mustRun <- res$clusters
+    
+    if (is.null(res$mustRun$minGenModulation)) {
+      if (is.null(res$thermalModulation)) {
+        local({
+          timeStep <- "hourly"
+          areas <- intersect(opts$areasWithClusters, union(areas, clusters))
+          .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA, "hourly")
+        })
+      }
+      .mergeByRef(res$mustRun, res$thermalModulation)
+    }
     
     clusterDesc <- readClusterDesc(opts)
     if (is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
