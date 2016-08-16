@@ -109,27 +109,35 @@
 removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL, 
                                reassignCosts = FALSE) {
   
-  opts <- simOptions(x)
-  
   # check x is an antaresData object with elements areas and links
   if (!is(x, "antaresDataList") || is.null(x$areas) || is.null(x$links))
     stop("x has to be an 'antaresDataList' object with elements 'areas' and 'links'")
   
-  areaList <- unique(x$areas$area)
+  if (is.null(storageFlexibility) & is.null(production))
+    stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
+  opts <- simOptions(x)
+  
+  # Keep only virtual areas present in data
+  areaList <- as.character(unique(x$areas$area))
+  production <- intersect(production, areaList)
+  storageFlexibility <- intersect(storageFlexibility, areaList)
   vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
-  if (is.null(vareas)) stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
+  
+  prodAreas <- x$areas[area %in% production]
+  storageAreas <- x$areas[area %in% storageFlexibility]
+  
+  # Aliases used for aggregation
   if (attr(x, "synthesis")) {
-    
     by <- c("timeId")
   } else {
     by <- c("mcYear", "timeId")
   }
-  
   bylink <- c("link", by)
   byarea <- c("area", by)
   
+  # Table with the definition of the links
   linkList <- getLinks(vareas, namesOnly = FALSE, withDirection = TRUE)
   
   # Treatment of hubs:
@@ -163,6 +171,10 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     x$areas[, c(veryVirtualAreas) := NULL]
   }
   
+  # Make a copy of x$areas with only real areas. This ensures that we do not modify
+  # accidentally the input data by reference
+  x$areas <- x$areas[!area %in% vareas]
+  
   # Flows between virtual and real nodes.
   #
   # These flows are used two times:
@@ -173,30 +185,35 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
                  x$links[, c(bylink, "FLOW LIN."), with = FALSE], 
                  by = "link")
   
-  # Some flows may be inversed depending on how the links are created. Correct this
-  flows$flow <- flows[, `FLOW LIN.` * direction]
-  flows[, `:=`(varea = area, rarea = to, area = to)]
-  flows[, c("FLOW LIN.", "direction", "to") := NULL]
+  flows[, `:=`(
+    flow = `FLOW LIN.` * direction, # Change sign of flows when links are in wrong direction
+    varea = area,                   # virtual area connected by the link
+    rarea = to,                     # real area connected by the link
+    area = to,                      # dummy variable used for merges
+    "FLOW LIN." = NULL,
+    direction = NULL,
+    to = NULL
+  )]
   
   # Correct balance
   if (! is.null(x$areas$BALANCE)) {
-    x$areas$BALANCE <- as.numeric(x$areas$BALANCE)
+    x$areas[, BALANCE := as.numeric(BALANCE)]
     
     corrections <- flows[, .(correction = sum(flow)), keyby = byarea]
-    setkeyv(x$areas, byarea)
     
-    corrections <- corrections[x$areas, c(byarea, "correction"), with = FALSE]
-    corrections[is.na(correction), correction := 0]
-    
-    setkeyv(x$areas, byarea)
-    x$areas[corrections, BALANCE := BALANCE + correction]
+    .mergeByRef(x$areas, corrections, on = byarea, colsToAdd = "correction")
+    x$areas[, `:=`(
+      BALANCE = BALANCE + ifelse(is.na(correction), 0, correction),
+      correction = NULL
+    )]
   }
   
   # Correct costs and CO2
   if (reassignCosts) {
     varCost <- intersect(names(x$areas), c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"))
     
-    costs <- x$areas[area %in% vareas, c(byarea, varCost), with = FALSE]
+    costs <- rbind(prodAreas, storageAreas)
+    costs <- costs[area %in% vareas, c(byarea, varCost), with = FALSE]
     
     # Add column "flow" to 'costs'
     flows[, area := varea]
@@ -206,7 +223,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     
     # Compute the proportion of the cost to repercute on each real area
     costs[, c("totalFlow", "N") := list(sum(abs(flow)), .N), by = byarea]
-    costs$prop <- ifelse(costs$totalFlow == 0, 1/costs$N, abs(costs$flow / costs$totalFlow))
+    costs[, prop := ifelse(totalFlow == 0, 1/N, abs(flow / totalFlow))]
     
     # Aggregate corrections by real area
     costs$area <- costs$rarea
@@ -221,7 +238,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   }
   
   # Add a column for each storage/flexibility area
-  if (!is.null(storageFlexibility)) {
+  if (length(storageFlexibility) > 0) {
     flows[, area := rarea]
     
     formula <- sprintf("%s ~ varea", paste(byarea, collapse = " + "))
@@ -229,16 +246,16 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     tmp <- dcast(flows[varea %in% storageFlexibility, mget(c("varea", byarea, "flow"))], 
                  as.formula(formula), value.var = "flow")
     
-    x$areas <- merge(x$areas, tmp, by = byarea, all.x = TRUE)
+    x$areas <- .mergeByRef(x$areas, tmp, on = byarea)
     
-    for (v in storageFlexibility) {
-      x$areas[[v]][is.na(x$areas[[v]])] <- 0
-    }
+    # Replace NA values by zeros
+    v <- storageFlexibility
+    x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
   }
   
   # Aggregate production of production virtual areas and add columns for each 
   # type of production.
-  if (!is.null(production)) {
+  if (length(production) > 0) {
     .prodNodes <- production # Just to prevent name conflicts with columns of x$areas
     
     linkListProd <- flows[varea %in% production]
@@ -248,11 +265,11 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     prodVars <- prodVars[prodVars != "LOAD"]
     vars <- c(byarea, prodVars)
     
-    virtualProd <- x$areas[area %in% .prodNodes, mget(vars)]
+    virtualProd <- prodAreas[, vars, with = FALSE]
     
     # Remove columns containing only zeros
     for (v in prodVars) {
-      if(all(virtualProd[[v]] == 0)) virtualProd[[v]] <- NULL
+      if(all(virtualProd[[v]] == 0)) virtualProd[, c(v) := NULL]
     }
     prodVars <- prodVars[prodVars %in% names(virtualProd)]
     
@@ -265,15 +282,16 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     setnames(virtualProd, "area", "varea")
     linkListProd$area <- linkListProd$rarea
     virtualProd <- merge(virtualProd, 
-                         linkListProd[, mget(c("varea", byarea))], 
+                         linkListProd[, c("varea", byarea), with = FALSE], 
                          by = c("varea", by))
     virtualProd$varea <- NULL
-    virtualProd <- virtualProd[, lapply(.SD, sum), by = mget(byarea)]
-    x$areas <- merge(x$areas, virtualProd, by = byarea, all.x = TRUE)
+    virtualProd <- virtualProd[, lapply(.SD, sum), by = byarea]
     
-    for (v in paste0(prodVars, "_virtual")) {
-      x$areas[[v]][is.na(x$areas[[v]])] <- 0
-    }
+    .mergeByRef(x$areas, virtualProd, on = byarea)
+    
+    # Replace NA values by zeros
+    v <- paste0(prodVars, "_virtual")
+    x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
   }
   
   # Put clusters of the virtual areas in the corresponding real areas
