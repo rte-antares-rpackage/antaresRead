@@ -10,6 +10,7 @@ NEW FEATURES:
 BUGFIXES:
 * readClusterDesc was not working in input mode.
 * Sometimes setSimulationPath changed working directory.
+* Solved some performance issues in readAntares() and removeVirtualAreas().
 
 
 Changes in version 0.11 (2016-08-01)
