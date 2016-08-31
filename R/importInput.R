@@ -106,7 +106,7 @@
   
   .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
                  colnames=c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh"),
-                 inputTimeStep = "daily")
+                 inputTimeStep = "daily", fun = "mean")
   
 }
 
