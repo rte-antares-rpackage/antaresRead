@@ -120,13 +120,63 @@
 #'
 #' @noRd
 #'
-.importOutputForArea <- function(area, synthesis, ...) {
-  res <- .importOutput("areas", "values", area, "area", synthesis, ...)
-  if (is.null(res)) return (NULL)
-
-  if (!synthesis)  res <- rbindlist(res)
-
-  res
+.importOutputForArea <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                 showProgress, opts) {
+  cat("Importing areas")
+  
+  if (is.null(mcYears)) {
+    args <- expand.grid(area = areas)
+    args$path <- sprintf("%s/mc-all/areas/%s/values-%s.txt", 
+                         opts$simDataPath, args$area, timeStep)
+  } else {
+    args <- expand.grid(area = areas, mcYear = mcYears)
+    args$path <- sprintf("%s/mc-ind/%05.0f/areas/%s/values-%s.txt",
+                         opts$simDataPath, args$mcYear, args$area, timeStep)
+  }
+  
+  outputMissing <- !file.exists(args$path)
+  
+  if (all(outputMissing)) {
+    warning("No data corresponding to your query.")
+    return(NULL)
+  } else if (any(outputMissing)) {
+    warning("Some requested output files are missing.")
+    args <- args[file.exists(args$path), ]
+  }
+  
+  # columns to retrieve
+  colNames <- .getOutputHeader(args$path[1], "area")
+  
+  if (is.null(select)) {
+    # read all columns except the time variables that will be recreated
+    selectCol <- which(!colNames %in% pkgEnv$idVars)
+  } else {
+    selectCol <- which(colNames %in% select)
+  }
+  #selectCol <- c(1, 2, selectCol)
+  colNames <- colNames[selectCol]
+  
+  # time ids
+  timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
+  timeIds <- seq(timeRange[1], timeRange[2])
+  
+  
+  res <- llply(1:nrow(args), function(i) {
+    data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                  select = selectCol, integer64 = "numeric")
+    setnames(data, names(data), colNames)
+    
+    data[, `:=`(
+      area = args$area[i],
+      timeId = timeIds
+    )]
+    
+    if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+    
+    data
+  }, .progress  =ifelse(showProgress, "text", "none"))
+  
+  rbindlist(res)
 }
 
 .importOutputForDistrict <- function(district, synthesis, ...) {

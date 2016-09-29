@@ -199,6 +199,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
   
   timeStep <- match.arg(timeStep)
+  if (synthesis) mcYears <- NULL
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
   
   # If all arguments are NULL, import all areas
@@ -287,7 +288,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   # Add output to res object. The ".importOutputForXXX" functions are
   # defined in the file "readOutputHelpers.R".
-  .addOutputToRes("areas", areas, .importOutputForArea, select$areas)
+  res$areas <- .importOutputForArea(areas, timeStep, select$areas, mcYears, showProgress, opts)
+  #.addOutputToRes("areas", areas, .importOutputForArea, select$areas)
   .addOutputToRes("links", links, .importOutputForLink, select$links)
   .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
   .addOutputToRes("districts", districts, .importOutputForDistrict, select$districts)
