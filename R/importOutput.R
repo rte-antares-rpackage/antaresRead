@@ -142,22 +142,34 @@
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts) {
   processFun <- function(x) {
+    # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    
     clusterNames <- unique(n[idx])
-    colnames <- c(paste0(clusterNames, "|MWh"), paste0(clusterNames, "|NP Cost"))
-    if (sum(idx) / length(clusterNames) == 3) colnames <- c(colnames, paste0(clusterNames, "|NODU"))
-    n[idx] <- colnames
     
-    setnames(x, 1:ncol(x), n)
+    # Id vars names
+    idVarsId <- which(!idx)
+    idVarsNames <- n[idVarsId]
     
-    # reshape data
-    x <- data.table::melt(x, id.vars = .idCols(x))
-    x$cluster <- as.factor(tolower(gsub("\\|.*$", "", x$variable)))
-    x$unit <- gsub("^.*\\|", "", x$variable)
-    x$variable <- NULL
-    data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
+    # Get final value columns
+    if (sum(idx) / length(clusterNames) == 3) {
+      colNames <- c("MWh", "NP Cost", "NODU")
+    } else {
+      colNames <- c("MWh", "NP Cost")
+    }
+    
+    # Loop over clusters
+    nclusters <- length(clusterNames)
+    ncols <- length(colNames)
+    
+    res <- llply(1:nclusters, function(i) {
+      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      setnames(dt, c(colNames, idVarsNames))
+      dt[, cluster := as.factor(clusterNames[i])]
+      dt
+    })
+    
+    rbindlist(res)
   }
   
   .importOutput("areas", "details", "area", areas, timeStep, NULL, 

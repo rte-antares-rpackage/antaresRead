@@ -376,10 +376,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # construct mustRun and mustRunPartial columns
   if (mustRun) {
     if (is.null(res$clusters) | timeStep != "hourly") {
-      local({
+      res$mustRun <- local({
         timeStep <- "hourly"
         areas <- intersect(opts$areasWithClusters, union(areas, clusters))
-        .addOutputToRes("mustRun", areas, .importOutputForClusters, NULL, "hourly")
+        .importOutputForClusters(areas, "hourly", NULL, mcYears, showProgress, opts)
       })
     } else res$mustRun <- res$clusters
     
