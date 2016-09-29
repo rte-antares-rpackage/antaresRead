@@ -287,12 +287,11 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
 
   # Add output to res object. The ".importOutputForXXX" functions are
-  # defined in the file "readOutputHelpers.R".
-  res$areas <- .importOutputForArea(areas, timeStep, select$areas, mcYears, showProgress, opts)
-  #.addOutputToRes("areas", areas, .importOutputForArea, select$areas)
-  .addOutputToRes("links", links, .importOutputForLink, select$links)
-  .addOutputToRes("clusters", clusters, .importOutputForClusters, NULL)
-  .addOutputToRes("districts", districts, .importOutputForDistrict, select$districts)
+  # defined in the file "importOutput.R".
+  res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts)
+  res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts)
+  res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears, showProgress, opts)
+  res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears, showProgress, opts)
   
   # Add inputs to the results.
   # If the user asks districts, we import input for the areas of the districts

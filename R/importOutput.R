@@ -34,81 +34,73 @@
 #'
 #' @noRd
 #'
-.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts, select) {
+.importOutput <- function(folder, fileName, objectName, ids, timeStep, select = NULL, 
+                          mcYears = NULL, 
+                          showProgress, opts, processFun = NULL, sameNames = TRUE,
+                          objectDisplayName = objectName) {
+  if (is.null(ids)) return(NULL)
   
-  firstTimeId <- .getTimeId(opts$timeIdMin, timeStep, opts)
-    
-  if (synthesis) { # Only get synthesis results ################################
-
-    path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt",
-                    opts$simDataPath, folder, id, file, timeStep)
-
-    # Check existence of the output file
-    if (!file.exists(path)) {
-      message(timeStep,  " output not found for ", objectName, " ", id)
-      return(NULL)
-    }
-
-    colNames <- .getOutputHeader(path, objectName)
-
-    # Select columns to import
+  if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
+  
+  if (is.null(mcYears)) {
+    args <- expand.grid(id = ids)
+    args$path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt", 
+                         opts$simDataPath, folder, args$id, fileName, timeStep)
+  } else {
+    args <- expand.grid(id = ids, mcYear = mcYears)
+    args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s/%s-%s.txt",
+                         opts$simDataPath, args$mcYear, folder, args$id, fileName, timeStep)
+  }
+  
+  outputMissing <- !file.exists(args$path)
+  
+  if (all(outputMissing)) {
+    message("No data corresponding to your query.")
+    return(NULL)
+  } else if (any(outputMissing)) {
+    message("Some requested output files are missing.")
+    args <- args[file.exists(args$path), ]
+  }
+  
+  # columns to retrieve
+  if (sameNames) {
+    colNames <- .getOutputHeader(args$path[1], objectName)
+  
     if (is.null(select)) {
-      selectCol <- 1:length(colNames)
+      # read all columns except the time variables that will be recreated
+      selectCol <- which(!colNames %in% pkgEnv$idVars)
     } else {
-      selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
+      selectCol <- which(colNames %in% select)
+    }
+    colNames <- colNames[selectCol]
+  }
+  
+  # time ids
+  timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
+  timeIds <- seq(timeRange[1], timeRange[2])
+  
+  
+  res <- llply(1:nrow(args), function(i) {
+    if (!sameNames) {
+      colNames <- .getOutputHeader(args$path[i], objectName)
+      selectCol <- which(!colNames %in% pkgEnv$idVars)
       colNames <- colNames[selectCol]
     }
-
-    res <- fread(path, sep = "\t", header = F, skip = 7, select = selectCol,
-                 stringsAsFactors = TRUE, integer64 = "numeric")
-    setnames(res, names(res), colNames)
+    data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                  select = selectCol, integer64 = "numeric")
     
-    # Fix timeId when timeStep is weekly
-    if (timeStep == "weekly") res$timeId <- firstTimeId + 1:nrow(res) - 1
-
-    res[, objectName] <- as.factor(rep(id, nrow(res)))
-
-  } else { # Get Monte Carlo scenarios #########################################
-
-    path <- sprintf("%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
-                    opts$simDataPath, folder, id, file, timeStep)
-
-    # Check output is available.
-    if (!file.exists(sprintf(path, mcYears[1]))) {
-      message(timeStep,  " output not found for ", objectName, " ", id)
-      return(NULL)
-    }
-
-    # Loop over Monte-Carlo years.
-    res <- llply(mcYears, function(i) {
-
-      colNames <- .getOutputHeader(sprintf(path,i), objectName)
-
-      # Select columns to import
-      if (is.null(select)) {
-        selectCol <- 1:length(colNames)
-      } else {
-        selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
-        colNames <- colNames[selectCol]
-      }
-
-      # Import output
-      x <- fread(sprintf(path,i), sep = "\t", header = F, skip = 7,
-                 select = selectCol,
-                 stringsAsFactors = TRUE, integer64 = "numeric")
-      x$mcYear <- i
-      setnames(x, names(x), c(colNames, "mcYear"))
-
-      x[, objectName] <- as.factor(rep(id, nrow(x)))
-
-      # Fix timeId when timeStep is weekly
-      if (timeStep == "weekly") x$timeId <- firstTimeId + 1:nrow(x) - 1
-      
-      x
-    })
-  }
-
-  res
+    setnames(data, names(data), colNames)
+    
+    data[, c(objectName) := args$id[i]]
+    data[, timeId := timeIds]
+    if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+    
+    if (!is.null(processFun)) data <- processFun(data)
+    
+    data
+  }, .progress = ifelse(showProgress, "text", "none"))
+  
+  rbindlist(res)
 }
 
 #' .importOutputForArea
@@ -120,73 +112,22 @@
 #'
 #' @noRd
 #'
-.importOutputForArea <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+.importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                  showProgress, opts) {
-  cat("Importing areas")
-  
-  if (is.null(mcYears)) {
-    args <- expand.grid(area = areas)
-    args$path <- sprintf("%s/mc-all/areas/%s/values-%s.txt", 
-                         opts$simDataPath, args$area, timeStep)
-  } else {
-    args <- expand.grid(area = areas, mcYear = mcYears)
-    args$path <- sprintf("%s/mc-ind/%05.0f/areas/%s/values-%s.txt",
-                         opts$simDataPath, args$mcYear, args$area, timeStep)
-  }
-  
-  outputMissing <- !file.exists(args$path)
-  
-  if (all(outputMissing)) {
-    warning("No data corresponding to your query.")
-    return(NULL)
-  } else if (any(outputMissing)) {
-    warning("Some requested output files are missing.")
-    args <- args[file.exists(args$path), ]
-  }
-  
-  # columns to retrieve
-  colNames <- .getOutputHeader(args$path[1], "area")
-  
-  if (is.null(select)) {
-    # read all columns except the time variables that will be recreated
-    selectCol <- which(!colNames %in% pkgEnv$idVars)
-  } else {
-    selectCol <- which(colNames %in% select)
-  }
-  #selectCol <- c(1, 2, selectCol)
-  colNames <- colNames[selectCol]
-  
-  # time ids
-  timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
-  timeIds <- seq(timeRange[1], timeRange[2])
-  
-  
-  res <- llply(1:nrow(args), function(i) {
-    data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                  select = selectCol, integer64 = "numeric")
-    setnames(data, names(data), colNames)
-    
-    data[, `:=`(
-      area = args$area[i],
-      timeId = timeIds
-    )]
-    
-    if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
-    
-    data
-  }, .progress  =ifelse(showProgress, "text", "none"))
-  
-  rbindlist(res)
+  .importOutput("areas", "values", "area", areas, timeStep, select, 
+                mcYears, showProgress, opts)
 }
 
-.importOutputForDistrict <- function(district, synthesis, ...) {
-  res <- .importOutputForArea(paste("@", district), synthesis, ...)
-  if (is.null(res)) return(NULL)
+.importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL, 
+                                      showProgress, opts) {
+  if (is.null(districts)) return(NULL)
   
-  setnames(res, "area", "district")
-  res[, district := as.factor(gsub("^@ ", "", district))]
+  processFun <- function(dt) {
+    dt[, district := as.factor(gsub("^@ ", "", district))]
+  }
   
-  res
+  .importOutput("areas", "values", "district", paste("@", districts), timeStep, select, 
+                mcYears, showProgress, opts, processFun)
 }
 
 #' .importOutputForClusters
@@ -198,14 +139,9 @@
 #'
 #' @noRd
 #'
-.importOutputForClusters <- function(area, synthesis, ...) {
-  res <- .importOutput("areas", "details", area, "area", synthesis, ...)
-  if (is.null(res)) return(NULL)
-
-  .reshapeData <- function(x) {
-    # For each cluster, there are two or three columns with same name but 
-    #different content. Fix that.
-
+.importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                  showProgress, opts) {
+  processFun <- function(x) {
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
     
@@ -215,7 +151,7 @@
     n[idx] <- colnames
     
     setnames(x, 1:ncol(x), n)
-
+    
     # reshape data
     x <- data.table::melt(x, id.vars = .idCols(x))
     x$cluster <- as.factor(tolower(gsub("\\|.*$", "", x$variable)))
@@ -223,17 +159,10 @@
     x$variable <- NULL
     data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
   }
-
-  if (synthesis) {
-    res <- .reshapeData(res)
-  } else {
-    res <- llply(res, .reshapeData)
-    res <- rbindlist(res)
-  }
   
-  setnames(res, "MWh", "production")
-
-  res
+  .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                mcYears, showProgress, opts, processFun, sameNames = FALSE,
+                objectDisplayName = "cluster")
 }
 
 #' .importOutputForLink
@@ -245,13 +174,10 @@
 #'
 #' @noRd
 #'
-.importOutputForLink <- function(link, synthesis, ...) {
-  res <- .importOutput("links", "values", link, "link", synthesis, ...)
-  if (is.null(res)) return (NULL)
-
-  if (!synthesis)  res <- rbindlist(res)
-
-  res
+.importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
+                                 showProgress, opts) {
+  .importOutput("links", "values", "link", links, timeStep, select, 
+                mcYears, showProgress, opts)
 }
 
 # The two following functions read input time series that are eventually
