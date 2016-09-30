@@ -76,9 +76,12 @@
   }
   
   # time ids
-  timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
-  timeIds <- seq(timeRange[1], timeRange[2])
-  
+  if (timeStep == "annual") {
+    timeIds <- as.factor("Annual")
+  } else {
+    timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
+    timeIds <- seq(timeRange[1], timeRange[2])
+  }
   
   res <- llply(1:nrow(args), function(i) {
     if (!sameNames) {
@@ -86,13 +89,18 @@
       selectCol <- which(!colNames %in% pkgEnv$idVars)
       colNames <- colNames[selectCol]
     }
-    data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                  select = selectCol, integer64 = "numeric")
     
-    setnames(data, names(data), colNames)
+    if (length(selectCol) == 0) {
+      data <- data.table(timeId = timeIds)
+    } else {
+      data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                    select = selectCol, integer64 = "numeric")
+      
+      setnames(data, names(data), colNames)
+      data[, timeId := timeIds]
+    }
     
     data[, c(objectName) := args$id[i]]
-    data[, timeId := timeIds]
     if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
     
     if (!is.null(processFun)) data <- processFun(data)
@@ -145,7 +153,7 @@
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- unique(n[idx])
+    clusterNames <- tolower(unique(n[idx]))
     
     # Id vars names
     idVarsId <- which(!idx)
@@ -153,9 +161,9 @@
     
     # Get final value columns
     if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("MWh", "NP Cost", "NODU")
+      colNames <- c("production", "NP Cost", "NODU")
     } else {
-      colNames <- c("MWh", "NP Cost")
+      colNames <- c("production", "NP Cost")
     }
     
     # Loop over clusters
