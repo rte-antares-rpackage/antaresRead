@@ -291,15 +291,57 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts)
   res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts)
   res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears, showProgress, opts)
-  res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears, showProgress, opts)
   
-  # Add inputs to the results.
-  # If the user asks districts, we import input for the areas of the districts
-  # Then we agregate by district.
+  # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
     districts <- opts$districtsDef[district %in% districts]
     areas <- union(areas, districts$area)
   }
+  
+  # Import clusters and eventually must run
+  
+  if (!mustRun) {
+    res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears, 
+                                             showProgress, opts, mustRun = FALSE)
+  } else {
+    clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
+    res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears, 
+                                             showProgress, opts, mustRun = TRUE)
+    
+    if (!is.null(res$areas)) {
+      tmp <- copy(res$clusters)
+      tmp[, cluster := NULL]
+      tmp <- tmp[,.(mustRun = sum(mustRun), 
+                    mustRunPartial = sum(mustRunPartial),
+                    mustRunTotal = sum(mustRunTotal)), 
+                 keyby = c(.idCols(tmp))]
+      res$areas <- .mergeByRef(res$areas, tmp)
+      
+      res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
+    }
+    
+    if (!is.null(districts)) {
+      tmp <- copy(res$clusters)
+      tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
+      tmp[, area := NULL]
+      tmp[, cluster := NULL]
+      tmp <- tmp[,.(mustRun = sum(mustRun), 
+                    mustRunPartial = sum(mustRunPartial),
+                    mustRunTotal = sum(mustRunTotal)), 
+                 keyby = c(.idCols(tmp))]
+      res$districts <- .mergeByRef(res$districts, tmp)
+      res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
+    }
+    
+    # Suppress that has not been asked
+    if (is.null(clusters)) {
+      res$clusters <- NULL
+    } else if (length(clustersAugmented) > length(clusters)) {
+      res$clusters <- res$clusters[area %in% clusters]
+    }
+  }
+  
+  # Add input time series
   
   if (misc) {
     .addOutputToRes("misc", areas, .importMisc, NA)
@@ -371,87 +413,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     
     if (!mustRun | !timeStep == "hourly") res$thermalModulation <- NULL
-  }
-  
-  # construct mustRun and mustRunPartial columns
-  if (mustRun) {
-    if (is.null(res$clusters) | timeStep != "hourly") {
-      res$mustRun <- local({
-        timeStep <- "hourly"
-        areas <- intersect(opts$areasWithClusters, union(areas, clusters))
-        .importOutputForClusters(areas, "hourly", NULL, mcYears, showProgress, opts)
-      })
-    } else res$mustRun <- res$clusters
-    
-    if (is.null(res$mustRun$minGenModulation)) {
-      if (is.null(res$thermalModulation)) {
-        local({
-          timeStep <- "hourly"
-          areas <- intersect(opts$areasWithClusters, union(areas, clusters))
-          .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA, "hourly")
-        })
-      }
-      .mergeByRef(res$mustRun, res$thermalModulation)
-    }
-    
-    clusterDesc <- readClusterDesc(opts)
-    if (is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
-    else clusterDesc[is.na(must.run), must.run := FALSE]
-    
-    clusterDesc <- clusterDesc[, .(area, cluster,
-                                   capacity = nominalcapacity * unitcount,
-                                   must.run)]
-    
-    .mergeByRef(res$mustRun, clusterDesc)
-    
-    if (is.null(res$mustRun$minGenModulation)) res$mustRun$minGenModulation <- NA_real_
-    
-    res$mustRun$mustRun <- res$mustRun[, capacity * must.run ]
-    res$mustRun$mustRunPartial <- 0
-    res$mustRun[!is.na(minGenModulation), 
-                c("mustRun", "mustRunPartial") := list(0, capacity * minGenModulation)]
-    
-    res$mustRun[mustRun > production, mustRun := as.numeric(production)]
-    res$mustRun[mustRunPartial > production, mustRunPartial := as.numeric(production)]
-    
-    res$mustRun$mustRunTotal <- res$mustRun$mustRun + res$mustRun$mustRunPartial
-    
-    if (synthesis) {
-      res$mustRun <- res$mustRun[, .(area, cluster, timeId, mustRun, mustRunPartial, mustRunTotal)]
-    } else {
-      res$mustRun <- res$mustRun[, .(area, cluster, timeId, mcYear, mustRun, mustRunPartial, mustRunTotal)]
-    }
-    
-    
-    res$mustRun <- changeTimeStep(res$mustRun, timeStep, "hourly", opts = opts)
-    
-    if (!is.null(res$clusters)) {
-      .mergeByRef(res$clusters, res$mustRun)
-    }
-    
-    if (!is.null(res$areas)) {
-      res$mustRun[, cluster := NULL]
-      res$mustRun <- res$mustRun[,.(mustRun = sum(mustRun), 
-                                    mustRunPartial = sum(mustRunPartial),
-                                    mustRunTotal = sum(mustRunTotal)), 
-                                 keyby = c(.idCols(res$mustRun))]
-      res$areas <- .mergeByRef(res$areas, res$mustRun)
-      
-      res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
-      
-    }
-    
-    if (!is.null(districts)) {
-      res$mustRun <- merge(res$mustRun, districts, by = "area", allow.cartesian = TRUE)
-      res$mustRun[, area := NULL]
-      if (!is.null(res$mustRun$cluster)) res$mustRun[, cluster := NULL]
-      res$mustRun <- res$mustRun[, lapply(.SD, sum), by = c(.idCols(res$mustRun))]
-      res$districts <- .mergeByRef(res$districts, res$mustRun)
-      res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
-    }
-    
-    res$mustRun <- NULL
-    res$thermalModulation <- NULL
   }
   
   # Class and attributes

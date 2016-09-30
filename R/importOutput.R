@@ -121,7 +121,7 @@
 #' @noRd
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                 showProgress, opts) {
+                                  showProgress, opts) {
   .importOutput("areas", "values", "area", areas, timeStep, select, 
                 mcYears, showProgress, opts)
 }
@@ -148,8 +148,14 @@
 #' @noRd
 #'
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                  showProgress, opts) {
-  processFun <- function(x) {
+                                  showProgress, opts, mustRun = FALSE) {
+  
+  # In output files, there is one file per area with the follwing form:
+  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
+  # the following function reshapes the result to have variable cluster in column.
+  # To improve greatly the performance we use our knowledge of the position of 
+  # the columns instead of using more general functions like dcast.
+  reshapeFun <- function(x) {
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
@@ -180,9 +186,77 @@
     rbindlist(res)
   }
   
-  .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                mcYears, showProgress, opts, processFun, sameNames = FALSE,
-                objectDisplayName = "cluster")
+  if (!mustRun) {
+    
+    .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                  objectDisplayName = "cluster")
+    
+  } else {
+    # The partial must run for a cluster is defined as:
+    # sum_t(min(production_t, capacity * minGenModulation_t))
+    # This formula is non-linear, so if we need to get hourly data to compute
+    # it. 
+    # To avoid importing large amount of data, we first check if minGenModulation
+    # is non null for at least one cluster.
+    # If we have to use hourly data, we aggregate it directly at the desired
+    # timestep to limit the amount of RAM required.
+    
+    # Get cluster capacity and must run mode
+    clusterDesc <- readClusterDesc(opts)
+    if(is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
+    clusterDesc[is.na(must.run), must.run := FALSE]
+    clusterDesc <- clusterDesc[, .(area, cluster,
+                                   capacity = nominalcapacity * unitcount,
+                                   must.run)]
+    
+    # Are clusters in partial must run mode ?
+    mod <- llply(areas, .importThermalModulation, opts = opts, timeStep = "hourly")
+    mod <- rbindlist(mod)
+    
+    # Should we compute the partial must run ?
+    if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
+      
+      # We should not \o/
+      res <- .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                           mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                           objectDisplayName = "cluster")
+      res[, mustRunPartial := 0L]
+      
+    } else {
+      
+      # Worst case ! We have to !
+      mod[is.na(minGenModulation), minGenModulation := 0]
+      
+      .mergeByRef(mod, clusterDesc)
+      mod[, mustRunPartial := minGenModulation * capacity]
+      
+      setkey(mod, area, cluster, timeId)
+      
+      processFun <- function(x) {
+        x <- reshapeFun(x)
+        mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
+        x[, mustRunPartial := pmin(production, mustRunPartial)]
+        changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
+      }
+      
+      res <- .importOutput("areas", "details", "area", areas, "hourly", NULL, 
+                           mcYears, showProgress, opts, processFun, 
+                           sameNames = FALSE, objectDisplayName = "cluster")
+      
+    }
+    
+    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run)])
+    
+    res[, `:=`(
+      mustRun = production * must.run,
+      mustRunTotal = production * must.run + mustRunPartial,
+      must.run = NULL
+    )]
+    
+    res
+  }
+  
 }
 
 #' .importOutputForLink
