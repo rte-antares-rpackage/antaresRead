@@ -346,12 +346,49 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     l <- linkList[area %in% storageFlexibility, link]
     idColsLinks <- .idCols(x$links)
     
-    x$pspCapacity <- merge(
-      linkList[area %in% storageFlexibility, .(link, area = to)],
+    pspCapacity <- merge(
+      linkList[area %in% storageFlexibility, .(link, area = to, direction)],
       x$links[, c(idColsLinks, "transCapacityDirect", 
                   "transCapacityIndirect"), with = FALSE],
       by = "link"
     )
+    
+    pspCapacity[direction == -1, `:=`(
+      transCapacityDirect = transCapacityIndirect,
+      transCapacityIndirect = transCapacityDirect
+    )]
+    
+    # Users tend to use a transmission capacity of 1 instead of 0 to avoid warnings.
+    # The following lines correct this.
+    pspCapacity[transCapacityDirect == 1, transCapacityDirect := 0]
+    pspCapacity[transCapacityIndirect == 1, transCapacityIndirect := 0]
+    
+    pspCapacity <- pspCapacity[, 
+      .(transCapacityDirect = sum(transCapacityDirect),
+        transCapacityIndirect = sum(transCapacityIndirect)),
+      by = c(.idCols(x$areas))
+    ]
+    
+    if (is.null(x$areas$storageCapacity)) {
+      x$areas[, `:=`(
+        storageCapacity = 0,
+        pumpingCapacity = 0
+      )]
+    }
+    
+    .mergeByRef(
+      x$areas,
+      pspCapacity[, c(.idCols(x$areas), "transCapacityDirect", 
+                      "transCapacityIndirect"), with = FALSE]
+    )
+    
+    x$areas[, `:=`(
+      storageCapacity = storageCapacity + ifelse(is.na(transCapacityIndirect), 0, transCapacityIndirect),
+      pumpingCapacity = pumpingCapacity + ifelse(is.na(transCapacityDirect), 0, transCapacityDirect),
+      transCapacityDirect = NULL,
+      transCapacityIndirect = NULL
+    )]
+    
   }
   
   x$links <- x$links[!link %in% linkList$link]

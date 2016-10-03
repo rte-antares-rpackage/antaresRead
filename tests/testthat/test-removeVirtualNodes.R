@@ -121,5 +121,5 @@ test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
 
 test_that("removeVirtualAreas removes virtual links, but keeps the data needed to compute margins", {
   expect_true(nrow(dataCorrected$links[link == "a - psp out-2"]) == 0)
-  expect_false(is.null(dataCorrected$pspCapacity))
+  expect_false(is.null(dataCorrected$areas$storageCapacity))
 })
