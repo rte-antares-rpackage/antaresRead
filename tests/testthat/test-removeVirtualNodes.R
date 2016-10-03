@@ -100,3 +100,12 @@ test_that("reassignCosts works correctly", {
   )
 })
 
+test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
+  psp1 <- dataCorrected$areas[, PSP + `psp in-2` + `psp out-2`]
+  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = vareas, 
+                                       newCols = FALSE)
+  psp2 <- dataCorrected2$areas$PSP
+  
+  expect_equal(psp1, psp2)
+})
+
