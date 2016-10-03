@@ -339,6 +339,19 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
   }
   
+  # Remove virtual links but if present keep the capacity of the links connected
+  # to storage flexibility areas. These capacities are needed to compute 
+  # upward and downward margins.
+  if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
+    l <- linkList[area %in% storageFlexibility, link]
+    idColsLinks <- .idCols(x$links)
+    x$pspCapacity <- x$links[link %in% l, 
+                             c(idColsLinks, "transCapacityDirect", 
+                               "transCapacityIndirect"), with = FALSE]
+  }
+  
+  x$links <- x$links[!link %in% linkList$link]
+  
   # Store in attributes the name of the virtuals nodes
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
                                   production = production)
