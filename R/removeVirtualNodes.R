@@ -317,6 +317,11 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     # Replace NA values by zeros
     v <- paste0(prodVars, "_virtual")
     x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
+    
+    if (!newCols) {
+      x$areas[, c(prodVars) := mapply(function(x, y) get(x) + get(y), prodVars, v)]
+      x$areas[, c(v) := NULL]
+    }
   }
   
   # Put clusters of the virtual areas in the corresponding real areas

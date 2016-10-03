@@ -51,6 +51,15 @@ test_that("RemoveVirtualAreas removes production areas", {
   expect_null(dataCorrected$areas$GAS_virtual)
 })
 
+test_that("RemoveVirtualAreas() corrects production columns if newCols = FALSE", {
+  dataCorrected <- removeVirtualAreas(data, production = "a_offshore")
+  wind1 <- dataCorrected$areas[, WIND + WIND_virtual]
+  dataCorrected2 <- removeVirtualAreas(data, production = "a_offshore", newCols = FALSE)
+  wind2 <- dataCorrected2$areas$WIND
+  expect_true(is.null(dataCorrected2$areas$WIND_virtual))
+  expect_equal(wind1, wind2)
+})
+
 test_that("Hub management works", {
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("hub", vareas))
   
@@ -107,5 +116,6 @@ test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
   psp2 <- dataCorrected2$areas$PSP
   
   expect_equal(psp1, psp2)
+  expect_true(is.null(dataCorrected2$areas$`psp in-2`))
 })
 
