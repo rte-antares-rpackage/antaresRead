@@ -345,9 +345,13 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
     l <- linkList[area %in% storageFlexibility, link]
     idColsLinks <- .idCols(x$links)
-    x$pspCapacity <- x$links[link %in% l, 
-                             c(idColsLinks, "transCapacityDirect", 
-                               "transCapacityIndirect"), with = FALSE]
+    
+    x$pspCapacity <- merge(
+      linkList[area %in% storageFlexibility, .(link, area = to)],
+      x$links[, c(idColsLinks, "transCapacityDirect", 
+                  "transCapacityIndirect"), with = FALSE],
+      by = "link"
+    )
   }
   
   x$links <- x$links[!link %in% linkList$link]
