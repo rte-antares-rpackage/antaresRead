@@ -1,12 +1,12 @@
 Package: antaresRead
 Type: Package
 Title: Import, manipulate and explore the results of an Antares simulation
-Version: 0.12.0
-Date: 2016-08-22
+Version: 0.13.0
+Date: 2016-10-06
 Authors@R: c(
     person("Francois", "Guillem", , "francois.guillem@rte-france.com", role = c("aut", "cre")),
-    person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = "aut"),
-    person("RTE Reseau de transport d’electricite", role = "cph")
+    person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = "ctb"),
+    person("RTE", role = "cph")
     )
 Description: Import, manipulate and explore the results of an Antares simulation.
 License: GPL (>= 2) + file LICENSE 
