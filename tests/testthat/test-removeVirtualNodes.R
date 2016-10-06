@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 context("removeVirtualAreas function")
 
 source("setup_test_case.R")

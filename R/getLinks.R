@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Retrieve links connected to a set of areas
 #'
 #' This function find the name of the links connected to a set of areas. 

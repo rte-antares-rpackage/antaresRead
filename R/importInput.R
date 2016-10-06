@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' .importInputTS
 #' 
 #' Private function that reads input time series for a given area

@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Remove virtual areas
 #' 
 #' This function removes virtual areas from an \code{antaresDataList} object and

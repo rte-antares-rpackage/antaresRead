@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' .getOutputHeader
 #'
 #' Private function that uses the first lines of an output file to generate

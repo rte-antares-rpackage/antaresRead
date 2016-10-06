@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 # Private function that returns the name of de id columns of a table
 .idCols <- function(x) {
   intersect(pkgEnv$idVars, names(x))
