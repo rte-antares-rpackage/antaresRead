@@ -5,7 +5,7 @@
 \title{Retrieve links connected to a set of areas}
 \usage{
 getLinks(areas = NULL, exclude = NULL, opts = simOptions(),
-  internalOnly = FALSE)
+  internalOnly = FALSE, namesOnly = TRUE, withDirection = FALSE)
 }
 \arguments{
 \item{areas}{Vector containing area names. It represents the set of areas we are interested
@@ -20,9 +20,35 @@ one of these areas are omited.}
 \item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
 If not, the function may return links that connect an area from the list with 
 an area outside the list.}
+
+\item{namesOnly}{If \code{TRUE}, the function returns a vector with link names, else it
+returns a table containing the name, the origin and the destination of each
+selected link.}
+
+\item{withDirection}{Used only if \code{namesOnly = TRUE}. If \code{FALSE}, then the function
+returns a table with one line per link, containing the link name the 
+origin and the destination of the link. If \code{FALSE}, then it returns a
+table with columns area, link, to and direction which is equal is equal to
+1 if the link connects "area" to "to" and -1 if it connects "to" to "area".
+The column area contains only areas that are compatible with parameters 
+\code{areas} and \code{exclude}. Note that the same link can appear twice 
+in the table with different directions.}
 }
 \value{
-character vector containing link names.
+If \code{namesOnly = TRUE} the function returns a vector containing link names 
+
+If \code{namesOnly = FALSE} and \code{withDirection = FALSE}, it returns a
+\code{data.table} with exactly one line per link and with three columns:
+\item{link}{link name}
+\item{from}{first area connected to the link}
+\item{to}{second area connected to the link}
+
+If \code{namesOnly = FALSE} and \code{withDirection = FALSE}, it returns a
+\code{data.table} with one or two lines per link and with four columns:
+\item{area}{Area name}
+\item{link}{Link name}
+\item{to}{Area connected to "area" by "link"}
+\item{direction}{1 if the link connects "area" to "to" else -1}
 }
 \description{
 This function find the name of the links connected to a set of areas.
@@ -31,6 +57,8 @@ This function find the name of the links connected to a set of areas.
 \dontrun{
 # Get all links of a study
 getLinks()
+
+# Get all links with their origin and their destination
 
 # Get all links connected to french areas (assuming their name contains "fr")
 getLinks(getAreas("fr"))

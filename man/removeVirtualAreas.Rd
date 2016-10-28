@@ -5,7 +5,7 @@
 \title{Remove virtual areas}
 \usage{
 removeVirtualAreas(x, storageFlexibility = NULL, production = NULL,
-  reassignCosts = FALSE)
+  reassignCosts = FALSE, newCols = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{antaresDataList} with at least components 
@@ -21,6 +21,10 @@ areas.}
 reallocated to the real areas they are connected to. If the virtual areas 
 are connected to a virtual hub, their costs are first reallocated to the 
 hub and then the costs of the hub are reallocated to the real areas.}
+
+\item{newCols}{If \code{TRUE}, new columns containing the production of the virtual
+areas are added. If FALSE their production is added to the production of
+the real areas they are connected to.}
 }
 \value{
 An \code{antaresDataList} object in which virtual areas have been removed and
@@ -64,14 +68,17 @@ of modeling in Antares and different types of post-treatment to do:
     created. It contains the values of the flow between the virtual area and 
     the real areas. This column is interpreted as a production of
     electricity: it is positive if the flow from the virtual area to the real
-    area is positive and negative otherwise.
-  
-  \item If the parameter \code{production} is specified, the functions
-    creates new columns names \code{*_virtual} where "\code{*}" is a type of 
-    production (wind, solar, nuclear, ...). For a given area, these columns 
-    contain the production of the virtual production areas connected to it.
-    If a column contains only zeros, then it is removed in the returned
-    object.
+    area is positive and negative otherwise. If parameter \code{newCols} is
+    \code{FALSE}, the values are added to the variable \code{PSP} and the 
+    columns is removed.
+    
+  \item If the parameter \code{production} is specified, then the non null
+    productions of the virtual areas are either added to the ones of the real 
+    areas they are connected to if \code{newCols = FALSE} or put in new 
+    columns if \code{newCols = TRUE}. In the second case the columns are 
+    named \code{*_virtual} where "\code{*}" is a type of 
+    production (wind, solar, nuclear, ...). Productions that are zero for
+    all virtual areas are omited.
   
   \item Finally, virtual areas and the links connected to them are removed
     from the data. 
