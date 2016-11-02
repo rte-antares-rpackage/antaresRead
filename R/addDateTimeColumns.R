@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 addDateTimeColumns <- function(x) {
   if (!is(x, "antaresData")) stop("x has to be an 'antaresData' object created with readAntares or readInputTS.")
   
@@ -5,10 +7,9 @@ addDateTimeColumns <- function(x) {
   opts <- attr(x, "opts")
   synthesis <- attr(x, "synthesis")
   
-  if (is(x, "antaresDataTable")) {
-    type <- attr(x, "type")
-    x <- list(x)
-    names(x) <- type
+  if (is(x, "antaresDataList")) {
+    for (el in x) addDateTimeColumns(el)
+    return(invisible(x))
   }
   
   if (timeStep == "hourly") {
@@ -64,13 +65,12 @@ addDateTimeColumns <- function(x) {
     
   }
   
-  for (e in names(x)) {
-    tmp <- copy(newCols)
-    for (n in names(newCols)[-1]) if (n %in% names(x[[e]])) tmp[, c(n) := NULL]
-    if (timeStep != "annual") x[[e]] <- cbind(x[[e]], tmp[x[[e]]$timeId])
-    else x[[e]] <- cbind(x[[e]], tmp)
+  colsToAdd <- setdiff(names(newCols), names(x))
+  if (timeStep != "annual") {
+    x[, c(colsToAdd) := newCols[x$timeId, colsToAdd, with = FALSE]]
+  } else {
+    x[, c(colsToAdd) := newCols[, colsToAdd, with = FALSE]]
   }
   
-  .addClassAndAttributes(x, synthesis = synthesis, timeStep = timeStep, 
-                         opts = opts, simplify = TRUE)
+  .reorderCols(x)
 }

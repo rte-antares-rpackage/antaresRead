@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' .getOutputHeader
 #'
 #' Private function that uses the first lines of an output file to generate
@@ -34,81 +36,81 @@
 #'
 #' @noRd
 #'
-.importOutput <- function(folder, file, id, objectName, synthesis, mcYears, timeStep, opts, select) {
+.importOutput <- function(folder, fileName, objectName, ids, timeStep, select = NULL, 
+                          mcYears = NULL, 
+                          showProgress, opts, processFun = NULL, sameNames = TRUE,
+                          objectDisplayName = objectName) {
+  if (is.null(ids)) return(NULL)
   
-  firstTimeId <- .getTimeId(opts$timeIdMin, timeStep, opts)
-    
-  if (synthesis) { # Only get synthesis results ################################
-
-    path <- sprintf("%s/%s/mc-all/%s/%s/%s-%s.txt",
-                    opts$path, opts$opath, folder, id, file, timeStep)
-
-    # Check existence of the output file
-    if (!file.exists(path)) {
-      message(timeStep,  " output not found for ", objectName, " ", id)
-      return(NULL)
-    }
-
-    colNames <- .getOutputHeader(path, objectName)
-
-    # Select columns to import
+  if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
+  
+  if (is.null(mcYears)) {
+    args <- expand.grid(id = ids)
+    args$path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt", 
+                         opts$simDataPath, folder, args$id, fileName, timeStep)
+  } else {
+    args <- expand.grid(id = ids, mcYear = mcYears)
+    args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s/%s-%s.txt",
+                         opts$simDataPath, args$mcYear, folder, args$id, fileName, timeStep)
+  }
+  
+  outputMissing <- !file.exists(args$path)
+  
+  if (all(outputMissing)) {
+    message("No data corresponding to your query.")
+    return(NULL)
+  } else if (any(outputMissing)) {
+    message("Some requested output files are missing.")
+    args <- args[file.exists(args$path), ]
+  }
+  
+  # columns to retrieve
+  if (sameNames) {
+    colNames <- .getOutputHeader(args$path[1], objectName)
+  
     if (is.null(select)) {
-      selectCol <- 1:length(colNames)
+      # read all columns except the time variables that will be recreated
+      selectCol <- which(!colNames %in% pkgEnv$idVars)
     } else {
-      selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
+      selectCol <- which(colNames %in% select)
+    }
+    colNames <- colNames[selectCol]
+  }
+  
+  # time ids
+  if (timeStep == "annual") {
+    timeIds <- as.factor("Annual")
+  } else {
+    timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
+    timeIds <- seq(timeRange[1], timeRange[2])
+  }
+  
+  res <- llply(1:nrow(args), function(i) {
+    if (!sameNames) {
+      colNames <- .getOutputHeader(args$path[i], objectName)
+      selectCol <- which(!colNames %in% pkgEnv$idVars)
       colNames <- colNames[selectCol]
     }
-
-    res <- fread(path, sep = "\t", header = F, skip = 7, select = selectCol,
-                 stringsAsFactors = TRUE, integer64 = "numeric")
-    setnames(res, names(res), colNames)
     
-    # Fix timeId when timeStep is weekly
-    if (timeStep == "weekly") res$timeId <- firstTimeId + 1:nrow(res) - 1
-
-    res[, objectName] <- as.factor(rep(id, nrow(res)))
-
-  } else { # Get Monte Carlo scenarios #########################################
-
-    path <- sprintf("%s/%s/mc-ind/%%05.0f/%s/%s/%s-%s.txt",
-                    opts$path, opts$opath, folder, id, file, timeStep)
-
-    # Check output is available.
-    if (!file.exists(sprintf(path, mcYears[1]))) {
-      message(timeStep,  " output not found for ", objectName, " ", id)
-      return(NULL)
-    }
-
-    # Loop over Monte-Carlo years.
-    res <- llply(mcYears, function(i) {
-
-      colNames <- .getOutputHeader(sprintf(path,i), objectName)
-
-      # Select columns to import
-      if (is.null(select)) {
-        selectCol <- 1:length(colNames)
-      } else {
-        selectCol <- which(colNames %in% c(pkgEnv$idVars, select))
-        colNames <- colNames[selectCol]
-      }
-
-      # Import output
-      x <- fread(sprintf(path,i), sep = "\t", header = F, skip = 7,
-                 select = selectCol,
-                 stringsAsFactors = TRUE, integer64 = "numeric")
-      x$mcYear <- i
-      setnames(x, names(x), c(colNames, "mcYear"))
-
-      x[, objectName] <- as.factor(rep(id, nrow(x)))
-
-      # Fix timeId when timeStep is weekly
-      if (timeStep == "weekly") x$timeId <- firstTimeId + 1:nrow(x) - 1
+    if (length(selectCol) == 0) {
+      data <- data.table(timeId = timeIds)
+    } else {
+      data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                    select = selectCol, integer64 = "numeric")
       
-      x
-    })
-  }
-
-  res
+      setnames(data, names(data), colNames)
+      data[, timeId := timeIds]
+    }
+    
+    data[, c(objectName) := args$id[i]]
+    if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+    
+    if (!is.null(processFun)) data <- processFun(data)
+    
+    data
+  }, .progress = ifelse(showProgress, "text", "none"))
+  
+  rbindlist(res)
 }
 
 #' .importOutputForArea
@@ -120,23 +122,22 @@
 #'
 #' @noRd
 #'
-.importOutputForArea <- function(area, synthesis, ...) {
-  res <- .importOutput("areas", "values", area, "area", synthesis, ...)
-  if (is.null(res)) return (NULL)
-
-  if (!synthesis)  res <- rbindlist(res)
-
-  res
+.importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                  showProgress, opts) {
+  .importOutput("areas", "values", "area", areas, timeStep, select, 
+                mcYears, showProgress, opts)
 }
 
-.importOutputForDistrict <- function(district, synthesis, ...) {
-  res <- .importOutputForArea(paste("@", district), synthesis, ...)
-  if (is.null(res)) return(NULL)
+.importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL, 
+                                      showProgress, opts) {
+  if (is.null(districts)) return(NULL)
   
-  setnames(res, "area", "district")
-  res[, district := as.factor(gsub("^@ ", "", district))]
+  processFun <- function(dt) {
+    dt[, district := as.factor(gsub("^@ ", "", district))]
+  }
   
-  res
+  .importOutput("areas", "values", "district", paste("@", districts), timeStep, select, 
+                mcYears, showProgress, opts, processFun)
 }
 
 #' .importOutputForClusters
@@ -148,42 +149,116 @@
 #'
 #' @noRd
 #'
-.importOutputForClusters <- function(area, synthesis, ...) {
-  res <- .importOutput("areas", "details", area, "area", synthesis, ...)
-  if (is.null(res)) return(NULL)
-
-  .reshapeData <- function(x) {
-    # For each cluster, there are two or three columns with same name but 
-    #different content. Fix that.
-
+.importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                  showProgress, opts, mustRun = FALSE) {
+  
+  # In output files, there is one file per area with the follwing form:
+  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
+  # the following function reshapes the result to have variable cluster in column.
+  # To improve greatly the performance we use our knowledge of the position of 
+  # the columns instead of using more general functions like dcast.
+  reshapeFun <- function(x) {
+    # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
+    clusterNames <- tolower(unique(n[idx]))
     
-    clusterNames <- unique(n[idx])
-    colnames <- c(paste0(clusterNames, "|MWh"), paste0(clusterNames, "|NP Cost"))
-    if (sum(idx) / length(clusterNames) == 3) colnames <- c(colnames, paste0(clusterNames, "|NODU"))
-    n[idx] <- colnames
+    # Id vars names
+    idVarsId <- which(!idx)
+    idVarsNames <- n[idVarsId]
     
-    setnames(x, 1:ncol(x), n)
-
-    # reshape data
-    x <- data.table::melt(x, id.vars = .idCols(x))
-    x$cluster <- as.factor(tolower(gsub("\\|.*$", "", x$variable)))
-    x$unit <- gsub("^.*\\|", "", x$variable)
-    x$variable <- NULL
-    data.table::dcast(x, ... ~ unit, value.var = "value", fun.aggregate = sum)
-  }
-
-  if (synthesis) {
-    res <- .reshapeData(res)
-  } else {
-    res <- llply(res, .reshapeData)
-    res <- rbindlist(res)
+    # Get final value columns
+    if (sum(idx) / length(clusterNames) == 3) {
+      colNames <- c("production", "NP Cost", "NODU")
+    } else {
+      colNames <- c("production", "NP Cost")
+    }
+    
+    # Loop over clusters
+    nclusters <- length(clusterNames)
+    ncols <- length(colNames)
+    
+    res <- llply(1:nclusters, function(i) {
+      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      setnames(dt, c(colNames, idVarsNames))
+      dt[, cluster := as.factor(clusterNames[i])]
+      dt
+    })
+    
+    rbindlist(res)
   }
   
-  setnames(res, "MWh", "production")
-
-  res
+  if (!mustRun) {
+    
+    .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                  objectDisplayName = "cluster")
+    
+  } else {
+    # The partial must run for a cluster is defined as:
+    # sum_t(min(production_t, capacity * minGenModulation_t))
+    # This formula is non-linear, so if we need to get hourly data to compute
+    # it. 
+    # To avoid importing large amount of data, we first check if minGenModulation
+    # is non null for at least one cluster.
+    # If we have to use hourly data, we aggregate it directly at the desired
+    # timestep to limit the amount of RAM required.
+    
+    # Get cluster capacity and must run mode
+    clusterDesc <- readClusterDesc(opts)
+    if(is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
+    clusterDesc[is.na(must.run), must.run := FALSE]
+    clusterDesc <- clusterDesc[, .(area, cluster,
+                                   capacity = nominalcapacity * unitcount,
+                                   must.run)]
+    
+    # Are clusters in partial must run mode ?
+    mod <- llply(areas, .importThermalModulation, opts = opts, timeStep = "hourly")
+    mod <- rbindlist(mod)
+    
+    # Should we compute the partial must run ?
+    if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
+      
+      # We should not \o/
+      res <- .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                           mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                           objectDisplayName = "cluster")
+      res[, mustRunPartial := 0L]
+      
+    } else {
+      
+      # Worst case ! We have to !
+      mod[is.na(minGenModulation), minGenModulation := 0]
+      
+      .mergeByRef(mod, clusterDesc)
+      mod[, mustRunPartial := minGenModulation * capacity]
+      
+      setkey(mod, area, cluster, timeId)
+      
+      processFun <- function(x) {
+        x <- reshapeFun(x)
+        mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
+        x[, mustRunPartial := pmin(production, mustRunPartial)]
+        changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
+      }
+      
+      res <- .importOutput("areas", "details", "area", areas, "hourly", NULL, 
+                           mcYears, showProgress, opts, processFun, 
+                           sameNames = FALSE, objectDisplayName = "cluster")
+      
+    }
+    
+    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run)])
+    
+    res[, `:=`(
+      mustRun = production * must.run,
+      mustRunTotal = production * must.run + mustRunPartial,
+      must.run = NULL
+    )]
+    
+    res
+  }
+  
 }
 
 #' .importOutputForLink
@@ -195,13 +270,10 @@
 #'
 #' @noRd
 #'
-.importOutputForLink <- function(link, synthesis, ...) {
-  res <- .importOutput("links", "values", link, "link", synthesis, ...)
-  if (is.null(res)) return (NULL)
-
-  if (!synthesis)  res <- rbindlist(res)
-
-  res
+.importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
+                                 showProgress, opts) {
+  .importOutput("links", "values", "link", links, timeStep, select, 
+                mcYears, showProgress, opts)
 }
 
 # The two following functions read input time series that are eventually
@@ -214,16 +286,16 @@
   
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/thermal")
+  pathTSNumbers <- file.path(opts$simPath, "ts-numbers/thermal")
   
   # Path to the time series. Ideally, time series are stored in output. If it is
   # not the case, read the series in the input.
-  pathInput <- file.path(opts$path, "ts-generator/thermal/mc-0")
+  pathInput <- file.path(opts$simPath, "ts-generator/thermal/mc-0")
   
   if (dir.exists(pathInput)) {
     filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
   } else {
-    pathInput <- file.path(opts$path, "../../input/thermal/series")
+    pathInput <- file.path(opts$inputPath, "thermal/series")
     filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
   }
   
@@ -266,6 +338,7 @@
   clusterDesc <- readClusterDesc(opts)
   series <- merge(series, clusterDesc[, .(area, cluster, nominalcapacity)],
                   by = c("area", "cluster"))
+  .mergeByRef(series, clusterDesc, on = c("area", "cluster"), "nominalcapacity")
   
   series[, availableUnits :=  ceiling(thermalAvailability / nominalcapacity)]
   series[, nominalcapacity := NULL]
@@ -285,7 +358,7 @@
 .importHydroStorage <- function(area, synthesis, timeStep, mcYears, opts, ...) {
   if (synthesis) mcYears <- opts$mcYears
   
-  pathTSNumbers <- file.path(opts$path, "ts-numbers/hydro")
+  pathTSNumbers <- file.path(opts$simPath, "ts-numbers/hydro")
   
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
@@ -293,12 +366,12 @@
   tsIds <- tsIds[mcYears]
   
   # Input time series
-  pathInput <- file.path(opts$path, "ts-generator/hydro/mc-0")
+  pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
   
   if (dir.exists(pathInput)) {
     f <- file.path(pathInput, area, "storage.txt")
   } else {
-    pathInput <- file.path(opts$path, "../../input/hydro/series")
+    pathInput <- file.path(opts$inputPath, "hydro/series")
     f <- file.path(pathInput, area, "mod.txt")
   }
   

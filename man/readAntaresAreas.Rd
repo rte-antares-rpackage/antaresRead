@@ -8,16 +8,16 @@ readAntaresAreas(areas, links = TRUE, clusters = TRUE,
   internalOnly = FALSE, opts = simOptions(), ...)
 }
 \arguments{
-\item{areas}{Vector containing area names. It represents the set of areas we interested
-in. If \code{NULL}, \code{\link{getAreas}} to create the set of areas.}
+\item{areas}{Vector containing area names. It represents the set of areas we are interested
+in. If \code{NULL}, all areas of the study are used.}
 
 \item{links}{should links connected to the areas be imported ?}
 
 \item{clusters}{should the clusters of the areas be imported ?}
 
-\item{internalOnly}{If TRUE, only links that connect two areas from the list are returned. 
-If not, the function may return links that connect a area from the list with 
-a area outside the list.}
+\item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
+If not, the function may return links that connect an area from the list with 
+an area outside the list.}
 
 \item{opts}{list of simulation parameters returned by the function 
 \code{\link{setSimulationPath}}}

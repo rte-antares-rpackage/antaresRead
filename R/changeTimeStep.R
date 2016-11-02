@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Change the timestep of an output
 #' 
 #' This function changes the timestep of a table or an \code{antaresData} object
@@ -50,7 +52,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   fun <- match.arg(fun, c("sum", "mean", "min", "max"), several.ok = TRUE)
   
   # Agregation function
-  funs <- list(sum = sum, mean = mean, min = min, max = max)
+  funs <- list(sum = function(x) sum(as.numeric(x)), mean = mean, min = min, max = max)
   #desagregation function
   ifuns <- list(sum = function(x, n) {x / n},
                 mean = function(x, n) {x},
@@ -135,7 +137,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   x <- .addClassAndAttributes(x, synthesis, newTimeStep, opts, type = type)
   
-  if(addDateTimeCol) x <- addDateTimeColumns(x)
+  if(addDateTimeCol) addDateTimeColumns(x)
   
   x
 }

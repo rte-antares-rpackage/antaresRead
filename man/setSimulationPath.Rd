@@ -4,7 +4,7 @@
 \alias{setSimulationPath}
 \title{Set Path to an Antares simulation}
 \usage{
-setSimulationPath(path, simulation)
+setSimulationPath(path, simulation = NULL)
 }
 \arguments{
 \item{path}{(optional) 
@@ -24,21 +24,38 @@ In such a case, the function \code{\link{readAntares}} is anavailable.}
 }
 \value{
 A list containing various information about the simulation, in particular:
-  \item{path}{path of the simulation}
-  \item{name}{name of the study}
+  \item{studyPath}{path of the Antares study}
+  \item{simPath}{path of the simulation}
+  \item{inputPath}{path of the input folder of the study}
+  \item{studyName}{Name of the study}
+  \item{simDataPath}{path of the folder containing the data of the simulation}
+  \item{name}{name of the simulation}
+  \item{mode}{type of simulation: economy, adequacy, draft or input}
   \item{synthesis}{Are synthetic results available ?}
   \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
   \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
     important to reconstruct some input time series that have been used in 
     each Monte-Carlo simulation.}
-  \item{mcYears}{Number of Monte-Carlo scenarii}
-  \item{start}{Date of the first day of the year in the simulation.}
-  \item{areaList}{Vector of the available areas}
-  \item{districtList}{Vector of the available districts}
-  \item{linkList}{Vector of the available links}
-  \item{areasWithClusters}{Vector of areas containing clusters}
-  \item{variables}{available variables for areas, districts and links}
+  \item{mcYears}{Vector containing the number of the exported Monte-Carlo scenarios}
+  \item{antaresVersion}{Version of Antares used to run the simulation.}
+  \item{areaList}{Vector of the available areas.}
+  \item{districtList}{Vector of the available districts.}
+  \item{linkList}{Vector of the available links.}
+  \item{areasWithClusters}{Vector of areas containing clusters.}
+  \item{variables}{Available variables for areas, districts and links.}
   \item{parameters}{Other parameters of the simulation.}
+  \item{timeIdMin}{
+    Minimum time id of the simulation. It is generally equal to one but can
+    be higher if working on a subperiod.
+  }
+  \item{timeIdMax}{maximum time id of the simulation.}
+  \item{start}{
+    Date of the first day of the year in the simulation. This date corresponds
+    to timeId = 1.
+  }
+  \item{firstWeekday}{First day of the week.}
+  \item{districtsDef}{data.table containing the specification of the districts.}
+  \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
 }
 \description{
 This function has to be used before the \code{read} functions. It sets the path to
@@ -57,7 +74,7 @@ and pass this variable to the functions of the package (see examples).
 \examples{
 
 \dontrun{
-# Select interactively a study. This only works on windows.
+# Select interactively a study. It only works on windows.
 
 setSimulationPath()
 
@@ -78,6 +95,13 @@ setSimulationPath("path_of_the_folder_of_the_study", -1)
 # Select a simulation by name
 
 setSimulationPath("path_of_the_folder_of_the_study", "name of the simulation")
+
+# Just need to read input data
+
+setSimulationPath("path_of_the_folder_of_the_study", "input")
+# or
+setSimulationPath("path_of_the_folder_of_the_study", 0)
+
 
 
 # WORKING WITH MULTIPLE SIMULATIONS

@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' View the content of an antares output
 #'
 #' This function displays each element of an \code{antaresData} object in a

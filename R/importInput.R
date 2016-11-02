@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' .importInputTS
 #' 
 #' Private function that reads input time series for a given area
@@ -106,7 +108,7 @@
   
   .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
                  colnames=c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh"),
-                 inputTimeStep = "daily")
+                 inputTimeStep = "daily", fun = "mean")
   
 }
 
@@ -157,7 +159,7 @@
   
 }
 
-.importThermalModulation <- function(area, opts, ...) {
+.importThermalModulation <- function(area, opts, timeStep, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
   
   path <- file.path(opts$inputPath, "thermal/prepro", area)
@@ -182,6 +184,6 @@
     modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
     modulation$timeId <- opts$timeIdMin:opts$timeIdMax
     
-    modulation
+    changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
   })
 }

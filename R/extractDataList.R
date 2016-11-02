@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Format data PPSE-style
 #'
 #' This function converts an "readAntares" object in the data structure used

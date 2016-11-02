@@ -1,3 +1,33 @@
+Copyright © 2016 RTE Réseau de transport d’électricité
+
+Changes in version 0.13 (2016-10-06)
+BREAKING CHANGES:
+* add a file LICENSE and copyright to sources files
+
+Changes in version 0.12 (2016-08-17)
+
+BREAKING CHANGES:
+* The object returned by 'setSimulationPath' and 'simOptions' has been modified. In particular, paths have been renamed to make their utility clearer. Moreover a new element named 'linksDef' contains a table with the specification of each link of the study.
+
+NEW FEATURES:
+* getLinks() can now return a table with the specification of the links, thanks to two new parameters "namesOnly" and "withDirection"
+* It is now possible to import several times the same Monte-Carlo scenario. This can be useful for performance test or to use bootstrap methods.
+
+BUGFIXES:
+* readClusterDesc was not working in input mode.
+* Sometimes setSimulationPath changed working directory.
+* Solved some performance issues in readAntares() and removeVirtualAreas().
+
+
+Changes in version 0.11 (2016-08-01)
+
+BREAKING CHANGES:
+* The parameters of 'getLinks' have been modified because they were unclear. Now user has to to explicitly specify areas to include and/or exclude.   
+
+BUGFIXES:
+* setSimulationPath was crashing if parameter 'horizon' was not set in Antares.
+* changeTimeStep sometimes generated NA values because of integer overflow.
+
 Changes in version 0.10 (2016-07-18)
 
 BREAKING CHANGES:

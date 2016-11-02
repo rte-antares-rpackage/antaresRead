@@ -1,10 +1,12 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 context("removeVirtualAreas function")
 
 source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-data <- readAntares("all", "all", showProgress = FALSE)
+data <- readAntares("all", "all", showProgress = FALSE, linkCapacity = TRUE)
 
 vareas <- c("psp in-2", "psp out-2")
 
@@ -16,10 +18,11 @@ test_that("removeVirtualAreas effectively removes virtual areas", {
 })
 
 test_that("Balance is corrected for nodes connected to virtual nodes but not the others", {
+  setkeyv(data$areas, .idCols(data$areas))
   expect_equal(data$areas[! area %in% c("hub", vareas)]$BALANCE, 
                dataCorrected$areas[! area %in% c("hub", vareas)]$BALANCE)
   
-  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
+  correction <- - data$links[link %in% getLinks(vareas), 
                              sum(`FLOW LIN.`), keyby = timeId]$V1
   
   expect_equal(dataCorrected$areas[area=="hub"]$BALANCE - data$areas[area=="hub"]$BALANCE,
@@ -50,6 +53,15 @@ test_that("RemoveVirtualAreas removes production areas", {
   expect_null(dataCorrected$areas$GAS_virtual)
 })
 
+test_that("RemoveVirtualAreas() corrects production columns if newCols = FALSE", {
+  dataCorrected <- removeVirtualAreas(data, production = "a_offshore")
+  wind1 <- dataCorrected$areas[, WIND + WIND_virtual]
+  dataCorrected2 <- removeVirtualAreas(data, production = "a_offshore", newCols = FALSE)
+  wind2 <- dataCorrected2$areas$WIND
+  expect_true(is.null(dataCorrected2$areas$WIND_virtual))
+  expect_equal(wind1, wind2)
+})
+
 test_that("Hub management works", {
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("hub", vareas))
   
@@ -66,7 +78,7 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
   data <- readAntares("all", "all", showProgress = FALSE, synthesis = FALSE)
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
   
-  correction <- - data$links[link %in% getLinks(vareas, regexpSelect = FALSE), 
+  correction <- - data$links[link %in% getLinks(vareas), 
                              sum(`FLOW LIN.`), keyby = .(mcYear, timeId)]$V1
   
   setkey(data$areas, mcYear, timeId)
@@ -99,3 +111,17 @@ test_that("reassignCosts works correctly", {
   )
 })
 
+test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
+  psp1 <- dataCorrected$areas[, PSP + `psp in-2` + `psp out-2`]
+  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = vareas, 
+                                       newCols = FALSE)
+  psp2 <- dataCorrected2$areas$PSP
+  
+  expect_equal(psp1, psp2)
+  expect_true(is.null(dataCorrected2$areas$`psp in-2`))
+})
+
+test_that("removeVirtualAreas removes virtual links, but keeps the data needed to compute margins", {
+  expect_true(nrow(dataCorrected$links[link == "a - psp out-2"]) == 0)
+  expect_false(is.null(dataCorrected$areas$storageCapacity))
+})

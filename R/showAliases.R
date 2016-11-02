@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' show aliases for variables
 #'
 #' This function shows aliases for groups of variables.These aliases can be used
