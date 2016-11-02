@@ -1,3 +1,6 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
+
 #' Select and exclude areas
 #' 
 #' \code{getAreas} and \code{getDistricts} are utility functions that builds 

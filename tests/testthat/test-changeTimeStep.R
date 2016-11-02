@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 context("Function changeTimeStep")
 
 source("setup_test_case.R")

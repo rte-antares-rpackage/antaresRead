@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Set Path to an Antares simulation
 #'
 #' This function has to be used before the \code{read} functions. It sets the path to

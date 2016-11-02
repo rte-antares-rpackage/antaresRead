@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Extract simulation options
 #' 
 #' The function \code{\link{readAntares}} stores in its output the options used

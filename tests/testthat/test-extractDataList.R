@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 context("Function extractDataList")
 
 source("setup_test_case.R")

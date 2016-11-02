@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 addDateTimeColumns <- function(x) {
   if (!is(x, "antaresData")) stop("x has to be an 'antaresData' object created with readAntares or readInputTS.")
   

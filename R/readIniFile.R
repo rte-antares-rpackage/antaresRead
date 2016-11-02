@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Private function that reads the content of a .ini file and convert it to a
 #' list
 #'

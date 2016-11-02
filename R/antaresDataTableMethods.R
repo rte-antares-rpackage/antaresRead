@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 # When doing some simple modifications
 #' @export
 "[.antaresDataTable" <- function(x, ...) {

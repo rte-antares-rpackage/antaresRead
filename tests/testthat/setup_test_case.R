@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 # Copy the test study in a temporary file and run a simulation if it has not
 # been already done.
 

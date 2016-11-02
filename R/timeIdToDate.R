@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' format timeId in a readable format
 #' 
 #' This function converts a \code{timeId} variable in a readable format according

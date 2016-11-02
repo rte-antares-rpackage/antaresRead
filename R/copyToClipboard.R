@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Copy data to the clipboard
 #' 
 #' \code{copyToClipboard} is a utility function that copies data to the

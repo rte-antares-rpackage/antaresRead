@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' Change the timestep of an output
 #' 
 #' This function changes the timestep of a table or an \code{antaresData} object

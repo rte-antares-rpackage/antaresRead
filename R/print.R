@@ -1,3 +1,5 @@
+#Copyright © 2016 RTE Réseau de transport d’électricité
+
 #' @export
 print.antaresDataTable <- function(x, ...) {
   cat(sprintf("'antaresDataTable' object with dimension %s x %s\n", nrow(x), ncol(x)))
