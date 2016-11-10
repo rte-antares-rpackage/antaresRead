@@ -6,7 +6,7 @@ source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-data <- readAntares("all", "all", showProgress = FALSE, linkCapacity = TRUE)
+data <- readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE)
 
 vareas <- c("psp in-2", "psp out-2")
 
@@ -130,6 +130,12 @@ test_that("removeVirtualAreas removes virtual links, but keeps the data needed t
     expect_gt(min(dataCorrected$areas$storageCapacity), -1)
     expect_gt(min(dataCorrected$areas$pumpingCapacity), -1)
   }
-
+  
+  if(!is.null(dataCorrected$districts)){
+    expect_false(is.null(dataCorrected$districts$storageCapacity))
+    expect_false(is.null(dataCorrected$districts$pumpingCapacity))
+    expect_gt(min(dataCorrected$districts$storageCapacity), -1)
+    expect_gt(min(dataCorrected$districts$pumpingCapacity), -1)
+  }
 
 })

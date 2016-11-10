@@ -405,6 +405,12 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   x$links <- x$links[!link %in% linkList$link]
   
+  if(!is.null(x$districts) && length(storageFlexibility) > 0){
+    stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
+    stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
+    x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
+  }
+  
   # Store in attributes the name of the virtuals nodes
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
                                   production = production)
