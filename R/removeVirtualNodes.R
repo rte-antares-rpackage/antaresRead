@@ -174,6 +174,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualArea)), 
                              by = area]
   
+  
   if (any(connectedToHub$connectedToHub)) {
     
     veryVirtualAreas <- connectedToHub[connectedToHub == TRUE]$area
@@ -408,7 +409,23 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   if(!is.null(x$districts) && length(storageFlexibility) > 0){
     stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
     stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
-    x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
+    
+    #the columns pumpingCapacity doesnt exist when we trade very virtual area
+    if(is.null(x$districts$pumpingCapacity)){
+      x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
+    }else {
+      #for simple virtual areas take into account the previous merge
+      x$districts<-merge(x$districts, stoPumDistricts, all.x=TRUE, by=c("timeId", "district"))
+      
+      x$districts[, ':=' (
+        pumpingCapacity=pumpingCapacity.x + pumpingCapacity.y , 
+        storageCapacity=storageCapacity.x + storageCapacity.y
+      )]
+      
+      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x" , "storageCapacity.y"
+                      ):= NULL]
+      
+    }
   }
   
   # Store in attributes the name of the virtuals nodes
