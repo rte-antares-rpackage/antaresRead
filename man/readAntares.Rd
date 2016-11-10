@@ -37,7 +37,7 @@ import misc.}
 
 \item{thermalAvailabilities}{Should thermal availabilities of clusters be imported ? If TRUE, the column
 "thermalAvailability" is added to the result and a new column "availableUnits"
-containing the number of available units in a cluster is created.If synthesis is set to TRUE then 
+containing the number of available units in a cluster is created.If synthesis is set to TRUE then
 "availableUnits" contain the mean of avaible units on all MC Years.}
 
 \item{hydroStorage}{Should hydro storage be imported ?}
@@ -71,7 +71,7 @@ synthesis is FALSE.}
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{parallel}{Should the importation be parallelized ? (See details)}
@@ -92,11 +92,11 @@ data.tables, each element representing one type of element (areas, links,
 clusters)
 }
 \description{
-\code{readAntares} is a swiss-army-knife function used to read almost every 
-possible time series of an antares Project at any desired time resolution 
-(hourly, daily, weekly, monthly or annual). 
+\code{readAntares} is a swiss-army-knife function used to read almost every
+possible time series of an antares Project at any desired time resolution
+(hourly, daily, weekly, monthly or annual).
 
-It was first designed to read 
+It was first designed to read
 output time series, but it can also read input time series. The input time
 series are processed by the function to fit the query of the user (timeStep,
 synthetic results or Monte-Carlo simulation, etc.). The few data that are not
@@ -109,7 +109,7 @@ If parameters \code{areas}, \code{links}, \code{clusters} and \code{districts}
 are all \code{NULL}, \code{readAntares} will read output for all areas.
 By default the function reads synthetic results if they are available.
 
-\code{readAntares} is able to read input time series, but when they are not 
+\code{readAntares} is able to read input time series, but when they are not
 stored in output, these time series may have changed since a simulation has
 been run. In such a case the function will remind you this danger with a
 warning.
@@ -124,7 +124,7 @@ objective:
   \item Filter the elements to import (parameters \code{areas},\code{links},
     \code{clusters} and \code{districts})
   \item Select only a few columns (parameter \code{select})
-  \item read only a subset of Monte-Carlo simulations (parameter 
+  \item read only a subset of Monte-Carlo simulations (parameter
     \code{mcYears}). For instance one can import a random sample of
     100 simulations with \code{mcYears = sample(simOptions()$mcYears, 100)}
 }
@@ -164,10 +164,10 @@ areas <- readAntares(areas = "all", misc = TRUE, reserve = TRUE)
 myArea <- sample(simOptions()$areaList, 1)
 myArea
 
-myAreaOutput <- readAntares(area = myArea, 
+myAreaOutput <- readAntares(area = myArea,
                             links = getLinks(myArea, regexpSelect=FALSE),
                             clusters = myArea)
-                           
+
 # Or equivalently:
 myAreaOutput <- readAntaresAreas(myArea)
 

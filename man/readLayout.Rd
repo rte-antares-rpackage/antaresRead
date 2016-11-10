@@ -7,7 +7,7 @@
 readLayout(opts = simOptions())
 }
 \arguments{
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 }
 \value{

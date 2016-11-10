@@ -31,7 +31,7 @@ readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
 
 \item{linkCapacity}{vector of links names for which links characteristics time series must be read}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,

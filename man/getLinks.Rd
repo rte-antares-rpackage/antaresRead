@@ -14,7 +14,7 @@ in. If \code{NULL}, all areas of the study are used.}
 \item{exclude}{Vector containing area names. If not \code{NULL}, all links connected to 
 one of these areas are omited.}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
