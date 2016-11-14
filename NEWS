@@ -1,8 +1,20 @@
-Copyright © 2016 RTE Réseau de transport d’électricité
+# Copyright © 2016 RTE Réseau de transport d’électricité
+
+Changes in version 0.14 (2016-11-14)
+
+NEW FEATURES:
+* readAntares() has been significantly improved. Depending on the query, the time needed to import data is decreased by 20% up to 95%. In particular, importing data for clusters is now 20 times faster than before. Moreover, the progress bar is now more precise.
+* removeVirtualAreas() has a new parameter "newCols" that permits to choose whether to create new columns containing the production of the virtual areas or to update the existing ones.
+* removeVirtualAreas() now also removes virtual links from the data. Before it was removing virtual areas but keeping the virtual links.
+* If the transmission capacity of the links is present in the data, removeVirtualAreas() now creates two new columns containing the capacity of pumping and storage of areas. These columns are used to compute upward and downward margins.
+* New functions as.antaresDataTable and as.antaresDataList have been added to convert compatible objects to these classes.
+
 
 Changes in version 0.13 (2016-10-06)
+
 BREAKING CHANGES:
 * add a file LICENSE and copyright to sources files
+
 
 Changes in version 0.12 (2016-08-17)
 
