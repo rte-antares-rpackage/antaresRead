@@ -22,7 +22,7 @@ the function to use ("sum", "mean", "min" or "max") for this column. It can
 be a single element, in that case the same function is applied to every 
 columns.}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 }
 \value{

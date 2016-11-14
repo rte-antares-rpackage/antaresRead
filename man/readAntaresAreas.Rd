@@ -19,7 +19,7 @@ in. If \code{NULL}, all areas of the study are used.}
 If not, the function may return links that connect an area from the list with 
 an area outside the list.}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{...}{Other arguments passed to the function \code{\link{readAntares}}}
@@ -45,7 +45,7 @@ data <- readAntaresAreas(myarea)
 data2 <- readAntares(myarea, links = getLinks(myarea), clusters = myarea)
 
 all.equal(data, data2)
-} 
- 
+}
+
 }
 

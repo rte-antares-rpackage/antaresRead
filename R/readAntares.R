@@ -13,46 +13,46 @@
 
 #' Read the data of an Antares simulation
 #'
-#' @description 
-#' \code{readAntares} is a swiss-army-knife function used to read almost every 
-#' possible time series of an antares Project at any desired time resolution 
-#' (hourly, daily, weekly, monthly or annual). 
-#' 
-#' It was first designed to read 
+#' @description
+#' \code{readAntares} is a swiss-army-knife function used to read almost every
+#' possible time series of an antares Project at any desired time resolution
+#' (hourly, daily, weekly, monthly or annual).
+#'
+#' It was first designed to read
 #' output time series, but it can also read input time series. The input time
 #' series are processed by the function to fit the query of the user (timeStep,
 #' synthetic results or Monte-Carlo simulation, etc.). The few data that are not
 #' read by \code{readAntares} can generally by read with other functions of the
 #' package starting with "read" (\code{\link{readClusterDesc}},
 #' \code{\link{readLayout}}, \code{\link{readBindingConstraints}})
-#' 
-#' @details 
+#'
+#' @details
 #' If parameters \code{areas}, \code{links}, \code{clusters} and \code{districts}
 #' are all \code{NULL}, \code{readAntares} will read output for all areas.
 #' By default the function reads synthetic results if they are available.
-#' 
-#' \code{readAntares} is able to read input time series, but when they are not 
+#'
+#' \code{readAntares} is able to read input time series, but when they are not
 #' stored in output, these time series may have changed since a simulation has
 #' been run. In such a case the function will remind you this danger with a
 #' warning.
-#' 
+#'
 #' When individual Monte-Carlo simulations are read, the function may crash
 #' because of insufficient memory. In such a case, it is necessary to reduce
 #' size of the output. Different strategies are available depending on your
 #' objective:
-#' 
+#'
 #' \itemize{
 #'   \item Use a larger time step (parameter \code{timeStep})
 #'   \item Filter the elements to import (parameters \code{areas},\code{links},
 #'     \code{clusters} and \code{districts})
 #'   \item Select only a few columns (parameter \code{select})
-#'   \item read only a subset of Monte-Carlo simulations (parameter 
+#'   \item read only a subset of Monte-Carlo simulations (parameter
 #'     \code{mcYears}). For instance one can import a random sample of
 #'     100 simulations with \code{mcYears = sample(simOptions()$mcYears, 100)}
 #' }
-#' 
+#'
 #' @section Parallelization:
-#' 
+#'
 #' If you import several elements of the same type (areas, links, clusters), you
 #' can use parallelized importation to improve performance. Setting the
 #' parameter \code{parallel = TRUE} is not enough to parallelize the
@@ -69,7 +69,7 @@
 #' @param areas
 #'   Vector containing the names of the areas to import. If
 #'   \code{NULL} no area is imported. The special value \code{"all"} tells the
-#'   function to import all areas. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter. 
+#'   function to import all areas. By default, the value is "all" when no other argument is enter and "NULL" when other arguments are enter.
 #' @param links
 #'   Vector containing the name of links to import. If \code{NULL} no
 #'   area is imported. The special value \code{"all"} tells the function to
@@ -90,12 +90,12 @@
 #' @param  thermalAvailabilities
 #'   Should thermal availabilities of clusters be imported ? If TRUE, the column
 #'   "thermalAvailability" is added to the result and a new column "availableUnits"
-#'   containing the number of available units in a cluster is created.If synthesis is set to TRUE then 
-#'   "availableUnits" contain the mean of avaible units on all MC Years. 
+#'   containing the number of available units in a cluster is created.If synthesis is set to TRUE then
+#'   "availableUnits" contain the mean of avaible units on all MC Years.
 #' @param hydroStorage
 #'   Should hydro storage be imported ?
 #' @param hydroStorageMaxPower
-#'   Should hydro storage maximum power be imported ? 
+#'   Should hydro storage maximum power be imported ?
 #' @param reserve
 #'   Should reserve be imported ?
 #' @param linkCapacity
@@ -124,7 +124,7 @@
 #'   Resolution of the data to import: hourly (default), daily,
 #'   weekly, monthly or annual.
 #' @param opts
-#'   list of simulation parameters returned by the function 
+#'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPath}}
 #' @param parallel
 #'   Should the importation be parallelized ? (See details)
@@ -143,46 +143,46 @@
 #' Else an object of class "antaresDataList" is returned. It is a list of
 #' data.tables, each element representing one type of element (areas, links,
 #' clusters)
-#' 
-#' @seealso 
+#'
+#' @seealso
 #' \code{\link{setSimulationPath}}, \code{\link{getAreas}},
 #' \code{\link{getLinks}}, \code{\link{getDistricts}}
 #'
 #' @examples
 #' \dontrun{
 #' # Import areas and links separately
-#' 
+#'
 #' areas <- readAntares() # equivalent to readAntares(areas="all")
 #' links <- readAntares(links="all")
 #'
 #' # Import areas and links at same time
-#' 
+#'
 #' output <- readAntares(areas = "all", links = "all")
-#' 
+#'
 #' # Add input time series to the object returned by the function
 #' areas <- readAntares(areas = "all", misc = TRUE, reserve = TRUE)
 #'
 #' # Get all output for one area
-#' 
+#'
 #' myArea <- sample(simOptions()$areaList, 1)
 #' myArea
 #'
-#' myAreaOutput <- readAntares(area = myArea, 
+#' myAreaOutput <- readAntares(area = myArea,
 #'                             links = getLinks(myArea, regexpSelect=FALSE),
 #'                             clusters = myArea)
-#'                            
+#'
 #' # Or equivalently:
 #' myAreaOutput <- readAntaresAreas(myArea)
-#' 
+#'
 #' # Use parameter "select" to read only some columns.
-#' 
+#'
 #' areas <- readAntares(select = c("LOAD", "OV. COST"))
-#' 
+#'
 #' # Aliases can be used to select frequent groups of columns. use showAliases()
 #' # to view a list of available aliases
-#' 
+#'
 #' areas <- readAntares(select="economy")
-#' 
+#'
 #' }
 #' @export
 #'
@@ -199,23 +199,23 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
-  
+
   timeStep <- match.arg(timeStep)
   if (synthesis) mcYears <- NULL
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
-  
+
   # If all arguments are NULL, import all areas
   if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
     areas <- "all"
   }
-  
+
   # Check arguments validity. The function .checkArgs is defined below
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
   districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
   mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
-  
+
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
   if ((is.null(areas) & is.null(districts)) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
@@ -223,7 +223,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
   if (is.null(clusters) & (thermalAvailabilities | thermalModulation)) stop("When 'thermalAvailabilities' or 'thermalModulation' is TRUE, argument 'clusters' needs to be specified.")
-  
+
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
   # not the case, throw a warning.
@@ -235,7 +235,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
     }
   }
-  
+
   if (hydroStorage) {
     if (! opts$scenarios) {
       stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
@@ -244,7 +244,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
     }
   }
-  
+
   if (misc | hydroStorageMaxPower | reserve | linkCapacity) {
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
@@ -281,9 +281,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                  .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
                  .paropts = list(.packages="antares"))
-    
+
     tmp <- rbindlist(tmp)
-    
+
     res[[name]] <<- tmp
     gc() # Ensures R frees unused memory
   }
@@ -293,48 +293,48 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts)
   res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts)
   res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears, showProgress, opts)
-  
+
   # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
     districts <- opts$districtsDef[district %in% districts]
     areas <- union(areas, districts$area)
   }
-  
+
   # Import clusters and eventually must run
-  
+
   if (!mustRun) {
-    res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears, 
+    res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = FALSE)
   } else {
     clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
-    res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears, 
+    res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = TRUE)
-    
+
     if (!is.null(res$areas)) {
       tmp <- copy(res$clusters)
       tmp[, cluster := NULL]
-      tmp <- tmp[,.(mustRun = sum(mustRun), 
+      tmp <- tmp[,.(mustRun = sum(mustRun),
                     mustRunPartial = sum(mustRunPartial),
-                    mustRunTotal = sum(mustRunTotal)), 
+                    mustRunTotal = sum(mustRunTotal)),
                  keyby = c(.idCols(tmp))]
       res$areas <- .mergeByRef(res$areas, tmp)
-      
+
       res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
-    
+
     if (!is.null(districts)) {
       tmp <- copy(res$clusters)
       tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
       tmp[, area := NULL]
       tmp[, cluster := NULL]
-      tmp <- tmp[,.(mustRun = sum(mustRun), 
+      tmp <- tmp[,.(mustRun = sum(mustRun),
                     mustRunPartial = sum(mustRunPartial),
-                    mustRunTotal = sum(mustRunTotal)), 
+                    mustRunTotal = sum(mustRunTotal)),
                  keyby = c(.idCols(tmp))]
       res$districts <- .mergeByRef(res$districts, tmp)
       res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
-    
+
     # Suppress that has not been asked
     if (is.null(clusters)) {
       res$clusters <- NULL
@@ -342,9 +342,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       res$clusters <- res$clusters[area %in% clusters]
     }
   }
-  
+
   # Add input time series
-  
+
   if (misc) {
     .addOutputToRes("misc", areas, .importMisc, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$misc)
@@ -356,31 +356,31 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     res$misc <- NULL
   }
-  
+
   if (thermalAvailabilities) {
     .addOutputToRes("thermalAvailabilities", clusters, .importThermal, NA)
     .mergeByRef(res$clusters, res$thermalAvailabilities)
     res$thermalAvailabilities <- NULL
   }
-  
+
   if (hydroStorage) {
     .addOutputToRes("hydroStorage", areas, .importHydroStorage, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorage)
-    
+
     if (!is.null(districts)) {
       res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
       res$hydroStorage[, area := NULL]
       res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = c(.idCols(res$hydroStorage))]
       .mergeByRef(res$districts, res$hydroStorage)
     }
-    
+
     res$hydroStorage <- NULL
   }
-  
+
   if (hydroStorageMaxPower) {
     .addOutputToRes("hydroStorageMaxPower", areas, .importHydroStorageMaxPower, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorageMaxPower)
-    if (!is.null(districts)) {
+    if (!is.null(res$districts)) {
       res$hydroStorageMaxPower <- merge(res$hydroStorageMaxPower, districts, by = "area", allow.cartesian = TRUE)
       res$hydroStorageMaxPower[, area := NULL]
       res$hydroStorageMaxPower <- res$hydroStorageMaxPower[, lapply(.SD, sum), by = .(district, timeId)]
@@ -388,7 +388,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     res$hydroStorageMaxPower <- NULL
   }
-  
+
   if (reserve) {
     .addOutputToRes("reserve", areas, .importReserves, NA)
     if(!is.null(res$areas)) .mergeByRef(res$areas, res$reserve)
@@ -406,20 +406,20 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
     res$linkCapacity <- NULL
   }
-  
+
   if (thermalModulation) {
     .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
-    
+
     if (!is.null(res$clusters)) {
       .mergeByRef(res$clusters, res$thermalModulation)
     }
-    
+
     if (!mustRun | !timeStep == "hourly") res$thermalModulation <- NULL
   }
-  
+
   # Class and attributes
   res <- .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
-  
+
   # Add date/time columns
   addDateTimeColumns(res)
 }
@@ -443,13 +443,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #' If the argument is empty it returns NULL.
 #' If it contains "all", it returns the reference list
 #' Else it returns the parameter "list" without the non-existent elements
-#' 
+#'
 #' @noRd
-#' 
+#'
 .checkArg <- function(list, reference, msg, allowDup = FALSE) {
   if (is.null(list) || length(list) == 0) return(NULL)
   if (any(list == "all")) return(reference)
-  
+
   if (allowDup) res <- list[list %in% reference]
   else res <- intersect(list, reference)
   if (length(res) < length(list)) {
@@ -457,17 +457,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
     if (length(res) == 0) return(NULL)
   }
-  
+
   res
 }
 
 
 
 #' Read output for a list of areas
-#' 
+#'
 #' This a function is a wrapper for "antaresData" that reads all data for a
 #' list of areas.
-#' 
+#'
 #' @param links
 #'   should links connected to the areas be imported ?
 #' @param clusters
@@ -476,38 +476,38 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #'   Other arguments passed to the function \code{\link{readAntares}}
 #' @inheritParams getLinks
 #' @inheritParams readAntares
-#'   
+#'
 #' @return If \code{simplify = TRUE} and only one type of output is imported
 #' then the result is a data.table.
 #'
 #' Else an object of class "antaresData" is returned. It is a list of
 #' data.tables, each element representing one type of element (areas, links,
 #' clusters)
-#'  
-#' @examples 
+#'
+#' @examples
 #' \dontrun{
 #' myarea <- simOptions()$areaList[1]
 #' data <- readAntaresAreas(myarea)
-#' 
+#'
 #' # Equivalent but more concise than:
 #' data2 <- readAntares(myarea, links = getLinks(myarea), clusters = myarea)
-#' 
+#'
 #' all.equal(data, data2)
-#' } 
-#'  
+#' }
+#'
 #' @export
 readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = FALSE, opts = simOptions(), ...) {
-  
+
   if (missing(areas)) stop("The function 'readAntaresAreas' expects a vector of area names as argument. You can use 'getAreas' to build such a vector.")
-  
+
   if (is.null(opts)) {
     message("Please choose a directory containing an Antares simulation")
     opts <- setSimulationPath()
   }
-  
+
   links <- if (links) getLinks(areas, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) areas else NULL
-  
+
   readAntares(areas, links, clusters, opts = opts, ...)
-  
+
 }

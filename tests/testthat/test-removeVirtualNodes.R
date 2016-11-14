@@ -6,7 +6,7 @@ source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-data <- readAntares("all", "all", showProgress = FALSE, linkCapacity = TRUE)
+data <- readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE)
 
 vareas <- c("psp in-2", "psp out-2")
 
@@ -37,7 +37,7 @@ test_that("A column has been created for each storage/flexibility area", {
 })
 
 test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
-  data <- readAntares("all", "all", "all", showProgress = FALSE, synthesis = FALSE)
+  data <- suppressWarnings(readAntares("all", "all", "all", showProgress = FALSE, synthesis = FALSE, linkCapacity = TRUE))
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "c")
   
   expect_false(any(dataCorrected$clusters$area == "c"))
@@ -75,7 +75,7 @@ test_that("Hub management works", {
 })
 
 test_that("RemoveVirtualAreas also works on non-synthesis results", {
-  data <- readAntares("all", "all", showProgress = FALSE, synthesis = FALSE)
+  data <- suppressWarnings(readAntares("all", "all", showProgress = FALSE, synthesis = FALSE, linkCapacity = TRUE))
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
   
   correction <- - data$links[link %in% getLinks(vareas), 
@@ -123,5 +123,19 @@ test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
 
 test_that("removeVirtualAreas removes virtual links, but keeps the data needed to compute margins", {
   expect_true(nrow(dataCorrected$links[link == "a - psp out-2"]) == 0)
-  expect_false(is.null(dataCorrected$areas$storageCapacity))
+
+  if(!is.null(dataCorrected$areas)){
+    expect_false(is.null(dataCorrected$areas$storageCapacity))
+    expect_false(is.null(dataCorrected$areas$pumpingCapacity))
+    expect_gt(min(dataCorrected$areas$storageCapacity), -1)
+    expect_gt(min(dataCorrected$areas$pumpingCapacity), -1)
+  }
+  
+  if(!is.null(dataCorrected$districts)){
+    expect_false(is.null(dataCorrected$districts$storageCapacity))
+    expect_false(is.null(dataCorrected$districts$pumpingCapacity))
+    expect_gt(min(dataCorrected$districts$storageCapacity), -1)
+    expect_gt(min(dataCorrected$districts$pumpingCapacity), -1)
+  }
+
 })

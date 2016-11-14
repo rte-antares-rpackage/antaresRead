@@ -28,7 +28,7 @@ exclude. If \code{NULL}, not any area is excluded.}
 
 \item{regexpExclude}{Is \code{exclude} a list of regular expressions ?}
 
-\item{opts}{list of simulation parameters returned by the function 
+\item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{ignore.case}{Should the case be ignored when evaluating the regular

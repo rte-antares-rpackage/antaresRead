@@ -132,7 +132,17 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   production <- intersect(production, areaList)
   storageFlexibility <- intersect(storageFlexibility, areaList)
   vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
-  
+
+  #if vareas is not null check if "transCapacityDirect" and "transCapacityIndirect" are presents
+  if(!is.null(vareas)){
+    colsNeededLinks<-c("transCapacityDirect", "transCapacityIndirect")
+    namesLinks<-names(x$links)
+    missingCols <- c()
+    missingCols <-setdiff(colsNeededLinks, names(x$links))
+    if (length(missingCols) > 0) {
+      stop("The following columns are needed but missing links: ", paste(missingCols, collapse = ", "))
+    }
+  }
   
   prodAreas <- x$areas[area %in% production]
   storageAreas <- x$areas[area %in% storageFlexibility]
@@ -163,6 +173,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualArea)), 
                              by = area]
+  
   
   if (any(connectedToHub$connectedToHub)) {
     
@@ -394,6 +405,28 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   }
   
   x$links <- x$links[!link %in% linkList$link]
+  
+  if(!is.null(x$districts) && length(storageFlexibility) > 0){
+    stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
+    stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
+    
+    #the columns pumpingCapacity doesnt exist when we trade very virtual area
+    if(is.null(x$districts$pumpingCapacity)){
+      x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
+    }else {
+      #for simple virtual areas take into account the previous merge
+      x$districts<-merge(x$districts, stoPumDistricts, all.x=TRUE, by=c("timeId", "district"))
+      
+      x$districts[, ':=' (
+        pumpingCapacity=pumpingCapacity.x + pumpingCapacity.y , 
+        storageCapacity=storageCapacity.x + storageCapacity.y
+      )]
+      
+      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x" , "storageCapacity.y"
+                      ):= NULL]
+      
+    }
+  }
   
   # Store in attributes the name of the virtuals nodes
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
