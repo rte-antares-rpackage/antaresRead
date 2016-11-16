@@ -33,6 +33,8 @@ To see a practical example of use of the package, look at the vignette:
 vignette("antares")
 ```
 
+Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antares-rpackageRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
+
 
 ## Initialisation
 
