@@ -208,7 +208,11 @@ setSimulationPath <- function(path, simulation = NULL) {
     simNames <- basename(list.dirs(outputPath, recursive = FALSE))
     
     if (length(simNames) == 0) {
-      stop("Cannot find any simulation result")
+      if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
+        stop("Cannot find any simulation result")
+      } else {
+        simulation <- 0
+      }
     }
     
     if (is.null(simulation)) {
@@ -223,7 +227,7 @@ setSimulationPath <- function(path, simulation = NULL) {
       }
     }
     
-    if (simulation == 0 | simulation == "input") {
+    if (simulation %in% c(0, "input")) {
       
       studyPath <- path
       simPath <- NULL
