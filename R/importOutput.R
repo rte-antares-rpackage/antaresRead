@@ -79,7 +79,7 @@
   
   # time ids
   if (timeStep == "annual") {
-    timeIds <- as.factor("Annual")
+    timeIds <- 1L
   } else {
     timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
     timeIds <- seq(timeRange[1], timeRange[2])

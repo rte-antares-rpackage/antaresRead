@@ -151,7 +151,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   }
   
   if (timeStep == "annual") {
-    return(as.factor(rep("Annual", length(hourId))))
+    return(rep(1L, length(hourId)))
   }
   
   # Hard cases
