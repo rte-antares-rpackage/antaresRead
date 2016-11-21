@@ -58,8 +58,8 @@
 
   } else {
     
-    year <- lubridate::year(as.POSIXct(opts$start))
-    return(rep(year, length(timeId)))
+    date <- as.Date(opts$start)
+    return(rep(date, length(timeId)))
     
   }
 }
