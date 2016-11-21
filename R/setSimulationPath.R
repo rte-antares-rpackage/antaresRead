@@ -421,7 +421,10 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     if (p$`first-month-in-year` != "january") newYear <- newYear - 1
     lubridate::year(start) <- newYear
-    warning("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ", newYear, call. = FALSE)
+    warning("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ", 
+            newYear, 
+            ".\nTo avoid this warning message in future simulations, open the study with Antares and go to the simulation tab, put a valid year number in the cell 'horizon' and use consistent values for parameters 'Leap year' and '1st january'.",
+            call. = FALSE)
 
   }
 
