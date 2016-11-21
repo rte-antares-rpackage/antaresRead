@@ -112,6 +112,8 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
     
     tmp <- rbindlist(tmp)
     
+    if (nrow(tmp) == 0) warning("Could not find '", name, "' time series.")
+    
     res[[name]] <<- tmp
     gc() # Ensures R frees unused memory
   }

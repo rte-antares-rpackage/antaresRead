@@ -48,6 +48,11 @@ readBindingConstraints <- function(opts=simOptions()) {
   path <- file.path(opts$inputPath, "bindingConstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
   
+  if(length(bindingConstraints) == 0) {
+    warning("It looks like there is no binding constraints is this study.")
+    return(NULL)
+  }
+  
   for (i in 1:length(bindingConstraints)) {
     path <- file.path(opts$inputPath, sprintf("bindingConstraints/%s.txt",
                                          bindingConstraints[[i]]$id))

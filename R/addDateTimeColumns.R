@@ -12,6 +12,11 @@ addDateTimeColumns <- function(x) {
     return(invisible(x))
   }
   
+  # If table is empty, return it as is
+  if (nrow(x) == 0) {
+    return(x)
+  }
+  
   if (timeStep == "hourly") {
     
     timestamp <- as.POSIXct(opts$start)

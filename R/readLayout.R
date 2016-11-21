@@ -65,31 +65,35 @@ readLayout <- function(opts = simOptions()) {
                          by = district]
 
   # links
-  links <- copy(opts$linksDef)
-  # Merge with areas two times to add coordinates or origin and destination
-  links[areas, `:=`(x0=x, y0=y), on = c(from="area")]
-  links[areas, `:=`(x1=x, y1=y), on = c(to="area")]
-
-  # Links districts
-  
-  # Identify the connexions between two districts. If two areas in distincts 
-  # districts are connected then the corresponding districts are connected too.
-  districtLinks <- merge(links[, .(to, from)], 
-                          opts$districtsDef[, .(to=area, toDistrict=district)],
-                          by = "to", allow.cartesian=TRUE)
-  districtLinks <- merge(districtLinks, 
-                          opts$districtsDef[, .(from=area, fromDistrict=district)],
-                          by = "from", allow.cartesian=TRUE)
-  districtLinks <- unique(districtLinks[fromDistrict != toDistrict,
+  if (nrow(opts$linksDef) == 0) {
+    links <- NULL
+    districtLinks <- NULL
+  } else {
+    links <- copy(opts$linksDef)
+    # Merge with areas two times to add coordinates or origin and destination
+    links[areas, `:=`(x0=x, y0=y), on = c(from="area")]
+    links[areas, `:=`(x1=x, y1=y), on = c(to="area")]
+    
+    # Links districts
+    
+    # Identify the connexions between two districts. If two areas in distincts 
+    # districts are connected then the corresponding districts are connected too.
+    districtLinks <- merge(links[, .(to, from)], 
+                           opts$districtsDef[, .(to=area, toDistrict=district)],
+                           by = "to", allow.cartesian=TRUE)
+    districtLinks <- merge(districtLinks, 
+                           opts$districtsDef[, .(from=area, fromDistrict=district)],
+                           by = "from", allow.cartesian=TRUE)
+    districtLinks <- unique(districtLinks[fromDistrict != toDistrict,
                                           .(fromDistrict, toDistrict)])
-  
-  # Add coordinates of origin and destination
-  districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                          by.x = "toDistrict", by.y = "district")
-  districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                          by.x = "fromDistrict", by.y = "district", 
-                          suffixes = c("0", "1"))
-  
+    
+    # Add coordinates of origin and destination
+    districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                           by.x = "toDistrict", by.y = "district")
+    districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                           by.x = "fromDistrict", by.y = "district", 
+                           suffixes = c("0", "1")) 
+  }
 
   list(areas = areas, districts = districts, links=links, districtLinks = districtLinks)
 }
