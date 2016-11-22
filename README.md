@@ -8,6 +8,7 @@ To install the package from Github, you will need to create a personal access to
 ```r
 # Install dependencies
 install.packages(c("data.table", "plyr", "lubridate", "devtools"))
+library(devtools)
 install_github("rte-antares-rpackage/antares-rpackageRead", auth_token = "your_pat")
 ```
 
@@ -25,12 +26,12 @@ install_github("rte-antares-rpackage/antares-rpackageRead",
 
 To display the help of the package and see all the functions it provides, type:
 ```r 
-help'(package="antaresRead")
+help(package="antaresRead")
 ```
 
-To see a practical example of use of the package, look at the vignette:
+To see a practical example of use of the package, look at the vignette, if you have antaresProcessing:
 ```r
-vignette("antares")
+vignette("antaresProcessing")
 ```
 
 Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antares-rpackageRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
@@ -41,7 +42,7 @@ Finally, you can download a cheatsheet that summarize in a single page how to us
 Load the package
 
 ```r
-library(antares)
+library(antaresRead)
 ```
 
 Select an Antares simulation interactively.
@@ -56,7 +57,7 @@ You can also select it programmatically:
 setsimulationPath("study_path", simulation)
 ```
 
-The parameter `simulation` can be the name of a simulation, the name of the folder containing the simulation results, or the index of the simulation. `1` corresponds to the oldest simulation, `-1` to the newest one. 
+The parameter `simulation` can be the name of a simulation, the name of the folder containing the simulation results, or the index of the simulation. `1` corresponds to the oldest simulation, `-1` to the newest one, 0 to the inputs.
 
 
 ## Read data from a simulation
@@ -108,7 +109,7 @@ Here are some examples:
 
 ```r
 # Select lines based on some criteria
-mydata[area == "fr" & month = "JUL"]
+mydata[area == "fr" & month == "JUL"]
 
 # Select columns, and compute new ones
 mydata[, .(area, month, load2 = LOAD^2)]
@@ -126,7 +127,7 @@ If you are not familiar with package `data.table`, you should have a look at the
 
 ```r
 help(package="data.table")
-vignette("datatable-intro")
+vignette("datatable-intro-vignette")
 ```
 
 
