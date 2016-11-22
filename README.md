@@ -1,13 +1,13 @@
-# Read data from an Antares study with R package 'antares'
+# Read data from an Antares study with R package 'antaresRead'
 
 
 ## Installation
 
-To install the package from Github, you will need to create a personal access token (PAT) here: https://github.com/settings/tokens .
+To install the package from Github, you will need to create a personal access token (PAT) here: https://github.com/settings/tokens . You must check "repo".
 
 ```r
 # Install dependencies
-install.packages(c("data.table", "plyr", "lubridate", "devtools"))
+install.packages(c("data.table", "plyr", "lubridate", "devtools", "digest"))
 library(devtools)
 install_github("rte-antares-rpackage/antares-rpackageRead", auth_token = "your_pat")
 ```
