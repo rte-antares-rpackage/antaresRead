@@ -31,7 +31,7 @@ help(package="antaresRead")
 
 To see a practical example of use of the package, look at the vignette, if you have antaresProcessing:
 ```r
-vignette("antaresProcessing")
+vignette("antares")
 ```
 
 Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antares-rpackageRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
@@ -127,7 +127,7 @@ If you are not familiar with package `data.table`, you should have a look at the
 
 ```r
 help(package="data.table")
-vignette("datatable-intro-vignette")
+vignette("datatable-intro")
 ```
 
 
