@@ -29,7 +29,7 @@ To display the help of the package and see all the functions it provides, type:
 help(package="antaresRead")
 ```
 
-To see a practical example of use of the package, look at the vignette, if you have antaresProcessing:
+To see a practical example of use of the package, look at the vignette :
 ```r
 vignette("antares")
 ```
