@@ -1,13 +1,14 @@
-# Read data from an Antares study with R package 'antares'
+# Read data from an Antares study with R package 'antaresRead'
 
 
 ## Installation
 
-To install the package from Github, you will need to create a personal access token (PAT) here: https://github.com/settings/tokens .
+To install the package from Github, you will need to create a personal access token (PAT) here: https://github.com/settings/tokens . You must check "repo".
 
 ```r
 # Install dependencies
-install.packages(c("data.table", "plyr", "lubridate", "devtools"))
+install.packages(c("data.table", "plyr", "lubridate", "devtools", "digest"))
+library(devtools)
 install_github("rte-antares-rpackage/antares-rpackageRead", auth_token = "your_pat")
 ```
 
@@ -25,10 +26,10 @@ install_github("rte-antares-rpackage/antares-rpackageRead",
 
 To display the help of the package and see all the functions it provides, type:
 ```r 
-help'(package="antaresRead")
+help(package="antaresRead")
 ```
 
-To see a practical example of use of the package, look at the vignette:
+To see a practical example of use of the package, look at the vignette, if you have antaresProcessing:
 ```r
 vignette("antares")
 ```
@@ -41,7 +42,7 @@ Finally, you can download a cheatsheet that summarize in a single page how to us
 Load the package
 
 ```r
-library(antares)
+library(antaresRead)
 ```
 
 Select an Antares simulation interactively.
@@ -56,7 +57,7 @@ You can also select it programmatically:
 setsimulationPath("study_path", simulation)
 ```
 
-The parameter `simulation` can be the name of a simulation, the name of the folder containing the simulation results, or the index of the simulation. `1` corresponds to the oldest simulation, `-1` to the newest one. 
+The parameter `simulation` can be the name of a simulation, the name of the folder containing the simulation results, or the index of the simulation. `1` corresponds to the oldest simulation, `-1` to the newest one, 0 to the inputs.
 
 
 ## Read data from a simulation
@@ -108,7 +109,7 @@ Here are some examples:
 
 ```r
 # Select lines based on some criteria
-mydata[area == "fr" & month = "JUL"]
+mydata[area == "fr" & month == "JUL"]
 
 # Select columns, and compute new ones
 mydata[, .(area, month, load2 = LOAD^2)]
