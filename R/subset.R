@@ -21,7 +21,41 @@
 #' @export
 #' 
 subset.antaresDataList <- function(x, y = NULL, areas = NULL, timeIds = NULL, mcYears = NULL, ...) {
+  if (!is.null(y)) {
+    y <- as.data.table(y)
+    
+    filterCols <- intersect(names(y), c("area", "timeId", "mcYear"))
+    if (length(filterCols) == 0) stop("y should be null or contain at least one of the columns 'area', 'timeId' or 'mcYear'")
+    yarea <- unique(y[, filterCols, with = FALSE], by = NULL)
+    
+    if (is.null(yarea$area)) ylink <- yarea
+    else {
+      bycols <- setdiff(filterCols, "area")
+      if (length(bycols) == 0) {
+        ylink <- data.table(link = getLinks(yarea$area))
+      } else {
+        ylink <- yarea[, .(link = getLinks(area)), by = bycols]
+      }
+      
+    }
+  }
+  
   for (n in names(x)) {
+    
+    if (!is.null(x[[n]]$area) & !is.null(y)) {
+      bycols <- intersect(names(x[[n]]), names(yarea))
+      if (length(bycols) > 0) {
+        x[[n]] <- merge(x[[n]], unique(yarea, by = NULL), by = bycols)
+      }
+    }
+    
+    if (!is.null(x[[n]]$link) && !is.null(y)) {
+      bycols <- intersect(names(x[[n]]), names(ylink))
+      if (length(bycols) > 0) {
+        x[[n]] <- merge(x[[n]], unique(ylink, by = NULL), by = bycols)
+      }
+    }
+    
     filter <- TRUE
     if (!is.null(areas)) {
       if (!is.null(x[[n]]$area)) {
