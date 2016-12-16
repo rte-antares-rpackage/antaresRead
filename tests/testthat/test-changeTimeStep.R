@@ -6,7 +6,7 @@ source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-areas <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE)
+areas <- readAntares(select = "LOAD", showProgress = FALSE, mcYears = "all")
 areas$day <- areas$month <- areas$hour <- NULL
 
 for (timeStep in c("daily", "weekly", "monthly", "annual")) {
@@ -14,7 +14,7 @@ for (timeStep in c("daily", "weekly", "monthly", "annual")) {
   test_that(sprintf("changeTimeStep aggregates hourly data at %s timestep", timeStep), {
     
     calc <- changeTimeStep(areas, timeStep, "hourly", opts = opts)
-    read <- readAntares(select = "LOAD", timeStep = timeStep, showProgress = FALSE, synthesis = FALSE)
+    read <- readAntares(select = "LOAD", timeStep = timeStep, showProgress = FALSE, mcYears = "all")
     
     tmp <- merge(calc, read[, .(area, timeId, mcYear, read = LOAD)], by = c("area", "timeId", "mcYear"))
     
@@ -32,7 +32,7 @@ test_that("changeTimeStep keeps attributes", {
 })
 
 test_that("Aggregating desaggregated data should give the initial values.", {
-  areasD <- readAntares(select = "LOAD", showProgress = FALSE, synthesis = FALSE, timeStep = "daily")
+  areasD <- readAntares(select = "LOAD", showProgress = FALSE, mcYears = "all", timeStep = "daily")
   areasH <- changeTimeStep(areasD, "hourly")
   areasD2 <- changeTimeStep(areasH, "daily")
   setorder(areasD, timeId, area, mcYear)
@@ -41,7 +41,7 @@ test_that("Aggregating desaggregated data should give the initial values.", {
 })
 
 test_that("changeTimeStep works on antaresData objects", {
-  mydata <- readAntares("all", "all", synthesis = FALSE, showProgress = FALSE)
+  mydata <- readAntares("all", "all", mcYears = "all", showProgress = FALSE)
   mydataAgg <- changeTimeStep(mydata, "daily")
   expect_equal(attr(mydataAgg, "timeStep"), "daily")
   expect_equal(attr(mydataAgg$areas, "timeStep"), "daily")

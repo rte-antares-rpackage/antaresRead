@@ -6,7 +6,7 @@ source("setup_test_case.R")
 opts <- setSimulationPath(studyPath)
 
 mydata <- readAntares(areas = "all", links = "all", clusters = "all",
-                      timeStep = "monthly", synthesis = FALSE,
+                      timeStep = "monthly", mcYears = "all",
                       showProgress = FALSE)
 
 myarea <- "a"

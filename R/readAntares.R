@@ -114,12 +114,11 @@
 #'   Should thermal modulation time series be imported ? If \code{TRUE}, the
 #'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
 #'   and "minGenModulation" are added to the cluster data.
-#' @param synthesis
-#'   TRUE if you want to import the synthetic results. FALSE if
-#'   you prefer to import year by year results.
 #' @param mcYears
-#'   Index of the Monte-Carlo years to import. Used only if
-#'   synthesis is FALSE.
+#'   Index of the Monte-Carlo years to import. If \code{NULL}, synthetic results
+#'   are read, else the specified Monte-Carlo simulations are imported. The 
+#'   special value \code{all} tells the function to import all Monte-Carlo
+#'   simulations.
 #' @param timeStep
 #'   Resolution of the data to import: hourly (default), daily,
 #'   weekly, monthly or annual.
@@ -192,8 +191,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         thermalModulation = FALSE,
                         select = NULL,
-                        synthesis = simOptions()$synthesis,
-                        mcYears = simOptions()$mcYears,
+                        mcYears = NULL,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
@@ -201,7 +199,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
 
   timeStep <- match.arg(timeStep)
-  if (synthesis) mcYears <- NULL
+  synthesis <- is.null(mcYears)
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
 
   # If all arguments are NULL, import all areas

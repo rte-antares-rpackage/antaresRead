@@ -37,7 +37,7 @@ test_that("A column has been created for each storage/flexibility area", {
 })
 
 test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
-  data <- suppressWarnings(readAntares("all", "all", "all", showProgress = FALSE, synthesis = FALSE, linkCapacity = TRUE))
+  data <- suppressWarnings(readAntares("all", "all", "all", showProgress = FALSE, mcYears = "all", linkCapacity = TRUE))
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "c")
   
   expect_false(any(dataCorrected$clusters$area == "c"))
@@ -75,7 +75,7 @@ test_that("Hub management works", {
 })
 
 test_that("RemoveVirtualAreas also works on non-synthesis results", {
-  data <- suppressWarnings(readAntares("all", "all", showProgress = FALSE, synthesis = FALSE, linkCapacity = TRUE))
+  data <- suppressWarnings(readAntares("all", "all", showProgress = FALSE, mcYears = "all", linkCapacity = TRUE))
   dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
   
   correction <- - data$links[link %in% getLinks(vareas), 

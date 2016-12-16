@@ -48,7 +48,7 @@ test_that("Time aggregation of mustRun works", {
 test_that("mustRun also works when synthesis = FALSE", {
   totalMustRun <- sum(areas$mustRunTotal)
   byYear <- readAntares(clusters = "all", mustRun = TRUE, showProgress=FALSE, 
-                        timeStep = "annual", synthesis = FALSE)
+                        timeStep = "annual", mcYears = "all")
   
   # average mustRun should be very close to the one in the synthetic results
   expect_lt(abs(sum(byYear$mustRunTotal)/length(opts$mcYears) / totalMustRun - 1), 0.001)
