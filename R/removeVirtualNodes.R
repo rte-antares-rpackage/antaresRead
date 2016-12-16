@@ -127,22 +127,15 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   opts <- simOptions(x)
   
-  # Keep only virtual areas present in data
+  # Keep only virtual areas present in data. Note, that for storage/flexibility 
+  # nodes, we do not need area data, but only links data, unless reassignCosts
+  # is TRUE
   areaList <- as.character(unique(x$areas$area))
   production <- intersect(production, areaList)
-  storageFlexibility <- intersect(storageFlexibility, areaList)
-  vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
-
-  #if vareas is not null check if "transCapacityDirect" and "transCapacityIndirect" are presents
-  if(!is.null(vareas)){
-    colsNeededLinks<-c("transCapacityDirect", "transCapacityIndirect")
-    namesLinks<-names(x$links)
-    missingCols <- c()
-    missingCols <-setdiff(colsNeededLinks, names(x$links))
-    if (length(missingCols) > 0) {
-      stop("The following columns are needed but missing links: ", paste(missingCols, collapse = ", "))
-    }
+  if (reassignCosts) {
+    storageFlexibility <- intersect(storageFlexibility, areaList)
   }
+  vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
   
   prodAreas <- x$areas[area %in% production]
   storageAreas <- x$areas[area %in% storageFlexibility]
