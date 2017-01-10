@@ -6,7 +6,7 @@ source("setup_test_case.R")
 
 opts <- setSimulationPath(studyPath)
 
-data <- readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE)
+data <- suppressWarnings(readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE))
 
 vareas <- c("psp in-2", "psp out-2")
 
