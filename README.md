@@ -129,5 +129,14 @@ If you are not familiar with package `data.table`, you should have a look at the
 help(package="data.table")
 vignette("datatable-intro")
 ```
+##Contributing:
 
+Contributions to the library are welcome and can be submitted in the form of pull requests to this repository.
 
+##License Information:
+
+Copyright 2015-2016 RTE (France)
+
+* RTE: http://www.rte-france.com
+
+This Source Code is subject to the terms of the GNU General Public License, version 2 or any higher version. If a copy of the GPL-v2 was not distributed with this file, You can obtain one at https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
