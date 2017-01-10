@@ -18,9 +18,67 @@
 #' @return 
 #' A filtered \code{antaresDataList}.
 #' 
+#' @examples
+#' \dontrun{
+#' #keep only the first year
+#' mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+#' mySubset<-subset(mydata, mcYears = 1)
+#'   
+#' #keep only the first year for areas a and b 
+#' mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+#' mySubset<-subset(mydata, mcYears = 1, areas=c("a", "b")) 
+#' 
+#' #' #keep only the first year for areas a and b and timeIds include in 5:16 
+#' mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+#' mySubset<-subset(mydata, mcYears = 1, areas=c("a", "b"), timeIds=5:16) 
+#'   
+#' }
+#' 
 #' @export
 #' 
 subset.antaresDataList <- function(x, y = NULL, areas = NULL, timeIds = NULL, mcYears = NULL, ...) {
+ 
+  #check parameter x
+  if (!is(x, "antaresDataList"))
+    stop("x has to be an 'antaresDataList' object'")
+  
+  #check parameter areas
+  if (!is.null(areas)){
+      for(i in areas){
+        if(!(i %in% getAreas())){
+          stop(sprintf('area "%s" is not an area of this study', i))
+        }
+      }
+  }
+  
+  #check parameter mcYears
+  if (!is.null(timeIds)){
+    tIds<-c()
+    for(j in names(x)){
+      tIds<-unique(c(tIds,unique(x[[j]]$timeId)))
+    }
+    
+    for(i in timeIds){
+      if(!(i %in% tIds)){
+        stop(sprintf('timeId %i is not an timeId of this study', i))
+      }
+    }  
+  }
+  
+  #check parameter mcYears
+  if (!is.null(mcYears)){
+    Mc<-c()
+    for(j in names(x)){
+      Mc<-unique(c(Mc,unique(x[[j]]$mcYear)))
+    }
+    
+    for(i in mcYears){
+      if(!(i %in% Mc)){
+        stop(sprintf('McYear %i is not an McYear of this study', i))
+      }
+    }  
+  }
+
   if (!is.null(y)) {
     y <- as.data.table(y)
     
