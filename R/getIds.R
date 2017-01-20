@@ -2,13 +2,13 @@
 
 #' get Id columns
 #' 
-#' \code{getIdCols} return ids of an AntaresDataTable
+#' \code{getIdCols} return the id columns of an AntaresDataTable
 #' 
 #' @param x 
 #'   an AntaresDataTable.
 #'   
 #' @return 
-#' A character vector containg ids of an antaresDataTable
+#' A character vector containing the name of the id columns of an antaresDataTable
 #' 
 #' @export
 #' 
