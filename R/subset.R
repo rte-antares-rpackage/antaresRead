@@ -38,9 +38,6 @@
 #' 
 subset.antaresDataList <- function(x, y = NULL, areas = NULL, timeIds = NULL, mcYears = NULL, ...) {
  
-  #check parameter x
-  if (!is(x, "antaresDataList"))
-    stop("x has to be an 'antaresDataList' object'")
   
   #check parameter areas
   if (!is.null(areas)){
