@@ -32,4 +32,21 @@ A filtered \code{antaresDataList}.
 \description{
 Subset method for \code{antaresDataList}.
 }
+\examples{
+\dontrun{
+#keep only the first year
+mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+mySubset<-subset(mydata, mcYears = 1)
+  
+#keep only the first year for areas a and b 
+mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+mySubset<-subset(mydata, mcYears = 1, areas=c("a", "b")) 
+
+#' #keep only the first year for areas a and b and timeIds include in 5:16 
+mydata <- readAntares(areas = "all", links = "all", mcYears = "all")
+mySubset<-subset(mydata, mcYears = 1, areas=c("a", "b"), timeIds=5:16) 
+  
+}
+
+}
 

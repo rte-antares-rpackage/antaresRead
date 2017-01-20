@@ -46,4 +46,13 @@ describe("subset.antaresDataTable", {
     expect_true(nrow(mysubset$areas) == 1)
     expect_true(nrow(mysubset$links) == length(mylinks))
   })
+  
+  it ("check parameter ", {
+    mydata <- readAntares(areas = "a", links = "all", mcYears = "all", showProgress = FALSE)
+    expect_silent(subset(mydata, areas = myarea))
+    expect_error(subset(mydata, areas = "feeRFE"))
+    expect_error(subset(mydata, mcYears=2695),"McYear 2695 is not an McYear of this study")
+    expect_error(subset(mydata, timeIds=15599),"timeId 15599 is not an timeId of this study")
+  })
+  
 })
