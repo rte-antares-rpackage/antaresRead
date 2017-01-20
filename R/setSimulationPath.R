@@ -273,9 +273,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   linksDef <- ldply(list.files(file.path(inputPath, "links")), function(f) {
     if (!dir.exists(file.path(inputPath, "links", f))) return(NULL)
-    to <- list.files(file.path(inputPath, "links", f))
-    to <- to[to != "properties.ini"]
-    to <- gsub(".txt", "", to)
+    to <- names(readIniFile(file.path(inputPath, "links", f, "properties.ini")))
     
     if (length(to) == 0) return(NULL)
     
