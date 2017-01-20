@@ -10,11 +10,11 @@ test_that("It only accepts antaresDataTable input", {
   setSimulationPath(studyPath, -1)
   mydata<-readAntares(areas = "all", links = "all", showProgress = FALSE)
   
-  expect_error(getIds("RER"))
-  expect_error(getIds(1))
-  expect_error(getIds(c(1,6)))
-  expect_error(getIds(mydata))
-  expect_error(getIds(mydata), "x has to be an 'antaresDataTable' object")
+  expect_error(getIdCols("RER"))
+  expect_error(getIdCols(1))
+  expect_error(getIdCols(c(1,6)))
+  expect_error(getIdCols(mydata))
+  expect_error(getIdCols(mydata), "x has to be an 'antaresDataTable' object")
 })
 
 test_that("output is character", {
@@ -22,5 +22,5 @@ test_that("output is character", {
   setSimulationPath(studyPath, -1)
   mydata<-readAntares(areas = "all", links = "all", showProgress = FALSE)
   
-  expect_is(getIds(mydata$areas), "character")
+  expect_is(getIdCols(mydata$areas), "character")
 })
