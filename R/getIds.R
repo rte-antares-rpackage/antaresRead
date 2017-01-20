@@ -1,8 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
-#' Get Ids of an AntaresDataTable
+#' get Id columns
 #' 
-#' \code{getIds} return ids of an AntaresDataTable
+#' \code{getIdCols} return ids of an AntaresDataTable
 #' 
 #' @param x 
 #'   an AntaresDataTable.
@@ -12,7 +12,7 @@
 #' 
 #' @export
 #' 
-getIds <- function(x = NULL) {
+getIdCols <- function(x = NULL) {
   
   if (!is(x, "antaresDataTable") || is.null(x))
     stop("x has to be an 'antaresDataTable' object")
