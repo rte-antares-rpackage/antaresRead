@@ -5,7 +5,7 @@ context("getIds")
 source("setup_test_case.R")
 opts <- setSimulationPath(studyPath)
 
-test_that("input is an antareDataTable", {
+test_that("It only accepts antaresDataTable input", {
   
   setSimulationPath(studyPath, -1)
   mydata<-readAntares(areas = "all", links = "all", showProgress = FALSE)
