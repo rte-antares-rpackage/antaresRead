@@ -271,7 +271,9 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   districtList <- tolower(names(readIniFile(file.path(inputPath, "areas/sets.ini"))))
   
-  linksDef <- ldply(list.files(file.path(inputPath, "links")), function(f) {
+  areasWithLinks <-list.files(file.path(inputPath, "links"))
+  areasWithLinks <- intersect(areasWithLinks, areaList)
+  linksDef <- ldply(areasWithLinks, function(f) {
     if (!dir.exists(file.path(inputPath, "links", f))) return(NULL)
     to <- names(readIniFile(file.path(inputPath, "links", f, "properties.ini")))
     
