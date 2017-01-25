@@ -1,5 +1,22 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 0.15 (2016-01-25)
+
+BREAKING CHANGES:
+* Parameter "synthesis" has been removed from readAntares. The new behavior is now to import synthetic results when "mcYears" is NULL and to import detailed results when "mcYears" is set.
+
+NEW FEATURES:
+* New function "getIdCols()" returns the Id columns of an antaresDataTable object.
+* New method "subset()" for antaresDataList objects permits to quickly extract the data for a given area or a given Monte-Carlo scenario.
+
+BUGFIXES:
+* In "input" mode, getLinks() could return links that did not exist anymore.
+* removeVirtualAreas was requiring some data that was not necesary. It should be OK now.
+* setSimulationPath() was crashing when one wanted to read the input data of a study before having run any simulation.
+* Variable "timeId" is now always numeric. Before it was numeric except for annual data where it could be character or factor.
+
+
+
 Changes in version 0.14 (2016-11-14)
 
 NEW FEATURES:
