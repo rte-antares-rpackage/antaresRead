@@ -1,14 +1,17 @@
 Package: antaresRead
 Type: Package
 Title: Import, manipulate and explore the results of an Antares simulation
-Version: 0.14.0
-Date: 2016-11-14
+Version: 0.15.0
+Date: 2016-01-25
 Authors@R: c(
     person("Francois", "Guillem", , "francois.guillem@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = "ctb"),
     person("RTE", role = "cph")
     )
+Maintainer: Francois Guillem <francois.guillem@rte-france.com>
 Description: Import, manipulate and explore the results of an Antares simulation.
+URL: https://github.com/rte-antares-rpackage/antares-rpackageRead
+BugReports: https://github.com/rte-antares-rpackage/antares-rpackageRead/issues
 License: GPL (>= 2) + file LICENSE 
 LazyData: TRUE
 Depends:
