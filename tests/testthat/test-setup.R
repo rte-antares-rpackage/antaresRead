@@ -2,8 +2,6 @@
 
 context("Setup functions")
 
-source("setup_test_case.R")
-
 trueOpts <- list(
   studyName = "Test_packages_R",
   name = "test",
@@ -13,18 +11,18 @@ trueOpts <- list(
   scenarios = TRUE,
   mcYears = c(1,2),
   antaresVersion = 500L,
-  timeIdMin = 1,
-  timeIdMax = 24 * 7 * 52,
+  timeIdMin = 7 * 24 + 1,
+  timeIdMax = 24 * 7 * 3,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
   firstWeekday = "Monday",
   areaList = c("a", "a_offshore", "b", "c", "hub", "psp in", "psp in-2", "psp out", 
                "psp out-2"),
-  districtList = "a and b together",
+  districtList = "a and b",
   linkList = c("a - a_offshore", "a - b", "a - psp in", "a - psp out", "b - c", 
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
   areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2"),
-  districtsDef = data.table(district = as.factor("a and b together"), area = as.factor(c("a", "b")))
+  districtsDef = data.table(district = as.factor("a and b"), area = as.factor(c("a", "b")))
 )
 
 test_that("setSimulationPath reads correct values", {

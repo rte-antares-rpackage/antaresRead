@@ -2,7 +2,8 @@
 
 context("Object antaresDataTable")
 
-source("setup_test_case.R")
+l <- list.files()
+
 opts <- setSimulationPath(studyPath)
 
 mydata <- readAntares(areas = "all", showProgress = FALSE)

@@ -2,29 +2,27 @@
 
 context("Function readAntares")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 test_that("Areas importation is ok", {
   areas <- readAntares(areas = opts$areaList, showProgress = FALSE)
   expect_is(areas, "data.table")
   expect_true(!is.null(areas$area))
-  expect_equal(nrow(areas), 24 * 7 * 52 * length(opts$areaList))
+  expect_equal(nrow(areas), 24 * 7 * nweeks * length(opts$areaList))
 })
 
 test_that("Links importation is ok", {
   links <- readAntares(links = opts$linkList, showProgress = FALSE)
   expect_is(links, "data.table")
   expect_true(!is.null(links$link))
-  expect_equal(nrow(links), 24 * 7 * 52 * length(opts$linkList))
+  expect_equal(nrow(links), 24 * 7 * nweeks * length(opts$linkList))
 })
 
 test_that("Clusters importation is ok", {
   clusters <- readAntares(clusters = opts$areasWithClusters, showProgress = FALSE)
   expect_is(clusters, "data.table")
   expect_true(!is.null(clusters$cluster))
-  expect_equal(nrow(clusters), 24 * 7 * 52 * nrow(readClusterDesc()))
+  expect_equal(nrow(clusters), 24 * 7 * nweeks * nrow(readClusterDesc()))
 })
 
 test_that("importation of different objects works", {
@@ -37,10 +35,10 @@ test_that("importation of different objects works", {
 # Test that importation works for all time resolutions.
 for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
   expected_rows = switch(timeStep,
-                         hourly = 24 * 7 * 52,
-                         daily = 7 * 52,
-                         weekly = 52,
-                         monthly = 12,
+                         hourly = 24 * 7 * nweeks,
+                         daily = 7 * nweeks,
+                         weekly = nweeks,
+                         monthly = 1,
                          annual = 1)
 
   test_that(sprintf("one can import %s output", timeStep), {
@@ -67,7 +65,7 @@ test_that("default behavior is fine", {
   # Check synthetic output
   expect_true(is.null(areas$mcYear))
   # Check hourly output
-  expect_equal(nrow(areas), 24 * 7 * 52 * length(getOption("antares")$areaList))
+  expect_equal(nrow(areas), 24 * 7 * nweeks * length(getOption("antares")$areaList))
 })
 
 test_that("It is possible to select only some columns", {

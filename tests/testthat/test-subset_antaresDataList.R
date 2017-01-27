@@ -2,11 +2,10 @@
 
 context("Subsetting antaresDataList")
 
-source("setup_test_case.R")
 opts <- setSimulationPath(studyPath)
 
 mydata <- readAntares(areas = "all", links = "all", clusters = "all",
-                      timeStep = "monthly", mcYears = "all",
+                      timeStep = "daily", mcYears = "all",
                       showProgress = FALSE)
 
 myarea <- "a"
@@ -26,7 +25,7 @@ describe("subset.antaresDataTable", {
   })
   
   it ("filters time ids", {
-    mytimeIds <- 2
+    mytimeIds <- 9
     mysubset <- subset(mydata, timeIds = mytimeIds)
     expect_true(all(mysubset$areas$timeId %in% mytimeIds))
     expect_true(all(mysubset$links$timeId %in% mytimeIds))
@@ -42,7 +41,7 @@ describe("subset.antaresDataTable", {
   })
   
   it ("filters all three variables together", {
-    mysubset <- subset(mydata, areas = myarea, timeIds = 1, mcYears = 1) 
+    mysubset <- subset(mydata, areas = myarea, timeIds = 9, mcYears = 1) 
     expect_true(nrow(mysubset$areas) == 1)
     expect_true(nrow(mysubset$links) == length(mylinks))
   })

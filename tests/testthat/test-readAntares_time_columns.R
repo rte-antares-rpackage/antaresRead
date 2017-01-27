@@ -2,8 +2,6 @@
 
 context("Function readAntares (date-time columns)")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 test_that("readAntares add date-time columns at hourly time step", {

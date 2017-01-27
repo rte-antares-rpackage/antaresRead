@@ -14,8 +14,6 @@ URL: https://github.com/rte-antares-rpackage/antares-rpackageRead
 BugReports: https://github.com/rte-antares-rpackage/antares-rpackageRead/issues
 License: GPL (>= 2) | file LICENSE 
 LazyData: TRUE
-Depends:
-    data.table (>= 1.9.6)
 Imports:
     data.table (>= 1.9.6),
     lubridate,

@@ -1,0 +1,9 @@
+A	area	de	weekly
+	VARIABLES	BEGIN	END
+	15	2	3
+
+A	weekly	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE
+		MWh	MWh	MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NODU	NODU	NODU	NODU	NODU
+	week															
+	2	6326880	210000	83351	59954	4056143	0	0	0	0	0	6456	3000	103	168	4539
+	3	6303360	233520	311733	92959	4499086	0	0	0	0	0	6432	3336	421	168	4848
