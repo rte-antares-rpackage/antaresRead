@@ -97,13 +97,3 @@ readLayout <- function(opts = simOptions()) {
 
   list(areas = areas, districts = districts, links=links, districtLinks = districtLinks)
 }
-
-# Fonction pour vérifier visuellement qu'importLayout fonctionne
-plotLayout <- function(layout) {
-  if (missing(layout)) layout <- readLayout()
-  plot(layout$areas$x, layout$areas$y, type="n",xaxt='n',yaxt='n',pch='',ylab='',xlab='')
-
-  with(layout$links, segments(x0, y0, x1, y1, col = gray(0.85)))
-
-  with(layout$areas, points(x, y, pch=21, col=gray(0.6), bg = color, cex = 2))
-}
