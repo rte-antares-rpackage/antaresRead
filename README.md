@@ -137,7 +137,7 @@ The folder test_case contains a test Antares study used to run automatic tests. 
 
 ```r
 tar(
-  tarfile = "tests/testthat/testdata/antares-test-study.tar.gz", 
+  tarfile = "inst/testdata/antares-test-study.tar.gz", 
   files = "test_case", 
   compression = "gzip"
 )
