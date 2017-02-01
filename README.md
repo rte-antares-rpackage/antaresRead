@@ -133,6 +133,16 @@ vignette("datatable-intro")
 
 Contributions to the library are welcome and can be submitted in the form of pull requests to this repository.
 
+The folder test_case contains a test Antares study used to run automatic tests. If you modifies it, you need to run the following command to include the modifications in the tests:
+
+```r
+tar(
+  tarfile = "inst/testdata/antares-test-study.tar.gz", 
+  files = "test_case", 
+  compression = "gzip"
+)
+```
+
 ##License Information:
 
 Copyright 2015-2016 RTE (France)

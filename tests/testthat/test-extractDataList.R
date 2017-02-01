@@ -2,8 +2,6 @@
 
 context("Function extractDataList")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 areas <- readAntares("all", showProgress=FALSE)

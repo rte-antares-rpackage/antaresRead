@@ -1,0 +1,9 @@
+PSP OUT	area	de	weekly
+	VARIABLES	BEGIN	END
+	3	2	3
+
+PSP OUT	weekly	PSP_OUT	PSP_OUT	PSP_OUT
+		MWh	NP Cost - Euro	NODU
+	week	EXP	EXP	EXP
+	2	117506	0	39
+	3	73734	0	26

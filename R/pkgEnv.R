@@ -5,7 +5,8 @@
 #' @importFrom methods is
 #' @importFrom grDevices col2rgb rgb
 #' @importFrom stats as.formula
-#' @importFrom utils View choose.dir read.table type.convert write.table writeClipboard
+#' @importFrom utils View choose.dir read.table type.convert write.table 
+#' @importFrom utils untar writeClipboard
 
 # Private variables accessible only by functions from the package
 

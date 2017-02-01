@@ -2,8 +2,6 @@
 
 context("Function readAntares (mustRun)")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 output <- readAntares(areas = "all", clusters = "all", mustRun = TRUE, 
@@ -22,7 +20,7 @@ test_that("Columns mustRun* have been added", {
 })
 
 test_that("The result has the same number of rows", {
-  expect_equal(nrow(output$areas), 24 * 7 * 52 * length(opts$areaList))
+  expect_equal(nrow(output$areas), 24 * 7 * nweeks * length(opts$areaList))
 })
 
 test_that("mustRun is equal to 0 for clusters that are not in 'must run' mode", {
@@ -48,7 +46,7 @@ test_that("Time aggregation of mustRun works", {
 test_that("mustRun also works when synthesis = FALSE", {
   totalMustRun <- sum(areas$mustRunTotal)
   byYear <- readAntares(clusters = "all", mustRun = TRUE, showProgress=FALSE, 
-                        timeStep = "annual", mcYears = "all")
+                        timeStep = "daily", mcYears = "all")
   
   # average mustRun should be very close to the one in the synthetic results
   expect_lt(abs(sum(byYear$mustRunTotal)/length(opts$mcYears) / totalMustRun - 1), 0.001)

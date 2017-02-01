@@ -1,0 +1,388 @@
+[Fri Jan 27 11:42:15 2017][solver][check] Antares Solver v5.0.0 (RTE France)
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: built for 64-bit architectures, Microsoft Windows, 4 cpu(s)
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: hostname = GROVSW108
+[Fri Jan 27 11:42:15 2017][solver][infos] 
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: from C:\Program Files\RTE\Antares\5.0.0\bin
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: log filename: D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case\logs\solver-20170127-114215.log
+[Fri Jan 27 11:42:15 2017][solver][infos] 
+[Fri Jan 27 11:42:15 2017][solver][notic] Preparing Test_packages_R...
+[Fri Jan 27 11:42:15 2017][solver][infos]   detected version: 500
+[Fri Jan 27 11:42:15 2017][solver][infos]   from `D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case`
+[Fri Jan 27 11:42:15 2017][solver][infos] 
+[Fri Jan 27 11:42:15 2017][solver][infos]   simulation mode: Economy
+[Fri Jan 27 11:42:15 2017][solver][infos]   simplex optimization range: day
+[Fri Jan 27 11:42:15 2017][solver][infos]   2 years in the user's playlist
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: enabling the 'year-by-year' mode
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: enabling the user playlist
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: enabling filtering
+[Fri Jan 27 11:42:15 2017][solver][infos]   :: ignoring export mps
+[Fri Jan 27 11:42:15 2017][solver][infos]   Output folder : D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case\output\20170127-1142eco-test_sim
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the list of areas...
+[Fri Jan 27 11:42:15 2017][solver][infos]   Loading the area list from `D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case\input\areas\list.txt`
+[Fri Jan 27 11:42:15 2017][solver][infos]   9 areas found
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading global hydro data...
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal clusters...
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area A
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area A_offshore
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area B
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area C
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area Hub
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area PSP IN
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area PSP IN-2
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area PSP OUT
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading thermal configuration for the area PSP OUT-2
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  9%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  18%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  27%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  36%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  45%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  54%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  63%
+[Fri Jan 27 11:42:15 2017][solver][infos]   NPO max for the thermal cluster 'BASE_must_run' has been normalized
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  72%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  81%
+[Fri Jan 27 11:42:15 2017][solver][infos]   NPO max for the thermal cluster 'PEAK_must_run_partial' has been normalized
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 1/9: A  90%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore  16%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore  33%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore  50%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore  66%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 2/9: A_offshore  83%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  11%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  22%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  33%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  44%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  55%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  66%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  77%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 3/9: B  88%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  11%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  22%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  33%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  44%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  55%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  66%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  77%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 4/9: C  88%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub  16%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub  33%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub  50%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub  66%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 5/9: Hub  83%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  14%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  28%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  42%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  57%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  71%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 6/9: PSP IN  85%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  14%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  28%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  42%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  57%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  71%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 7/9: PSP IN-2  85%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  14%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  28%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  42%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  57%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  71%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 8/9: PSP OUT  85%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  14%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  28%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  42%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  57%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  71%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading the area 9/9: PSP OUT-2  85%
+[Fri Jan 27 11:42:15 2017][solver][infos] Loading correlation matrices...
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Loading constraints...
+[Fri Jan 27 11:42:16 2017][solver][infos]  added `psp` (daily, equality)
+[Fri Jan 27 11:42:16 2017][solver][infos]  added `psp_hub` (daily, equality)
+[Fri Jan 27 11:42:16 2017][solver][infos]  added `psp_a` (daily, equality)
+[Fri Jan 27 11:42:16 2017][solver][infos] 3 binding constraints found
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Loading sets of areas...
+[Fri Jan 27 11:42:16 2017][solver][infos]    found `a and b together` (2 items)
+[Fri Jan 27 11:42:16 2017][solver][infos]  Elapsed time: Study loading: 359ms
+[Fri Jan 27 11:42:16 2017][solver][infos] [statistics] disk: read: 3480 ko, written: 0 ko
+[Fri Jan 27 11:42:16 2017][solver][infos] [statistics] network: read: 0 ko, written: 0 ko
+[Fri Jan 27 11:42:16 2017][solver][infos] The study is loaded.
+[Fri Jan 27 11:42:16 2017][solver][infos] [UI] Display messages: Off
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating calendar informations
+[Fri Jan 27 11:42:16 2017][solver][infos] Calendar: hours:169..672, days:8..28, weeks:2..4, months:1..1, years:1..2
+[Fri Jan 27 11:42:16 2017][solver][infos] Simulation days per month : 21, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Optimizing the thermal clusters in 'must-run' mode...
+[Fri Jan 27 11:42:16 2017][solver][infos] enabling 'must-run' mode for the cluster  A::BASE_must_run
+[Fri Jan 27 11:42:16 2017][solver][infos] Found 1 thermal cluster in 'must-run' mode
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Optimizing 3 binding constraints
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Summary
+[Fri Jan 27 11:42:16 2017][solver][infos]      areas: 9
+[Fri Jan 27 11:42:16 2017][solver][infos]      links: 10
+[Fri Jan 27 11:42:16 2017][solver][infos]      thermal clusters: 14
+[Fri Jan 27 11:42:16 2017][solver][infos]      thermal clusters (must-run): 1
+[Fri Jan 27 11:42:16 2017][solver][infos]      binding constraints: 3
+[Fri Jan 27 11:42:16 2017][solver][infos]      filtering:true
+[Fri Jan 27 11:42:16 2017][solver][infos]      memory : 17Mo
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Initializing random number generators...
+[Fri Jan 27 11:42:16 2017][solver][infos] [UI] Progression map: D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case\output\20170127-1142eco-test_sim\about-the-study\map
+[Fri Jan 27 11:42:16 2017][solver][infos]   system memory report: 11831 Mib / 16136 Mib,  73.320526% free
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] [UI] Display messages: On
+[Fri Jan 27 11:42:16 2017][solver][check] Running the simulation (economy)
+[Fri Jan 27 11:42:16 2017][solver][infos] Allocating resources...
+[Fri Jan 27 11:42:16 2017][solver][infos] Allocating resources 55%
+[Fri Jan 27 11:42:16 2017][solver][infos] Allocating resources...
+[Fri Jan 27 11:42:16 2017][solver][infos]  Variables:  (121Mo)
+[Fri Jan 27 11:42:16 2017][solver][infos]  + Areas                             
+[Fri Jan 27 11:42:16 2017][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        ENERG. PLANT          MWh     Energy generated by all the clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        ROW BAL.              MWh     Row Balance
+[Fri Jan 27 11:42:16 2017][solver][infos]        PSP                   MWh     PSP
+[Fri Jan 27 11:42:16 2017][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Fri Jan 27 11:42:16 2017][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Fri Jan 27 11:42:16 2017][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOLD                  Hours   LOLD
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOLP                  %       LOLP
+[Fri Jan 27 11:42:16 2017][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Fri Jan 27 11:42:16 2017][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Fri Jan 27 11:42:16 2017][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]                              NP Cost Non proportional costs by all the clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        NODU                          Number Of Dispatched Units throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]                              NODU    Number of Dispatchable Units by plant
+[Fri Jan 27 11:42:16 2017][solver][infos]      + Links                         
+[Fri Jan 27 11:42:16 2017][solver][infos]            FLOW LIN.         MWh     Flow assessed, over all MC years, through linear optimization
+[Fri Jan 27 11:42:16 2017][solver][infos]            UCAP LIN.         MWh     Used capacity assessed, over all MC years, through linear optimization
+[Fri Jan 27 11:42:16 2017][solver][infos]            FLOW QUAD.        MWh     Flow (quad.)
+[Fri Jan 27 11:42:16 2017][solver][infos]            CONG. FEE (ALG.)  Euro    Congestion fee collected throughout all MC years (Alg.)
+[Fri Jan 27 11:42:16 2017][solver][infos]            CONG. FEE (ABS.)  Euro    Congestion fee collected throughout all MC years (Absolute value)
+[Fri Jan 27 11:42:16 2017][solver][infos]            MARG. COST        Euro/MW Decrease of the overall operating cost expected by a 1MW capacity reinforcement
+[Fri Jan 27 11:42:16 2017][solver][infos]            CONG. PROB. (+/-) %       Probability for the line to be congested in the upstream-downstream way
+[Fri Jan 27 11:42:16 2017][solver][infos]            HURDLE COST       Euro    Hurdle costs, over all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]  + Sets of Areas                     
+[Fri Jan 27 11:42:16 2017][solver][infos]        OV. COST              Euro    Overall Cost throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        OP. COST              Euro    Operating Cost throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        MRG. PRICE            Euro    Marginal Price, throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        CO2 EMIS.             Tons    Overall CO2 emissions expected from all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        BALANCE               MWh     Nodal energy balance, throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        ROW BAL.              MWh     Row Balance
+[Fri Jan 27 11:42:16 2017][solver][infos]        PSP                   MWh     PSP
+[Fri Jan 27 11:42:16 2017][solver][infos]        MISC. NDG             MWh     Non-dispatchable generation (not including wind and run-of-the-river)
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOAD                  MWh     Load generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        H. ROR                MWh     Hydro generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        WIND                  MWh     Wind generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        SOLAR                 MWh     Solar generation, thoughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        Dispatch. Gen.        MWh     Value of all the dispatchable generation throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        H. STOR               MWh     Hydro Storage Generation
+[Fri Jan 27 11:42:16 2017][solver][infos]        UNSP. ENRG            MWh     Unsuplied Energy (demand that cannot be satisfied)
+[Fri Jan 27 11:42:16 2017][solver][infos]        SPIL. ENRG            MWh     Spilled Energy (generation that cannot be satisfied)
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOLD                  Hours   LOLD
+[Fri Jan 27 11:42:16 2017][solver][infos]        LOLP                  %       LOLP
+[Fri Jan 27 11:42:16 2017][solver][infos]        AVL DTG               MWh     Available dispatchable generation
+[Fri Jan 27 11:42:16 2017][solver][infos]        DTG MRG               MWh     Dispatchable Generation Margin
+[Fri Jan 27 11:42:16 2017][solver][infos]        MAX MRG               MWh     Maximum margin throughout all MC years
+[Fri Jan 27 11:42:16 2017][solver][infos]        NP COST               Euro    Non Proportional Cost throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos]        NODU                          Number Of Dispatched Units throughout all MC years, of all the thermal dispatchable clusters
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Preparing time-series numbers...
+[Fri Jan 27 11:42:16 2017][solver][infos] MC-Years : [1 .. 2], total: 2
+[Fri Jan 27 11:42:16 2017][solver][infos]  Starting the simulation
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating the load time-series
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'A'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'B'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'C'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'PSP IN'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'PSP IN-2'
+[Fri Jan 27 11:42:16 2017][solver][infos]   17520 points calculated, using 730 correlation matrices, out of which 0 were npsd and transformed
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting load time-series into the output (year:0)
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 load, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]   Releasing the load TS Generator
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating the solar time-series
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'A'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'B'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'C'
+[Fri Jan 27 11:42:16 2017][solver][infos]   175200 points calculated, using 730 correlation matrices, out of which 0 were npsd and transformed
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting solar time-series into the output (year:0)
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 solar, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]   Releasing the solar TS Generator
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating the wind time-series
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'A'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'A_offshore'
+[Fri Jan 27 11:42:16 2017][solver][infos]   Added the area 'C'
+[Fri Jan 27 11:42:16 2017][solver][infos]   88896 points calculated, using 730 correlation matrices, out of which 0 were npsd and transformed
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting wind time-series into the output (year:0)
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 wind, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]   Releasing the wind TS Generator
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating the hydro time-series
+[Fri Jan 27 11:42:16 2017][solver][infos] Archiving the hydro time-series
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 hydro, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][infos] Generating the thermal time-series
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 thermal, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos] Current MC Year : 1
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting the annual results
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A_offshore
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : C
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP IN-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP OUT-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - A_offshore
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - B
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - C
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : C - Hub
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub - PSP IN-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub - PSP OUT-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : All areas
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 output, post, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]  Elapsed time: Survey report: 156ms
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 mc, year: 0, 100
+[Fri Jan 27 11:42:16 2017][solver][infos] Current MC Year : 2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting the annual results
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A_offshore
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : C
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP IN-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP OUT-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - A_offshore
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - B
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A - PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - C
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - PSP IN
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B - PSP OUT
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : C - Hub
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub - PSP IN-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub - PSP OUT-2
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : All areas
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 output, post, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]  Elapsed time: Survey report: 158ms
+[Fri Jan 27 11:42:16 2017][solver][progress] task 0 mc, year: 1, 100
+[Fri Jan 27 11:42:16 2017][solver][infos]   The quadratic optimisation has been skipped
+[Fri Jan 27 11:42:16 2017][solver][infos]  Elapsed time: MC Years: 673ms
+[Fri Jan 27 11:42:16 2017][solver][infos] 
+[Fri Jan 27 11:42:16 2017][solver][check] Exporting the survey results...
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : A_offshore
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : B
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : C
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : Hub
+[Fri Jan 27 11:42:16 2017][solver][infos] Exporting results : PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : A - A_offshore
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : A - B
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : A - PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : A - PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : B - C
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : B - PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : B - PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : C - Hub
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : Hub - PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : Hub - PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][progress] task 0 output, post, 90.000000
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting results : All areas
+[Fri Jan 27 11:42:17 2017][solver][infos] Exporting digest...
+[Fri Jan 27 11:42:17 2017][solver][progress] task 0 output, post, 100
+[Fri Jan 27 11:42:17 2017][solver][infos]  Elapsed time: Survey report: 475ms
+[Fri Jan 27 11:42:17 2017][solver][notic] Updating the input data...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing the generated time-series into the input data
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : A
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : A_offshore
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : B
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : C
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : Hub
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing load timeseries : PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : A
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : A_offshore
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : B
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : C
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : Hub
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing solar timeseries : PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : A
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : A_offshore
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : B
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : C
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : Hub
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing hydro timeseries : PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : A
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : A_offshore
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : B
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : C
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : Hub
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : PSP IN
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : PSP IN-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : PSP OUT
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing wind timeseries : PSP OUT-2
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries...
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : A  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : A  20% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : A  40% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : A  60% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : A  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : B  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : B  25% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : B  50% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : C  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : C  25% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : C  50% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : PSP IN  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : PSP IN-2  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : PSP OUT  0% complete
+[Fri Jan 27 11:42:17 2017][solver][infos] Importing thermal timeseries : PSP OUT-2  0% complete
+[Fri Jan 27 11:42:17 2017][solver][progress] task 0 import timeseries, post, 100
+[Fri Jan 27 11:42:17 2017][solver][infos] [UI] Quitting the solver gracefully
+[Fri Jan 27 11:42:17 2017][solver][infos]  Writing log file: D:\Users\franguil\Documents\R\antares-rpackageInAndOut\test_case\output\20170127-1142eco-test_sim\simulation.log
+[Fri Jan 27 11:42:17 2017][solver][infos] Done.

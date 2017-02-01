@@ -1,6 +1,5 @@
 context("Function .groupByDistrict")
 
-source("setup_test_case.R")
 opts <- setSimulationPath(studyPath)
 
 describe(".groupByDistrict", {
