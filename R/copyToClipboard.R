@@ -25,12 +25,15 @@
 #' The function does not return anything. It is only used to interact with the
 #' clipboard
 #' 
-#' @examples 
+#' @examples
+#'  # This only works on Windows systems
+#' \dontrun{
 #' x <- data.frame(a = sample(10), b = sample(10))
 #' 
 #' copyToClipboard(x)
 #' 
 #' # Try to open excel and use CTRL + V to copy the data in a spreadsheet.
+#' }
 #' 
 #' @export
 copyToClipboard <- function(x, ...) {
