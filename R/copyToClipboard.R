@@ -34,6 +34,9 @@
 #' 
 #' @export
 copyToClipboard <- function(x, ...) {
+  if (!exists("writeClipboard", getNamespace("utils"))) {
+    stop("This function works only on windows systems")
+  }
   UseMethod("copyToClipboard", x)
   invisible()
 }
@@ -60,7 +63,7 @@ copyToClipboard.data.frame <- function(x, ...) {
   }
   write.table(x, file = textConnection(".txt", "w", local=TRUE), 
               sep="\t", row.names = FALSE, ...)
-  writeClipboard(.txt)
+  utils::writeClipboard(.txt)
 }
 
 #' @export
@@ -71,7 +74,7 @@ copyToClipboard.matrix <- function(x, ...) {
   }
   write.table(x, file = textConnection(".txt", "w", local=TRUE), 
               sep="\t", row.names = FALSE, col.names = FALSE, ...)
-  writeClipboard("txt")
+  utils::writeClipboard(.txt)
 }
 
 #' @export

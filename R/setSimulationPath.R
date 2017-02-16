@@ -137,9 +137,9 @@
 setSimulationPath <- function(path, simulation = NULL) {
   
   if (missing(path)) {
-    if (exists("choose.dir")) {
+    if (exists("choose.dir", getNamespace("utils"))) {
       # choose.dir is defined only on Windows
-      path <- choose.dir(getwd(), "Select an Antares simulation directory")
+      path <- utils::choose.dir(getwd(), "Select an Antares simulation directory")
       if (is.na(path)) stop("You have canceled the execution.")
     } else {
       stop("Please specify a path to an Antares simulation")
