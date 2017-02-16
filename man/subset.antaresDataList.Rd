@@ -49,4 +49,3 @@ mySubset<-subset(mydata, mcYears = 1, areas=c("a", "b"), timeIds=5:16)
 }
 
 }
-

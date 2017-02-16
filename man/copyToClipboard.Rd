@@ -39,4 +39,3 @@ copyToClipboard(x)
 # Try to open excel and use CTRL + V to copy the data in a spreadsheet.
 
 }
-

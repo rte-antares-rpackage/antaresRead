@@ -140,4 +140,3 @@ matplot(output[area == area[1], !c("area", "timeId"), with = FALSE],
 \code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
   \code{\link{readClusterDesc}}, \code{\link{readBindingConstraints}}
 }
-

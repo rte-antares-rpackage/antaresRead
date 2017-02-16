@@ -31,4 +31,3 @@ viewAntares(output) # Opens three data viewers for each element of output
 }
 
 }
-

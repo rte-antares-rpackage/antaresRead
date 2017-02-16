@@ -122,4 +122,3 @@ correctedData <- removeVirtualAreas(data,
 }
 
 }
-

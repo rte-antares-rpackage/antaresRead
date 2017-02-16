@@ -143,6 +143,7 @@ register your parallel backend. For instance, if you use package "doParallel"
 you need to use the function \code{registerDoParallel} once per
 session.
 }
+
 \examples{
 \dontrun{
 # Import areas and links separately
@@ -184,4 +185,3 @@ areas <- readAntares(select="economy")
 \code{\link{setSimulationPath}}, \code{\link{getAreas}},
 \code{\link{getLinks}}, \code{\link{getDistricts}}
 }
-
