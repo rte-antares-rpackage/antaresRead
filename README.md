@@ -1,5 +1,7 @@
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rte-antares-rpackage/antares-rpackageRead?branch=master&svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageRead)
 
+[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead)
+
 # Read data from an Antares study with R package 'antaresRead'
 
 
