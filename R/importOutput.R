@@ -317,7 +317,7 @@
     colToRead <- sort(unique(ids)) # Columns to read in the ts file
     colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
     
-    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)[1:(24*7*52),]
+    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
     
     ldply(1:length(ids), function(i) {
       data.frame(

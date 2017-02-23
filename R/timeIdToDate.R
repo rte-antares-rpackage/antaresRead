@@ -21,23 +21,23 @@
   if (timeStep == "hourly") {
     
     timestamp <- as.POSIXct(opts$start)
-    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*7*52) - 1
+    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*365) - 1
     
     return(timestamp[timeId])
     
   } else if (timeStep == "daily") {
     
     date <- as.Date(opts$start)
-    date <- date + 1:(7*52) - 1
+    date <- date + 1:365 - 1
     
     return(date[timeId])
     
   } else if (timeStep == "weekly") {
     
     timestamp <- as.POSIXct(opts$start)
-    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*7*52) - 1
+    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*365) - 1
     
-    weekId <- .getTimeId(1:(24*7*52), "weekly", opts)
+    weekId <- .getTimeId(1:(24*365), "weekly", opts)
     date <- as.Date(tapply(timestamp, weekId, function(x) as.Date(min(x))), origin = "1970-1-1")
     date[1] <- date[2] - 7
     
@@ -48,9 +48,9 @@
   } else if (timeStep == "monthly") {
     
     timestamp <- as.POSIXct(opts$start)
-    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*7*52) - 1
+    lubridate::hour(timestamp) <- lubridate::hour(timestamp) + 1:(24*365) - 1
     
-    monthId <- .getTimeId(1:(24*7*52), "monthly", opts)
+    monthId <- .getTimeId(1:(24*365), "monthly", opts)
     month <- as.Date(tapply(timestamp, monthId, function(x) as.Date(min(x))), origin = "1970-1-1")
     # month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
     
