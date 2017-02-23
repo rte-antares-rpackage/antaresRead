@@ -1,0 +1,8 @@
+PSP OUT	area	de	annual
+	VARIABLES	BEGIN	END
+	3	1	1
+
+PSP OUT	annual	PSP_OUT	PSP_OUT	PSP_OUT
+		MWh	NP Cost - Euro	NODU
+				
+	Annual	194699	0	68

@@ -1,0 +1,8 @@
+A	link	va	monthly
+A_offshore	VARIABLES	BEGIN	END
+	9	1	1
+
+A	monthly		FLOW LIN.	UCAP LIN.	FLOW QUAD.	CONG. FEE (ALG.)	CONG. FEE (ABS.)	MARG. COST	CONG. PROB +	CONG. PROB -	HURDLE COST
+			MWh	MWh	MWh	Euro	Euro	Euro/MW	%	%	Euro
+	index	month									
+	1	JAN	-1814	1814	0	0	0	0	0	0	0

@@ -91,4 +91,3 @@ matplot(myArea[, - (1:2), with = FALSE], type = "l")
 \code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }
-

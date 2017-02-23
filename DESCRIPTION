@@ -11,19 +11,19 @@ Authors@R: c(
 Maintainer: Francois Guillem <francois.guillem@rte-france.com>
 Description: Import, manipulate and explore the results of an Antares simulation.
 URL: https://github.com/rte-antares-rpackage/antares-rpackageRead
-BugReports: https://github.com/rte-antares-rpackage/antares-rpackageRead/issues
-License: GPL (>= 2) + file LICENSE 
+BugReports: https://goo.gl/07W6Ip
+License: GPL (>= 2) | file LICENSE 
 LazyData: TRUE
-Depends:
-    data.table (>= 1.9.6)
 Imports:
     data.table (>= 1.9.6),
     lubridate,
-    plyr
+    plyr,
+    methods,
+    stats
 Suggests:
     testthat,
     knitr,
     rmarkdown,
     foreach
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 VignetteBuilder: knitr

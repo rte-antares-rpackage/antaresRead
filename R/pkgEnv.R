@@ -2,6 +2,11 @@
 
 #' @import data.table
 #' @import plyr
+#' @importFrom methods is
+#' @importFrom grDevices col2rgb rgb
+#' @importFrom stats as.formula
+#' @importFrom utils View read.table type.convert write.table 
+#' @importFrom utils untar
 
 # Private variables accessible only by functions from the package
 
@@ -49,10 +54,16 @@ pkgEnv$varAliases <- list(
 # The goal of the following lines is only to remove many useless warnings in 
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
 # They come from the use of the data.table syntax.
-utils::globalVariables(c("timeId", "area", "hydroStorage", "thermalAvailability",
-                         "cluster", "FLOW LIN.", "direction", "flow",
-                         "BALANCE", "totalFlow", "prop", "to", "link", "change",
-                         "district", "must.run", ".txt", "detailsLength",
-                         "linkLength", "connectedToVirtualArea", "from", "correction",
-                         "nominalcapacity", "unitcount", "capacity", "minGenModulation",
-                         "production", "mustRunPartial", "mustRunTotal", "mcYear"))
+utils::globalVariables(
+  c("timeId", "area", "hydroStorage", "thermalAvailability",
+    "cluster", "FLOW LIN.", "direction", "flow",
+    "BALANCE", "totalFlow", "prop", "to", "link", "change",
+    "district", "must.run", ".txt", "detailsLength",
+    "linkLength", "connectedToVirtualArea", "from", "correction",
+    "nominalcapacity", "unitcount", "capacity", "minGenModulation",
+    "production", "mustRunPartial", "mustRunTotal", "mcYear",
+    "J", "N", "PSP", "availableUnits", "color", "corrPSP", "fromDistrict", 
+    "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea", 
+    "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict", 
+    "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y")
+)

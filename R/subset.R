@@ -3,7 +3,7 @@
 #' Subset method for \code{antaresDataList}.
 #' 
 #' @param x Object of class \code{antaresDataList} created with 
-#'   \code{\link{antaresDataList}}.
+#'   \code{\link{readAntares}}.
 #' @param y A table containing at least one of the columns "area", "timeId" or 
 #'   "mcYear". If it is not \code{NULL}, then only tuples \code{(area, timeId,
 #'   mcYear)} present in this table are kept.

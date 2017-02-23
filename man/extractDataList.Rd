@@ -26,4 +26,3 @@ clusters, the function creates a list with one element per area. Each element
 is a data.table containing the data about the area and one column per cluster
 of the area containing the production of this cluster.
 }
-

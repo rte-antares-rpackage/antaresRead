@@ -40,4 +40,3 @@ An \code{antaresDataList} is a list of tables of class\code{antaresDataTable}.
 It also has attributes that store the time step, the type of data and the 
 simulation options.
 }
-

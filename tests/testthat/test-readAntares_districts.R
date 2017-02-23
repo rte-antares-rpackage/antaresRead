@@ -2,8 +2,6 @@
 
 context("Function readAntares (districts)")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 suppressWarnings({

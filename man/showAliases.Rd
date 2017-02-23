@@ -18,4 +18,3 @@ in the \code{\link{readAntares}} function in the \code{select} argument
 showAliases()
 
 }
-

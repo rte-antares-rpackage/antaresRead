@@ -34,4 +34,3 @@ An \code{antaresDataTable} is simply a \code{data.table} with additional
 attributes recording the time step, the type of data and the simulation 
 options.
 }
-

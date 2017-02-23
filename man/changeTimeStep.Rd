@@ -55,4 +55,3 @@ changeTimeStep(mydata, "annual", fun = c("sum", "mean"))
 }
 
 }
-

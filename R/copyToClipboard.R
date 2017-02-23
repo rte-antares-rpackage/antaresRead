@@ -25,15 +25,21 @@
 #' The function does not return anything. It is only used to interact with the
 #' clipboard
 #' 
-#' @examples 
+#' @examples
+#'  # This only works on Windows systems
+#' \dontrun{
 #' x <- data.frame(a = sample(10), b = sample(10))
 #' 
 #' copyToClipboard(x)
 #' 
 #' # Try to open excel and use CTRL + V to copy the data in a spreadsheet.
+#' }
 #' 
 #' @export
 copyToClipboard <- function(x, ...) {
+  if (!exists("writeClipboard", getNamespace("utils"))) {
+    stop("This function works only on windows systems")
+  }
   UseMethod("copyToClipboard", x)
   invisible()
 }
@@ -60,7 +66,7 @@ copyToClipboard.data.frame <- function(x, ...) {
   }
   write.table(x, file = textConnection(".txt", "w", local=TRUE), 
               sep="\t", row.names = FALSE, ...)
-  writeClipboard(.txt)
+  utils::writeClipboard(.txt)
 }
 
 #' @export
@@ -71,7 +77,7 @@ copyToClipboard.matrix <- function(x, ...) {
   }
   write.table(x, file = textConnection(".txt", "w", local=TRUE), 
               sep="\t", row.names = FALSE, col.names = FALSE, ...)
-  writeClipboard("txt")
+  utils::writeClipboard(.txt)
 }
 
 #' @export

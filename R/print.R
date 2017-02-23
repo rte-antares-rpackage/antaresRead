@@ -5,7 +5,7 @@ print.antaresDataTable <- function(x, ...) {
   cat(sprintf("'antaresDataTable' object with dimension %s x %s\n", nrow(x), ncol(x)))
   cat(sprintf("Type: %s\nTimeStep: %s\nSynthesis: %s\n",
               attr(x, "type"), attr(x, "timeStep"), attr(x, "synthesis")))
-  data.table:::print.data.table(x)
+  NextMethod()
 }
 
 #' @export
@@ -21,9 +21,13 @@ print.antaresDataList <- function(x, ...) {
   cat(sprintf("TimeStep: %s\nSynthesis: %s\n",
               attr(x, "type"), attr(x, "timeStep"), attr(x, "synthesis")))
   
+  # Overwrite print.antaresDataTable so that informations like synthesis and 
+  # timestep are not printed again.
+  print.antaresDataTable <- function(x, ...) NextMethod()
+  
   for (n in names(x)) {
-    cat(paste0("\n.$", n, "\n"))
-    data.table:::print.data.table(x[[n]])
+    cat(sprintf("\n.$%s (%s x %s)\n", n, nrow(x[[n]]), ncol(x[[n]])))
+    print(x[[n]])
   }
   
 }

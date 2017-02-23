@@ -2,8 +2,6 @@
 
 context("Function changeTimeStep")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 areas <- readAntares(select = "LOAD", showProgress = FALSE, mcYears = "all")

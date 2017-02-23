@@ -15,4 +15,3 @@ A character vector containing the name of the id columns of an antaresDataTable
 \description{
 \code{getIdCols} return the id columns of an AntaresDataTable
 }
-

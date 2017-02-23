@@ -2,8 +2,6 @@
 
 context("removeVirtualAreas function")
 
-source("setup_test_case.R")
-
 opts <- setSimulationPath(studyPath)
 
 data <- suppressWarnings(readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE))

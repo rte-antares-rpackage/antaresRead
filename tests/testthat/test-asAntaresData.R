@@ -1,3 +1,5 @@
+context("Conversion as antaresData")
+
 describe("as.antaresDataTable", {
   
   it("converts data.frames", {

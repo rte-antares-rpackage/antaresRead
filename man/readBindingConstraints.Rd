@@ -49,4 +49,3 @@ readBindingConstraints(simOptions(areasSimulation1))
 }
 
 }
-

@@ -1,0 +1,8 @@
+A	link	va	monthly
+B	VARIABLES	BEGIN	END
+	9	1	1
+
+A	monthly		FLOW LIN.	UCAP LIN.	FLOW QUAD.	CONG. FEE (ALG.)	CONG. FEE (ABS.)	MARG. COST	CONG. PROB +	CONG. PROB -	HURDLE COST
+			MWh	MWh	MWh	Euro	Euro	Euro/MW	%	%	Euro
+	index	month									
+	1	JAN	-17183	77301	0	154601	154601	0	0	0	154601

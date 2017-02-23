@@ -1,0 +1,8 @@
+B	area	de	monthly
+	VARIABLES	BEGIN	END
+	9	1	1
+
+B	monthly		BASE	PEAK	SEMI BASE	BASE	PEAK	SEMI BASE	BASE	PEAK	SEMI BASE
+			MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NODU	NODU	NODU
+	index	month									
+	1	JAN	13152000	1526650	9548712	0	0	0	13152	2278	9696

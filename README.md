@@ -1,5 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs/branch/master?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread/branch/master)
 
+[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead)
+
 # Read data from an Antares study with R package 'antaresRead'
 
 
@@ -134,6 +136,16 @@ vignette("datatable-intro")
 ##Contributing:
 
 Contributions to the library are welcome and can be submitted in the form of pull requests to this repository.
+
+The folder test_case contains a test Antares study used to run automatic tests. If you modifies it, you need to run the following command to include the modifications in the tests:
+
+```r
+tar(
+  tarfile = "inst/testdata/antares-test-study.tar.gz", 
+  files = "test_case", 
+  compression = "gzip"
+)
+```
 
 ##License Information:
 

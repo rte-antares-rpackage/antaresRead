@@ -49,4 +49,3 @@ exclude areas/districts
 \seealso{
 \code{\link{getLinks}}
 }
-
