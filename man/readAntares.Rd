@@ -53,13 +53,15 @@ containing the number of available units in a cluster is created.If synthesis is
 columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
 and "minGenModulation" are added to the cluster data.}
 
-\item{select}{Character vector containing the name of the columns to import. If this
-argument is \code{NULL}, all variables are imported. Special names
-\code{"allAreas"} and \code{"allLinks"} indicate to the function to import
-all variables for areas or for links. The list of available variables can
-be seen with the command \code{simOptions()$variables}.  Id
-variables like \code{area}, \code{link} or \code{timeId} are automatically
-imported.}
+\item{select}{Character vector containing the name of the columns to import. If this 
+argument is \code{NULL}, all variables are imported. Special names 
+\code{"allAreas"} and \code{"allLinks"} indicate to the function to import 
+all variables for areas or for links. Since version 1.0, values "misc", 
+"thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower", "reserve",
+"linkCapacity", "mustRun", "thermalModulation" are also accepted and can
+replace the corresponding arguments. The list of available variables can be
+seen with the command \code{simOptions()$variables}.  Id variables like
+\code{area}, \code{link} or \code{timeId} are automatically imported.}
 
 \item{mcYears}{Index of the Monte-Carlo years to import. If \code{NULL}, synthetic results
 are read, else the specified Monte-Carlo simulations are imported. The 

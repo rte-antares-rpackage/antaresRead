@@ -103,13 +103,15 @@
 #' @param mustRun
 #'   Should mustRun and partialMustRun columns be added to the result ?
 #' @param select
-#'   Character vector containing the name of the columns to import. If this
-#'   argument is \code{NULL}, all variables are imported. Special names
-#'   \code{"allAreas"} and \code{"allLinks"} indicate to the function to import
-#'   all variables for areas or for links. The list of available variables can
-#'   be seen with the command \code{simOptions()$variables}.  Id
-#'   variables like \code{area}, \code{link} or \code{timeId} are automatically
-#'   imported.
+#'   Character vector containing the name of the columns to import. If this 
+#'   argument is \code{NULL}, all variables are imported. Special names 
+#'   \code{"allAreas"} and \code{"allLinks"} indicate to the function to import 
+#'   all variables for areas or for links. Since version 1.0, values "misc", 
+#'   "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower", "reserve",
+#'   "linkCapacity", "mustRun", "thermalModulation" are also accepted and can
+#'   replace the corresponding arguments. The list of available variables can be
+#'   seen with the command \code{simOptions()$variables}.  Id variables like
+#'   \code{area}, \code{link} or \code{timeId} are automatically imported.
 #' @param thermalModulation
 #'   Should thermal modulation time series be imported ? If \code{TRUE}, the
 #'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
@@ -213,7 +215,24 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
   districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
   mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
-
+  
+  # Aliases for groups of variables
+  select <- llply(select, function(x) {
+    for (alias in names(pkgEnv$varAliases)) {
+      if (alias %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]])
+    }
+    x
+  })
+  
+  for (v in c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+              "reserve", "linkCapacity", "mustRun", "thermalModulation")) {
+    if (v %in% unlist(select)) assign(v, TRUE)
+  }
+  
+  # Special aliases allArea and allLink
+  select$areas <- if(any(grepl("allArea", select$areas, ignore.case = TRUE))) NULL else select$areas
+  select$links <- if(any(grepl("allLink", select$links, ignore.case = TRUE))) NULL else select$links
+  
   # Check that when a user wants to import input time series, the corresponding
   # output is also imported
   if ((is.null(areas) & is.null(districts)) & (misc | hydroStorage | hydroStorageMaxPower | reserve)) {
@@ -246,18 +265,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (misc | hydroStorageMaxPower | reserve | linkCapacity) {
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
-
-  # Aliases for groups of variables
-  select <- llply(select, function(x) {
-    for (alias in names(pkgEnv$varAliases)) {
-      if (alias %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]])
-    }
-    x
-  })
-
-  # Special aliases allArea and allLink
-  select$areas <- if(any(grepl("allArea", select$areas, ignore.case = TRUE))) NULL else select$areas
-  select$links <- if(any(grepl("allLink", select$links, ignore.case = TRUE))) NULL else select$links
 
   # Can the importation be parallelized ?
   if (parallel) {
