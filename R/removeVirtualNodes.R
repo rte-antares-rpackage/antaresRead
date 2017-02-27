@@ -389,8 +389,8 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     )
     
     x$areas[, `:=`(
-      storageCapacity = storageCapacity + ifelse(is.na(transCapacityIndirect), 0, transCapacityIndirect),
-      pumpingCapacity = pumpingCapacity + ifelse(is.na(transCapacityDirect), 0, transCapacityDirect),
+      pumpingCapacity = pumpingCapacity + ifelse(is.na(transCapacityIndirect), 0, transCapacityIndirect),
+      storageCapacity = storageCapacity + ifelse(is.na(transCapacityDirect), 0, transCapacityDirect),
       transCapacityDirect = NULL,
       transCapacityIndirect = NULL
     )]
