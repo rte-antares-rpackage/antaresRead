@@ -516,11 +516,6 @@ readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = 
 
   if (missing(areas)) stop("The function 'readAntaresAreas' expects a vector of area names as argument. You can use 'getAreas' to build such a vector.")
 
-  if (is.null(opts)) {
-    message("Please choose a directory containing an Antares simulation")
-    opts <- setSimulationPath()
-  }
-
   links <- if (links) getLinks(areas, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) areas else NULL
 

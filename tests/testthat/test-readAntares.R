@@ -134,3 +134,17 @@ test_that("import only data related to some areas with 'select'", {
                          timeStep = "annual", showProgress = FALSE, select = "")
   expect_equal(mydata, mydata2)
 })
+
+describe("readAntaresAreas", {
+  it("returns data for a set of areas", {
+    mydata <- readAntaresAreas("a", showProgress = FALSE)
+    expect_equal(names(mydata), c("areas", "links", "clusters"))
+    expect_true(all(mydata$areas$area == "a"))
+    expect_true(all(mydata$links$link %in% getLinks("a")))
+    expect_true(all(mydata$clusters$area == "a"))
+  })
+  
+  it ("throws error if no area specified", {
+    expect_error(readAntaresAreas(showProgress = FALSE), "area")
+  })
+})
