@@ -201,20 +201,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
 
   timeStep <- match.arg(timeStep)
-  synthesis <- is.null(mcYears)
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
-
-  # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
-    areas <- "all"
-  }
-
-  # Check arguments validity. The function .checkArgs is defined below
-  areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
-  links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
-  clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
-  districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
-  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
   
   # Aliases for groups of variables
   select <- llply(select, function(x) {
@@ -228,6 +215,30 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
               "reserve", "linkCapacity", "mustRun", "thermalModulation")) {
     if (v %in% unlist(select)) assign(v, TRUE)
   }
+  
+  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
+  if ("links" %in% unlist(select) & is.null(links)) {
+    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
+    else links <- "all"
+  }
+  if ("clusters" %in% unlist(select) & is.null(clusters)) {
+    if (!is.null(areas)) clusters <- areas
+    else clusters <- "all"
+  }
+  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
+  
+  # If all arguments are NULL, import all areas
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
+    areas <- "all"
+  }
+
+  # Check arguments validity. The function .checkArgs is defined below
+  synthesis <- is.null(mcYears)
+  areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
+  links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
+  clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
+  districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
+  mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
   
   # Special aliases allArea and allLink
   select$areas <- if(any(grepl("allArea", select$areas, ignore.case = TRUE))) NULL else select$areas
