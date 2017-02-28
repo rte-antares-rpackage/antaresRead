@@ -241,7 +241,7 @@ setSimulationPath <- function(path, simulation = NULL) {
       } else {
         if (any(simNames == simulation)) sim <- simulation
         else {
-          sim <- simNames[grep(paste0("-", simulation, "$"), simNames, ignore.case = TRUE)]
+          sim <- simNames[grep(paste0("(^\\d{8}-\\d{4})?", simulation, "$"), simNames, ignore.case = TRUE)]
           if (length(sim) == 0) stop ("Cannot find the simulation called ", simulation)
           if (length(sim) > 1) warning("Several simulations have the same name. The most recent will be used")
           sim <- last(sim)
@@ -286,14 +286,20 @@ setSimulationPath <- function(path, simulation = NULL) {
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
+  # Areas with clusters
+  areaHasClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    f <- file.path(inputPath, "thermal/clusters", a, "list.ini")
+    file.exists(f) && file.info(f)$size > 0
+  })
+  
   res <- list(
     mode = "Input",
     antaresVersion = antaresVersion,
     areaList = areaList,
     districtList = districtList,
-    linkList = linksDef$link,
+    linkList = as.character(linksDef$link),
     linksDef = linksDef,
-    areasWithClusters = NA,
+    areasWithClusters = areaList[areaHasClusters],
     parameters = params
   )
 
