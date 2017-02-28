@@ -36,6 +36,7 @@ test_that("R option 'antares' is set", {
 })
 
 test_that("Interactive mode if no study path provided", {
+  skip_if_not(exists("choose.dir", getNamespace("utils")))
   with_mock(
     `utils::choose.dir` = function(...) {studyPath},
     {
