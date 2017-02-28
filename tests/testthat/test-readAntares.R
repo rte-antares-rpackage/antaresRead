@@ -90,3 +90,47 @@ test_that("Aliases are case incensitive", {
                c("area", "timeId", "time", "OV. COST", "OP. COST", "MRG. PRICE",
                  "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
 })
+
+test_that("'select' can be used to import input columns", {
+  for (v in c("misc", "thermalAvailabilities", "hydroStorage", 
+              "hydroStorageMaxPower", "reserve", "linkCapacity", "mustRun",
+              "thermalModulation")) {
+    baseParams <- list(areas = "all", links = "all", clusters = "all",
+                       timeStep = "annual", showProgress = FALSE)
+    params <- baseParams
+    params$select <- ""
+    params[[v]] <- TRUE
+    
+    params2 <- baseParams
+    params2$select = v
+    
+    suppressWarnings({
+      mydata <- do.call(readAntares, params)
+      mydata2 <- do.call(readAntares, params2)
+    })
+    expect_equal(mydata, mydata2)
+  }
+})
+
+test_that("'select' can be used to import link, area, cluster, detailed data", {
+  for (v in c("areas", "links", "clusters", "mcYears")) {
+    params <- list(select = "", timeStep = "annual", showProgress = FALSE)
+    params[[v]] <- "all"
+    
+    params2 <- list(select = v, timeStep = "annual", showProgress = FALSE)
+    
+    suppressWarnings({
+      mydata <- do.call(readAntares, params)
+      mydata2 <- do.call(readAntares, params2)
+    })
+    expect_equal(mydata, mydata2)
+  }
+})
+
+test_that("import only data related to some areas with 'select'", {
+  mydata <- readAntares(areas = "a", select = c("links", "clusters"), 
+                        timeStep = "annual", showProgress = FALSE)
+  mydata2 <- readAntares(areas = "a", links = getLinks("a"), clusters = "a",
+                         timeStep = "annual", showProgress = FALSE, select = "")
+  expect_equal(mydata, mydata2)
+})
