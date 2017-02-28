@@ -54,4 +54,23 @@ describe("subset.antaresDataTable", {
     expect_error(subset(mydata, timeIds=15599),"timeId 15599 is not an timeId of this study")
   })
   
+  it("filters with another table", {
+    filterTable <- data.table(timeId = 1:2, mcYear = 1:2, value = c(2, 5))
+    filteredData <- subset(mydata, filterTable)
+    expect_true(all(filteredData$areas[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+    expect_true(all(filteredData$links[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+    expect_true(all(filteredData$clusters[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+  })
+  
+  it("filters with another table containing areas", {
+    filterTable <- data.table(area = "a", timeId = 1:2, mcYear = 1:2, value = c(2, 5))
+    filteredData <- subset(mydata, filterTable)
+    expect_true(all(filteredData$areas[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+    expect_true(all(filteredData$links[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+    expect_true(all(filteredData$clusters[, paste(timeId, mcYear)] %in% c("1 1", "2 2")))
+    expect_true(all(filteredData$areas[, area] == "a"))
+    expect_true(all(filteredData$links[, link] %in% getLinks("a")))
+    expect_true(all(filteredData$clusters[, area] == "a"))
+  })
+  
 })
