@@ -389,7 +389,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   )
 }
 
-# Get the first of the simulation, ie. the date corresponding to timeId == 1
+# Get the first date of the simulation, ie. the date corresponding to timeId == 1
 .getStartDate <- function(params) {
   mNames <- c("january", "february", "march", "april", "may", "june", "july",
               "september", "october", "november", "december")
@@ -399,7 +399,7 @@ setSimulationPath <- function(path, simulation = NULL) {
 
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
-  if (is.na(m) || length(m) == 0 || m == -1) year <- 2017
+  if (is.na(m) || length(m) == 0 || m == -1) year <- lubridate::year(Sys.Date())
   else year <- as.numeric(regmatches(p$horizon, m))
 
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
@@ -420,10 +420,10 @@ setSimulationPath <- function(path, simulation = NULL) {
   if (jan1 != wday(dateJan1) | lubridate::leap_year(dateLeapYear) != p$leapyear) {
 
     if (p$leapyear & p$`first-month-in-year` == "february") {
-      newYear <- switch(jan1, 2045, 2029, 2041, 2025, 2037, 2021, 2031)
+      newYear <- switch(jan1, 2045, 2029, 2041, 2025, 2037, 2021, 2033)
     } else if (p$leapyear & p$`first-month-in-year` != "february") {
       newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
-    } else newYear <- switch(jan1, 2017, 2018, 2019, 2025, 2026, 2021, 2022)
+    } else newYear <- switch(jan1, 2023, 2018, 2019, 2031, 2026, 2027, 2022)
     
     if (p$`first-month-in-year` != "january") newYear <- newYear - 1
     lubridate::year(start) <- newYear
