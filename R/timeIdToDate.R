@@ -43,7 +43,7 @@
     
     week <- date #format(date, format = "%G-w%V")
     
-    return(week[timeId])
+    return(unname(week[timeId]))
     
   } else if (timeStep == "monthly") {
     
@@ -54,7 +54,7 @@
     month <- as.Date(tapply(timestamp, monthId, function(x) as.Date(min(x))), origin = "1970-1-1")
     # month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
     
-    return(month[timeId])
+    return(unname(month[timeId]))
 
   } else {
     
