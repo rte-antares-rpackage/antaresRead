@@ -1,8 +1,10 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Setup functions")
-
 suppressPackageStartupMessages(require(lubridate))
+suppressPackageStartupMessages(require(data.table))
+
+# Reading of study options #####################################################
 
 trueOpts <- list(
   studyName = "Test_packages_R",
@@ -37,17 +39,6 @@ test_that("R option 'antares' is set", {
   expect_identical(opts, getOption("antares"))
 })
 
-test_that("Interactive mode if no study path provided", {
-  skip_if_not(exists("choose.dir", getNamespace("utils")))
-  with_mock(
-    `utils::choose.dir` = function(...) {studyPath},
-    {
-      opts <- setSimulationPath()
-      expect_equal(opts[names(trueOpts)], trueOpts)
-    }
-  )
-})
-
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
   expect_error(setSimulationPath(file.path(studyPath, "..")))
 })
@@ -59,6 +50,19 @@ test_that("setSimulationPath can read info in input", {
               "firstWeekday")) {
     expect_equal(opts[[v]], trueOpts[[v]])
   }
+})
+
+# Simulation selection #########################################################
+
+test_that("Interactive mode if no study path provided", {
+  skip_if_not(exists("choose.dir", getNamespace("utils")))
+  with_mock(
+    `utils::choose.dir` = function(...) {studyPath},
+    {
+      opts <- setSimulationPath()
+      expect_equal(opts[names(trueOpts)], trueOpts)
+    }
+  )
 })
 
 # Create a fake simulation (just an empty directory)
@@ -107,6 +111,33 @@ test_that("select simulation interactively (name)", {
 
 # Remove fake study
 unlink(file.path(studyPath, "output/30000101-0000fake"), TRUE, TRUE)
+
+
+# Study with no simulation #####################################################
+
+# We rename the folder "output" to simulate a study without any simulation
+# results
+file.rename(file.path(studyPath, "output"), file.path(studyPath, "outputBack"))
+
+test_that("No simulation", {
+  test_that("Error if the user tries to read simulation results", {
+    expect_error(setSimulationPath(studyPath, 1))
+  })
+  
+  test_that("User can read input data", {
+    expect_silent(opts <- setSimulationPath(studyPath, 0))
+    expect_equal(opts$mode, "Input")
+  })
+  
+  test_that("Read input data by default", {
+    expect_silent(opts <- setSimulationPath(studyPath))
+    expect_equal(opts$mode, "Input")
+  })
+})
+
+file.rename(file.path(studyPath, "outputBack"), file.path(studyPath, "output"))
+
+# Correction of start date #####################################################
 
 describe(".getStartDate", {
   mNames <- c("january", "february", "march", "april", "may", "june", "july",
