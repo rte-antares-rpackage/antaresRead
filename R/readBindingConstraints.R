@@ -76,6 +76,81 @@ readBindingConstraints <- function(opts=simOptions()) {
     
   }
   
-  unname(bindingConstraints)
+  res <- unname(bindingConstraints)
   
+  constraintNames <- vapply(res, function(x) x$name, character(1))
+  
+  res <- lapply(res, function(x) {
+    coefs <- x
+    for (v in c("name", "id", "enabled", "type", "operator", "values")) {
+      coefs[[v]] <- NULL
+    }
+    
+    list(
+      enabled = x$enabled,
+      type = x$type,
+      operator = x$operator,
+      coefs = unlist(coefs),
+      values = x$values
+    )
+  })
+  
+  names(res) <- constraintNames
+  class(res) <- "bindingConstraints"
+  res
+}
+
+
+summary.bindingConstraints <- function(x) {
+  equations <- vapply(x, FUN.VALUE = character(1), function(x) {
+    coefs <- sprintf(
+      "%s %s x %s",
+      ifelse(sign(x$coefs < 0), " -", " +"),
+      abs(x$coefs),
+      names(x$coefs)
+    )
+    
+    lhs <- paste(coefs, collapse = "")
+    lhs <- gsub("^ (\\+ )?", "", lhs)
+    lhs <- gsub("1 x ", "", lhs)
+    
+    if (x$operator == "both") {
+      # Left inequality
+      rhs <- mean(x$values$greater)
+      range <- range(x$values$greater)
+      if(range[1] == range[2]) {
+        res <- sprintf("%s < %s", rhs, lhs)
+      } else {
+        res <- sprintf("[%s, %s] < %s", range[1], range[2], lhs)
+      }
+      # right inequality
+      rhs <- mean(x$values$less)
+      range <- range(x$values$less)
+      if(range[1] == range[2]) {
+        res <- sprintf("%s < %s", res, rhs)
+      } else {
+        res <- sprintf("%s < [%s, %s]", res, range[1], range[2])
+      }
+    } else {
+      operator <- switch(x$operator, equal = "=", less = "<", greater = ">")
+      rhs <- mean(x$values[[x$operator]])
+      range <- range(x$values[[x$operator]])
+      if(range[1] == range[2]) {
+        res <- sprintf("%s %s %s", lhs, operator, rhs)
+      } else {
+        res <- sprintf("%s %s [%s, %s]", lhs, operator, range[1], range[2])
+      }
+    }
+    
+    res
+  })
+  
+  type <- vapply(x, function(x) x$type, character(1))
+  enabled <- vapply(x, function(x) x$enabled, logical(1))
+  
+  data.frame(
+    enabled = enabled, 
+    type = type, 
+    equation = equations
+  )
 }
