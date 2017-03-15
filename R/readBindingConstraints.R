@@ -5,40 +5,31 @@
 #' @description 
 #' This function reads the binding constraints of an Antares project. 
 #' 
-#' Be aware
-#' that binding constraints are read in the input files of a study. So they may
-#' have changed since a simulation has been run.
+#' Be aware that binding constraints are read in the input files of a study. So
+#' they may have changed since a simulation has been run.
 #' 
 #' @inheritParams readAntares
 #' 
 #' @return 
-#' A list containing one element per constraint. Each element is a list with the
-#' following content:
-#' \item{name}{name of the constraint}
-#' \item{id}{id of the constraint}
+#' \code{readBindingConstraints} returns an object of class \code{bindingConstraints}.
+#' It is a named list with one element per read constraint. Each element is itself
+#' a list with the following elements: 
 #' \item{enabled}{is the constraint enabled ?}
-#' \item{type}{time step the constraint applies to}
+#' \item{timeStep}{time step the constraint applies to}
 #' \item{operator}{type of constraint: equality, inequality on one side or both sides}
 #' \item{coefficients}{elements containing the coefficients used by the constraint}
 #' \item{values}{values used by the constraint. It contains one line per time step
-#'   and three columns "less", "greate" and "equal"}
+#'   and three columns "less", "greater" and "equal"}
+#' 
+#' The \code{summary} method returns a data.frame with one line per constraint.
+#' 
 #' 
 #' @examples 
 #' \dontrun{
 #' setSimulationPath()
-#' 
-#' # Read the constraints of the default antares study
-#' readBindingConstraints()
-#' 
-#' #Equivalent to:
-#' readBindingConstraints(simOptions())
-#' 
-#' # Read the constraints of a given antares study
-#' areasSimulation1 <- readAntares()
-#' 
-#' # [... code that change the default antares study]
-#' 
-#' readBindingConstraints(simOptions(areasSimulation1))
+#'
+#' constraints <- readBindingConstraints()
+#' summary(constraints)
 #' 
 #' }
 #' 
@@ -88,7 +79,7 @@ readBindingConstraints <- function(opts=simOptions()) {
     
     list(
       enabled = x$enabled,
-      type = x$type,
+      timeStep = x$type,
       operator = x$operator,
       coefs = unlist(coefs),
       values = x$values
@@ -100,9 +91,13 @@ readBindingConstraints <- function(opts=simOptions()) {
   res
 }
 
-
-summary.bindingConstraints <- function(x) {
-  equations <- vapply(x, FUN.VALUE = character(1), function(x) {
+#' @param object Object returned by readBindingConstraints
+#' @param ... Unused
+#' 
+#' @export
+#' @rdname readBindingConstraints
+summary.bindingConstraints <- function(object, ...) {
+  equations <- vapply(object, FUN.VALUE = character(1), function(x) {
     coefs <- sprintf(
       "%s %s x %s",
       ifelse(sign(x$coefs < 0), " -", " +"),
@@ -145,12 +140,12 @@ summary.bindingConstraints <- function(x) {
     res
   })
   
-  type <- vapply(x, function(x) x$type, character(1))
-  enabled <- vapply(x, function(x) x$enabled, logical(1))
+  timeStep <- vapply(object, function(x) x$timeStep, character(1))
+  enabled <- vapply(object, function(x) x$enabled, logical(1))
   
   data.frame(
     enabled = enabled, 
-    type = type, 
+    timeStep = timeStep, 
     equation = equations
   )
 }

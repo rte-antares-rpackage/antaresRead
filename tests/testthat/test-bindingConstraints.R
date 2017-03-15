@@ -15,6 +15,6 @@ describe("summary.bindingConstraints", {
     constraints <- readBindingConstraints(opts)
     sumConstraints <- summary(constraints)
     expect_is(sumConstraints, "data.frame")
-    expect_true(all(c("enabled", "type", "equation") %in% names(sumConstraints)))
+    expect_true(all(c("enabled", "timeStep", "equation") %in% names(sumConstraints)))
   })
 })
