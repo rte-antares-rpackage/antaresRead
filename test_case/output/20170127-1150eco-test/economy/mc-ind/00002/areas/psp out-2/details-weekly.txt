@@ -1,9 +1,0 @@
-PSP OUT-2	area	de	weekly
-	VARIABLES	BEGIN	END
-	3	2	3
-
-PSP OUT-2	weekly	PSP_OUT_2	PSP_OUT_2	PSP_OUT_2
-		MWh	NP Cost - Euro	NODU
-	week			
-	2	64001	0	27
-	3	22102	0	11

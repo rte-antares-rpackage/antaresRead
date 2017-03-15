@@ -1,0 +1,8 @@
+PSP OUT-2	area	de	monthly
+	VARIABLES	BEGIN	END
+	3	1	1
+
+PSP OUT-2	monthly		PSP_OUT_2	PSP_OUT_2	PSP_OUT_2
+			MWh	NP Cost - Euro	NODU
+	index	month			
+	1	JAN	147735	0	76

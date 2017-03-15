@@ -1,0 +1,11 @@
+upstream	downstream
+a	a_offshore
+a	b
+a	psp in
+a	psp out
+b	c
+b	psp in
+b	psp out
+c	hub
+hub	psp in-2
+hub	psp out-2
