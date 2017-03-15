@@ -36,7 +36,7 @@
 #' @export
 readBindingConstraints <- function(opts=simOptions()) {
   
-  path <- file.path(opts$inputPath, "bindingConstraints/bindingconstraints.ini")
+  path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
   
   if(length(bindingConstraints) == 0) {
@@ -45,7 +45,7 @@ readBindingConstraints <- function(opts=simOptions()) {
   }
   
   for (i in 1:length(bindingConstraints)) {
-    path <- file.path(opts$inputPath, sprintf("bindingConstraints/%s.txt",
+    path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt",
                                          bindingConstraints[[i]]$id))
     
     if (file.size(path) == 0) {
