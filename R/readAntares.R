@@ -206,7 +206,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Aliases for groups of variables
   select <- llply(select, function(x) {
     for (alias in names(pkgEnv$varAliases)) {
-      if (alias %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]])
+      if (alias %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]]$select)
     }
     x
   })

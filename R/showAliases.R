@@ -14,13 +14,33 @@
 #' 
 #' @export
 #'
-showAliases <- function() {
-  l_ply(names(pkgEnv$varAliases), function(x) {
-    cat(sprintf("\"%s\":\n   ", x))
-    cat(paste(pkgEnv$varAliases[[x]], collapse = ", "), "\n")
+showAliases <- function(names = NULL) {
+  desc <- vapply(pkgEnv$varAliases, function(x) x$desc, character(1))
+  select <- vapply(pkgEnv$varAliases, FUN.VALUE = character(1), function(x) {
+    paste(x$select, collapse = ", ")
   })
-  cat('"allArea" : all area variables\n')
-  cat('"allLink" : all link variables\n')
+  
+  res <- data.frame(
+    name = names(pkgEnv$varAliases),
+    desc = desc,
+    select = select,
+    row.names = NULL
+  )
+  
+  if (is.null(names)) {
+    print(res[, c("name", "desc")])
+  } else {
+    res <- res[res$name %in% names, ]
+    print(res)
+  }
 
-  invisible(pkgEnv$varAliases)
+  invisible(res)
+}
+
+
+addAlias <- function(name, desc, select) {
+  if (!exists("varAliases", envir = pkgEnv)) {
+    assign("pkgEnv", list(), envir = pkgEnv)
+  }
+  pkgEnv$varAliases[[name]] <- list(desc = desc, select = select)
 }

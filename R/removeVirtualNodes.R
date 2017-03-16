@@ -292,7 +292,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     linkListProd <- flows[varea %in% production]
     
     # Add virtual productions columns to x$areas
-    prodVars <- intersect(names(x$areas), c(pkgEnv$varAliases$generation, pkgEnv$varAliases$netLoad, "SPIL. ENRG"))
+    prodVars <- intersect(names(x$areas), c(pkgEnv$varAliases$generation$select, 
+                                            pkgEnv$varAliases$netLoad$select, 
+                                            "SPIL. ENRG"))
     prodVars <- prodVars[prodVars != "LOAD"]
     vars <- c(byarea, prodVars)
     
