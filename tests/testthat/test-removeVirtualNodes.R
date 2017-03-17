@@ -137,3 +137,15 @@ test_that("removeVirtualAreas removes virtual links, but keeps the data needed t
   }
 
 })
+
+test_that("removeVirtualAreas compute storage and pumping capacities", {
+  dataCorrectedStep <- removeVirtualAreas(data, storageFlexibility = getAreas("psp"))
+  
+  expect_equal(dataCorrectedStep$areas[area=="a" & timeId==200,]$pumpingCapacity, 2516)
+  expect_equal(dataCorrectedStep$areas[area=="a" & timeId==203,]$pumpingCapacity, 4562)
+  
+  expect_equal(dataCorrectedStep$areas[area=="a" & timeId==202,]$storageCapacity, 2758)
+  expect_equal(dataCorrectedStep$areas[area=="a" & timeId==208,]$storageCapacity, 4613)
+  
+  
+})

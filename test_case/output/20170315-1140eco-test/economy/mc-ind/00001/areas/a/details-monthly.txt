@@ -1,0 +1,8 @@
+A	area	de	monthly
+	VARIABLES	BEGIN	END
+	15	1	1
+
+A	monthly		BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE
+			MWh	MWh	MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NODU	NODU	NODU	NODU	NODU
+	index	month															
+	1	JAN	13453440	423360	1608470	87292	8166606	0	0	0	0	0	13728	6048	2185	336	8541
