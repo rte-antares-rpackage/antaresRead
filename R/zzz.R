@@ -67,5 +67,6 @@ utils::globalVariables(
     "J", "N", "PSP", "availableUnits", "color", "corrPSP", "fromDistrict", 
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea", 
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict", 
-    "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y")
+    "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
+    "NODU", "min.stable.power", "thermalPmin")
 )

@@ -47,7 +47,15 @@ containing the number of available units in a cluster is created.If synthesis is
 
 \item{linkCapacity}{Should link capacities be imported ?}
 
-\item{mustRun}{Should mustRun and partialMustRun columns be added to the result ?}
+\item{mustRun}{Should must run productions be added to the result? If TRUE,
+then four columns are added: \code{mustRun} contains the production of 
+clusters that are in complete must run mode; \code{mustRunPartial}
+contains the partial must run production of clusters; \code{mustRunTotal}
+is the sum of the two previous columns. Finally \code{thermalPmin} is
+similar to mustRunTotal except it also takes into account the production
+induced by the minimum stable power of the units of a cluster. More
+precisely, for a given cluster and a given time step, it is equal to 
+\code{min(NODU x min.stable.power, mustRunTotal)}.}
 
 \item{thermalModulation}{Should thermal modulation time series be imported ? If \code{TRUE}, the
 columns "marginalCostModulation", "marketBidModulation", "capacityModulation"

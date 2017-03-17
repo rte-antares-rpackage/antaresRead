@@ -208,8 +208,11 @@
     clusterDesc <- readClusterDesc(opts)
     if(is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
     clusterDesc[is.na(must.run), must.run := FALSE]
+    if (is.null(clusterDesc$min.stable.power)) clusterDesc$min.stable.power <- 0
+    clusterDesc[is.na(min.stable.power), min.stable.power := 0]
     clusterDesc <- clusterDesc[, .(area, cluster,
                                    capacity = nominalcapacity * unitcount,
+                                   pmin = min.stable.power,
                                    must.run)]
     
     # Are clusters in partial must run mode ?
@@ -248,13 +251,19 @@
       
     }
     
-    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run)])
+    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run, pmin)])
+    
+    if (is.null(res$NODU)) res[, thermalPmin := 0]
+    else res[, thermalPmin := pmin * NODU]
     
     res[, `:=`(
       mustRun = production * must.run,
       mustRunTotal = production * must.run + mustRunPartial,
-      must.run = NULL
+      must.run = NULL,
+      pmin = NULL
     )]
+    
+    res[, thermalPmin := pmax(thermalPmin, mustRunTotal)]
     
     res
   }

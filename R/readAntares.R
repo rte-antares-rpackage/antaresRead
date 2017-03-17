@@ -101,7 +101,15 @@
 #' @param linkCapacity
 #'   Should link capacities be imported ?
 #' @param mustRun
-#'   Should mustRun and partialMustRun columns be added to the result ?
+#'   Should must run productions be added to the result? If TRUE,
+#'   then four columns are added: \code{mustRun} contains the production of 
+#'   clusters that are in complete must run mode; \code{mustRunPartial}
+#'   contains the partial must run production of clusters; \code{mustRunTotal}
+#'   is the sum of the two previous columns. Finally \code{thermalPmin} is
+#'   similar to mustRunTotal except it also takes into account the production
+#'   induced by the minimum stable power of the units of a cluster. More
+#'   precisely, for a given cluster and a given time step, it is equal to 
+#'   \code{min(NODU x min.stable.power, mustRunTotal)}.
 #' @param select
 #'   Character vector containing the name of the columns to import. If this 
 #'   argument is \code{NULL}, all variables are imported. Special names 
@@ -329,13 +337,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(res$areas)) {
       tmp <- copy(res$clusters)
       tmp[, cluster := NULL]
-      tmp <- tmp[,.(mustRun = sum(mustRun),
+      tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
+                    mustRun = sum(mustRun),
                     mustRunPartial = sum(mustRunPartial),
                     mustRunTotal = sum(mustRunTotal)),
                  keyby = c(.idCols(tmp))]
       res$areas <- .mergeByRef(res$areas, tmp)
 
-      res$areas[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
+      res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
 
     if (!is.null(districts)) {
@@ -343,12 +352,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
       tmp[, area := NULL]
       tmp[, cluster := NULL]
-      tmp <- tmp[,.(mustRun = sum(mustRun),
+      tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
+                    mustRun = sum(mustRun),
                     mustRunPartial = sum(mustRunPartial),
                     mustRunTotal = sum(mustRunTotal)),
                  keyby = c(.idCols(tmp))]
       res$districts <- .mergeByRef(res$districts, tmp)
-      res$districts[is.na(mustRunTotal), c("mustRun", "mustRunPartial", "mustRunTotal") := 0]
+      res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
 
     # Suppress that has not been asked
