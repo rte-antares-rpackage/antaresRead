@@ -1,9 +1,0 @@
-PSP IN	area	de	weekly
-	VARIABLES	BEGIN	END
-	3	2	3
-
-PSP IN	weekly	PSP_IN	PSP_IN	PSP_IN
-		MWh	NP Cost - Euro	NODU
-	week	EXP	EXP	EXP
-	2	851326	0	154
-	3	909689	0	162

@@ -1,0 +1,8 @@
+Hub	link	va	monthly
+PSP OUT-2	VARIABLES	BEGIN	END
+	9	1	1
+
+Hub	monthly		FLOW LIN.	UCAP LIN.	FLOW QUAD.	CONG. FEE (ALG.)	CONG. FEE (ABS.)	MARG. COST	CONG. PROB +	CONG. PROB -	HURDLE COST
+			MWh	MWh	MWh	Euro	Euro	Euro/MW	%	%	Euro
+	index	month									
+	1	JAN	-86103	86103	0	6579608	6579608	1542	100.00	100.00	0
