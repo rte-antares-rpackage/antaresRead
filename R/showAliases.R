@@ -24,7 +24,7 @@ showAliases <- function(names = NULL) {
   if (is.null(names)) {
     print(res[, c("name", "desc")])
   } else {
-    res <- res[res$name %in% names, ]
+    res <- res[tolower(res$name) %in% tolower(names), ]
     print(res)
   }
 
