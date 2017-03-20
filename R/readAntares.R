@@ -299,12 +299,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
     if (showProgress) cat(sprintf("Importing %s\n", name))
 
-    tmp <- llply(ids, function(x, ...) outputFun(x, ...),
-                 synthesis=synthesis, mcYears=mcYears,timeStep=ts,
-                 opts=opts, select = select,
-                 .progress = ifelse(showProgress, "text", "none"),
-                 .parallel = parallel,
-                 .paropts = list(.packages="antares"))
+    tmp <- suppressWarnings(
+      llply(ids, function(x, ...) outputFun(x, ...),
+            synthesis=synthesis, mcYears=mcYears,timeStep=ts,
+            opts=opts, select = select,
+            .progress = ifelse(showProgress, "text", "none"),
+            .parallel = parallel,
+            .paropts = list(.packages="antaresRead"))
+    )
 
     tmp <- rbindlist(tmp)
 
@@ -314,9 +316,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   # Add output to res object. The ".importOutputForXXX" functions are
   # defined in the file "importOutput.R".
-  res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts)
-  res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts)
-  res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears, showProgress, opts)
+  res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts,
+                                     parallel = parallel)
+  res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts,
+                                     parallel = parallel)
+  res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears,
+                                             showProgress, opts, parallel = parallel)
 
   # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
@@ -328,11 +333,11 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   if (!mustRun) {
     res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = FALSE)
+                                             showProgress, opts, mustRun = FALSE, parallel = parallel)
   } else {
     clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
     res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = TRUE)
+                                             showProgress, opts, mustRun = TRUE, parallel = parallel)
 
     if (!is.null(res$areas)) {
       tmp <- copy(res$clusters)

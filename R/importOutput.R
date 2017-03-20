@@ -39,7 +39,7 @@
 .importOutput <- function(folder, fileName, objectName, ids, timeStep, select = NULL, 
                           mcYears = NULL, 
                           showProgress, opts, processFun = NULL, sameNames = TRUE,
-                          objectDisplayName = objectName) {
+                          objectDisplayName = objectName, parallel) {
   if (is.null(ids)) return(NULL)
   
   if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
@@ -85,30 +85,36 @@
     timeIds <- seq(timeRange[1], timeRange[2])
   }
   
-  res <- llply(1:nrow(args), function(i) {
-    if (!sameNames) {
-      colNames <- .getOutputHeader(args$path[i], objectName)
-      selectCol <- which(!colNames %in% pkgEnv$idVars)
-      colNames <- colNames[selectCol]
-    }
-    
-    if (length(selectCol) == 0) {
-      data <- data.table(timeId = timeIds)
-    } else {
-      data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                    select = selectCol, integer64 = "numeric")
+  res <- llply(
+    1:nrow(args), 
+    function(i) {
+      if (!sameNames) {
+        colNames <- .getOutputHeader(args$path[i], objectName)
+        selectCol <- which(!colNames %in% pkgEnv$idVars)
+        colNames <- colNames[selectCol]
+      }
       
-      setnames(data, names(data), colNames)
-      data[, timeId := timeIds]
-    }
-    
-    data[, c(objectName) := args$id[i]]
-    if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
-    
-    if (!is.null(processFun)) data <- processFun(data)
-    
-    data
-  }, .progress = ifelse(showProgress, "text", "none"))
+      if (length(selectCol) == 0) {
+        data <- data.table(timeId = timeIds)
+      } else {
+        data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                      select = selectCol, integer64 = "numeric")
+        
+        setnames(data, names(data), colNames)
+        data[, timeId := timeIds]
+      }
+      
+      data[, c(objectName) := args$id[i]]
+      if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+      
+      if (!is.null(processFun)) data <- processFun(data)
+      
+      data
+    }, 
+    .progress = ifelse(showProgress, "text", "none"),
+    .parallel = parallel,
+    .paropts = list(.packages = "antaresRead")
+  )
   
   rbindlist(res)
 }
@@ -123,21 +129,25 @@
 #' @noRd
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                  showProgress, opts) {
-  .importOutput("areas", "values", "area", areas, timeStep, select, 
-                mcYears, showProgress, opts)
+                                  showProgress, opts, parallel) {
+  suppressWarnings(
+    .importOutput("areas", "values", "area", areas, timeStep, select, 
+                  mcYears, showProgress, opts, parallel = parallel)
+  )
 }
 
 .importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL, 
-                                      showProgress, opts) {
+                                      showProgress, opts, parallel) {
   if (is.null(districts)) return(NULL)
   
   processFun <- function(dt) {
     dt[, district := as.factor(gsub("^@ ", "", district))]
   }
   
-  .importOutput("areas", "values", "district", paste("@", districts), timeStep, select, 
-                mcYears, showProgress, opts, processFun)
+  suppressWarnings(
+    .importOutput("areas", "values", "district", paste("@", districts), timeStep, select, 
+                  mcYears, showProgress, opts, processFun, parallel = parallel)
+  )
 }
 
 #' .importOutputForClusters
@@ -150,7 +160,7 @@
 #' @noRd
 #'
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                  showProgress, opts, mustRun = FALSE) {
+                                  showProgress, opts, mustRun = FALSE, parallel) {
   
   # In output files, there is one file per area with the follwing form:
   # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
@@ -189,10 +199,11 @@
   }
   
   if (!mustRun) {
-    
-    .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "cluster")
+    suppressWarnings(
+      .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "cluster", parallel = parallel)
+    )
     
   } else {
     # The partial must run for a cluster is defined as:
@@ -223,9 +234,11 @@
     if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
       
       # We should not \o/
-      res <- .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                           mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                           objectDisplayName = "cluster")
+      res <- suppressWarnings(
+        .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                      mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                      objectDisplayName = "cluster")
+      )
       res[, mustRunPartial := 0L]
       
     } else {
@@ -245,9 +258,12 @@
         changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
       }
       
-      res <- .importOutput("areas", "details", "area", areas, "hourly", NULL, 
-                           mcYears, showProgress, opts, processFun, 
-                           sameNames = FALSE, objectDisplayName = "cluster")
+      res <- suppressWarnings(
+        .importOutput("areas", "details", "area", areas, "hourly", NULL, 
+                      mcYears, showProgress, opts, processFun, 
+                      sameNames = FALSE, objectDisplayName = "cluster", 
+                      parallel = parallel)
+      )
       
     }
     
@@ -280,9 +296,11 @@
 #' @noRd
 #'
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
-                                 showProgress, opts) {
-  .importOutput("links", "values", "link", links, timeStep, select, 
-                mcYears, showProgress, opts)
+                                 showProgress, opts, parallel) {
+  suppressWarnings(
+    .importOutput("links", "values", "link", links, timeStep, select, 
+                  mcYears, showProgress, opts, parallel = parallel)
+  )
 }
 
 # The two following functions read input time series that are eventually

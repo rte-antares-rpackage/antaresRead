@@ -108,7 +108,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
                  timeStep=ts, opts=opts,
                  .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
-                 .paropts = list(.packages="antares"))
+                 .paropts = list(.packages="antaresRead"))
     
     tmp <- rbindlist(tmp)
     
