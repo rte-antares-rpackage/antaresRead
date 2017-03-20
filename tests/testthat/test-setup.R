@@ -52,6 +52,25 @@ test_that("setSimulationPath can read info in input", {
   }
 })
 
+test_that("setSimulationPath works if synthesis and some MC years are not saved (#31)", {
+  opts <- setSimulationPath(studyPath)
+  
+  file.rename(file.path(opts$simDataPath, "mc-all"), 
+              file.path(opts$simDataPath, "mc-all_back"))
+  file.rename(file.path(opts$simDataPath, "mc-ind/00001"), 
+              file.path(opts$simDataPath, "mc-ind/00001_back"))
+  
+  opts <- setSimulationPath(studyPath)
+  trueOpts$synthesis <- FALSE
+  trueOpts$mcYears <- 2
+  expect_equal(opts[names(trueOpts)], trueOpts)
+  
+  file.rename(file.path(opts$simDataPath, "mc-all_back"), 
+              file.path(opts$simDataPath, "mc-all"))
+  file.rename(file.path(opts$simDataPath, "mc-ind/00001_back"), 
+              file.path(opts$simDataPath, "mc-ind/00001"))
+})
+
 # Simulation selection #########################################################
 
 test_that("Interactive mode if no study path provided", {

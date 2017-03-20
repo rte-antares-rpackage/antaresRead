@@ -327,13 +327,19 @@ setSimulationPath <- function(path, simulation = NULL) {
   yearByYear <- file.exists(file.path(simDataPath, "mc-ind"))
   scenarios <- file.exists(file.path(simPath, "ts-numbers"))
   
-  mcYears <- if(yearByYear) as.numeric(list.files(file.path(simDataPath, "mc-ind")))
+  mcYears <- if(yearByYear) as.numeric(list.files(file.path(simDataPath, "mc-ind"), pattern = "^\\d{5}$"))
   else numeric()
   
   if (!synthesis & !yearByYear) stop("No results found")
   
   # List of available areas and links
-  dataPath <- file.path(simDataPath, ifelse(synthesis, "mc-all", "mc-ind/00001"))
+  if (file.exists(file.path(simDataPath, "mc-all"))) {
+    dataPath <- file.path(simDataPath, "mc-all")
+  } else {
+    tmp <- list.files(file.path(simDataPath, "mc-ind"), pattern = "^\\d{5}$", 
+                      full.names = TRUE)
+    dataPath <- tmp[1]
+  }
   
   areaList <- list.files(file.path(dataPath, "areas"))
   districtList <- areaList[areaList %like% "^@"]

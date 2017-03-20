@@ -1,4 +1,4 @@
-context("test-aliases")
+context("Aliases")
 
 describe("addAlias", {
   it("adds a new alias", {

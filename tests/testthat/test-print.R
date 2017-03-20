@@ -1,4 +1,4 @@
-context("test-print")
+context("print methods")
 
 opts <- setSimulationPath(studyPath)
 
