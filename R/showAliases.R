@@ -7,7 +7,7 @@
 #'   short description of all aliases is displayed.
 #' 
 #' @export
-#' @rdname addAlias
+#' @rdname setAlias
 showAliases <- function(names = NULL) {
   desc <- vapply(pkgEnv$varAliases, function(x) x$desc, character(1))
   select <- vapply(pkgEnv$varAliases, FUN.VALUE = character(1), function(x) {
@@ -38,7 +38,7 @@ showAliases <- function(names = NULL) {
 #' function \code{\link{readAntares}} to tell the function which columns and/or
 #' type of data to import. 
 #' 
-#' \code{addAlias} can be used to create a new alias. It can be especially
+#' \code{setAlias} can be used to create a new alias. It can be especially
 #' useful for package developers to help their users select the data required
 #' by their packages.
 #' 
@@ -50,7 +50,7 @@ showAliases <- function(names = NULL) {
 #'   import.
 #' 
 #' @return
-#' \code{addAlias} is only used for its side effects. A data.frame with columns 
+#' \code{setAlias} is only used for its side effects. A data.frame with columns 
 #' 'name', 'desc' and 'select'. \code{showAliases} invisibly returns a 
 #' data.frame with columns "name", "desc" and "select".
 #' 
@@ -65,12 +65,12 @@ showAliases <- function(names = NULL) {
 #' 
 #' \dontrun{
 #' # Create a new alias that imports flows
-#' addAlias("test", "short description", c("links", "FLOW LIN.")) 
+#' setAlias("test", "short description", c("links", "FLOW LIN.")) 
 #' showAliases()
 #' }
 #' 
 #' @export
-addAlias <- function(name, desc, select) {
+setAlias <- function(name, desc, select) {
   if (!exists("varAliases", envir = pkgEnv)) {
     assign("pkgEnv", list(), envir = pkgEnv)
   }

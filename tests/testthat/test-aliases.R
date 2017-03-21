@@ -1,8 +1,8 @@
 context("Aliases")
 
-describe("addAlias", {
+describe("setAlias", {
   it("adds a new alias", {
-    addAlias("test", "test desc", c("area", "LOAD"))
+    setAlias("test", "test desc", c("area", "LOAD"))
     expect_false(is.null(pkgEnv$varAliases$test))
     expect_equal(pkgEnv$varAliases$test, list(desc = "test desc", select = c("area", "LOAD")))
   })
@@ -12,7 +12,7 @@ describe("addAlias", {
     oldList <- pkgEnv$varAliases
     rm(list = "varAliases", envir = pkgEnv)
     
-    addAlias("test", "test desc", c("area", "LOAD"))
+    setAlias("test", "test desc", c("area", "LOAD"))
     expect_false(is.null(pkgEnv$varAliases))
     expect_equal(length(pkgEnv$varAliases), 1)
     expect_false(is.null(pkgEnv$varAliases$test))

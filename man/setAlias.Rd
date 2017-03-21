@@ -2,12 +2,12 @@
 % Please edit documentation in R/showAliases.R
 \name{showAliases}
 \alias{showAliases}
-\alias{addAlias}
+\alias{setAlias}
 \title{show aliases for variables}
 \usage{
 showAliases(names = NULL)
 
-addAlias(name, desc, select)
+setAlias(name, desc, select)
 }
 \arguments{
 \item{names}{optional vector of alias names. If provided, the full list of 
@@ -22,7 +22,7 @@ short description of all aliases is displayed.}
 import.}
 }
 \value{
-\code{addAlias} is only used for its side effects. A data.frame with columns 
+\code{setAlias} is only used for its side effects. A data.frame with columns 
 'name', 'desc' and 'select'. \code{showAliases} invisibly returns a 
 data.frame with columns "name", "desc" and "select".
 }
@@ -33,7 +33,7 @@ Aliases are short names that can be used in the \code{select} parameter in
 function \code{\link{readAntares}} to tell the function which columns and/or
 type of data to import. 
 
-\code{addAlias} can be used to create a new alias. It can be especially
+\code{setAlias} can be used to create a new alias. It can be especially
 useful for package developers to help their users select the data required
 by their packages.
 
@@ -49,7 +49,7 @@ showAliases("renewable")
 
 \dontrun{
 # Create a new alias that imports flows
-addAlias("test", "short description", c("links", "FLOW LIN.")) 
+setAlias("test", "short description", c("links", "FLOW LIN.")) 
 showAliases()
 }
 

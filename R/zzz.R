@@ -32,18 +32,18 @@ pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
 # of "select" is.
 pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "mcYear", "timeId", "time", "day", "week", "month", "hour")
 
-addAlias("economy", "Production costs, prices, exchanges and spilled energy",
+setAlias("economy", "Production costs, prices, exchanges and spilled energy",
          c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
-addAlias("adequacy", "Adequacy variables",
+setAlias("adequacy", "Adequacy variables",
          c("UNSP. ENRG", "LOLD", "LOLP", "AVL DTG", "DTG MRG", "MAX MRG"))
-addAlias("generation", "Production that can be controlled: thermal and hydrostorage",
+setAlias("generation", "Production that can be controlled: thermal and hydrostorage",
          pkgEnv$generation)
-addAlias("renewable", "Renewable productions", pkgEnv$ren)
-addAlias("thermal", "Thermal productions", pkgEnv$thermal)
-addAlias("netLoad", "Variables used to compute net load", 
+setAlias("renewable", "Renewable productions", pkgEnv$ren)
+setAlias("thermal", "Thermal productions", pkgEnv$thermal)
+setAlias("netLoad", "Variables used to compute net load", 
          c("areas", "LOAD", "ROW BAL.", "PSP", "MISC. NDG", "H. ROR", 
            "WIND", "SOLAR", "mustRun"))
-addAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
+setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
          c("OV. COST", "OP. COST", 
            "MRG. PRICE", "CO2 EMIS.", "BALANCE", "ROW BAL.", "PSP", "MISC. NDG",
            "LOAD", "H. ROR", "WIND", "SOLAR", "NUCLEAR", "LIGNITE", "COAL",
