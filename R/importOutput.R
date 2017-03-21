@@ -235,9 +235,11 @@
       
       # We should not \o/
       res <- suppressWarnings(
-        .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                      mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                      objectDisplayName = "cluster")
+        suppressWarnings(
+          .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                        mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                        objectDisplayName = "cluster", parallel = parallel)
+        )
       )
       res[, mustRunPartial := 0L]
       
