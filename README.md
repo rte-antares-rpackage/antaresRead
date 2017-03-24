@@ -1,4 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead)[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/rte-antares-rpackage/antares-rpackageRead?branch=master&svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageRead)[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
+[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead)[![Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
 
 
 # Read data from an Antares study with R package 'antaresRead'
