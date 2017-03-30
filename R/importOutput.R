@@ -1,4 +1,4 @@
-#Copyright © 2016 RTE Réseau de transport d’électricité
+# Copyright © 2016 RTE Réseau de transport d’électricité
 
 #' .getOutputHeader
 #'
@@ -180,8 +180,10 @@
     # Get final value columns
     if (sum(idx) / length(clusterNames) == 3) {
       colNames <- c("production", "NP Cost", "NODU")
-    } else {
+    } else if (sum(idx) / length(clusterNames) == 2) {
       colNames <- c("production", "NP Cost")
+    } else {
+      colNames <- c("production")
     }
     
     # Loop over clusters
