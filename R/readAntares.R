@@ -57,9 +57,9 @@
 #' can use parallelized importation to improve performance. Setting the
 #' parameter \code{parallel = TRUE} is not enough to parallelize the
 #' importation, you also have to install the package
-#' \href{https://cran.r-project.org/web/packages/foreach/index.html}{foreach}
+#' \href{https://CRAN.R-project.org/package=foreach}{foreach}
 #' and a package that provides a parallel backend (for instance the package
-#' \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel}).
+#' \href{https://CRAN.R-project.org/package=doParallel}{doParallel}).
 #'
 #' Before running the function with argument \code{parallel=TRUE}, you need to
 #' register your parallel backend. For instance, if you use package "doParallel"
