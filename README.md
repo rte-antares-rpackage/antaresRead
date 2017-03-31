@@ -1,4 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antares-rpackageRead)[![Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
+[![Travis Build Status](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead.svg?token=WaVoXyXk2rzKrq8scC1K&branch=master)](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead)[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
 
 
 # Read data from an Antares study with R package 'antaresRead'
@@ -6,16 +6,17 @@
 
 ## Installation
 
-To install the package from Github, you will need to create a personal access token (PAT) here: https://github.com/settings/tokens . You must check "repo".
+You can install the package from Github:
 
 ```r
 # Install dependencies
 install.packages(c("data.table", "plyr", "lubridate", "devtools", "digest"))
 library(devtools)
-install_github("rte-antares-rpackage/antares-rpackageRead", auth_token = "your_pat")
+install_github("rte-antares-rpackage/antares-rpackageRead")
 ```
 
 If you are behind a proxy, you need to first run this code:
+
 ```r
 library(httr)
 set_config(use_proxy("XXX.XXX.XX.XX", port=XXXX, username="proxy_user", password="passwd"))
@@ -23,8 +24,7 @@ set_config(use_proxy("XXX.XXX.XX.XX", port=XXXX, username="proxy_user", password
 
 To install the last development version:
 ```r
-install_github("rte-antares-rpackage/antares-rpackageRead", 
-               auth_token = "your_pat", ref ="develop")
+install_github("rte-antares-rpackage/antares-rpackageRead", ref ="develop")
 ```
 
 To display the help of the package and see all the functions it provides, type:
@@ -75,10 +75,10 @@ areaData <- readAntares(areas = "all")
 areaData <- readAntares(areas = "all", timeStep = "daily")
 
 # Read all Monte Carlo scenarios for a given area.
-myArea <- readAntares(areas = "my_area", synthesis = FALSE)
+myArea <- readAntares(areas = "my_area", mcYears = "all")
 
 # Same but add miscelaneous production time series to the result 
-myArea <- readAntares(areas = "my_area", synthesis = FALSE, misc = TRUE)
+myArea <- readAntares(areas = "my_area", mcYears = "all", misc = TRUE)
 
 # Read only columns "LOAD" and "MRG. PRICE"
 areaData <- readAntares(areas = "all", select = c("LOAD", "MRG. PRICE"))
@@ -132,7 +132,7 @@ If you are not familiar with package `data.table`, you should have a look at the
 help(package="data.table")
 vignette("datatable-intro")
 ```
-##Contributing:
+## Contributing:
 
 Contributions to the library are welcome and can be submitted in the form of pull requests to this repository.
 
@@ -146,7 +146,7 @@ tar(
 )
 ```
 
-##License Information:
+## License Information:
 
 Copyright 2015-2016 RTE (France)
 
