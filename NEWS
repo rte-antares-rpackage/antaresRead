@@ -1,5 +1,22 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 1.1.0 (2017-03-31)
+
+NEW FEATURES:
+* The 'select' parameter of readAntares() has been improved. It now accepts new keywords "areas", "links", "clusters", "districts" to indicate which type of data to read,"mcYears" to import detailed results, "misc", "mustRun", etc. to import the corresponding input data. 
+* A new function setAlias() has been added. It permits to packages developers to define new aliases to use in the 'select' parameter of readAntares() in order to help their users to import the required data.
+* readBindingConstraints() has been improved and returns an object of class 'bindingConstraints' which is a named list where each element has the same structure. 
+* A summary method has been added for objects of class 'bindingConstraints'. It is useful to quickly look at the binding contraints defined in a study.
+* readAntares(mustRun = TRUE) now adds a new column "thermalPmin". It is similar to mustRunTotal, except it also takes into account the minimum stable power of the cluster units. 
+
+BUGFIXES:
+* Columns 'pumpingCapacity' and 'storageCapacity' created by removeVirtualAreas() were reversed.
+* setSimulationPath() was sometimes setting a start data that was not consistent with parameters "1st january" and "leap year".
+* setSimulationPath() was not working if synthetic results and the first Monte-Carlo scenario were not saved in a given Antares simulation.
+* readAntares(clusters = "all") was not working in some situations.
+
+
+
 Changes in version 1.0.0 (2017-02-23)
 
 BUGFIXES:
