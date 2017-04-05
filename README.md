@@ -1,4 +1,7 @@
-[![Travis Build Status](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead.svg?token=WaVoXyXk2rzKrq8scC1K&branch=master)](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead)[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
+[![Travis Build Status](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead.svg?token=WaVoXyXk2rzKrq8scC1K&branch=master)](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead)
+[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)
+[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
 
 
 # Read data from an Antares study with R package 'antaresRead'
@@ -6,25 +9,14 @@
 
 ## Installation
 
-You can install the package from Github:
-
+You can install the package from CRAN:
 ```r
-# Install dependencies
-install.packages(c("data.table", "plyr", "lubridate", "devtools", "digest"))
-library(devtools)
-install_github("rte-antares-rpackage/antares-rpackageRead")
+install.packages("antaresRead")
 ```
 
-If you are behind a proxy, you need to first run this code:
-
+You can also install the last development version from Github:
 ```r
-library(httr)
-set_config(use_proxy("XXX.XXX.XX.XX", port=XXXX, username="proxy_user", password="passwd"))
-```
-
-To install the last development version:
-```r
-install_github("rte-antares-rpackage/antares-rpackageRead", ref ="develop")
+devtools::install_github("rte-antares-rpackage/antaresRead", ref ="develop")
 ```
 
 To display the help of the package and see all the functions it provides, type:
@@ -37,7 +29,7 @@ To see a practical example of use of the package, look at the vignette :
 vignette("antares")
 ```
 
-Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antares-rpackageRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
+Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antaresRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
 
 
 ## Initialisation
