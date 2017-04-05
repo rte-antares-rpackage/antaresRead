@@ -1,6 +1,6 @@
-[![Travis Build Status](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead.svg?token=WaVoXyXk2rzKrq8scC1K&branch=master)](https://travis-ci.com/rte-antares-rpackage/antares-rpackageRead)
-[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/4xo13npbnexxfrvs?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antares-rpackageread)
-[![codecov](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead/branch/master/graph/badge.svg?token=UuWN3YaVEq)](https://codecov.io/gh/rte-antares-rpackage/antares-rpackageRead)
+[![Build Status](https://travis-ci.org/rte-antares-rpackage/antaresRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antaresRead)
+[![Build status](https://ci.appveyor.com/api/projects/status/010n9as7tokv7f70?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antaresread)
+[![codecov](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master/graph/badge.svg)](https://codecov.io/gh/rte-antares-rpackage/antaresRead)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
 
 
