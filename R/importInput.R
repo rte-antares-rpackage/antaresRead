@@ -86,6 +86,8 @@
     res <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
                           inputTimeStep = "hourly", type = "matrix")
     
+    if (is.null(res)) return(NULL)
+    
     res$area <- area
     res$cluster <- cl
     
