@@ -1,9 +1,16 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 1.1.3 (2017-05-30)
+
+BUGFIXES:
+* readInputTS was crashing when trying to import cluster data and some clusters were disabled.
+
+
 Changes in version 1.1.2 (2017-04-18)
 
 BUGFIXES:
 * Fixed an issue that caused compilation to crash on mac OS X
+
 
 Changes in version 1.1.0 (2017-03-31)
 
