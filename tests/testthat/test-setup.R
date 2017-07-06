@@ -156,6 +156,14 @@ test_that("No simulation", {
 
 file.rename(file.path(studyPath, "outputBack"), file.path(studyPath, "output"))
 
+# Antares v6 ###################################################################
+
+test_that("Folder 'maps' is not interpreted as a study (#49)", {
+  dir.create(file.path(studyPath, "output", "maps"))
+  expect_silent(opts <- setSimulationPath(studyPath, -1))
+})
+unlink(file.path(studyPath, "output", "maps"))
+
 # Correction of start date #####################################################
 
 describe(".getStartDate", {

@@ -205,7 +205,9 @@ setSimulationPath <- function(path, simulation = NULL) {
       stop("Directory is not an Antares study.")
     
     outputPath <- file.path(path, "output")
-    simNames <- basename(list.dirs(outputPath, recursive = FALSE))
+    
+    outputContent <- list.dirs(outputPath, recursive = FALSE)
+    simNames <- setdiff(basename(outputContent), "maps")
     
     if (length(simNames) == 0) {
       if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
