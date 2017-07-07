@@ -1,0 +1,26 @@
+[Thu Jul  6 11:43:38 2017][solver][check] Antares Solver v6.0.3 (RTE France)
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: built for 64-bit architectures, Microsoft Windows, 4 cpu(s)
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: hostname = GROVSW108
+[Thu Jul  6 11:43:38 2017][solver][infos] 
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: from C:\Program Files\RTE\Antares\6.0.3\bin
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: log filename: D:\Users\franguil\Documents\R\antaresRead\test_case\logs\solver-20170706-114338.log
+[Thu Jul  6 11:43:38 2017][solver][infos] 
+[Thu Jul  6 11:43:38 2017][solver][notic] Preparing Test_packages_R...
+[Thu Jul  6 11:43:38 2017][solver][infos]   detected version: 500
+[Thu Jul  6 11:43:38 2017][solver][infos]   from `D:\Users\franguil\Documents\R\antaresRead\test_case`
+[Thu Jul  6 11:43:38 2017][solver][infos] 
+[Thu Jul  6 11:43:38 2017][solver][infos]   simulation mode: Economy
+[Thu Jul  6 11:43:38 2017][solver][infos]   simplex optimization range: day
+[Thu Jul  6 11:43:38 2017][solver][infos]   2 years in the user's playlist
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: enabling the 'year-by-year' mode
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: enabling the user playlist
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: enabling the custom build mode
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: enabling filtering
+[Thu Jul  6 11:43:38 2017][solver][infos]   :: ignoring export mps
+[Thu Jul  6 11:43:38 2017][solver][error] The study must be upgraded to store the generated timeseries into the input folder
+[Thu Jul  6 11:43:38 2017][solver][infos]  Elapsed time: Study loading: 0ms
+[Thu Jul  6 11:43:38 2017][solver][infos] [statistics] disk: read: 1 ko, written: 0 ko
+[Thu Jul  6 11:43:38 2017][solver][infos] [statistics] network: read: 0 ko, written: 0 ko
+[Thu Jul  6 11:43:38 2017][solver][infos] [UI] Quitting the solver gracefully
+[Thu Jul  6 11:43:38 2017][solver][infos]  Writing log file: D:\Users\franguil\Documents\R\antaresRead\test_case\output\simulation.log
+[Thu Jul  6 11:43:38 2017][solver][infos] Done.

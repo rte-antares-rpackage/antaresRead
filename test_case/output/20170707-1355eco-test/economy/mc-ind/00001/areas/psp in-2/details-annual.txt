@@ -1,0 +1,8 @@
+PSP IN-2	area	de	annual
+	VARIABLES	BEGIN	END
+	3	1	1
+
+PSP IN-2	annual	PSP_IN_2	PSP_IN_2	PSP_IN_2
+		MWh	NP Cost - Euro	NODU
+				
+	Annual	811020	0	299

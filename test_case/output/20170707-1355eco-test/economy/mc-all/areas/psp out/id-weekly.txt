@@ -1,0 +1,9 @@
+PSP OUT	area	id	weekly
+	VARIABLES	BEGIN	END
+	46	2	3
+
+PSP OUT	weekly	OP. COST	OP. COST	MRG. PRICE	MRG. PRICE	BALANCE	BALANCE	LOAD	LOAD	H. ROR	H. ROR	WIND	WIND	SOLAR	SOLAR	NUCLEAR	NUCLEAR	LIGNITE	LIGNITE	COAL	COAL	GAS	GAS	OIL	OIL	MIX. FUEL	MIX. FUEL	MISC. DTG	MISC. DTG	H. STOR	H. STOR	UNSP. ENRG	UNSP. ENRG	SPIL. ENRG	SPIL. ENRG	LOLD	LOLD	AVL DTG	AVL DTG	DTG MRG	DTG MRG	MAX MRG	MAX MRG	NP COST	NP COST	NODU	NODU
+		Euro	Euro	Euro	Euro	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	MWh	Hours	Hours	MWh	MWh	MWh	MWh	MWh	MWh	Euro	Euro	 	 
+	week	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max	min	max
+	2	2	1	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	2	1
+	3	1	2	1	2	1	2	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	1	2	1	1	1	1	1	1	1	1	1	1	2	1	2	1	1	1	2	1
