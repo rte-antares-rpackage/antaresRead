@@ -7,5 +7,10 @@ cache: packages
 r_packages:
   - covr
 
+include:
+  - r: release
+  - r: oldrel
+  - r: devel
+
 after_success:
   - Rscript -e 'library(covr); codecov()'
