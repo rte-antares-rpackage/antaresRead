@@ -7,6 +7,7 @@
 #' @importFrom stats as.formula
 #' @importFrom utils View read.table type.convert write.table 
 #' @importFrom utils untar
+#' @importFrom stringr str_match str_replace
 
 # Private variables accessible only by functions from the package
 

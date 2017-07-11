@@ -21,7 +21,8 @@ Imports:
     lubridate,
     plyr,
     methods,
-    stats
+    stats,
+    stringr
 Suggests:
     testthat,
     knitr,
