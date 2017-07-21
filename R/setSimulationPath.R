@@ -450,6 +450,8 @@ setSimulationPath <- function(path, simulation = NULL) {
 # Private function that reads the definition of the districts
 .readDistrictsDef <- function(inputPath, areas) {
   districts <- readIniFile(file.path(inputPath, "areas/sets.ini"))
+  if (length(districts) == 0) return(NULL)
+  
   res <- ldply(names(districts), function(n) {
     x <- districts[[n]]
     if (any(unlist(x) == "add-all")) {
