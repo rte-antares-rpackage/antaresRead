@@ -444,8 +444,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(res$clusters)) {
       .mergeByRef(res$clusters, res$thermalModulation)
     }
-
-    if (!mustRun | !timeStep == "hourly") res$thermalModulation <- NULL
+    res$thermalModulation <- NULL
   }
 
   # Class and attributes
