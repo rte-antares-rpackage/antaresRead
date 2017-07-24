@@ -4,12 +4,28 @@
 \alias{readOptimCriteria}
 \title{Read Optimization Criteria}
 \usage{
-readOptimCriteria(opts = simOptions)
+readOptimCriteria(opts = simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 }
+\value{
+A table of class \code{antaresDataTable}. It contains the usual columns
+\code{timeID}, \code{mcYear}, \code{time} and two columns "criterion1" and
+"criterion2" containing the values of the criteria. Time step can be daily 
+or weekly depending on the optimization options.
+}
 \description{
-Read Optimization Criteria
+This function can be used to read the value of the criteria optimized by
+Notice that these values are only available in "Xpansion" mode or when option
+"Export mps" is turned on.
+}
+\examples{
+\dontrun{
+setSimulationPath()
+
+optimCriteria <- readOptimCriteria()
+} 
+
 }
