@@ -452,6 +452,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 
   # Add date/time columns
   addDateTimeColumns(res)
+  
+  res
 }
 
 
