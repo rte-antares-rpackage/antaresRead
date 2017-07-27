@@ -205,43 +205,35 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
-
+  
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
-
+  
   timeStep <- match.arg(timeStep)
-  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
   
-  # Aliases for groups of variables
-  select <- llply(select, function(x) {
-    for (alias in names(pkgEnv$varAliases)) {
-      if (tolower(alias) %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]]$select)
+  reqInfos <- .giveInfoRequest(select = select,
+                               areas = areas,
+                               links = links,
+                               clusters = clusters,
+                               districts = districts,
+                               mcYears = mcYears)
+  
+  select <- reqInfos$select
+  areas <- reqInfos$areas
+  links <- reqInfos$links
+  clusters <- reqInfos$clusters
+  districts <- reqInfos$districts
+  mcYears <- reqInfos$mcYears
+  synthesis <- reqInfos$synthesis
+  
+  if(length(reqInfos$computeAdd)>0)
+  {
+    for (v in reqInfos$computeAdd) {
+      assign(v, TRUE)
     }
-    x
-  })
-  
-  for (v in c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
-              "reserve", "linkCapacity", "mustRun", "thermalModulation")) {
-    if (v %in% unlist(select)) assign(v, TRUE)
   }
   
-  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
-  if ("links" %in% unlist(select) & is.null(links)) {
-    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
-    else links <- "all"
-  }
-  if ("clusters" %in% unlist(select) & is.null(clusters)) {
-    if (!is.null(areas)) clusters <- areas
-    else clusters <- "all"
-  }
-  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
   
-  # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
-    areas <- "all"
-  }
-
-  # Check arguments validity. The function .checkArgs is defined below
-  synthesis <- is.null(mcYears)
+  
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
@@ -259,7 +251,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   if (is.null(links) & linkCapacity) stop("When 'linkCapacity' is TRUE, argument 'links' needs to be specified.")
   if (is.null(clusters) & (thermalAvailabilities | thermalModulation)) stop("When 'thermalAvailabilities' or 'thermalModulation' is TRUE, argument 'clusters' needs to be specified.")
-
+  
   # If user asks input time series, first throw an error if monte-carlo scenarii
   # are not available. Then check if time series are available in output. If it
   # not the case, throw a warning.
@@ -271,7 +263,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
     }
   }
-
+  
   if (hydroStorage) {
     if (! opts$scenarios) {
       stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
@@ -280,25 +272,25 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
     }
   }
-
+  
   if (misc | hydroStorageMaxPower | reserve | linkCapacity) {
     warning("When misc, hydroStorageMaxPower, reserve or linkCapacity is not null, 'readAntares' reads input time series. Result may be wrong if these time series have changed since the simulation has been run.")
   }
-
+  
   # Can the importation be parallelized ?
   if (parallel) {
     if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
-
+  
   res <- list() # Object the function will return
-
+  
   # local function that add a type of output to the object "res"
   .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
-
+    
     if (showProgress) cat(sprintf("Importing %s\n", name))
-
+    
     tmp <- suppressWarnings(
       llply(ids, function(x, ...) outputFun(x, ...),
             synthesis=synthesis, mcYears=mcYears,timeStep=ts,
@@ -307,13 +299,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
             .parallel = parallel,
             .paropts = list(.packages="antaresRead"))
     )
-
+    
     tmp <- rbindlist(tmp)
-
+    
     res[[name]] <<- tmp
     gc() # Ensures R frees unused memory
   }
-
+  
   # Add output to res object. The ".importOutputForXXX" functions are
   # defined in the file "importOutput.R".
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts,
@@ -322,15 +314,15 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                      parallel = parallel)
   res$districts <- .importOutputForDistricts(districts, timeStep, select$areas, mcYears,
                                              showProgress, opts, parallel = parallel)
-
+  
   # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
     districts <- opts$districtsDef[district %in% districts]
     areas <- union(areas, districts$area)
   }
-
+  
   # Import clusters and eventually must run
-
+  
   if (!mustRun) {
     res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = FALSE, parallel = parallel)
@@ -338,7 +330,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
     res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = TRUE, parallel = parallel)
-
+    
     if (!is.null(res$areas)) {
       tmp <- copy(res$clusters)
       tmp[, cluster := NULL]
@@ -348,10 +340,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                     mustRunTotal = sum(mustRunTotal)),
                  keyby = c(.idCols(tmp))]
       res$areas <- .mergeByRef(res$areas, tmp)
-
+      
       res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
-
+    
     if (!is.null(districts)) {
       tmp <- copy(res$clusters)
       tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
@@ -365,7 +357,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       res$districts <- .mergeByRef(res$districts, tmp)
       res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
     }
-
+    
     # Suppress that has not been asked
     if (is.null(clusters)) {
       res$clusters <- NULL
@@ -373,9 +365,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       res$clusters <- res$clusters[area %in% clusters]
     }
   }
-
+  
   # Add input time series
-
+  
   if (misc) {
     .addOutputToRes("misc", areas, .importMisc, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$misc)
@@ -387,27 +379,27 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     res$misc <- NULL
   }
-
+  
   if (thermalAvailabilities) {
     .addOutputToRes("thermalAvailabilities", clusters, .importThermal, NA)
     .mergeByRef(res$clusters, res$thermalAvailabilities)
     res$thermalAvailabilities <- NULL
   }
-
+  
   if (hydroStorage) {
     .addOutputToRes("hydroStorage", areas, .importHydroStorage, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorage)
-
+    
     if (!is.null(districts)) {
       res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
       res$hydroStorage[, area := NULL]
       res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = c(.idCols(res$hydroStorage))]
       .mergeByRef(res$districts, res$hydroStorage)
     }
-
+    
     res$hydroStorage <- NULL
   }
-
+  
   if (hydroStorageMaxPower) {
     .addOutputToRes("hydroStorageMaxPower", areas, .importHydroStorageMaxPower, NA)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$hydroStorageMaxPower)
@@ -419,7 +411,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     res$hydroStorageMaxPower <- NULL
   }
-
+  
   if (reserve) {
     .addOutputToRes("reserve", areas, .importReserves, NA)
     if(!is.null(res$areas)) .mergeByRef(res$areas, res$reserve)
@@ -431,26 +423,26 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     res$reserve <- NULL
   }
-
+  
   if (linkCapacity) {
     .addOutputToRes("linkCapacity", links, .importLinkCapacity, NA)
     res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
     res$linkCapacity <- NULL
   }
-
+  
   if (thermalModulation) {
     .addOutputToRes("thermalModulation", union(areas, clusters), .importThermalModulation, NA)
-
+    
     if (!is.null(res$clusters)) {
       .mergeByRef(res$clusters, res$thermalModulation)
     }
-
+    
     if (!mustRun | !timeStep == "hourly") res$thermalModulation <- NULL
   }
-
+  
   # Class and attributes
   res <- .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
-
+  
   # Add date/time columns
   addDateTimeColumns(res)
 }
@@ -480,7 +472,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 .checkArg <- function(list, reference, msg, allowDup = FALSE) {
   if (is.null(list) || length(list) == 0) return(NULL)
   if (any(list == "all")) return(reference)
-
+  
   if (allowDup) res <- list[list %in% reference]
   else res <- intersect(list, reference)
   if (length(res) < length(list)) {
@@ -488,7 +480,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     warning(sprintf(msg, paste(missingElements, collapse = ", ")), call. = FALSE)
     if (length(res) == 0) return(NULL)
   }
-
+  
   res
 }
 
@@ -528,12 +520,91 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #'
 #' @export
 readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = FALSE, opts = simOptions(), ...) {
-
+  
   if (missing(areas)) stop("The function 'readAntaresAreas' expects a vector of area names as argument. You can use 'getAreas' to build such a vector.")
-
+  
   links <- if (links) getLinks(areas, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) areas else NULL
-
+  
   readAntares(areas, links, clusters, opts = opts, ...)
+  
+}
 
+
+
+
+
+
+#' Use to transform inputs arguments to be passable to reading function
+#'
+#' 
+#'
+#' @param select Character vector containing the name of the columns to import. See \link{readAntares} for further information.
+#' @param areas Vector containing the names of the areas to import. See \link{readAntares} for further information.
+#' @param links Vector containing the names of the links to import. See \link{readAntares} for further information.
+#' @param clusters Vector containing the names of the clusters to import. See \link{readAntares} for further information.
+#' @param districts Vector containing the names of the districts to import. See \link{readAntares} for further information.
+#' @param mcYears Index of the Monte-Carlo years to import. See \link{readAntares} for further information.
+#' 
+#' @return \code{list}
+#' \itemize{
+#' \item select
+#' \item areas
+#' \item links
+#' \item clusters
+#' \item districts
+#' \item mcYears
+#' \item synthesis
+#' \item computeAdd
+#' }
+#' 
+#' @noRd
+.giveInfoRequest <- function(select,
+                             areas,
+                             links,
+                             clusters,
+                             districts,
+                             mcYears){
+  
+  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
+  
+  # Aliases for groups of variables
+  select <- llply(select, function(x) {
+    for (alias in names(pkgEnv$varAliases)) {
+      if (tolower(alias) %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]]$select)
+    }
+    x
+  })
+  
+  allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+                  "reserve", "linkCapacity", "mustRun", "thermalModulation")
+  computeAdd <- allCompute[allCompute%in%unlist(select)]
+  
+  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
+  if ("links" %in% unlist(select) & is.null(links)) {
+    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
+    else links <- "all"
+  }
+  if ("clusters" %in% unlist(select) & is.null(clusters)) {
+    if (!is.null(areas)) clusters <- areas
+    else clusters <- "all"
+  }
+  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
+  
+  # If all arguments are NULL, import all areas
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
+    areas <- "all"
+  }
+  
+  # Check arguments validity. The function .checkArgs is defined below
+  synthesis <- is.null(mcYears)
+  
+  return(list(select = select,
+              areas = areas,
+              links = links,
+              clusters = clusters,
+              districts = districts,
+              mcYears = mcYears,
+              synthesis = synthesis,
+              computeAdd = computeAdd))
 }
