@@ -118,11 +118,22 @@
                  inputTimeStep = "monthly", type = "matrix")
 }
   
-.importHydroStorageMaxPower <- function(area, timeStep, opts, ...) {
+.importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
+  
+  beginName <- c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh")
+  unselect = unselect$areas
+  
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
   .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
-                 colnames=c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh"),
-                 inputTimeStep = "daily", fun = "mean")
+                 colnames=names,
+                 inputTimeStep = "daily", fun = "mean", colSelect = colSelect)
   
 }
 
