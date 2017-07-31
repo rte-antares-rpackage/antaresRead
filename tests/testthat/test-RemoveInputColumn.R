@@ -34,10 +34,18 @@ V2[,hstorPMaxHigh:=NULL]
 
 expect_true(identical(V, V2))
 
-
+#linkCapacity
 V <- readAntares(links = "all",  select = c("linkCapacity", "-transCapacityIndirect"))
 V2 <- readAntares(links = "all", select = c("linkCapacity"))
 V2[,transCapacityIndirect:=NULL] 
+
+expect_true(identical(V, V2))
+
+
+#thermalModulation
+V <- readAntares(clusters = "all",  select = c("thermalModulation", "-capacityModulation"))
+V2 <- readAntares(clusters = "all", select = c("thermalModulation"))
+V2[,capacityModulation:=NULL] 
 
 expect_true(identical(V, V2))
 

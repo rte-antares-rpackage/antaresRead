@@ -190,7 +190,7 @@
   
   areas <- strsplit(link, " - ")[[1]]
   
-  
+  unselect <- unselect$links
   beginName <- c("transCapacityDirect", "transCapacityIndirect",
                  "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
   if(!is.null(unselect)){
@@ -215,20 +215,34 @@
   
 }
 
-.importThermalModulation <- function(area, opts, timeStep, ...) {
+.importThermalModulation <- function(area, opts, timeStep, unselect = NULL, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
-  
+  unselect <- unselect$areas
   path <- file.path(opts$inputPath, "thermal/prepro", area)
   
   clusters <- list.files(path)
   
+  beginName <- c("marginalCostModulation", "marketBidModulation", 
+      "capacityModulation", "minGenModulation")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
+  
+  
   res <- ldply(clusters, function(cl) {
+    if(is.null(colSelect))
+    {
     modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+    }else{
+      modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+    }
     
     setnames(modulation, 
-             names(modulation), 
-             c("marginalCostModulation", "marketBidModulation", 
-               "capacityModulation", "minGenModulation"))
+             names(modulation), names)
     
     
     
