@@ -318,18 +318,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res <- list() # Object the function will return
 
   # local function that add a type of output to the object "res"
-  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep, unselect = NULL) {
+  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
 
     if (showProgress) cat(sprintf("Importing %s\n", name))
-    
-    if(!is.null(unselect)){
-      colSelect <- which(!pkgEnv$miscNames%in%unselect)
-      names <- pkgEnv$miscNames[colSelect]
-    }else{
-      colSelect <- NULL
-      names <- pkgEnv$miscNames
-    }
     
     tmp <- suppressWarnings(
       llply(ids, function(x, ...) outputFun(x, ...),
@@ -337,6 +329,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
             opts=opts, select = select,
             colSelect = colSelect,
             names = names,
+            unselect = unselect,
             .progress = ifelse(showProgress, "text", "none"),
             .parallel = parallel,
             .paropts = list(.packages="antaresRead"))
@@ -411,7 +404,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Add input time series
 
   if (misc) {
-    .addOutputToRes("misc", areas, .importMisc, unselect = unselect$areas)
+    .addOutputToRes("misc", areas, .importMisc)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$misc)
     if (!is.null(districts)) {
       res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
@@ -455,7 +448,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
 
   if (reserve) {
-    .addOutputToRes("reserve", areas, .importReserves, NA)
+    .addOutputToRes("reserve", areas, .importReserves, NA, unselect = unselect$areas)
     if(!is.null(res$areas)) .mergeByRef(res$areas, res$reserve)
     if (!is.null(districts)) {
       res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)

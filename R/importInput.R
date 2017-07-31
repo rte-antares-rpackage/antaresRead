@@ -136,7 +136,18 @@
                  inputTimeStep = "hourly", type = "matrix")
 }
 
-.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, ...) {
+.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect = NULL, ...) {
+  
+  unselect = unselect$areas
+  if(!is.null(unselect)){
+    colSelect <- which(!pkgEnv$miscNames%in%unselect)
+    names <- pkgEnv$miscNames[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- pkgEnv$miscNames
+  }
+  
+  
   if(is.null(names)){
     names=pkgEnv$miscNames
   }
@@ -146,11 +157,15 @@
   
 }
 
-.importReserves <- function(area, timeStep, opts, ...) {
-  
+.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, ...) {
+  beginName <- c("primaryRes", "strategicRes", "DSM", "dayAhead")
+  if(is.null(names)){
+    names <- beginName
+    colSelect <- which(beginName%in%names)
+  }
   .importInputTS(area, timeStep, opts, "reserves/%s.txt", 
-                 colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
-                 inputTimeStep = "hourly")
+                 colnames=names,
+                 inputTimeStep = "hourly", colSelect = colSelect)
   
 }
 
