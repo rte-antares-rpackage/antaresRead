@@ -448,7 +448,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
 
   if (reserve) {
-    .addOutputToRes("reserve", areas, .importReserves, NA, unselect = unselect$areas)
+    .addOutputToRes("reserve", areas, .importReserves, NA)
     if(!is.null(res$areas)) .mergeByRef(res$areas, res$reserve)
     if (!is.null(districts)) {
       res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)

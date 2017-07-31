@@ -157,12 +157,18 @@
   
 }
 
-.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, ...) {
+.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect =NULL, ...) {
   beginName <- c("primaryRes", "strategicRes", "DSM", "dayAhead")
-  if(is.null(names)){
+  unselect = unselect$areas
+  
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
     names <- beginName
-    colSelect <- which(beginName%in%names)
   }
+  
   .importInputTS(area, timeStep, opts, "reserves/%s.txt", 
                  colnames=names,
                  inputTimeStep = "hourly", colSelect = colSelect)
