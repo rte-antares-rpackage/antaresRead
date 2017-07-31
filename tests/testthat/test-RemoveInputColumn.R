@@ -25,3 +25,11 @@ V2 <- readAntares(areas = "all", select = c("reserve"))
 V2[,DSM:=NULL] 
 
 expect_true(identical(V, V2))
+
+
+#hydroStorageMaxPower
+V <- readAntares(areas = "all",  select = c("hydroStorageMaxPower", "-hstorPMaxHigh"))
+V2 <- readAntares(areas = "all", select = c("hydroStorageMaxPower"))
+V2[,hstorPMaxHigh:=NULL] 
+
+expect_true(identical(V, V2))
