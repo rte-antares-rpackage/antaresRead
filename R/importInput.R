@@ -33,9 +33,13 @@
 #' @noRd
 #' 
 .importInputTS <- function(area, timeStep, opts, fileNamePattern, colnames, 
-                           inputTimeStep, fun = "sum", type = "simple", ...) {
+                           inputTimeStep, fun = "sum", type = "simple", colSelect = NULL, ...) {
   
   path <- file.path(opts$inputPath, sprintf(fileNamePattern, area))
+  
+  # if(!is.null(colSelect)){
+  #   colnames <- colnames[colSelect]
+  # }
   
   # If file does not exists or is empty, but we know the columns, then we
   # create a table filled with 0. Else we return NULL
@@ -48,7 +52,15 @@
     if (type == "matrix") return(NULL)
     inputTS <- data.table(matrix(0L, timeRange[2] - timeRange[1] + 1,length(colnames)))
   } else {
+    
+    if(is.null(colSelect))
+    {
     inputTS <- fread(path, integer64 = "numeric", header = FALSE)
+    }else{
+      inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
+    }
+    
+    
     inputTS <- inputTS[timeRange[1]:timeRange[2]]
   }
   
@@ -124,11 +136,13 @@
                  inputTimeStep = "hourly", type = "matrix")
 }
 
-.importMisc <- function(area, timeStep, opts, ...) {
-  
+.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, ...) {
+  if(is.null(names)){
+    names=pkgEnv$miscNames
+  }
   .importInputTS(area, timeStep, opts, "misc-gen/miscgen-%s.txt", 
-                 colnames=pkgEnv$miscNames,
-                 inputTimeStep = "hourly")
+                 colnames=names,
+                 inputTimeStep = "hourly", colSelect = colSelect)
   
 }
 

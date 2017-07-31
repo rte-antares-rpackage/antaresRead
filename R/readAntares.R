@@ -211,6 +211,30 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   timeStep <- match.arg(timeStep)
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
   
+  ##Get unselect columns (by - operator)
+  unselect <- lapply(select, function(X){
+    minusColumns <- grep("^-", X)
+    if(length(minusColumns)>0)
+    {
+    uns <- X[minusColumns]
+    gsub("^-", "", uns)
+    }else{
+      NULL
+    }
+  })
+  
+  ##Remove unselect columns
+  select <- lapply(select, function(X){
+    minusColumns <- grep("^-", X)
+    if(length(minusColumns) > 0){
+      X[-c(minusColumns)]
+    }else{
+      X
+    }
+  })
+  
+  
+  
   # Aliases for groups of variables
   select <- llply(select, function(x) {
     for (alias in names(pkgEnv$varAliases)) {
@@ -294,15 +318,25 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res <- list() # Object the function will return
 
   # local function that add a type of output to the object "res"
-  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
+  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep, unselect = NULL) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
 
     if (showProgress) cat(sprintf("Importing %s\n", name))
-
+    
+    if(!is.null(unselect)){
+      colSelect <- which(!pkgEnv$miscNames%in%unselect)
+      names <- pkgEnv$miscNames[colSelect]
+    }else{
+      colSelect <- NULL
+      names <- pkgEnv$miscNames
+    }
+    
     tmp <- suppressWarnings(
       llply(ids, function(x, ...) outputFun(x, ...),
             synthesis=synthesis, mcYears=mcYears,timeStep=ts,
             opts=opts, select = select,
+            colSelect = colSelect,
+            names = names,
             .progress = ifelse(showProgress, "text", "none"),
             .parallel = parallel,
             .paropts = list(.packages="antaresRead"))
@@ -377,7 +411,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Add input time series
 
   if (misc) {
-    .addOutputToRes("misc", areas, .importMisc, NA)
+    .addOutputToRes("misc", areas, .importMisc, unselect = unselect$areas)
     if (!is.null(res$areas)) .mergeByRef(res$areas, res$misc)
     if (!is.null(districts)) {
       res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
