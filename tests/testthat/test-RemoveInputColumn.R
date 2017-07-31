@@ -33,3 +33,11 @@ V2 <- readAntares(areas = "all", select = c("hydroStorageMaxPower"))
 V2[,hstorPMaxHigh:=NULL] 
 
 expect_true(identical(V, V2))
+
+
+V <- readAntares(links = "all",  select = c("linkCapacity", "-transCapacityIndirect"))
+V2 <- readAntares(links = "all", select = c("linkCapacity"))
+V2[,transCapacityIndirect:=NULL] 
+
+expect_true(identical(V, V2))
+

@@ -186,24 +186,32 @@
   
 }
 
-.importLinkCapacity <- function(link, timeStep, opts, ...) {
+.importLinkCapacity <- function(link, timeStep, opts, unselect = NULL, ...) {
   
   areas <- strsplit(link, " - ")[[1]]
   
-  colnames <- c("transCapacityDirect", "transCapacityIndirect",
-                "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  
+  beginName <- c("transCapacityDirect", "transCapacityIndirect",
+                 "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
   # A bit hacky, but it works !
   res <- .importInputTS(areas[2], timeStep, opts, 
                         sprintf("%s/%%s.txt", file.path("links", areas[1])), 
-                        colnames=colnames,
+                        colnames=names,
                         inputTimeStep = "hourly", 
-                        fun = c("sum", "sum", "mean", "mean", "mean"))
+                        fun = c("sum", "sum", "mean", "mean", "mean"), colSelect = colSelect)
   
   res$area <- NULL
   res$link <- link
   
-  setcolorder(res, c("link", "timeId", colnames))
+  setcolorder(res, c("link", "timeId", names))
   
 }
 
