@@ -209,63 +209,35 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
 
   timeStep <- match.arg(timeStep)
-  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
+ 
   
-  ##Get unselect columns (by - operator)
-  unselect <- lapply(select, function(X){
-    minusColumns <- grep("^-", X)
-    if(length(minusColumns)>0)
-    {
-    uns <- X[minusColumns]
-    gsub("^-", "", uns)
-    }else{
-      NULL
+  reqInfos <- .giveInfoRequest(select = select,
+                               areas = areas,
+                               links = links,
+                               clusters = clusters,
+                               districts = districts,
+                               mcYears = mcYears)
+  
+  select <- reqInfos$select
+  areas <- reqInfos$areas
+  links <- reqInfos$links
+  clusters <- reqInfos$clusters
+  districts <- reqInfos$districts
+  mcYears <- reqInfos$mcYears
+  synthesis <- reqInfos$synthesis
+  unselect <- reqInfos$unselect
+  
+  if(length(reqInfos$computeAdd)>0)
+  {
+    for (v in reqInfos$computeAdd) {
+      assign(v, TRUE)
     }
-  })
-  
-  ##Remove unselect columns
-  select <- lapply(select, function(X){
-    minusColumns <- grep("^-", X)
-    if(length(minusColumns) > 0){
-      X[-c(minusColumns)]
-    }else{
-      X
-    }
-  })
-  
-  
-  
-  # Aliases for groups of variables
-  select <- llply(select, function(x) {
-    for (alias in names(pkgEnv$varAliases)) {
-      if (tolower(alias) %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]]$select)
-    }
-    x
-  })
-  
-  for (v in c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
-              "reserve", "linkCapacity", "mustRun", "thermalModulation")) {
-    if (v %in% unlist(select)) assign(v, TRUE)
   }
   
-  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
-  if ("links" %in% unlist(select) & is.null(links)) {
-    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
-    else links <- "all"
-  }
-  if ("clusters" %in% unlist(select) & is.null(clusters)) {
-    if (!is.null(areas)) clusters <- areas
-    else clusters <- "all"
-  }
-  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
   
-  # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
-    areas <- "all"
-  }
-
-  # Check arguments validity. The function .checkArgs is defined below
-  synthesis <- is.null(mcYears)
+  
+  
+  
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
@@ -575,4 +547,108 @@ readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = 
 
   readAntares(areas, links, clusters, opts = opts, ...)
 
+}
+
+
+
+
+
+#' Use to transform inputs arguments to be passable to reading function
+#'
+#' 
+#'
+#' @param select Character vector containing the name of the columns to import. See \link{readAntares} for further information.
+#' @param areas Vector containing the names of the areas to import. See \link{readAntares} for further information.
+#' @param links Vector containing the names of the links to import. See \link{readAntares} for further information.
+#' @param clusters Vector containing the names of the clusters to import. See \link{readAntares} for further information.
+#' @param districts Vector containing the names of the districts to import. See \link{readAntares} for further information.
+#' @param mcYears Index of the Monte-Carlo years to import. See \link{readAntares} for further information.
+#' 
+#' @return \code{list}
+#' \itemize{
+#' \item select
+#' \item areas
+#' \item links
+#' \item clusters
+#' \item districts
+#' \item mcYears
+#' \item synthesis
+#' \item computeAdd
+#' }
+#' 
+#' @noRd
+.giveInfoRequest <- function(select,
+                             areas,
+                             links,
+                             clusters,
+                             districts,
+                             mcYears){
+  
+  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
+  
+  
+  ##Get unselect columns (by - operator)
+  unselect <- lapply(select, function(X){
+    minusColumns <- grep("^-", X)
+    if(length(minusColumns)>0)
+    {
+      uns <- X[minusColumns]
+      gsub("^-", "", uns)
+    }else{
+      NULL
+    }
+  })
+  
+  ##Remove unselect columns
+  select <- lapply(select, function(X){
+    minusColumns <- grep("^-", X)
+    if(length(minusColumns) > 0){
+      X[-c(minusColumns)]
+    }else{
+      X
+    }
+  })
+  
+  
+  # Aliases for groups of variables
+  select <- llply(select, function(x) {
+    for (alias in names(pkgEnv$varAliases)) {
+      if (tolower(alias) %in% tolower(x)) x <- append(x, pkgEnv$varAliases[[alias]]$select)
+    }
+    x
+  })
+  
+  allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+                  "reserve", "linkCapacity", "mustRun", "thermalModulation")
+  computeAdd <- allCompute[allCompute%in%unlist(select)]
+  
+  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
+  if ("links" %in% unlist(select) & is.null(links)) {
+    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
+    else links <- "all"
+  }
+  if ("clusters" %in% unlist(select) & is.null(clusters)) {
+    if (!is.null(areas)) clusters <- areas
+    else clusters <- "all"
+  }
+  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
+  
+  # If all arguments are NULL, import all areas
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
+    areas <- "all"
+  }
+  
+  # Check arguments validity. The function .checkArgs is defined below
+  synthesis <- is.null(mcYears)
+  print(select)
+  
+  return(list(select = select,
+              areas = areas,
+              links = links,
+              clusters = clusters,
+              districts = districts,
+              mcYears = mcYears,
+              synthesis = synthesis,
+              computeAdd = computeAdd,
+              unselect = unselect))
 }
