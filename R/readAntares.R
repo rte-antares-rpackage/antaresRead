@@ -640,7 +640,6 @@ readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = 
   
   # Check arguments validity. The function .checkArgs is defined below
   synthesis <- is.null(mcYears)
-  print(select)
   
   return(list(select = select,
               areas = areas,
