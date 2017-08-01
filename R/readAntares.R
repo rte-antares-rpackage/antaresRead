@@ -316,7 +316,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
 
   res <- list() # Object the function will return
-
+  colSelect = NULL
   # local function that add a type of output to the object "res"
   .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
@@ -472,6 +472,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       .mergeByRef(res$clusters, res$thermalModulation)
     }
     res$thermalModulation <- NULL
+  }
+  
+  
+  #Remove no nedeed column(s)
+  for(i in 1:length(unselect)){
+    oldw <- getOption("warn")
+    options(warn = -1)
+    if(!is.null(res[[names(unselect)[i]]]) & length(unselect[[i]]) > 0){
+      res[[names(unselect)[i]]][, c(unselect[[i]]) := NULL]
+    }
+    options(warn = oldw)
   }
 
   # Class and attributes
