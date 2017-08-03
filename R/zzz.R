@@ -17,6 +17,9 @@ pkgEnv <- new.env()
 pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package
                                             = "antaresRead"), sep = ";", header = TRUE)
 
+pkgEnv$allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+                       "reserve", "linkCapacity", "mustRun", "thermalModulation")
+
 # Column names in the misc input files.
 pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
 

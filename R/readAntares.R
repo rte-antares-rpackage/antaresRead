@@ -234,10 +234,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  
-  
-  
-  
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
@@ -618,8 +614,7 @@ readAntaresAreas <- function(areas, links=TRUE, clusters = TRUE, internalOnly = 
     x
   })
   
-  allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
-                  "reserve", "linkCapacity", "mustRun", "thermalModulation")
+  allCompute <- pkgEnv$allCompute
   computeAdd <- allCompute[allCompute%in%unlist(select)]
   
   if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
