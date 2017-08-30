@@ -47,6 +47,11 @@
 #' @export
 #'
 readClusterDesc <- function(opts = simOptions()) {
+  
+  if(isH5Opts(opts)){
+    return(antaresHdf5::h5ReadClusterDesc(opts))
+  }
+  
   path <- file.path(opts$inputPath, "thermal/clusters")
 
   areas <- list.files(path)

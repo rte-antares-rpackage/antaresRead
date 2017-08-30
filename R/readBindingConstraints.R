@@ -36,6 +36,11 @@
 #' @export
 readBindingConstraints <- function(opts=simOptions()) {
   
+  if(isH5Opts(opts)){
+    return(antaresHdf5::h5ReadBindingConstraints(opts))
+  }
+  
+  
   path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
   

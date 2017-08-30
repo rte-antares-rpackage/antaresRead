@@ -1,7 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Function readAntares (districts)")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 suppressWarnings({
@@ -29,4 +30,5 @@ test_that("readAntares adds reserve to districts", {
 
 test_that("readAntares adds mustRun to districts", {
   expect_false(is.null(districts$mustRunTotal))
+})
 })

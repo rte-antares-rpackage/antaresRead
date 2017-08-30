@@ -1,6 +1,9 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Setup functions")
+
+sapply(studyPathS, function(studyPath){
+  
 suppressPackageStartupMessages(require(lubridate))
 suppressPackageStartupMessages(require(data.table))
 
@@ -38,11 +41,17 @@ test_that("R option 'antares' is set", {
   opts <- setSimulationPath(studyPath)
   expect_identical(opts, getOption("antares"))
 })
-
+opts <- setSimulationPath(studyPath)
+if(!isH5Opts(opts))
+{
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
-  expect_error(setSimulationPath(file.path(studyPath, "..")))
+  expect_error(setSimulationPath(file.path(studyPath, "../..")))
 })
+}
 
+opts <- setSimulationPath(studyPath)
+if(!isH5Opts(opts))
+{
 test_that("setSimulationPath can read info in input", {
   opts <- setSimulationPath(studyPath, "input")
   for (v in c("studyName", "areaList", "districtList", "linkList",
@@ -180,7 +189,7 @@ describe(".getStartDate", {
           january.1st = day
         ))
         
-        it(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
+        describe(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
           start <- suppressWarnings(.getStartDate(params))
           # start compatible with january.1st?
           if (month == "january") {
@@ -201,4 +210,8 @@ describe(".getStartDate", {
       }
     }
   }
+})
+
+
+}
 })

@@ -1,7 +1,12 @@
 context("readOptimCriteria")
 
+
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath, 1)
 
+if(!isH5Opts(opts))
+{
 describe("readOptimCriteria", {
   it("returns an antaresDataTable", {
     optimCrit <- readOptimCriteria(opts)
@@ -10,4 +15,6 @@ describe("readOptimCriteria", {
     expect_equal(attr(optimCrit, "synthesis"), FALSE)
     expect_equal(attr(optimCrit, "timeStep"), "daily")
   })
+})
+}
 })

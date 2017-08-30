@@ -1,7 +1,10 @@
 context("print methods")
 
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
+  
 describe("print.antaresDataTable", {
   data <- readAntares(timeStep="annual", showProgress = FALSE)
   it ("prints basic information", {
@@ -36,4 +39,5 @@ describe("print.simOptions", {
   it("prints basic information about the study", {
     expect_output(print(opts), "Simulation 'test'")
   })
+})
 })

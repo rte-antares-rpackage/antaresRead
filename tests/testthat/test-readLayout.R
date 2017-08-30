@@ -1,5 +1,6 @@
 context("Function readLayout")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath, 1)
 
 describe("readLayout", {
@@ -10,7 +11,8 @@ describe("readLayout", {
     expect_equal(names(l$links), c("link", "from", "to", "x0", "y0", "x1", "y1"))
   })
   
-  
+  if(!isH5Opts(opts))
+  {
   districtDefFile <- file.path(opts$inputPath, "areas/sets.ini")
   
   it("still works when there is no district (#50)", {
@@ -29,4 +31,7 @@ describe("readLayout", {
   
   file.remove(districtDefFile)
   file.rename(paste0(districtDefFile, ".back"), districtDefFile)
+  }
+  
+})
 })

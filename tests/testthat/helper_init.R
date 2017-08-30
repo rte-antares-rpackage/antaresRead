@@ -12,10 +12,19 @@ if (sourcedir != "") {
   if (Sys.info()['sysname'] == "Windows") {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path, 
           extras = "--force-local")
+    
+    file.copy(file.path(sourcedir, "20170707-1355eco-test.h5"), to = path)
+    
   } else {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
+    file.copy(file.path(sourcedir, "20170707-1355eco-test.h5"),  to = path)
+    
   }
   
-  assign("studyPath", file.path(path, "test_case"), envir = globalenv())
-  assign("nweeks", 2, envir = globalenv())
+  # assign("studyPath", file.path(path, "test_case"), envir = globalenv())
+
+  assign("studyPathS", c(file.path(path), file.path(path, "test_case")), envir = globalenv())
+  
+  
+   assign("nweeks", 2, envir = globalenv())
 }

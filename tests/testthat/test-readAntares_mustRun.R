@@ -1,7 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Function readAntares (mustRun)")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 output <- readAntares(areas = "all", clusters = "all", mustRun = TRUE, 
@@ -63,4 +64,4 @@ test_that("table 'thermalModulation' is removed from the returned object (#51)",
   
 })
 
-
+})

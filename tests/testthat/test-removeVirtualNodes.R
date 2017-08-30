@@ -1,7 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("removeVirtualAreas function")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 data <- suppressWarnings(readAntares("all", "all", districts = "all" , showProgress = FALSE, linkCapacity = TRUE))
@@ -148,4 +149,5 @@ test_that("removeVirtualAreas compute storage and pumping capacities", {
   expect_equal(dataCorrectedStep$areas[area=="a" & timeId==208,]$storageCapacity, 4613)
   
   
+})
 })

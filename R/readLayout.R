@@ -42,6 +42,10 @@
 #'
 readLayout <- function(opts = simOptions()) {
   
+  if(isH5Opts(opts)){
+    return(antaresHdf5::h5ReadLayout(opts))
+  }
+  
   # areas
   path <- file.path(opts$inputPath, "areas")
   areas <- ldply(list.files(path), function(f) {

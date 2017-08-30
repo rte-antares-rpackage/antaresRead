@@ -2,5 +2,7 @@
 
 library(testthat)
 library(antaresRead)
+library(antaresHdf5)
+library(plyr)
 
 test_check("antaresRead")
