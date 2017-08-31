@@ -1,6 +1,10 @@
 context("Remove input column(s)")
 
 #misc
+
+sapply(studyPathS, function(studyPath){
+  
+
 opts <- setSimulationPath(studyPath)
 V <- readAntares(areas = "all", select = c("misc", "-GeoThermal"))
 V2 <- readAntares(areas = "all", select = c("misc"))
@@ -58,5 +62,5 @@ V2 <- readAntares(areas = "all", select = c("mustRun"))
 V2[,mustRunPartial:=NULL] 
 expect_true(identical(V, V2))
 
-
+}
 
