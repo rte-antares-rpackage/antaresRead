@@ -33,9 +33,13 @@
 #' @noRd
 #' 
 .importInputTS <- function(area, timeStep, opts, fileNamePattern, colnames, 
-                           inputTimeStep, fun = "sum", type = "simple", ...) {
+                           inputTimeStep, fun = "sum", type = "simple", colSelect = NULL, ...) {
   
   path <- file.path(opts$inputPath, sprintf(fileNamePattern, area))
+  
+  # if(!is.null(colSelect)){
+  #   colnames <- colnames[colSelect]
+  # }
   
   # If file does not exists or is empty, but we know the columns, then we
   # create a table filled with 0. Else we return NULL
@@ -48,7 +52,15 @@
     if (type == "matrix") return(NULL)
     inputTS <- data.table(matrix(0L, timeRange[2] - timeRange[1] + 1,length(colnames)))
   } else {
+    
+    if(is.null(colSelect))
+    {
     inputTS <- fread(path, integer64 = "numeric", header = FALSE)
+    }else{
+      inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
+    }
+    
+    
     inputTS <- inputTS[timeRange[1]:timeRange[2]]
   }
   
@@ -106,11 +118,22 @@
                  inputTimeStep = "monthly", type = "matrix")
 }
   
-.importHydroStorageMaxPower <- function(area, timeStep, opts, ...) {
+.importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
+  
+  beginName <- c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh")
+  unselect = unselect$areas
+  
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
   .importInputTS(area, timeStep, opts, "hydro/common/capacity/maxpower_%s.txt", 
-                 colnames=c("hstorPMaxLow", "hstorPMaxAvg", "hstorPMaxHigh"),
-                 inputTimeStep = "daily", fun = "mean")
+                 colnames=names,
+                 inputTimeStep = "daily", fun = "mean", colSelect = colSelect)
   
 }
 
@@ -124,57 +147,102 @@
                  inputTimeStep = "hourly", type = "matrix")
 }
 
-.importMisc <- function(area, timeStep, opts, ...) {
+.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect = NULL, ...) {
   
+  unselect = unselect$areas
+  if(!is.null(unselect)){
+    colSelect <- which(!pkgEnv$miscNames%in%unselect)
+    names <- pkgEnv$miscNames[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- pkgEnv$miscNames
+  }
+  
+  
+  if(is.null(names)){
+    names=pkgEnv$miscNames
+  }
   .importInputTS(area, timeStep, opts, "misc-gen/miscgen-%s.txt", 
-                 colnames=pkgEnv$miscNames,
-                 inputTimeStep = "hourly")
+                 colnames=names,
+                 inputTimeStep = "hourly", colSelect = colSelect)
   
 }
 
-.importReserves <- function(area, timeStep, opts, ...) {
+.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect =NULL, ...) {
+  beginName <- c("primaryRes", "strategicRes", "DSM", "dayAhead")
+  unselect = unselect$areas
+  
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
   .importInputTS(area, timeStep, opts, "reserves/%s.txt", 
-                 colnames=c("primaryRes", "strategicRes", "DSM", "dayAhead"),
-                 inputTimeStep = "hourly")
+                 colnames=names,
+                 inputTimeStep = "hourly", colSelect = colSelect)
   
 }
 
-.importLinkCapacity <- function(link, timeStep, opts, ...) {
+.importLinkCapacity <- function(link, timeStep, opts, unselect = NULL, ...) {
   
   areas <- strsplit(link, " - ")[[1]]
   
-  colnames <- c("transCapacityDirect", "transCapacityIndirect",
-                "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  unselect <- unselect$links
+  beginName <- c("transCapacityDirect", "transCapacityIndirect",
+                 "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
   # A bit hacky, but it works !
   res <- .importInputTS(areas[2], timeStep, opts, 
                         sprintf("%s/%%s.txt", file.path("links", areas[1])), 
-                        colnames=colnames,
+                        colnames=names,
                         inputTimeStep = "hourly", 
-                        fun = c("sum", "sum", "mean", "mean", "mean"))
+                        fun = c("sum", "sum", "mean", "mean", "mean"), colSelect = colSelect)
   
   res$area <- NULL
   res$link <- link
   
-  setcolorder(res, c("link", "timeId", colnames))
+  setcolorder(res, c("link", "timeId", names))
   
 }
 
-.importThermalModulation <- function(area, opts, timeStep, ...) {
+.importThermalModulation <- function(area, opts, timeStep, unselect = NULL, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
-  
+  unselect <- unselect$areas
   path <- file.path(opts$inputPath, "thermal/prepro", area)
   
   clusters <- list.files(path)
   
+  beginName <- c("marginalCostModulation", "marketBidModulation", 
+      "capacityModulation", "minGenModulation")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
+  
+  
   res <- ldply(clusters, function(cl) {
+    if(is.null(colSelect))
+    {
     modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+    }else{
+      modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+    }
     
     setnames(modulation, 
-             names(modulation), 
-             c("marginalCostModulation", "marketBidModulation", 
-               "capacityModulation", "minGenModulation"))
+             names(modulation), names)
     
     
     

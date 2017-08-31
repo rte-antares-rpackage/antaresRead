@@ -13,6 +13,13 @@
 
 pkgEnv <- new.env()
 
+
+pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package
+                                            = "antaresRead"), sep = ";", header = TRUE)
+
+pkgEnv$allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+                       "reserve", "linkCapacity", "mustRun", "thermalModulation")
+
 # Column names in the misc input files.
 pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
 
@@ -32,6 +39,8 @@ pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
 # present in an output file, they are automatically imported, whatever the value
 # of "select" is.
 pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "mcYear", "timeId", "time", "day", "week", "month", "hour")
+
+pkgEnv$idTimeVars <- c("timeId", "time", "day", "week", "month", "hour")
 
 setAlias("economy", "Production costs, prices, exchanges and spilled energy",
          c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
