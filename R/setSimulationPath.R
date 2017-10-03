@@ -147,6 +147,13 @@ setSimulationPath <- function(path, simulation = NULL) {
   }
   
   # Get study, simulation and input paths
+  if(grepl(".h5$", path)){
+    if(file.exists(path)){
+      return(antaresHdf5::setSimulationPathH5(path))
+    } else {
+      stop("Invalid path argument. File .h5 not found")
+    }
+  }
   res <- .getPaths(path, simulation)
   if(res[1] == "H5"){
     return(antaresHdf5::setSimulationPathH5(path, simulation))
