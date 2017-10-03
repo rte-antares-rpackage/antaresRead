@@ -211,29 +211,29 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if(isH5Opts(opts)){
     
     return(antaresHdf5::h5ReadAntares(path = opts$h5path, 
-                         areas = areas,
-                         links = links,
-                         clusters = clusters,
-                         districts = districts,
-                         misc = misc,
-                         thermalAvailabilities = thermalAvailabilities,
-                         hydroStorage = hydroStorage,
-                         hydroStorageMaxPower = hydroStorageMaxPower,
-                         reserve = reserve,
-                         linkCapacity = linkCapacity,
-                         mustRun = mustRun,
-                         thermalModulation = thermalModulation,
-                         select = select,
-                         mcYears = mcYears,
-                         timeStep = timeStep[1],
-                         showProgress = showProgress,
-                         simplify = simplify))
+                                      areas = areas,
+                                      links = links,
+                                      clusters = clusters,
+                                      districts = districts,
+                                      misc = misc,
+                                      thermalAvailabilities = thermalAvailabilities,
+                                      hydroStorage = hydroStorage,
+                                      hydroStorageMaxPower = hydroStorageMaxPower,
+                                      reserve = reserve,
+                                      linkCapacity = linkCapacity,
+                                      mustRun = mustRun,
+                                      thermalModulation = thermalModulation,
+                                      select = select,
+                                      mcYears = mcYears,
+                                      timeStep = timeStep[1],
+                                      showProgress = showProgress,
+                                      simplify = simplify))
   }
   
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
   
   timeStep <- match.arg(timeStep)
- 
+  
   
   reqInfos <- .giveInfoRequest(select = select,
                                areas = areas,
@@ -265,7 +265,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   # Check arguments validity. The function .checkArgs is defined below
   synthesis <- is.null(mcYears)
-
+  
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any cluster.")
@@ -316,7 +316,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   
   res <- list() # Object the function will return
-
+  
   colSelect = NULL
   # local function that add a type of output to the object "res"
   .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
@@ -383,17 +383,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(districts)) {
       if(nrow(districts ) > 0)
       {
-      tmp <- copy(res$clusters)
-      tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
-      tmp[, area := NULL]
-      tmp[, cluster := NULL]
-      tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
-                    mustRun = sum(mustRun),
-                    mustRunPartial = sum(mustRunPartial),
-                    mustRunTotal = sum(mustRunTotal)),
-                 keyby = c(.idCols(tmp))]
-      res$districts <- .mergeByRef(res$districts, tmp)
-      res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
+        tmp <- copy(res$clusters)
+        tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
+        tmp[, area := NULL]
+        tmp[, cluster := NULL]
+        tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
+                      mustRun = sum(mustRun),
+                      mustRunPartial = sum(mustRunPartial),
+                      mustRunTotal = sum(mustRunTotal)),
+                   keyby = c(.idCols(tmp))]
+        res$districts <- .mergeByRef(res$districts, tmp)
+        res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
       }
     }
     
@@ -413,10 +413,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(districts)) {
       if(nrow(districts ) > 0)
       {
-      res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
-      res$misc[, area := NULL]
-      res$misc <- res$misc[, lapply(.SD, sum), by = .(district, timeId)]
-      .mergeByRef(res$districts, res$misc)
+        res$misc <- merge(res$misc, districts, by = "area", allow.cartesian = TRUE)
+        res$misc[, area := NULL]
+        res$misc <- res$misc[, lapply(.SD, sum), by = .(district, timeId)]
+        .mergeByRef(res$districts, res$misc)
       }
     }
     res$misc <- NULL
@@ -435,12 +435,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(districts)) {
       if(nrow(districts ) > 0)
       {
-      res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
-      res$hydroStorage[, area := NULL]
-      res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = c(.idCols(res$hydroStorage))]
-      .mergeByRef(res$districts, res$hydroStorage)
-    }
-
+        res$hydroStorage <- merge(res$hydroStorage, districts, by = "area", allow.cartesian = TRUE)
+        res$hydroStorage[, area := NULL]
+        res$hydroStorage <- res$hydroStorage[, lapply(.SD, sum), by = c(.idCols(res$hydroStorage))]
+        .mergeByRef(res$districts, res$hydroStorage)
+      }
+      
     }
     
     res$hydroStorage <- NULL
@@ -452,10 +452,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(res$districts)) {
       if(nrow(districts ) > 0)
       {
-      res$hydroStorageMaxPower <- merge(res$hydroStorageMaxPower, districts, by = "area", allow.cartesian = TRUE)
-      res$hydroStorageMaxPower[, area := NULL]
-      res$hydroStorageMaxPower <- res$hydroStorageMaxPower[, lapply(.SD, sum), by = .(district, timeId)]
-      .mergeByRef(res$districts, res$hydroStorageMaxPower)
+        res$hydroStorageMaxPower <- merge(res$hydroStorageMaxPower, districts, by = "area", allow.cartesian = TRUE)
+        res$hydroStorageMaxPower[, area := NULL]
+        res$hydroStorageMaxPower <- res$hydroStorageMaxPower[, lapply(.SD, sum), by = .(district, timeId)]
+        .mergeByRef(res$districts, res$hydroStorageMaxPower)
       }
     }
     res$hydroStorageMaxPower <- NULL
@@ -467,10 +467,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!is.null(districts)) {
       if(nrow(districts ) > 0)
       {
-      res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)
-      res$reserve[, area := NULL]
-      res$reserve <- res$reserve[, lapply(.SD, sum), by = .(district, timeId)]
-      .mergeByRef(res$districts, res$reserve)
+        res$reserve <- merge(res$reserve, districts, by = "area", allow.cartesian = TRUE)
+        res$reserve[, area := NULL]
+        res$reserve <- res$reserve[, lapply(.SD, sum), by = .(district, timeId)]
+        .mergeByRef(res$districts, res$reserve)
       }
     }
     res$reserve <- NULL
@@ -496,12 +496,19 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   for(i in 1:length(unselect)){
     oldw <- getOption("warn")
     options(warn = -1)
-    if(!is.null(res[[names(unselect)[i]]]) & length(unselect[[i]]) > 0){
-      res[[names(unselect)[i]]][, c(unselect[[i]]) := NULL]
-    }
+    if("antaresDataList" %in%class(res))
+    {
+      for(j in 1:length(res)){
+        if(!is.null(res[[j]][[names(unselect)[i]]]) & length(unselect[[i]]) > 0){
+          res[[j]][[names(unselect)[i]]][, c(unselect[[i]]) := NULL]
+        }}
+    }else{
+      if(!is.null(res[[names(unselect)[i]]]) & length(unselect[[i]]) > 0){
+        res[[names(unselect)[i]]][, c(unselect[[i]]) := NULL]
+      }}
     options(warn = oldw)
   }
-
+  
   # Class and attributes
   res <- .addClassAndAttributes(res, synthesis, timeStep, opts, simplify)
   
