@@ -46,21 +46,11 @@ V2[,transCapacityIndirect:=NULL]
 expect_true(identical(V, V2))
 
 
-#thermalModulation
-V <- readAntares(clusters = "all",  select = c("thermalModulation", "-capacityModulation"))
-V2 <- readAntares(clusters = "all", select = c("thermalModulation"))
-V2[,capacityModulation:=NULL] 
-
-expect_true(identical(V, V2))
-
-
-
-
 
 V <- readAntares(areas = "all", select = c("mustRun", "-mustRunPartial"))
 V2 <- readAntares(areas = "all", select = c("mustRun"))
 V2[,mustRunPartial:=NULL] 
 expect_true(identical(V, V2))
 
-}
+})
 
