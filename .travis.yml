@@ -5,6 +5,7 @@ sudo: false
 cache: packages
 
 r_github_packages:
+ - hadley/devtools#1263
  - rte-antares-rpackage
 
 r_packages:
