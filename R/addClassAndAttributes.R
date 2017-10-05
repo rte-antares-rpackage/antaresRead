@@ -1,5 +1,6 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
+
 #' Transform a table or a list of table in an antaresData object
 #' 
 #' This function modifies the class and the attributes of its input to transform
