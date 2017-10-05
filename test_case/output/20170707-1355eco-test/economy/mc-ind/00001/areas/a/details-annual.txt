@@ -1,8 +1,0 @@
-A	area	de	annual
-	VARIABLES	BEGIN	END
-	15	1	1
-
-A	annual	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE	BASE	BASE_must_run	PEAK	PEAK_must_run_partial	SEMI BASE
-		MWh	MWh	MWh	MWh	MWh	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NP Cost - Euro	NODU	NODU	NODU	NODU	NODU
-																
-	Annual	13453440	423360	1454442	241319	8162141	0	0	0	0	0	13728	6048	2022	336	8541

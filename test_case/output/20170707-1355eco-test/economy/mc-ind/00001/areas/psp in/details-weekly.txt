@@ -1,9 +1,0 @@
-PSP IN	area	de	weekly
-	VARIABLES	BEGIN	END
-	3	2	3
-
-PSP IN	weekly	PSP_IN	PSP_IN	PSP_IN
-		MWh	NP Cost - Euro	NODU
-	week			
-	2	840135	0	155
-	3	916750	0	163
