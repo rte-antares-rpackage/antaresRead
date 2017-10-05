@@ -2,7 +2,6 @@
 
 require(testthat)
 require(antaresRead)
-require(rhdf5)
 require(antaresHdf5)
 require(plyr)
 
