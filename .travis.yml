@@ -6,7 +6,7 @@ cache: packages
 
 r_github_packages:
  - hadley/devtools#1263
- - rte-antares-rpackage
+ - rte-antares-rpackage/antaresHDF5
 
 r_packages:
   - covr
