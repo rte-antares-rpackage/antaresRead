@@ -4,6 +4,8 @@ language: R
 sudo: false
 cache: packages
 
+r: bioc-devel
+
 r_github_packages:
  - hadley/devtools#1263
  - rte-antares-rpackage/antaresProcessing
