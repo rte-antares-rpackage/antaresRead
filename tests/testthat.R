@@ -1,8 +1,9 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
-library(testthat)
-library(antaresRead)
-library(antaresHdf5)
-library(plyr)
+require(testthat)
+require(antaresRead)
+require(rhdf5)
+require(antaresHdf5)
+require(plyr)
 
 test_check("antaresRead")
