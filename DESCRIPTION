@@ -22,7 +22,8 @@ Imports:
     plyr,
     methods,
     stats,
-    stringr
+    stringr,
+    shiny
 Suggests:
     testthat,
     knitr,

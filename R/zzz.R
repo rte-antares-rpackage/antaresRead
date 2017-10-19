@@ -2,6 +2,7 @@
 
 #' @import data.table
 #' @import plyr
+#' @importFrom shiny withProgress incProgress getDefaultReactiveDomain
 #' @importFrom methods is
 #' @importFrom grDevices col2rgb rgb
 #' @importFrom stats as.formula

@@ -220,7 +220,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   
   if(is.null(getOption("maxSizeLoadOnComp"))){
-    options(maxSizeLoadOnComp = 25000*0.7/1000)
+    options(maxSizeLoadOnComp = utils::memory.limit()*0.7/1000)
     
   }
   
