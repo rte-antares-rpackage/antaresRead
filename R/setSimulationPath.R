@@ -417,6 +417,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   )
 }
 
+
 # Get the first date of the simulation, ie. the date corresponding to timeId == 1
 .getStartDate <- function(params) {
   mNames <- c("january", "february", "march", "april", "may", "june", "july",
