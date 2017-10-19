@@ -80,3 +80,4 @@ utils::globalVariables(
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
     "NODU", "min.stable.power", "thermalPmin", "name", "value")
 )
+

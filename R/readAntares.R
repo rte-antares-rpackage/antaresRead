@@ -208,6 +208,39 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   
   
+  timeStep <- match.arg(timeStep)
+  
+  
+  ##Controle size of data load
+  size <- .giveSize(opts = opts, areas = areas, links = links, 
+                    clusters = clusters, districts = districts, select = select,
+                    mcYears = mcYears ,timeStep = timeStep, misc = misc, thermalAvailabilities = thermalAvailabilities,
+                    hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower, reserve = reserve,
+                    linkCapacity = linkCapacity, mustRun = mustRun, thermalModulation = thermalModulation)/1024
+  
+  
+  if(is.null(getOption("maxSizeLoadOnComp"))){
+    options(maxSizeLoadOnComp = utils::memory.limit()*0.7/1000)
+    
+  }
+  
+  if(is.null(getOption("maxSizeLoad"))){
+    options(maxSizeLoad = 10)
+  }
+  if(getOption("maxSizeLoad")<size)
+  {
+    stop("You want to load more than 10Go of data,
+         if you want you can modify antaresRead rules of RAM control with setRam()")
+  }
+  
+  if(getOption("maxSizeLoadOnComp")<size)
+  {
+    stop("You want to load more than 70% of your computer capacity,
+         if you want you can modify antaresRead rules of RAM control with setRam()")
+  }
+  
+  
+  
   if(isH5Opts(opts)){
     
     return(antaresHdf5::h5ReadAntares(path = opts$h5path, 
@@ -232,7 +265,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
   
-  timeStep <- match.arg(timeStep)
+
   
   
   reqInfos <- .giveInfoRequest(select = select,
@@ -315,9 +348,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
   
-  res <- list() # Object the function will return
-  
   colSelect = NULL
+  res <- list()
   # local function that add a type of output to the object "res"
   .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
@@ -344,6 +376,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   # Add output to res object. The ".importOutputForXXX" functions are
   # defined in the file "importOutput.R".
+  
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, mcYears, showProgress, opts,
                                      parallel = parallel)
   res$links <- .importOutputForLinks(links, timeStep, select$links, mcYears, showProgress, opts,
