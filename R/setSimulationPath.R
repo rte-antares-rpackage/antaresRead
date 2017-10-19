@@ -427,9 +427,12 @@ setSimulationPath <- function(path, simulation = NULL) {
 
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
-  if (is.na(m) || length(m) == 0 || m == -1) year <- lubridate::year(Sys.Date())
-  else year <- as.numeric(regmatches(p$horizon, m))
+  
+   if (is.na(m) || length(m) == 0 || m == -1) {year <- lubridate::year(Sys.Date())
+   }else {year <- as.numeric(substr(p$horizon,1,4))}
 
+  
+  
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
   start <- as.Date(paste(year, "01 01"), format = "%Y %m %d")
   jan1 <- which(dNames == p$january.1st)
