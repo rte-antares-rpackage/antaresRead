@@ -93,7 +93,7 @@
   res <- llply(
     1:nrow(args), 
     function(i) {
-      incProgress(1/n, detail = paste("Load"))
+      incProgress(1/n, detail = paste0("antaresRead : importing ", folder, " data"))
       
       if (!sameNames) {
         colNames <- .getOutputHeader(args$path[i], objectName)
