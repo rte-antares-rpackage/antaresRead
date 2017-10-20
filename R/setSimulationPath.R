@@ -19,7 +19,7 @@
 #'   Path to the simulation. It can either be the path to a directory containing
 #'   an antares project or directly to the directory containing the output of a
 #'   simulation.  If missing, a window opens and lets the user choose the
-#'   directory of the simulation interactively
+#'   directory of the simulation interactively. Can also choose .h5 file, if \code{antaresHdf5} is installed.
 #' @param simulation
 #'   (optional) Only used if "path" represents the path of a study and not of the
 #'   output of a simulation. It can be either the name of the simulation or a
@@ -149,14 +149,22 @@ setSimulationPath <- function(path, simulation = NULL) {
   # Get study, simulation and input paths
   if(grepl(".h5$", path)){
     if(file.exists(path)){
-      return(antaresHdf5::setSimulationPathH5(path))
+      if(requireNamespace("antaresHdf5", quietly = TRUE)){
+        return(antaresHdf5::setSimulationPathH5(path))
+      } else {
+        stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+      }
     } else {
       stop("Invalid path argument. File .h5 not found")
     }
   }
   res <- .getPaths(path, simulation)
   if(res[1] == "H5"){
-    return(antaresHdf5::setSimulationPathH5(path, simulation))
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::setSimulationPathH5(path, simulation))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
   }
   
   res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
