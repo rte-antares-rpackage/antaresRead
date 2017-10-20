@@ -42,7 +42,11 @@ environment:
     
 build_script:
   - travis-tool.sh install_deps
-
+  - travis-tool.sh install_bioc zlibbioc
+  - travis-tool.sh install_bioc rhdf5
+  - ./travis-tool.sh install_github rte-antares-rpackage/antaresHDF5@master
+  - ./travis-tool.sh install_github rte-antares-rpackage/antaresProcessing
+  
 test_script:
   - travis-tool.sh run_tests
 
