@@ -1,5 +1,8 @@
 context("bindingConstraints")
 
+
+sapply(studyPathS, function(studyPath){
+
 opts <- setSimulationPath(studyPath, 0)
 
 describe("readBindingConstraints", {
@@ -17,4 +20,5 @@ describe("summary.bindingConstraints", {
     expect_is(sumConstraints, "data.frame")
     expect_true(all(c("enabled", "timeStep", "equation") %in% names(sumConstraints)))
   })
+})
 })

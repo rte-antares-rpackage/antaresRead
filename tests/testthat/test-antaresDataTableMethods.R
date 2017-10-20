@@ -4,6 +4,9 @@ context("Object antaresDataTable")
 
 l <- list.files()
 
+sapply(studyPathS, function(studyPath){
+  
+
 opts <- setSimulationPath(studyPath)
 
 mydata <- readAntares(areas = "all", showProgress = FALSE)
@@ -26,4 +29,5 @@ test_that("merge an antaresDataTable with a table returns an antaresDataTable", 
   newdata <- merge(mydata, opts$districtsDef, by = "area")
   expect_is(newdata, "antaresDataTable")
   expect_true(all(c("timeStep", "opts", "synthesis", "type") %in% names(attributes(newdata))))
+})
 })

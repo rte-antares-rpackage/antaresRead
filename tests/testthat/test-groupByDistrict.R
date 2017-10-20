@@ -1,7 +1,10 @@
 context("Function .groupByDistrict")
 
-opts <- setSimulationPath(studyPath)
 
+sapply(studyPathS, function(studyPath){
+
+opts <- setSimulationPath(studyPath)
+  
 describe(".groupByDistrict", {
 
   it("groups data by district", {
@@ -18,4 +21,5 @@ describe(".groupByDistrict", {
     mydata <- readAntares("a", select = "LOAD", timeStep = "monthly", showProgress = FALSE)
     expect_warning(.groupByDistrict(mydata, opts), " b$")
   })
+})
 })

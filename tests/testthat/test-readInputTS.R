@@ -1,8 +1,12 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Function readInputTS")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
+
+
+if(!isH5Opts(opts)){
 
 test_that("Load importation works", {
   input <- readInputTS(load = "all", showProgress = FALSE)
@@ -72,4 +76,6 @@ test_that("Link capacity importation works", {
   expect_is(input, "antaresDataTable")
   expect_gt(nrow(input), 0)
   expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
+})
+}
 })

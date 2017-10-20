@@ -42,6 +42,14 @@
 #'
 readLayout <- function(opts = simOptions()) {
   
+  if(isH5Opts(opts)){
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::h5ReadLayout(opts))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
+  }
+  
   # areas
   path <- file.path(opts$inputPath, "areas")
   areas <- ldply(list.files(path), function(f) {
@@ -56,13 +64,17 @@ readLayout <- function(opts = simOptions()) {
   areas <- data.table(areas)
   
   # districts
-  districts <- merge(areas, opts$districtsDef, by = "area", allow.cartesian=TRUE)
-  meanCol <- function(cols) {
-    meanrgb <- apply(col2rgb(c("#DF8848", "#DF8848")), 1, mean)
-    rgb(meanrgb[1], meanrgb[2], meanrgb[3], maxColorValue = 255)
+  if (is.null(opts$districtsDef)) {
+    districts <- NULL
+  } else {
+    districts <- merge(areas, opts$districtsDef, by = "area", allow.cartesian=TRUE)
+    meanCol <- function(cols) {
+      meanrgb <- apply(col2rgb(c("#DF8848", "#DF8848")), 1, mean)
+      rgb(meanrgb[1], meanrgb[2], meanrgb[3], maxColorValue = 255)
+    }
+    districts <- districts[, .(x = mean(x), y = mean(y), color = meanCol(color)), 
+                           by = district]
   }
-  districts <- districts[, .(x = mean(x), y = mean(y), color = meanCol(color)), 
-                         by = district]
 
   # links
   if (nrow(opts$linksDef) == 0) {
@@ -75,24 +87,27 @@ readLayout <- function(opts = simOptions()) {
     links[areas, `:=`(x1=x, y1=y), on = c(to="area")]
     
     # Links districts
-    
-    # Identify the connexions between two districts. If two areas in distincts 
-    # districts are connected then the corresponding districts are connected too.
-    districtLinks <- merge(links[, .(to, from)], 
-                           opts$districtsDef[, .(to=area, toDistrict=district)],
-                           by = "to", allow.cartesian=TRUE)
-    districtLinks <- merge(districtLinks, 
-                           opts$districtsDef[, .(from=area, fromDistrict=district)],
-                           by = "from", allow.cartesian=TRUE)
-    districtLinks <- unique(districtLinks[fromDistrict != toDistrict,
-                                          .(fromDistrict, toDistrict)])
-    
-    # Add coordinates of origin and destination
-    districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                           by.x = "toDistrict", by.y = "district")
-    districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                           by.x = "fromDistrict", by.y = "district", 
-                           suffixes = c("0", "1")) 
+    if (is.null(opts$districtsDef)) {
+      districtLinks <- NULL
+    } else {
+      # Identify the connexions between two districts. If two areas in distincts 
+      # districts are connected then the corresponding districts are connected too.
+      districtLinks <- merge(links[, .(to, from)], 
+                             opts$districtsDef[, .(to=area, toDistrict=district)],
+                             by = "to", allow.cartesian=TRUE)
+      districtLinks <- merge(districtLinks, 
+                             opts$districtsDef[, .(from=area, fromDistrict=district)],
+                             by = "from", allow.cartesian=TRUE)
+      districtLinks <- unique(districtLinks[fromDistrict != toDistrict,
+                                            .(fromDistrict, toDistrict)])
+      
+      # Add coordinates of origin and destination
+      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                             by.x = "toDistrict", by.y = "district")
+      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                             by.x = "fromDistrict", by.y = "district", 
+                             suffixes = c("0", "1")) 
+    }
   }
 
   list(areas = areas, districts = districts, links=links, districtLinks = districtLinks)

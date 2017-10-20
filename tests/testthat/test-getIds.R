@@ -2,6 +2,8 @@
 
 context("getIds")
 
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 test_that("It only accepts antaresDataTable input", {
@@ -22,4 +24,5 @@ test_that("output is character", {
   mydata<-readAntares(areas = "all", links = "all", showProgress = FALSE)
   
   expect_is(getIdCols(mydata$areas), "character")
+})
 })

@@ -1,7 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Function readAntares (date-time columns)")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 test_that("readAntares add date-time columns at hourly time step", {
@@ -27,4 +28,5 @@ test_that("readAntares add date-time columns at monthly time step", {
 test_that("readAntares add date-time columns at annual time step", {
   output <- readAntares("a", showProgress = FALSE, timeStep = "annual")
   expect_true(all(c("timeId", "time") %in% names(output)))
+})
 })

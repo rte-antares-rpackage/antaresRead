@@ -56,3 +56,4 @@ simOptions <- function(x = NULL) {
   
   attr(x, "opts")
 }
+

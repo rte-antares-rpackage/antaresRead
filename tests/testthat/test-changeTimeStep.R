@@ -1,6 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Function changeTimeStep")
+sapply(studyPathS, function(studyPath){
+  
 
 opts <- setSimulationPath(studyPath)
 
@@ -46,3 +48,4 @@ test_that("changeTimeStep works on antaresData objects", {
   expect_equal(attr(mydataAgg$links, "timeStep"), "daily")
 })
 
+})

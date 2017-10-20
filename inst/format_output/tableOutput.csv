@@ -1,0 +1,251 @@
+Folder;Files;Mode;Name;Unit;digits
+area;values;economy;OV. COST;Euro;0
+area;values;economy;OP. COST;Euro;0
+area;values;economy;MRG. PRICE;Euro;2
+area;values;economy;CO2 EMIS.;Tons;0
+area;values;economy;BALANCE;MWh;0
+area;values;economy;ROW BAL.;MWh;0
+area;values;economy;PSP;MWh;0
+area;values;economy;MISC. NDG;MWh;0
+area;values;economy;LOAD;MWh;2
+area;values;economy;H. ROR;MWh;0
+area;values;economy;WIND;MWh;0
+area;values;economy;SOLAR;MWh;0
+area;values;economy;NUCLEAR;MWh;0
+area;values;economy;LIGNITE;MWh;0
+area;values;economy;COAL;MWh;0
+area;values;economy;GAS;MWh;0
+area;values;economy;OIL;MWh;0
+area;values;economy;MIX. FUEL;MWh;0
+area;values;economy;MISC. DTG;MWh;0
+area;values;economy;H. STOR;MWh;0
+area;values;economy;UNSP. ENRG;MWh;0
+area;values;economy;SPIL. ENRG;MWh;0
+area;values;economy;LOLD;Hours;2
+area;values;economy;LOLP;%;2
+area;values;economy;AVL DTG;MWh;0
+area;values;economy;DTG MRG;MWh;0
+area;values;economy;MAX MRG;MWh;0
+area;values;economy;NP COST;Euro;0
+area;values;economy;NODU; ;0
+area;values;adequacy;OV. COST;Euro;0
+area;values;adequacy;OP. COST;Euro;0
+area;values;adequacy;MRG. PRICE;Euro;2
+area;values;adequacy;CO2 EMIS.;Tons;0
+area;values;adequacy;BALANCE;MWh;0
+area;values;adequacy;ROW BAL.;MWh;0
+area;values;adequacy;PSP;MWh;0
+area;values;adequacy;MISC. NDG;MWh;0
+area;values;adequacy;LOAD;MWh;2
+area;values;adequacy;H. ROR;MWh;0
+area;values;adequacy;WIND;MWh;0
+area;values;adequacy;SOLAR;MWh;0
+area;values;adequacy;NUCLEAR;MWh;0
+area;values;adequacy;LIGNITE;MWh;0
+area;values;adequacy;COAL;MWh;0
+area;values;adequacy;GAS;MWh;0
+area;values;adequacy;OIL;MWh;0
+area;values;adequacy;MIX. FUEL;MWh;0
+area;values;adequacy;MISC. DTG;MWh;0
+area;values;adequacy;H. STOR;MWh;0
+area;values;adequacy;UNSP. ENRG;MWh;0
+area;values;adequacy;SPIL. ENRG;MWh;0
+area;values;adequacy;LOLD;Hours;2
+area;values;adequacy;LOLP;%;2
+area;values;adequacy;AVL DTG;MWh;0
+area;values;adequacy;DTG MRG;MWh;0
+area;values;adequacy;MAX MRG;MWh;0
+link;values;economy;FLOW LIN.;MWh;0
+link;values;economy;UCAP LIN.;MWh;0
+link;values;economy;FLOW QUAD.;MWh;0
+link;values;economy;CONG. FEE (ALG.);Euro;0
+link;values;economy;CONG. FEE (ABS.);Euro;0
+link;values;economy;MARG. COST;Euro/MW;0
+link;values;economy;CONG. PROB +;%;0
+link;values;economy;CONG. PROB -;%;0
+link;values;economy;HURDLE COST;Euro;0
+link;values;adequacy;FLOW LIN.;MWh;0
+link;values;adequacy;UCAP LIN.;MWh;0
+link;values;adequacy;FLOW QUAD.;MWh;0
+link;values;adequacy;CONG. FEE (ALG.);Euro;0
+link;values;adequacy;CONG. FEE (ABS.);Euro;0
+link;values;adequacy;MARG. COST;Euro/MW;0
+link;values;adequacy;CONG. PROB +;%;0
+link;values;adequacy;CONG. PROB -;%;0
+link;values;adequacy;HURDLE COST;Euro;0
+cluster;values;adequacy;production;MWh;0
+cluster;values;adequacy;NP Cost;Euro;0
+cluster;values;adequacy;NODU;Euro;0
+cluster;values;economy;production;MWh;0
+cluster;values;economy;NP Cost;Euro;0
+cluster;values;economy;NODU;Euro;0
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;
+;;;;;

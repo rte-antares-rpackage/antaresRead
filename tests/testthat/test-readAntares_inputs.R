@@ -2,8 +2,10 @@
 
 context("Function readAntares (add inputs)")
 
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
-
+  
 test_that("Misc importation is ok", {
   suppressWarnings(misc <- readAntares(areas="all", misc = TRUE, showProgress = FALSE))
   expect_is(misc, "data.table")
@@ -59,3 +61,4 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
     expect_equal(nrow(misc), expected_rows * length(opts$areaList))
   })
 }
+})

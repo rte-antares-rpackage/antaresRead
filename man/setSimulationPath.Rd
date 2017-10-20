@@ -11,7 +11,7 @@ setSimulationPath(path, simulation = NULL)
 Path to the simulation. It can either be the path to a directory containing
 an antares project or directly to the directory containing the output of a
 simulation.  If missing, a window opens and lets the user choose the
-directory of the simulation interactively}
+directory of the simulation interactively. Can also choose .h5 file, if \code{antaresHdf5} is installed.}
 
 \item{simulation}{(optional) Only used if "path" represents the path of a study and not of the
 output of a simulation. It can be either the name of the simulation or a

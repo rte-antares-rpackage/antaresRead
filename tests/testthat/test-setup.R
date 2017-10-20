@@ -1,6 +1,9 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Setup functions")
+
+sapply(studyPathS, function(studyPath){
+  
 suppressPackageStartupMessages(require(lubridate))
 suppressPackageStartupMessages(require(data.table))
 
@@ -14,7 +17,7 @@ trueOpts <- list(
   yearByYear = TRUE,
   scenarios = TRUE,
   mcYears = c(1,2),
-  antaresVersion = 500L,
+  antaresVersion = 600L,
   timeIdMin = 7 * 24 + 1,
   timeIdMax = 24 * 7 * 3,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
@@ -38,11 +41,17 @@ test_that("R option 'antares' is set", {
   opts <- setSimulationPath(studyPath)
   expect_identical(opts, getOption("antares"))
 })
-
+opts <- setSimulationPath(studyPath)
+if(!isH5Opts(opts))
+{
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
-  expect_error(setSimulationPath(file.path(studyPath, "..")))
+  expect_error(setSimulationPath(file.path(studyPath, "../..")))
 })
+}
 
+opts <- setSimulationPath(studyPath)
+if(!isH5Opts(opts))
+{
 test_that("setSimulationPath can read info in input", {
   opts <- setSimulationPath(studyPath, "input")
   for (v in c("studyName", "areaList", "districtList", "linkList",
@@ -159,10 +168,8 @@ file.rename(file.path(studyPath, "outputBack"), file.path(studyPath, "output"))
 # Antares v6 ###################################################################
 
 test_that("Folder 'maps' is not interpreted as a study (#49)", {
-  dir.create(file.path(studyPath, "output", "maps"))
   expect_silent(opts <- setSimulationPath(studyPath, -1))
 })
-unlink(file.path(studyPath, "output", "maps"))
 
 # Correction of start date #####################################################
 
@@ -182,7 +189,7 @@ describe(".getStartDate", {
           january.1st = day
         ))
         
-        it(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
+        describe(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
           start <- suppressWarnings(.getStartDate(params))
           # start compatible with january.1st?
           if (month == "january") {
@@ -203,4 +210,8 @@ describe(".getStartDate", {
       }
     }
   }
+})
+
+
+}
 })

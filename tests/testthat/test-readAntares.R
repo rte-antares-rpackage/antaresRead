@@ -2,6 +2,9 @@
 
 context("Function readAntares")
 
+sapply(studyPathS, function(studyPath){
+  
+
 opts <- setSimulationPath(studyPath)
 
 test_that("Areas importation is ok", {
@@ -147,4 +150,6 @@ describe("readAntaresAreas", {
   it ("throws error if no area specified", {
     expect_error(readAntaresAreas(showProgress = FALSE), "area")
   })
+})
+
 })

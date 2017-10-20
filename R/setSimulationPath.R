@@ -19,7 +19,7 @@
 #'   Path to the simulation. It can either be the path to a directory containing
 #'   an antares project or directly to the directory containing the output of a
 #'   simulation.  If missing, a window opens and lets the user choose the
-#'   directory of the simulation interactively
+#'   directory of the simulation interactively. Can also choose .h5 file, if \code{antaresHdf5} is installed.
 #' @param simulation
 #'   (optional) Only used if "path" represents the path of a study and not of the
 #'   output of a simulation. It can be either the name of the simulation or a
@@ -147,7 +147,25 @@ setSimulationPath <- function(path, simulation = NULL) {
   }
   
   # Get study, simulation and input paths
+  if(grepl(".h5$", path)){
+    if(file.exists(path)){
+      if(requireNamespace("antaresHdf5", quietly = TRUE)){
+        return(antaresHdf5::setSimulationPathH5(path))
+      } else {
+        stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+      }
+    } else {
+      stop("Invalid path argument. File .h5 not found")
+    }
+  }
   res <- .getPaths(path, simulation)
+  if(res[1] == "H5"){
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::setSimulationPathH5(path, simulation))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
+  }
   
   res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
   
@@ -201,8 +219,18 @@ setSimulationPath <- function(path, simulation = NULL) {
     # - 2. there is only one study in the output. Select it
     # - 3. asks the user to interactively choose one simulation
     
-    if (!file.exists(file.path(path, "study.antares"))) 
+    if (!file.exists(file.path(path, "study.antares"))){
+      allFiles <- list.files(path)
+      avaliableFile <- allFiles[grep(".h5$", allFiles)]
+      if(length(avaliableFile) == 0)
+      {
       stop("Directory is not an Antares study.")
+      }else{
+        ##H5 mode
+        return("H5")
+      }
+    }
+      
     
     outputPath <- file.path(path, "output")
     
@@ -407,9 +435,12 @@ setSimulationPath <- function(path, simulation = NULL) {
 
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
-  if (is.na(m) || length(m) == 0 || m == -1) year <- lubridate::year(Sys.Date())
-  else year <- as.numeric(regmatches(p$horizon, m))
+  
+   if (is.na(m) || length(m) == 0 || m == -1) {year <- lubridate::year(Sys.Date())
+   }else {year <- as.numeric(substr(p$horizon,1,4))}
 
+  
+  
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
   start <- as.Date(paste(year, "01 01"), format = "%Y %m %d")
   jan1 <- which(dNames == p$january.1st)
@@ -450,6 +481,8 @@ setSimulationPath <- function(path, simulation = NULL) {
 # Private function that reads the definition of the districts
 .readDistrictsDef <- function(inputPath, areas) {
   districts <- readIniFile(file.path(inputPath, "areas/sets.ini"))
+  if (length(districts) == 0) return(NULL)
+  
   res <- ldply(names(districts), function(n) {
     x <- districts[[n]]
     if (any(unlist(x) == "add-all")) {

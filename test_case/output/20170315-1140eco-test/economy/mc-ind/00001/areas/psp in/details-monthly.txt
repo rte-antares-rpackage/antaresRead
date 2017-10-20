@@ -1,8 +1,0 @@
-PSP IN	area	de	monthly
-	VARIABLES	BEGIN	END
-	3	1	1
-
-PSP IN	monthly		PSP_IN	PSP_IN	PSP_IN
-			MWh	NP Cost - Euro	NODU
-	index	month			
-	1	JAN	1756885	0	316

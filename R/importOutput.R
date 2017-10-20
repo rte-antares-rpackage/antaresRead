@@ -85,9 +85,16 @@
     timeIds <- seq(timeRange[1], timeRange[2])
   }
   
+  
+  if(!is.null((getDefaultReactiveDomain())))
+  {
+    n <- nrow(args)
+    withProgress(message = 'Making plot', value = 0, {
   res <- llply(
     1:nrow(args), 
     function(i) {
+      incProgress(1/n, detail = paste0("antaresRead : importing ", folder, " data"))
+      
       if (!sameNames) {
         colNames <- .getOutputHeader(args$path[i], objectName)
         selectCol <- which(!colNames %in% pkgEnv$idVars)
@@ -115,6 +122,41 @@
     .parallel = parallel,
     .paropts = list(.packages = "antaresRead")
   )
+    })
+  
+  }else{
+    res <- llply(
+      1:nrow(args), 
+      function(i) {
+        
+        if (!sameNames) {
+          colNames <- .getOutputHeader(args$path[i], objectName)
+          selectCol <- which(!colNames %in% pkgEnv$idVars)
+          colNames <- colNames[selectCol]
+        }
+        
+        if (length(selectCol) == 0) {
+          data <- data.table(timeId = timeIds)
+        } else {
+          data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                        select = selectCol, integer64 = "numeric")
+          
+          setnames(data, names(data), colNames)
+          data[, timeId := timeIds]
+        }
+        
+        data[, c(objectName) := args$id[i]]
+        if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+        
+        if (!is.null(processFun)) data <- processFun(data)
+        
+        data
+      }, 
+      .progress = ifelse(showProgress, "text", "none"),
+      .parallel = parallel,
+      .paropts = list(.packages = "antaresRead")
+    )
+  }
   
   rbindlist(res)
 }

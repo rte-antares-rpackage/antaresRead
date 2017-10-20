@@ -4,6 +4,15 @@ language: R
 sudo: false
 cache: packages
 
+r: bioc-devel
+
+r_github_packages:
+ - hadley/devtools#1263
+ - rte-antares-rpackage/antaresProcessing
+ - Bioconductor-mirror/zlibbioc
+ - Bioconductor-mirror/rhdf5
+ - rte-antares-rpackage/antaresHDF5
+
 r_packages:
   - covr
 

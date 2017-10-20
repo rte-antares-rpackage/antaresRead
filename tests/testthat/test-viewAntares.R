@@ -1,5 +1,7 @@
 context("viewAntares")
 
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 describe("viewAntares", {
@@ -29,4 +31,5 @@ describe("viewAntares", {
       })
     }
   )
+})
 })

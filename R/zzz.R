@@ -2,15 +2,24 @@
 
 #' @import data.table
 #' @import plyr
+#' @importFrom shiny withProgress incProgress getDefaultReactiveDomain
 #' @importFrom methods is
 #' @importFrom grDevices col2rgb rgb
 #' @importFrom stats as.formula
 #' @importFrom utils View read.table type.convert write.table 
 #' @importFrom utils untar
+#' @importFrom stringr str_match str_replace
 
 # Private variables accessible only by functions from the package
 
 pkgEnv <- new.env()
+
+
+pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package
+                                            = "antaresRead"), sep = ";", header = TRUE)
+
+pkgEnv$allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+                       "reserve", "linkCapacity", "mustRun", "thermalModulation")
 
 # Column names in the misc input files.
 pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
@@ -31,6 +40,8 @@ pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
 # present in an output file, they are automatically imported, whatever the value
 # of "select" is.
 pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "mcYear", "timeId", "time", "day", "week", "month", "hour")
+
+pkgEnv$idTimeVars <- c("timeId", "time", "day", "week", "month", "hour")
 
 setAlias("economy", "Production costs, prices, exchanges and spilled energy",
          c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
@@ -68,5 +79,6 @@ utils::globalVariables(
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea", 
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict", 
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
-    "NODU", "min.stable.power", "thermalPmin")
+    "NODU", "min.stable.power", "thermalPmin", "name", "value")
 )
+

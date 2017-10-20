@@ -1,7 +1,8 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("Subsetting antaresDataList")
-
+sapply(studyPathS, function(studyPath){
+  
 opts <- setSimulationPath(studyPath)
 
 mydata <- readAntares(areas = "all", links = "all", clusters = "all",
@@ -73,4 +74,5 @@ describe("subset.antaresDataTable", {
     expect_true(all(filteredData$clusters[, area] == "a"))
   })
   
+})
 })
