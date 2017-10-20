@@ -49,7 +49,11 @@
 readClusterDesc <- function(opts = simOptions()) {
   
   if(isH5Opts(opts)){
-    return(antaresHdf5::h5ReadClusterDesc(opts))
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::h5ReadClusterDesc(opts))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
   }
   
   path <- file.path(opts$inputPath, "thermal/clusters")

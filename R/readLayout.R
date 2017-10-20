@@ -43,7 +43,11 @@
 readLayout <- function(opts = simOptions()) {
   
   if(isH5Opts(opts)){
-    return(antaresHdf5::h5ReadLayout(opts))
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::h5ReadLayout(opts))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
   }
   
   # areas

@@ -243,30 +243,31 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if(isH5Opts(opts)){
     
-    return(antaresHdf5::h5ReadAntares(path = opts$h5path, 
-                                      areas = areas,
-                                      links = links,
-                                      clusters = clusters,
-                                      districts = districts,
-                                      misc = misc,
-                                      thermalAvailabilities = thermalAvailabilities,
-                                      hydroStorage = hydroStorage,
-                                      hydroStorageMaxPower = hydroStorageMaxPower,
-                                      reserve = reserve,
-                                      linkCapacity = linkCapacity,
-                                      mustRun = mustRun,
-                                      thermalModulation = thermalModulation,
-                                      select = select,
-                                      mcYears = mcYears,
-                                      timeStep = timeStep[1],
-                                      showProgress = showProgress,
-                                      simplify = simplify))
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::h5ReadAntares(path = opts$h5path, 
+                                        areas = areas,
+                                        links = links,
+                                        clusters = clusters,
+                                        districts = districts,
+                                        misc = misc,
+                                        thermalAvailabilities = thermalAvailabilities,
+                                        hydroStorage = hydroStorage,
+                                        hydroStorageMaxPower = hydroStorageMaxPower,
+                                        reserve = reserve,
+                                        linkCapacity = linkCapacity,
+                                        mustRun = mustRun,
+                                        thermalModulation = thermalModulation,
+                                        select = select,
+                                        mcYears = mcYears,
+                                        timeStep = timeStep[1],
+                                        showProgress = showProgress,
+                                        simplify = simplify))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
   }
   
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
-  
-
-  
   
   reqInfos <- .giveInfoRequest(select = select,
                                areas = areas,

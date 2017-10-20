@@ -37,9 +37,12 @@
 readBindingConstraints <- function(opts=simOptions()) {
   
   if(isH5Opts(opts)){
-    return(antaresHdf5::h5ReadBindingConstraints(opts))
+    if(requireNamespace("antaresHdf5", quietly = TRUE)){
+      return(antaresHdf5::h5ReadBindingConstraints(opts))
+    } else {
+      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+    }
   }
-  
   
   path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
   bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

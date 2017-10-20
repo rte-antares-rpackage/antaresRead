@@ -1,6 +1,7 @@
 context("Function readLayout")
+
 sapply(studyPathS, function(studyPath){
-  
+
 opts <- setSimulationPath(studyPath, 1)
 
 describe("readLayout", {
