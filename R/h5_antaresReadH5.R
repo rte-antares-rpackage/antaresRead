@@ -31,7 +31,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                           timeStep = "hourly", select = NULL, showProgress = TRUE,
                           simplify = TRUE, perf = FALSE){
 
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(perf){
     Beg <- Sys.time()
@@ -334,7 +334,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
 #' @noRd
 .optimH5Read <- function(fid, index = NULL, GP){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   did <- rhdf5::H5Dopen(fid,  GP)
   if(is.null(index)){
@@ -446,7 +446,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                        simplify,
                        attrib){
 
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(areas)){
 
@@ -515,7 +515,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                        simplify,
                        attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   ##Load links
   if(!is.null(links)){
@@ -588,7 +588,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                            simplify,
                            attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(districts)){
 
@@ -660,7 +660,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                           simplify,
                           attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(clusters)){
 
@@ -748,7 +748,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
 
 .loadAttributes <- function(fid, timeStep){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(rhdf5::H5Lexists(fid, paste0(timeStep, "/attrib")))
   {
@@ -771,7 +771,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
 
 
 .getstructure <- function(fid, strgp){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   gid <- rhdf5::H5Gopen(fid,  strgp)
   data <- rhdf5::h5dump(gid)
   rhdf5::H5Gclose(gid)

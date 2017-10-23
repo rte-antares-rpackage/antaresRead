@@ -18,7 +18,7 @@ isH5Opts <- function(opts){
 
 
 .getTimeStep <- function(fid){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   timeSteps <- sapply(c("hourly", "daily", "weekly", "monthly", "annual"), function(X){
     rhdf5::H5Lexists(fid, X)
   })
@@ -27,7 +27,7 @@ isH5Opts <- function(opts){
 
 .writeAttributes <- function(res = NULL, path = NULL, timeStep = "hourly", fid = NULL, attributes = NULL)
 {
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(is.null(attributes))
   {

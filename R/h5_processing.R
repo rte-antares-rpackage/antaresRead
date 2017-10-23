@@ -221,7 +221,7 @@ addStraitments <- function(opts,
 .writeAllTables <- function(timeStep, mcY, path, outToWrite,
                             areas, links, clusters, districts, 
                             mcYear = NULL, writeStruct = FALSE){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   fid <- rhdf5::H5Fopen(path)
   sapply(c("areas", "links", "clusters", "districts"), function(X){
     if(get(X)){
@@ -241,7 +241,7 @@ addStraitments <- function(opts,
 
 .getDim <- function(fid, GP, type = "size")
 {
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   did <- rhdf5::H5Dopen(fid, GP)
   rhdf5::H5Dget_space(did)
   res <- rhdf5::H5Dget_space(did)
@@ -379,7 +379,7 @@ addStraitments <- function(opts,
 .writeNewColumns <- function(fid, newdata, GP, mcYear = NULL, writeStruct = FALSE)
 {
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   nbVarToWrite <- ncol(newdata)
   namesVariable <- colnames(newdata)

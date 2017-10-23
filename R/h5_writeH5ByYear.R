@@ -201,7 +201,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                reassignCosts,
                                newCols){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(is.null(path)){
     studPath <- unlist(strsplit(opts$simPath, "/"))

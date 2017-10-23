@@ -61,7 +61,7 @@ setSimulationPathH5 <- function(path, simulation = NULL){
 #' @noRd
 getOptionsH5 <- function(path){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))) stop(rhdf5_message)
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   fid <- rhdf5::H5Fopen(path)
   attributes <- .loadAttributes(fid, "hourly")
   attributes <- attributes$opts
