@@ -412,7 +412,7 @@ addStraitments <- function(opts,
       structVarAdd[which(structVarAdd == "")][1:length(namesVariable)] <- namesVariable
       
       #h5write(structVarAdd, path, oldStruct)
-      rhdf5::h5writeDataset(obj = structVarAdd,  fid, oldStruct)
+      rhdf5::h5writeDataset.array(obj = structVarAdd,  fid, oldStruct)
       
       
       # if(grepl("areas", GP))

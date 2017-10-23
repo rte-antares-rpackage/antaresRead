@@ -47,7 +47,7 @@
 #'
 #' @export
 writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "weekly", "monthly", "annual"),
-                           opts = antaresRead::simOptions(),
+                           opts = simOptions(),
                            writeMcAll = TRUE,
                            compress = 1,
                            misc = FALSE,
@@ -66,7 +66,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            reassignCosts = FALSE,
                            newCols = TRUE, 
                            overwrite = FALSE){
-
+  
   if(!dir.exists(path)){
     stop(paste0("Folder ", path, " not found."))
   }
@@ -77,7 +77,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
     path <- paste0(path, "/", simName, ".h5")
     
     if(overwrite & file.exists(path)){
-     file.remove(path)
+      file.remove(path)
     }
     
     .writeAntaresH5Fun(path = path,
@@ -100,104 +100,110 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                        newCols = newCols)
   }else{
     studieSToWrite <- list.dirs(paste0(opts$studyPath, "/output"), recursive = FALSE, full.names = FALSE)
-    studyPath <- opts$studyPath
-    if(nbCores>1)
-    {
-    cl <- makeCluster(nbCores)
-    clusterEvalQ(cl, {
-      library(antaresRead)
-    })
-    clusterExport(cl, c("path","opts","studyPath",
-                        "timeSteps",
-                        "writeMcAll",
-                        "compress",
-                        "misc",
-                        "thermalAvailabilities",
-                        "hydroStorage",
-                        "hydroStorageMaxPower",
-                        "reserve",
-                        "linkCapacity",
-                        "mustRun",
-                        "thermalModulation",
-                        "removeVirtualAreas",
-                        "storageFlexibility",
-                        "production",
-                        "reassignCosts",
-                        "newCols", 
-                        "overwrite"
-                        ), envir = environment())
-
-    parSapplyLB(cl, studieSToWrite, function(X){
-      opts <- setSimulationPath(studyPath, X)
-      if(!is.null(path)){
-        pathStud <- paste0(path, "/", X, ".h5")
-      }
-      
-      if(overwrite & file.exists(pathStud)){
-        file.remove(pathStud)
-      }
-      
-      antaresRead:::.writeAntaresH5Fun(path = pathStud,
-                         timeSteps = timeSteps,
-                         opts = opts,
-                         writeMcAll = writeMcAll,
-                         compress = compress,
-                         misc = misc,
-                         thermalAvailabilities = thermalAvailabilities,
-                         hydroStorage = hydroStorage,
-                         hydroStorageMaxPower = hydroStorageMaxPower,
-                         reserve = reserve,
-                         linkCapacity = linkCapacity,
-                         mustRun = mustRun,
-                         thermalModulation = thermalModulation,
-                         removeVirtualAreas = removeVirtualAreas,
-                         storageFlexibility = storageFlexibility,
-                         production = production,
-                         reassignCosts = reassignCosts,
-                         newCols = newCols, 
-                         overwrite = overwrite)
-
-
-    })
-    stopCluster(cl)
-
-    }else{
-      sapply(studieSToWrite, function(X){
-        opts <- setSimulationPath(studyPath, X)
-        if(!is.null(path)){
-          pathStud <- paste0(path, "/", opts$studyName, ".h5")
-        }
+    studieSToWrite <- setdiff(studieSToWrite, "maps")
+    if(length(studieSToWrite) > 0){
+      studyPath <- opts$studyPath
+      if(nbCores>1)
+      {
+        cl <- makeCluster(nbCores)
+        clusterEvalQ(cl, {
+          library(antaresRead)
+        })
+        clusterExport(cl, c("path","opts","studyPath",
+                            "timeSteps",
+                            "writeMcAll",
+                            "compress",
+                            "misc",
+                            "thermalAvailabilities",
+                            "hydroStorage",
+                            "hydroStorageMaxPower",
+                            "reserve",
+                            "linkCapacity",
+                            "mustRun",
+                            "thermalModulation",
+                            "removeVirtualAreas",
+                            "storageFlexibility",
+                            "production",
+                            "reassignCosts",
+                            "newCols", 
+                            "overwrite"
+        ), envir = environment())
         
-        if(overwrite & file.exists(pathStud)){
-          file.remove(pathStud)
-        }
+        parSapplyLB(cl, studieSToWrite, function(X){
+          opts <- setSimulationPath(studyPath, X)
+          if(!is.null(path)){
+            pathStud <- paste0(path, "/", X, ".h5")
+          }
+          
+          if(overwrite & file.exists(pathStud)){
+            file.remove(pathStud)
+          }
+          
+          antaresRead:::.writeAntaresH5Fun(path = pathStud,
+                                           timeSteps = timeSteps,
+                                           opts = opts,
+                                           writeMcAll = writeMcAll,
+                                           compress = compress,
+                                           misc = misc,
+                                           thermalAvailabilities = thermalAvailabilities,
+                                           hydroStorage = hydroStorage,
+                                           hydroStorageMaxPower = hydroStorageMaxPower,
+                                           reserve = reserve,
+                                           linkCapacity = linkCapacity,
+                                           mustRun = mustRun,
+                                           thermalModulation = thermalModulation,
+                                           removeVirtualAreas = removeVirtualAreas,
+                                           storageFlexibility = storageFlexibility,
+                                           production = production,
+                                           reassignCosts = reassignCosts,
+                                           newCols = newCols, 
+                                           overwrite = overwrite)
+          
+          
+        })
+        stopCluster(cl)
         
-        .writeAntaresH5Fun(path = pathStud,
-                           timeSteps = timeSteps,
-                           opts = opts,
-                           writeMcAll = writeMcAll,
-                           compress = compress,
-                           misc = misc,
-                           thermalAvailabilities = thermalAvailabilities,
-                           hydroStorage = hydroStorage,
-                           hydroStorageMaxPower = hydroStorageMaxPower,
-                           reserve = reserve,
-                           linkCapacity = linkCapacity,
-                           mustRun = mustRun,
-                           thermalModulation = thermalModulation,
-                           removeVirtualAreas = removeVirtualAreas,
-                           storageFlexibility = storageFlexibility,
-                           production = production,
-                           reassignCosts = reassignCosts,
-                           newCols = newCols)
-
-
-      })
-
+      }else{
+        sapply(studieSToWrite, function(X){
+          opts <- setSimulationPath(studyPath, X)
+          if(!is.null(path)){
+            pathStud <- paste0(path, "/", opts$studyName, ".h5")
+          }
+          
+          if(overwrite & file.exists(pathStud)){
+            file.remove(pathStud)
+          }
+          
+          .writeAntaresH5Fun(path = pathStud,
+                             timeSteps = timeSteps,
+                             opts = opts,
+                             writeMcAll = writeMcAll,
+                             compress = compress,
+                             misc = misc,
+                             thermalAvailabilities = thermalAvailabilities,
+                             hydroStorage = hydroStorage,
+                             hydroStorageMaxPower = hydroStorageMaxPower,
+                             reserve = reserve,
+                             linkCapacity = linkCapacity,
+                             mustRun = mustRun,
+                             thermalModulation = thermalModulation,
+                             removeVirtualAreas = removeVirtualAreas,
+                             storageFlexibility = storageFlexibility,
+                             production = production,
+                             reassignCosts = reassignCosts,
+                             newCols = newCols)
+          
+          
+        })
+        
+      }
+    } else {
+      message("No study.")
     }
   }
-
-
+  
+  
+  
 }
 
 #' Convert antares output to h5 file
@@ -229,19 +235,19 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
     studName <- studPath[length(studPath)]
     path <- paste0(studName, ".h5")
   }
-
+  
   #Create h5 file
   rhdf5::h5createFile(path)
-
+  
   #loop on timeStep
   sapply(timeSteps, function(timeStep){
-
+    
     #Add mcAll
     allMcYears <- opts$mcYears
     if(writeMcAll){
       allMcYears <- c(allMcYears, -1)
     }
-
+    
     #Loop on MCyear
     sapply(allMcYears, function(mcY)
     {
@@ -256,7 +262,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         writeStructure <- TRUE
         mcAll <- TRUE
       }
-
+      
       #Read data
       res <- readAntares(areas = "all" ,
                          links = "all",
@@ -268,7 +274,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                          hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
                          reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
                          thermalModulation = thermalModulation)
-
+      
       if(removeVirtualAreas){
         removeVirtualAreas(res,
                            storageFlexibility = storageFlexibility,
@@ -276,10 +282,10 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            reassignCosts = reassignCosts,
                            newCols = newCols)
       }
-
-      if(writeStructure & !mcAll){
-
       
+      if(writeStructure & !mcAll){
+        
+        
         # Create group
         rhdf5::H5close()
         rhdf5::h5createGroup(path, timeStep)
@@ -295,8 +301,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         
         # .writeAttributes(res = res, path = path, timeStep = timeStep)
         
-  
-
+        
+        
         ###Write inputs
         rhdf5::h5createGroup(path, paste0(timeStep, "/inputs"))
         layout <- readLayout()
@@ -308,9 +314,9 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         bc <- readBindingConstraints()
         s <- serialize(bc, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
-
+        
       }
-
+      
       #Remove useless data
       ctrl <- sapply(1:length(res), function(i){
         if("day" %in% names(res[[i]])){
@@ -328,13 +334,13 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         invisible()
       })
       gc()
-
-
+      
+      
       if(is.null(mcY)){
-
+        
         lapply(res, function(X){
           X[, "mcYear" := "mcAll"]
-
+          
         })
       }
       #Transform for write
