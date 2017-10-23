@@ -20,7 +20,8 @@
 #' @param production \code{character}, see \link[antaresRead]{removeVirtualAreas}
 #' @param reassignCosts \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
 #' @param newCols \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
-#'
+#' @param overwrite \code{boolean}, overwrite old file
+#' 
 #' @examples
 #' 
 #' \dontrun{
@@ -63,12 +64,21 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            storageFlexibility = NULL,
                            production = NULL,
                            reassignCosts = FALSE,
-                           newCols = TRUE){
+                           newCols = TRUE, 
+                           overwrite = FALSE){
 
+  if(!dir.exists(path)){
+    stop(paste0("Folder ", path, " not found."))
+  }
+  
   if(!writeAllSimulations){
     simName <- unlist(strsplit(opts$simPath, "/"))
     simName <- simName[length(simName)]
     path <- paste0(path, "/", simName, ".h5")
+    
+    if(overwrite & file.exists(path)){
+     file.remove(path)
+    }
     
     .writeAntaresH5Fun(path = path,
                        timeSteps = timeSteps,
@@ -113,15 +123,21 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                         "storageFlexibility",
                         "production",
                         "reassignCosts",
-                        "newCols"
+                        "newCols", 
+                        "overwrite"
                         ), envir = environment())
 
     parSapplyLB(cl, studieSToWrite, function(X){
       opts <- setSimulationPath(studyPath, X)
       if(!is.null(path)){
-        pathStud <- paste0(path, "/", opts$studyName, ".h5")
+        pathStud <- paste0(path, "/", X, ".h5")
       }
-      .writeAntaresH5Fun(path = pathStud,
+      
+      if(overwrite & file.exists(pathStud)){
+        file.remove(pathStud)
+      }
+      
+      antaresRead:::.writeAntaresH5Fun(path = pathStud,
                          timeSteps = timeSteps,
                          opts = opts,
                          writeMcAll = writeMcAll,
@@ -138,7 +154,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                          storageFlexibility = storageFlexibility,
                          production = production,
                          reassignCosts = reassignCosts,
-                         newCols = newCols)
+                         newCols = newCols, 
+                         overwrite = overwrite)
 
 
     })
@@ -149,6 +166,10 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         opts <- setSimulationPath(studyPath, X)
         if(!is.null(path)){
           pathStud <- paste0(path, "/", opts$studyName, ".h5")
+        }
+        
+        if(overwrite & file.exists(pathStud)){
+          file.remove(pathStud)
         }
         
         .writeAntaresH5Fun(path = pathStud,
@@ -270,7 +291,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         
         attrib <- attributes(res)
         s <- serialize(attrib, NULL, ascii = TRUE)
-        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/attrib"))
+        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/attrib"))
         
         # .writeAttributes(res = res, path = path, timeStep = timeStep)
         
@@ -280,13 +301,13 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         rhdf5::h5createGroup(path, paste0(timeStep, "/inputs"))
         layout <- readLayout()
         s <- serialize(layout, NULL, ascii = TRUE)
-        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
+        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
         cldesc <- readClusterDesc()
         s <- serialize(cldesc, NULL, ascii = TRUE)
-        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
+        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
         bc <- readBindingConstraints()
         s <- serialize(bc, NULL, ascii = TRUE)
-        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
+        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
 
       }
 
@@ -326,6 +347,6 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
     })
   })
   rhdf5::H5close()
-  cat(paste0("File write : ", path, "\n"))
+  message(paste0("File .h5 writed : ", path, "\n"))
   invisible()
 }

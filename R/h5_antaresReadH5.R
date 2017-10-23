@@ -33,6 +33,10 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
 
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
+  if(!file.exists(path)){
+   stop(paste0("File ", path, " not exist."))
+  }
+  
   if(perf){
     Beg <- Sys.time()
   }
@@ -277,7 +281,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
       cat(paste0("Size of object loaded : ", round(objectS, 1), "Mo\n"))
       cat(paste0("Mo/s loaded : ",round(as.numeric(objectS)/ as.numeric(TotalTime),1), "\n"))
       dtaloded <- sum(unlist(lapply(listOut, function(X)prod(dim(X)))))
-      cat(paste0("Data loded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
+      cat(paste0("Data loaded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
     }
 
     listOut[[1]]
@@ -291,7 +295,7 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
       cat(paste0("Size of object loaded : ", round(objectS, 1), "Mo\n"))
       cat(paste0("Mo/s loaded : ",round(as.numeric(objectS)/ as.numeric(TotalTime),1), "\n"))
       dtaloded <- sum(unlist(lapply(listOut, function(X)prod(dim(X)))))
-      cat(paste0("Data loded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
+      cat(paste0("Data loaded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
     }
 
     listOut
@@ -727,6 +731,12 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
   if(mcType == "mcInd")
   {
     data[, "mcYear" := rep(struct$mcyLoad, each = dimData[1] * dimData[3])]
+  }
+  
+  integerVariableS <- integerVariable[integerVariable%in%names(data)]
+  if(length(integerVariableS)){
+    ordervar <- names(data)[ match(integerVariableS, names(data))]
+    data[,c(ordervar) := lapply(.SD, as.integer), .SDcols = ordervar]
   }
   data
 }

@@ -38,7 +38,7 @@ isH5Opts <- function(opts){
   s <- serialize(attrib, NULL, ascii = TRUE)
   if(!is.null(path))
   {
-    rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/attrib"))
+    rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/attrib"))
   }else{
     did <- rhdf5::H5Dopen(fid,  paste0(timeStep, "/attrib"))
     rhdf5::H5Dwrite(did, rawToChar(s))

@@ -1,8 +1,9 @@
-#' Read binding constraints
+#' Import binding constraints
 #'
 #' @description
-#' This function reads the binding constraints of an Antares project \link[antaresRead]{readBindingConstraints}.
-#' @param opts \link[antaresRead]{readBindingConstraints}
+#' This function imports the binding constraints of an Antares project form an h5 file see also \link[antaresRead]{readBindingConstraints}.
+#'
+#' @param opts \code{list} of simulation parameters returned by the function \link[antaresRead]{setSimulationPath}.
 #'
 #' @noRd
 h5ReadBindingConstraints <- function(opts){
@@ -14,13 +15,14 @@ h5ReadBindingConstraints <- function(opts){
   out
 }
 
-#' Import clusters description
+#' Import areas layout
 #'
 #' @description
-#' This function reads in the input files of an antares study the
-#' characteristics of each cluster \link[antaresRead]{readBindingConstraints}.
+#' This function imports the position of the areas from an h5 file. It may be useful for plotting the
+#' network see also \link[antaresRead]{readLayout}.
 #'
-#' @param opts \link[antaresRead]{readBindingConstraints}
+#' Be aware that the layout is read in the input files so they may have changed since a simulation has been run.
+#' @param opts \code{list} of simulation parameters returned by the function \link[antaresRead]{setSimulationPath}.
 #'
 #' @noRd
 h5ReadLayout <- function(opts){
@@ -32,17 +34,13 @@ h5ReadLayout <- function(opts){
   out
 }
 
-#' Read areas layout
+#' Import cluster description
 #'
 #' @description
-#' This function reads in the input files of an antares study the current areas
-#' layout, ie. the position of the areas It may be useful for plotting the
-#' network.
+#' This function imports the characteristics of each cluster from an h5 file see also \link[antaresRead]{readClusterDesc}.
 #'
-#' Be aware that the layout is read in the input files so they may have
-#' changed since a simulation has been run \link[antaresRead]{readBindingConstraints}.
-#' 
-#' @param opts \link[antaresRead]{readBindingConstraints}
+#' Be aware that clusters descriptions are read in the input files so they may have changed since a simulation has been run.
+#' @param opts \code{list} of simulation parameters returned by the function \link[antaresRead]{setSimulationPath}.
 #'
 #' @noRd
 #' 

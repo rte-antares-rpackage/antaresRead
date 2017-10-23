@@ -40,6 +40,12 @@
 #'                evalClusters = list(),
 #'                evalDistricts = list()
 #'                )
+#'                
+#' #After write of new columns, new aliases are avialable in antaresRead.You can use
+#' #showAliases() to see them. Prifix Out_ is used to distinguish them.
+#' showAliases("Out_surplusClusters")
+#' readAntares(opts = opts, select = "Out_surplusClusters")
+#' 
 #' }
 #' 
 #' @export
@@ -59,6 +65,12 @@ addStraitments <- function(opts,
                            evalLinks = list(),
                            evalClusters = list(),
                            evalDistricts = list(), nThreads = 1){
+  
+  .setAlliasH5()
+  
+  if(!isH5Opts(opts)){
+    stop("opts not refear to an h5 file")
+  }
   
   mcY <- match.arg(mcY)
   allStraitments <- list(
@@ -402,7 +414,7 @@ addStraitments <- function(opts,
       #h5write(structVarAdd, path, oldStruct)
       rhdf5::h5writeDataset(obj = structVarAdd,  fid, oldStruct)
       
-
+      
       # if(grepl("areas", GP))
       # {
       #   attributes <- .loadAttributes(fid, "hourly")

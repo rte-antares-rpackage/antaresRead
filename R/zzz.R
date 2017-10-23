@@ -270,3 +270,6 @@ pkgEnvAntareasH5$processDispo <- data.frame(
                  "surplusClusters"
   ))
 
+integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
+integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
+                                function(X){paste0(X, collapse = "")}))

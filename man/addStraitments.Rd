@@ -70,6 +70,12 @@ addStraitments(opts = opts,  mcY = "mcInd",
                evalClusters = list(),
                evalDistricts = list()
                )
+               
+#After write of new columns, new aliases are avialable in antaresRead.You can use
+#showAliases() to see them. Prifix Out_ is used to distinguish them.
+showAliases("Out_surplusClusters")
+readAntares(opts = opts, select = "Out_surplusClusters")
+
 }
 
 }
