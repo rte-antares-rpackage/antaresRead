@@ -23,13 +23,16 @@ Imports:
     methods,
     stats,
     stringr,
-    shiny
+    shiny,
+    parallel
 Suggests:
+    antaresProcessing (>=  0.11.0),
+    rhdf5 (>= 2.20.0),
     testthat,
     knitr,
     rmarkdown,
-    foreach,
-    antaresHdf5 (>= 0.1.1)
+    foreach
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8
+biocViews: Infrastructure, DataImport

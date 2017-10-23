@@ -16,7 +16,7 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
   }
   
-  if(requireNamespace("antaresHdf5", quietly = TRUE)){
+  if(requireNamespace("rhdf5", quietly = TRUE)){
     file.copy(file.path(sourcedir, "20170707-1355eco-test.h5"), to = path)
     assign("studyPathS", c(file.path(path), file.path(path, "test_case")), envir = globalenv())
   } else {

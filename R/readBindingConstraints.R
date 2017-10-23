@@ -37,10 +37,10 @@
 readBindingConstraints <- function(opts=simOptions()) {
   
   if(isH5Opts(opts)){
-    if(requireNamespace("antaresHdf5", quietly = TRUE)){
-      return(antaresHdf5::h5ReadBindingConstraints(opts))
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+      return(h5ReadBindingConstraints(opts))
     } else {
-      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+      stop(rhdf5_message)
     }
   }
   
