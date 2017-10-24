@@ -1,7 +1,7 @@
 context("h5 : addStraitments")
 
 if(requireNamespace("rhdf5") & requireNamespace("antaresProcessing")){
-  if(packageVersion("antaresProcessing") > "0.10"){
+  if(packageVersion("antaresProcessing") > "0.11"){
     test_that("h5 : processing, write results", {
       .setAlliasH5()
       optsH5 <- setSimulationPathH5(tpDir, h5file)
