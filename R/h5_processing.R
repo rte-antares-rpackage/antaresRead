@@ -20,6 +20,24 @@
 #' @param evalDistricts \code{list}, list of operation to evaluate in districts data
 #' @param nThreads \code{numeric}, nThreads to use
 #' 
+#' @details 
+#' 
+#' When you add a straitment, an alias is created. They can be used for request h5 file. See examples.
+#' 
+#' Available alias are :
+#' \itemize{
+#'    \item "Out_addDownwardMargin"
+#'    \item "Out_addUpwardMargin"
+#'    \item "Out_addExportAndImport"
+#'    \item "Out_addLoadFactorLink"
+#'    \item "Out_externalDependency"
+#'    \item "Out_loadFactor"
+#'    \item "Out_modulation"
+#'    \item "Out_netLoadRamp"
+#'    \item "Out_surplus"
+#'    \item "Out_surplusClusters"
+#'    }
+#' 
 #' @examples
 #' 
 #' \dontrun{

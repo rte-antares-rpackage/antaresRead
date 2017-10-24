@@ -50,6 +50,23 @@ addStraitments(opts, mcY = c("mcInd", "mcAll"), addDownwardMargin = FALSE,
 \description{
 In this version only hourly data can be enriched.
 }
+\details{
+When you add a straitment, an alias is created. They can be used for request h5 file. See examples.
+
+Available alias are :
+\itemize{
+   \item "Out_addDownwardMargin"
+   \item "Out_addUpwardMargin"
+   \item "Out_addExportAndImport"
+   \item "Out_addLoadFactorLink"
+   \item "Out_externalDependency"
+   \item "Out_loadFactor"
+   \item "Out_modulation"
+   \item "Out_netLoadRamp"
+   \item "Out_surplus"
+   \item "Out_surplusClusters"
+   }
+}
 \examples{
 
 \dontrun{
