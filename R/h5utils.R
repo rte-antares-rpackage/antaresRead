@@ -25,22 +25,22 @@ isH5Opts <- function(opts){
   names(timeSteps[which(timeSteps == TRUE)])
 }
 
-.writeAttributes <- function(res = NULL, path = NULL, timeStep = "hourly", fid = NULL, attributes = NULL)
-{
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
-  
-  if(is.null(attributes))
-  {
-    attrib <- attributes(res)
-  }else{
-    attrib <- attributes
-  }
-  s <- serialize(attrib, NULL, ascii = TRUE)
-  if(!is.null(path))
-  {
-    rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/attrib"))
-  }else{
-    did <- rhdf5::H5Dopen(fid,  paste0(timeStep, "/attrib"))
-    rhdf5::H5Dwrite(did, rawToChar(s))
-  }
-}
+# .writeAttributes <- function(res = NULL, path = NULL, timeStep = "hourly", fid = NULL, attributes = NULL)
+# {
+#   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+#   
+#   if(is.null(attributes))
+#   {
+#     attrib <- attributes(res)
+#   }else{
+#     attrib <- attributes
+#   }
+#   s <- serialize(attrib, NULL, ascii = TRUE)
+#   if(!is.null(path))
+#   {
+#     rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/attrib"))
+#   }else{
+#     did <- rhdf5::H5Dopen(fid,  paste0(timeStep, "/attrib"))
+#     rhdf5::H5Dwrite(did, rawToChar(s))
+#   }
+# }
