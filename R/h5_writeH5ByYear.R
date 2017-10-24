@@ -156,8 +156,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                            storageFlexibility = storageFlexibility,
                                            production = production,
                                            reassignCosts = reassignCosts,
-                                           newCols = newCols, 
-                                           overwrite = overwrite)
+                                           newCols = newCols)
           
           
         })
