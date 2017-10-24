@@ -80,6 +80,11 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       file.remove(path)
     }
     
+    if(file.exists(path)){
+      stop(paste0("File ", path, " already exist you must use overwrite argument if you want to overwrite"))
+    }
+    
+    
     .writeAntaresH5Fun(path = path,
                        timeSteps = timeSteps,
                        opts = opts,
@@ -126,7 +131,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                             "production",
                             "reassignCosts",
                             "newCols", 
-                            "overwrite"
+                            "overwrite",
+                            ".writeAntaresH5Fun"
         ), envir = environment())
         
         parSapplyLB(cl, studieSToWrite, function(X){
@@ -138,6 +144,11 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
           if(overwrite & file.exists(pathStud)){
             file.remove(pathStud)
           }
+          
+          if(file.exists(pathStud)){
+            stop(paste0("File ", pathStud, " already exist you must use overwrite argument if you want to overwrite"))
+          }
+          
           
           .writeAntaresH5Fun(path = pathStud,
                                            timeSteps = timeSteps,
@@ -156,8 +167,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                            storageFlexibility = storageFlexibility,
                                            production = production,
                                            reassignCosts = reassignCosts,
-                                           newCols = newCols, 
-                                           overwrite = overwrite)
+                                           newCols = newCols)
           
           
         })
@@ -172,6 +182,9 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
           
           if(overwrite & file.exists(pathStud)){
             file.remove(pathStud)
+          }
+          if(file.exists(pathStud)){
+            stop(paste0("File ", pathStud, " already exist you must use overwrite argument if you want to overwrite"))
           }
           
           .writeAntaresH5Fun(path = pathStud,
