@@ -132,8 +132,8 @@ addStraitments <- function(opts,
     clusterExport(cl, c("opts"))
     clusterEvalQ(cl = cl, {
       require(antaresRead)
-      antaresRead:::.setAlliasH5()
-      opts <- antaresRead::setSimulationPath(opts$h5path)
+      .setAlliasH5()
+      opts <- setSimulationPath(opts$h5path)
     })
     
   }else{
@@ -579,6 +579,8 @@ addStraitments <- function(opts,
   res
 }
 
+#'@export
+#'@noRd
 .setAlliasH5 <- function(){
   sapply(names(pkgEnvAntareasH5$process), function(X){
     tpAlias <- pkgEnvAntareasH5$process[[X]]

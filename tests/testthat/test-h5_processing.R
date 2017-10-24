@@ -3,7 +3,7 @@ context("h5 : addStraitments")
 if(requireNamespace("rhdf5") & requireNamespace("antaresProcessing")){
   if(packageVersion("antaresProcessing") > "0.10"){
     test_that("h5 : processing, write results", {
-      antaresHdf5:::.setAlliasH5()
+      .setAlliasH5()
       optsH5 <- setSimulationPathH5(tpDir, h5file)
       suppressWarnings({addStraitments(opts = optsH5,  mcY = "mcInd",
                      addDownwardMargin = TRUE,

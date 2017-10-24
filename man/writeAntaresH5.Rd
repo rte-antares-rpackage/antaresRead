@@ -5,7 +5,7 @@
 \title{Convert antares output to h5 file}
 \usage{
 writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
-  "monthly", "annual"), opts = antaresRead::simOptions(), writeMcAll = TRUE,
+  "monthly", "annual"), opts = simOptions(), writeMcAll = TRUE,
   compress = 1, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
   linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,

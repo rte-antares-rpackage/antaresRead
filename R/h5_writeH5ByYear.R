@@ -139,7 +139,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
             file.remove(pathStud)
           }
           
-          antaresRead:::.writeAntaresH5Fun(path = pathStud,
+          .writeAntaresH5Fun(path = pathStud,
                                            timeSteps = timeSteps,
                                            opts = opts,
                                            writeMcAll = writeMcAll,
@@ -208,6 +208,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
 
 #' Convert antares output to h5 file
 #'
+#' @export
 #' @noRd
 .writeAntaresH5Fun <- function(path,
                                timeSteps,
