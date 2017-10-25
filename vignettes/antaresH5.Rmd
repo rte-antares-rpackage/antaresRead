@@ -87,3 +87,20 @@ For read data after add of addDownwardMargin you can use alias Out_addDownwardMa
 readAntares(mcyears = "all", select = c("Tota", "Tota2"))
 readAntares(mcyears = "all", select = "Out_addDownwardMargin")
 ```
+
+## Use h5 opts for vizualisation
+It's possible to use opts from h5 to run vizualisation modules of antaresViz package.
+
+```
+opts <- setSimulationPath("mySim.h5")
+antaresViz::prodStack(opts)
+antaresViz::plot(opts)
+antaresViz::exchangesStack(opts)
+
+#After read of map layout
+antaresViz::plotMap(opts, ml)
+
+#Run on more than one opts :
+opts2 <- setSimulationPath("mySim2.h5")
+antaresViz::plot(list(opts, opts2))
+```
