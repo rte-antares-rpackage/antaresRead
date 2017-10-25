@@ -110,11 +110,13 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       studyPath <- opts$studyPath
       if(nbCores>1)
       {
-        cl <- makeCluster(nbCores)
-        clusterEvalQ(cl, {
+        if(!requireNamespace("parallel")) stop("Error loading 'parallel' package.")
+        
+        cl <- parallel::makeCluster(nbCores)
+        parallel::clusterEvalQ(cl, {
           library(antaresRead)
         })
-        clusterExport(cl, c("path","opts","studyPath",
+        parallel::clusterExport(cl, c("path","opts","studyPath",
                             "timeSteps",
                             "writeMcAll",
                             "compress",
@@ -135,7 +137,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                             ".writeAntaresH5Fun"
         ), envir = environment())
         
-        parSapplyLB(cl, studieSToWrite, function(X){
+        parallel::parSapplyLB(cl, studieSToWrite, function(X){
           opts <- setSimulationPath(studyPath, X)
           if(!is.null(path)){
             pathStud <- paste0(path, "/", X, ".h5")
@@ -171,7 +173,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
           
           
         })
-        stopCluster(cl)
+        parallel::stopCluster(cl)
         
       }else{
         sapply(studieSToWrite, function(X){
