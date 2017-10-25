@@ -77,7 +77,7 @@ extractDataList <- function(x, areas=NULL) {
       cl <- x$clusters[area == n]
 
       if (nrow(cl) > 0) {
-        tmp <- dcast(cl, Scenario + timeId ~ cluster, value.var = "MWh")
+        tmp <- dcast(cl, Scenario + timeId ~ cluster, value.var = "production")
         dataList[[n]] <- merge(dataList[[n]], tmp, by = c("Scenario", "timeId"))
 
         info[area == n, detailsLength := ncol(tmp) - 2]
