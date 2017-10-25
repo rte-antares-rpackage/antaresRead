@@ -112,10 +112,10 @@ h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
 
   select <- sapply(names(select), function(X){
     as.vector(unlist(sapply(select[[X]], function(Y){
-      if(is.null(pkgEnvAntareasH5$varAliasCraeted[[Y]][[X]])){
+      if(is.null(pkgEnvAntareasH5$varAliasCreated[[Y]][[X]])){
         Y
       }else{
-        pkgEnvAntareasH5$varAliasCraeted[[Y]][[X]]
+        pkgEnvAntareasH5$varAliasCreated[[Y]][[X]]
       }
     })))
   }, simplify = FALSE)
