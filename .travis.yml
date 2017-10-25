@@ -8,8 +8,6 @@ r: bioc-devel
 
 r_github_packages:
  - hadley/devtools#1263
- - rte-antares-rpackage/antaresRead@develop
- - rte-antares-rpackage/antaresProcessing@develop
  - Bioconductor-mirror/zlibbioc
  - Bioconductor-mirror/rhdf5
 
