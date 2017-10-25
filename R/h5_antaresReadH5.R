@@ -23,6 +23,8 @@
 #' @import parallel plyr
 #'
 #' @noRd
+#' @export
+# Need to be export for antaresViz
 h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                           districts = NULL, mcYears = NULL,
                           misc = FALSE, thermalAvailabilities = FALSE,
