@@ -4,11 +4,13 @@
 \alias{readLayout}
 \title{Read areas layout}
 \usage{
-readLayout(opts = simOptions())
+readLayout(opts = simOptions(), xyCompare = c("union", "intersect"))
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
+
+\item{xyCompare}{Use when passing multiple opts, can be "union" or "intersect".}
 }
 \value{
 A list with three elements:
@@ -21,7 +23,7 @@ A list with three elements:
    
 By default, \code{readLayout} reads the layout for the current default
 antares study. It is possible to specify another study with the parameter
-\code{opts}.
+\code{opts}. And we can pass multiple studies using a \code{list} of opts.
 }
 \description{
 This function reads in the input files of an antares study the current areas
