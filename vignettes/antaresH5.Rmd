@@ -15,7 +15,7 @@ This document describes use of the `antaresRead` package with h5 file format.
 
 ## Installation
 
-To use h5 file format, you must install packages zlibbioc and rhdf5 (>= 2.20.0) from bioconductor. If your proxy allows it, you can use :
+To use **h5** file format, you must install packages ``zlibbioc`` and ``rhdf5 (>= 2.20.0)`` from **bioconductor**. If your proxy allows it, you can use :
 
 ```r
 source('https://bioconductor.org/biocLite.R')
@@ -28,7 +28,7 @@ http://bioconductor.org/packages/release/bioc/html/rhdf5.html
 
 ## Write h5 file from antares study
 
-The function ```writeAntaresH5``` is used to write h5 file from antares output. This function repeat the arguments of ```readAntares```.
+The function ```writeAntaresH5``` is used to write h5 file from antares output. You can add inputs data like in ``readAntares``.
 
 ### Basic use
 
@@ -47,14 +47,15 @@ writeAntaresH5(misc = TRUE, thermalAvailabilities = TRUE,
   writeAllSimulations = TRUE)
 ```
 
-### Overwrite your before h5 file
+### Overwrite 
 
+By default ``writeAntaresH5`` returns an error if the **h5** file already exists. You can use ``overwrite = TRUE``.
 ```r
 setSimulationPath("study_path/output/simulation_name")
 writeAntaresH5(overwrite = TRUE)
 ```
 
-### Write all your simulation in parallel
+### Write all your simulations in parallel
 
 ```r
 setSimulationPath("study_path/output/simulation_name")
@@ -63,15 +64,23 @@ writeAntaresH5(nbCores = 5, writeAllSimulations = TRUE)
 
 ## Read data from your h5 file
 
-You can use ```setSimulationPath``` on your h5 file and read data with ```readAntares```. All arguments of ```readAntares``` are available with h5 file.
+You can use ```setSimulationPath``` and ```readAntares``` in the same way than on normal study.
+
 ```r
 setSimulationPath("mySim.h5")
 readAntares()
+readAntares(areas = "all", links = "all")
+readAntares(areas = "all", mcYears = "all")
+readAntares(timeStep = "weekly")
+# example
 ```
+
+
 
 ## Add columns to your h5 file (hourly data only)
 
-You can use function ```addProcessingH5``` from antaresProcessing package. 
+You can use function ```addProcessingH5``` from ``antaresProcessing`` package. 
+
 ```
  opts <- setSimulationPath("mySim.h5")
  addProcessingH5(opts = opts,  mcY = "mcInd",
@@ -81,7 +90,7 @@ You can use function ```addProcessingH5``` from antaresProcessing package.
                 )
 ```
 
-For read data after add of addDownwardMargin you can use alias Out_addDownwardMargin, use ```showAliases()``` to see them.
+For read data after adding **addDownwardMargin**, you can use alias ``Out_addDownwardMargin``, use ```showAliases()``` to see them.
 
 ```
 readAntares(mcyears = "all", select = c("Tota", "Tota2"))
@@ -89,16 +98,15 @@ readAntares(mcyears = "all", select = "Out_addDownwardMargin")
 ```
 
 ## Use h5 opts for vizualisation
-It's possible to use opts from h5 to run vizualisation modules of antaresViz package.
+
+It's possible to use opts from **h5** with all ``antaresViz`` modules.
 
 ```
 opts <- setSimulationPath("mySim.h5")
+
 antaresViz::prodStack(opts)
 antaresViz::plot(opts)
 antaresViz::exchangesStack(opts)
-
-#After read of map layout
-antaresViz::plotMap(opts, ml)
 
 #Run on more than one opts :
 opts2 <- setSimulationPath("mySim2.h5")
