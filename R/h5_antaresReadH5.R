@@ -21,11 +21,11 @@
 #' @param perf \code{boolean}, eval performance during developpement time, to remove
 #'
 #' @import parallel plyr
-#'
+#' 
 #' @noRd
 #' @export
 # Need to be export for antaresViz
-h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
+.h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
                           districts = NULL, mcYears = NULL,
                           misc = FALSE, thermalAvailabilities = FALSE,
                           hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,

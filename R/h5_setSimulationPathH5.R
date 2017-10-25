@@ -49,7 +49,7 @@ setSimulationPathH5 <- function(path, simulation = NULL){
     stop("Invalid path argument. Must be a .h5 file or a repertory with .h5 file(s)")
   }
 
-  attributes <- getOptionsH5(path)
+  attributes <- .getOptionsH5(path)
   options(antares=attributes)
   attributes
 }
@@ -61,7 +61,7 @@ setSimulationPathH5 <- function(path, simulation = NULL){
 #' @noRd
 #' @export
 # Need to be export for antaresViz
-getOptionsH5 <- function(path){
+.getOptionsH5 <- function(path){
   
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   fid <- rhdf5::H5Fopen(path)

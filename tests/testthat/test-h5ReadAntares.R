@@ -1,4 +1,4 @@
-context("h5ReadAntares")
+context(".h5ReadAntares")
 
 if(requireNamespace("rhdf5")){
   sapply(pkgEnv$allCompute, function(X){
@@ -6,8 +6,8 @@ if(requireNamespace("rhdf5")){
       param1 <- list(path = pathF, areas = "a", mcYears = 1, select = X)
       param2 <- list(path = pathF, areas = "a", mcYears = 1)
       param2[[X]] <- TRUE
-      testthat::expect_true(identical(do.call(h5ReadAntares, param1),
-                                      do.call(h5ReadAntares, param2)))
+      testthat::expect_true(identical(do.call(.h5ReadAntares, param1),
+                                      do.call(.h5ReadAntares, param2)))
     })
   })
 }
@@ -59,7 +59,7 @@ sapply(names(paramComparaison), function(Z){
     param2$path <- pathF
     
     DF1 <- suppressWarnings({do.call(readAntares, param1)})
-    DF2 <- do.call(h5ReadAntares, param2)
+    DF2 <- do.call(.h5ReadAntares, param2)
     expect_true(all(unlist(compareValue(DF1, DF2))))
   })
 })
@@ -75,7 +75,7 @@ test_that("Show perf", {
   ##End silent
   param2$path <- pathF
   DF1 <- suppressWarnings({do.call(readAntares, param1)})
-  DF2 <- do.call(h5ReadAntares, param2)
+  DF2 <- do.call(.h5ReadAntares, param2)
   expect_true(all(unlist(compareValue( DF1,DF2))))
 })
 
@@ -90,7 +90,7 @@ test_that("Show perf multi request", {
   ##End silent
   param2$path <- pathF
   DF1 <- suppressWarnings({do.call(readAntares, param1)})
-  DF2 <- do.call(h5ReadAntares, param2)
+  DF2 <- do.call(.h5ReadAntares, param2)
   expect_true(all(unlist(compareValue( DF1,DF2))))
 })
 
@@ -130,7 +130,7 @@ cgtrl <- sapply("hourly", function(Z){
       ##End silent
       param2$path <- pathF
       DF1 <- suppressWarnings({do.call(readAntares, param1)})
-      DF2 <- do.call(h5ReadAntares, param2)
+      DF2 <- do.call(.h5ReadAntares, param2)
       if(!is(DF1, "antaresDataList"))
       {
         setorderv(DF1, getIdCols(DF1))
@@ -156,6 +156,6 @@ cgtrl <- sapply("hourly", function(Z){
 })
 
 test_that("Bad path", {
-  expect_error(h5ReadAntares("toto"), "File toto not exist.")
+  expect_error(.h5ReadAntares("toto"), "File toto not exist.")
   
 })
