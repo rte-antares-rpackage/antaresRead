@@ -290,7 +290,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                          thermalModulation = thermalModulation)
       
       if(removeVirtualAreas){
-        removeVirtualAreas(res,
+        res <- removeVirtualAreas(res,
                            storageFlexibility = storageFlexibility,
                            production = production,
                            reassignCosts = reassignCosts,
