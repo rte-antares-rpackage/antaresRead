@@ -401,7 +401,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   x$links <- x$links[!link %in% linkList$link]
   
-  if(!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)){
+  if(!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
     
     stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
     stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
