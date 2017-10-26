@@ -179,7 +179,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         sapply(studieSToWrite, function(X){
           opts <- setSimulationPath(studyPath, X)
           if(!is.null(path)){
-            pathStud <- paste0(path, "/", opts$studyName, ".h5")
+            pathStud <- paste0(path, "/", X, ".h5")
           }
           
           if(overwrite & file.exists(pathStud)){
