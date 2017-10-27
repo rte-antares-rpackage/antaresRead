@@ -38,9 +38,9 @@ test_that("A column has been created for each storage/flexibility area", {
 
 test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
   data <- suppressWarnings(readAntares("all", "all", "all", showProgress = FALSE, mcYears = "all", linkCapacity = TRUE, select = "nostat"))
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "c")
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "psp in-2")
   
-  expect_false(any(dataCorrected$clusters$area == "c"))
+  expect_false(any(dataCorrected$clusters$area == "psp in-2"))
 })
 
 test_that("RemoveVirtualAreas removes production areas", {
