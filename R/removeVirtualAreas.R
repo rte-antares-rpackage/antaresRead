@@ -338,14 +338,16 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   #TODO we must rename production virtual areas to productionVirual 
   # cluster has a "production" column 
   productionVirual<-production
-  if (!is.null(x$clusters) & length(unique(x$clusters[area %in% productionVirual, area])) > 0) {
-    linkListProd <- linkListProd[varea %in% production]
-    linkListProd$area <- linkListProd$varea
-    x$clusters <- merge(x$clusters, linkListProd[, mget(c(byarea, "rarea"))],
-                        by = byarea, all.x = TRUE)
-    x$clusters[!is.na(rarea), area := rarea]
-    x$clusters[, rarea := NULL]
-  }
+  if (!is.null(x$clusters)){
+    if (length(unique(x$clusters[area %in% productionVirual, area])) > 0){
+      linkListProdVirtual <- linkListProd[varea %in% productionVirual]
+      linkListProdVirtual$area <- linkListProdVirtual$varea
+      x$clusters <- merge(x$clusters, linkListProdVirtual[, mget(c(byarea, "rarea"))],
+                          by = byarea, all.x = TRUE)
+      x$clusters[!is.na(rarea), area := rarea]
+      x$clusters[, rarea := NULL]
+    }
+  } 
   
   # Remove all data about virtual areas in x
   for (n in names(x)) {
