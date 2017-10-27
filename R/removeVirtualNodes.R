@@ -287,7 +287,6 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   # Aggregate production of production virtual areas and add columns for each 
   # type of production.
   if (length(production) > 0) {
-    .prodNodes <- production # Just to prevent name conflicts with columns of x$areas
     
     linkListProd <- flows[varea %in% production]
     
@@ -351,7 +350,6 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   # to storage flexibility areas. These capacities are needed to compute 
   # upward and downward margins.
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
-    l <- linkList[area %in% storageFlexibility, link]
     idColsLinks <- .idCols(x$links)
     
     pspCapacity <- merge(
