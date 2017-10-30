@@ -11,7 +11,7 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
   linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
   writeAllSimulations = FALSE, nbCores = 4, removeVirtualAreas = FALSE,
   storageFlexibility = NULL, production = NULL, reassignCosts = FALSE,
-  newCols = TRUE, overwrite = FALSE)
+  newCols = TRUE, overwrite = FALSE, supressMessages = FALSE)
 }
 \arguments{
 \item{path}{\code{character} folder where h5 file will be write (default getwd())}
@@ -55,6 +55,8 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
 \item{newCols}{\code{boolean}, see \link[antaresRead]{removeVirtualAreas}}
 
 \item{overwrite}{\code{boolean}, overwrite old file}
+
+\item{supressMessages}{\code{boolean}, supress supressMessages from antaresRead.}
 }
 \description{
 Convert antares output to h5 file

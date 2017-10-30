@@ -21,6 +21,7 @@
 #' @param reassignCosts \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
 #' @param newCols \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
 #' @param overwrite \code{boolean}, overwrite old file
+#' @param supressMessages \code{boolean}, supress supressMessages from antaresRead.
 #' 
 #' @examples
 #' 
@@ -65,7 +66,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            production = NULL,
                            reassignCosts = FALSE,
                            newCols = TRUE, 
-                           overwrite = FALSE){
+                           overwrite = FALSE, supressMessages = FALSE){
   
   if(!dir.exists(path)){
     stop(paste0("Folder ", path, " not found."))
@@ -102,7 +103,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                        storageFlexibility = storageFlexibility,
                        production = production,
                        reassignCosts = reassignCosts,
-                       newCols = newCols)
+                       newCols = newCols,
+                       supressMessages = supressMessages)
   }else{
     studieSToWrite <- list.dirs(paste0(opts$studyPath, "/output"), recursive = FALSE, full.names = FALSE)
     studieSToWrite <- setdiff(studieSToWrite, "maps")
@@ -134,7 +136,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                             "reassignCosts",
                             "newCols", 
                             "overwrite",
-                            ".writeAntaresH5Fun"
+                            ".writeAntaresH5Fun",
+                            "supressMessages"
         ), envir = environment())
         
         parallel::parSapplyLB(cl, studieSToWrite, function(X){
@@ -169,7 +172,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                            storageFlexibility = storageFlexibility,
                                            production = production,
                                            reassignCosts = reassignCosts,
-                                           newCols = newCols)
+                                           newCols = newCols,
+                                           supressMessages = supressMessages)
           
           
         })
@@ -206,7 +210,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                              storageFlexibility = storageFlexibility,
                              production = production,
                              reassignCosts = reassignCosts,
-                             newCols = newCols)
+                             newCols = newCols,
+                             supressMessages = supressMessages)
           
           
         })
@@ -242,8 +247,9 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                storageFlexibility,
                                production,
                                reassignCosts,
-                               newCols){
-  
+                               newCols,
+                               supressMessages){
+   
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(is.null(path)){
@@ -267,6 +273,8 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
     #Loop on MCyear
     sapply(allMcYears, function(mcY)
     {
+      
+      messageS <- ifelse(allMcYears[1] == mcY & timeSteps[1] == timeStep && !supressMessages, TRUE, FALSE)
       if(allMcYears[1] == mcY){
         writeStructure = TRUE
       }else{
@@ -280,6 +288,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       }
       
       #Read data
+      if(messageS){
       res <- readAntares(areas = "all" ,
                          links = "all",
                          clusters = "all",
@@ -290,6 +299,21 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                          hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
                          reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
                          thermalModulation = thermalModulation)
+      
+      
+      }else{
+        res <- suppressMessages(readAntares(areas = "all" ,
+                           links = "all",
+                           clusters = "all",
+                           districts = "all",
+                           mcYears = mcY,
+                           timeStep = timeStep, opts = opts, showProgress = FALSE,
+                           misc = misc, thermalAvailabilities = thermalAvailabilities,
+                           hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
+                           reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
+                           thermalModulation = thermalModulation))
+        
+      }
       
       if(removeVirtualAreas){
         res <- removeVirtualAreas(res,
