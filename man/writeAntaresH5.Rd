@@ -9,9 +9,10 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
   compress = 1, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
   linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
-  writeAllSimulations = FALSE, nbCores = 4, removeVirtualAreas = FALSE,
-  storageFlexibility = NULL, production = NULL, reassignCosts = FALSE,
-  newCols = TRUE, overwrite = FALSE, supressMessages = FALSE)
+  allData = TRUE, writeAllSimulations = FALSE, nbCores = 4,
+  removeVirtualAreas = FALSE, storageFlexibility = NULL,
+  production = NULL, reassignCosts = FALSE, newCols = TRUE,
+  overwrite = FALSE, supressMessages = FALSE)
 }
 \arguments{
 \item{path}{\code{character} folder where h5 file will be write (default getwd())}
@@ -39,6 +40,8 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
 \item{mustRun}{\code{boolean} see \link[antaresRead]{readAntares}}
 
 \item{thermalModulation}{\code{boolean} see \link[antaresRead]{readAntares}}
+
+\item{allData}{\code{boolean} add all process with a sigle call (misc, thermalAvailabilities, ...).}
 
 \item{writeAllSimulations}{\code{boolean}, write all simulations of your antares study.}
 

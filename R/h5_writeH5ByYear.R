@@ -13,6 +13,7 @@
 #' @param linkCapacity \code{boolean} see \link[antaresRead]{readAntares}
 #' @param mustRun \code{boolean} see \link[antaresRead]{readAntares}
 #' @param thermalModulation \code{boolean} see \link[antaresRead]{readAntares}
+#' @param allData \code{boolean} add all process with a sigle call (misc, thermalAvailabilities, ...).
 #' @param writeAllSimulations \code{boolean}, write all simulations of your antares study.
 #' @param nbCores \code{numeric}, number of cores to use, only used if writeAllSimulations is TRUE
 #' @param removeVirtualAreas \code{boolean}, remove virtual areas, see \link[antaresRead]{removeVirtualAreas}
@@ -59,6 +60,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            linkCapacity = FALSE,
                            mustRun = FALSE,
                            thermalModulation = FALSE,
+                           allData = TRUE,
                            writeAllSimulations = FALSE,
                            nbCores = 4,
                            removeVirtualAreas = FALSE,
@@ -71,6 +73,18 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
   if(!dir.exists(path)){
     stop(paste0("Folder ", path, " not found."))
   }
+  
+  if(allData){
+    misc <- TRUE
+    thermalAvailabilities <- TRUE
+    hydroStorage <- TRUE
+    hydroStorageMaxPower <- TRUE
+    reserve <- TRUE
+    linkCapacity <- TRUE
+    mustRun <- TRUE
+    thermalModulation <- TRUE
+  }
+  
   
   if(!writeAllSimulations){
     simName <- unlist(strsplit(opts$simPath, "/"))
