@@ -736,6 +736,10 @@
   }
   
   integerVariableS <- integerVariable[integerVariable%in%names(data)]
+  if("timeId" %in% names(data)){
+    integerVariableS <- c("timeId", integerVariableS)
+  }
+  
   if(length(integerVariableS)){
     ordervar <- names(data)[ match(integerVariableS, names(data))]
     data[,c(ordervar) := lapply(.SD, as.integer), .SDcols = ordervar]
