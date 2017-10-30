@@ -21,7 +21,7 @@
 #' @param reassignCosts \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
 #' @param newCols \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
 #' @param overwrite \code{boolean}, overwrite old file
-#' @param supressMessages \code{boolean}, supress supressMessages from antaresRead.
+#' @param supressMessages \code{boolean}, supress messages from \link[antaresRead]{readAntares} and \link[antaresRead]{removeVirtualAreas}
 #' 
 #' @examples
 #' 
