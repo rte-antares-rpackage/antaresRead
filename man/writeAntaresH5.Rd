@@ -56,7 +56,7 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
 
 \item{overwrite}{\code{boolean}, overwrite old file}
 
-\item{supressMessages}{\code{boolean}, supress supressMessages from antaresRead.}
+\item{supressMessages}{\code{boolean}, supress messages from \link[antaresRead]{readAntares} and \link[antaresRead]{removeVirtualAreas}}
 }
 \description{
 Convert antares output to h5 file
