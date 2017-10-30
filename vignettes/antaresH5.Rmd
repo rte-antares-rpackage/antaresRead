@@ -26,6 +26,10 @@ An other solution is to install manualy this two packages from zip file. They ar
 https://bioconductor.org/packages/release/bioc/html/zlibbioc.html
 http://bioconductor.org/packages/release/bioc/html/rhdf5.html
 
+## Avantages of h5 transformation
+
+With h5 file, ``antaresRead`` will be running faster. Your reading will take between **2 and 4 times** less time. An other avantage is the **compression**, a study can pass from **15Go** in txt to **2.5Go** in h5. Furthermore, a h5 transformation convert lot of txt file in a single h5 file, it will be **easier to move** it. Finally, you can use in the same way function of ``antaresProcessing`` and ``antaresViz`` packages. You can also use ``addProcessingH5`` function to add columns to your h5 file.
+
 ## Write h5 file from antares study
 
 The function ```writeAntaresH5``` is used to write h5 file from antares output. You can add inputs data like in ``readAntares``.
