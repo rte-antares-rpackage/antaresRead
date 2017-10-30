@@ -60,7 +60,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            linkCapacity = FALSE,
                            mustRun = FALSE,
                            thermalModulation = FALSE,
-                           allData = TRUE,
+                           allData = FALSE,
                            writeAllSimulations = FALSE,
                            nbCores = 4,
                            removeVirtualAreas = FALSE,
