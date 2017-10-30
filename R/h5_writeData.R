@@ -11,11 +11,11 @@
 #' @noRd
 #' 
 writeAntaresData <- function(data,
-                                path,
-                                rootGroup = NULL,
-                                writeStructure = TRUE,
-                                mcAll = FALSE,
-                                compress = 0){
+                             path,
+                             rootGroup = NULL,
+                             writeStructure = TRUE,
+                             mcAll = FALSE,
+                             compress = 0){
 
   if(!is.null(data$areas)){
     #Write areas
