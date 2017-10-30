@@ -85,6 +85,9 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
     thermalModulation <- TRUE
   }
   
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  
+  rhdf5::H5close()
   
   if(!writeAllSimulations){
     simName <- unlist(strsplit(opts$simPath, "/"))
@@ -266,11 +269,15 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
    
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
+  
   if(is.null(path)){
     studPath <- unlist(strsplit(opts$simPath, "/"))
     studName <- studPath[length(studPath)]
     path <- paste0(studName, ".h5")
   }
+  
+  #Close connection if exist
+  rhdf5::H5close()
   
   #Create h5 file
   rhdf5::h5createFile(path)
@@ -316,7 +323,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       
       
       }else{
-        res <- suppressMessages(readAntares(areas = "all" ,
+        res <- suppressWarnings(suppressMessages(readAntares(areas = "all" ,
                            links = "all",
                            clusters = "all",
                            districts = "all",
@@ -325,7 +332,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            misc = misc, thermalAvailabilities = thermalAvailabilities,
                            hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
                            reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
-                           thermalModulation = thermalModulation))
+                           thermalModulation = thermalModulation)))
         
       }
       
