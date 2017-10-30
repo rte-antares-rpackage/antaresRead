@@ -522,8 +522,12 @@ setSimulationPath <- function(path, simulation = NULL) {
       currentFrom <- l
     }
   }
-  
+  if(length(from)> 0 & length(to) > 0)
+  {
   data.table(link = paste(from, "-", to),
              from = from,
              to = to)
+  }else{
+    data.table(link = character(), from = character(), to = character())
+  }
 }
