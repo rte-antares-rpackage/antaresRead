@@ -13,7 +13,8 @@
 #' @param linkCapacity \code{boolean} see \link[antaresRead]{readAntares}
 #' @param mustRun \code{boolean} see \link[antaresRead]{readAntares}
 #' @param thermalModulation \code{boolean} see \link[antaresRead]{readAntares}
-#' @param allData \code{boolean} add all process with a sigle call (misc, thermalAvailabilities, ...).
+#' @param allData \code{boolean} add all data with a single call (writeMcAll, misc, thermalAvailabilities, hydroStorage, hydroStorageMaxPower
+#' reserve, linkCapacity, mustRun, thermalModulation).
 #' @param writeAllSimulations \code{boolean}, write all simulations of your antares study.
 #' @param nbCores \code{numeric}, number of cores to use, only used if writeAllSimulations is TRUE
 #' @param removeVirtualAreas \code{boolean}, remove virtual areas, see \link[antaresRead]{removeVirtualAreas}
@@ -44,9 +45,11 @@
 #'    misc = TRUE, thermalAvailabilities = TRUE,
 #'    hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
 #'    linkCapacity = TRUE, mustRun = TRUE, thermalModulation = TRUE)
+#' 
+#' # Write all data with a shorcut 
+#' writeAntaresH5(allData = TRUE)
 #'
 #' }
-#'
 #' @export
 writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "weekly", "monthly", "annual"),
                            opts = simOptions(),
@@ -75,6 +78,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
   }
   
   if(allData){
+    writeMcAll <- TRUE
     misc <- TRUE
     thermalAvailabilities <- TRUE
     hydroStorage <- TRUE
