@@ -5,7 +5,7 @@ sapply(studyPathS, function(studyPath){
   
 opts <- setSimulationPath(studyPath)
 
-data <- suppressWarnings(readAntares("all", "all", districts = "all" , showProgress = FALSE,
+data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , showProgress = FALSE,
                                      linkCapacity = TRUE, select = "nostat"))
 
 vareas <- c("psp in-2", "psp out-2")
@@ -14,7 +14,7 @@ dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
 
 test_that("removeVirtualAreas effectively removes virtual areas", {
   expect_false(any(dataCorrected$areas$area %in% vareas))
-  expect_false(any(dataCorrected$areas$link %in% getLinks(vareas)))
+  expect_false(any(dataCorrected$links$link %in% getLinks(vareas)))
 })
 
 test_that("Balance is corrected for nodes connected to virtual nodes but not the others", {
@@ -38,9 +38,9 @@ test_that("A column has been created for each storage/flexibility area", {
 
 test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
   data <- suppressWarnings(readAntares("all", "all", "all", showProgress = FALSE, mcYears = "all", linkCapacity = TRUE, select = "nostat"))
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "c")
+  dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas, production = "psp in-2")
   
-  expect_false(any(dataCorrected$clusters$area == "c"))
+  expect_false(any(dataCorrected$clusters$area == "psp in-2"))
 })
 
 test_that("RemoveVirtualAreas removes production areas", {
@@ -151,4 +151,24 @@ test_that("removeVirtualAreas compute storage and pumping capacities", {
   
   
 })
+
+test_that("removeVirtualAreas move the cluster from virtual areas to real areas", {
+  data <- suppressWarnings(readAntares(areas="all", links = "all", clusters = "all", districts = "all", showProgress = FALSE, mcYears = "all", linkCapacity = TRUE, select = "nostat"))
+  
+  #for this example we use psp virtual areas like virtual production areas
+  dataCorrected <- removeVirtualAreas(data, production = getAreas(select = c("psp in-2", "psp out-2")))
+  
+  expect_equal(dim(dataCorrected$clusters[area %in% vareas,])[1], 0)
+  
+  expect_gt(dim(data$clusters[area %in% vareas,])[1], dim(dataCorrected$clusters[area %in% vareas,])[1])
+  
+  #cluster was in virtal areas
+  clusterVirual<-unique(data$clusters[area %in% vareas, cluster])
+  
+  rarea<-unique(dataCorrected$clusters[cluster %in% clusterVirual, area])
+  
+  expect_equal(as.character(rarea), "hub")
+})
+
+
 })
