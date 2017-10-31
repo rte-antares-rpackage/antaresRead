@@ -21,4 +21,17 @@ describe("summary.bindingConstraints", {
     expect_true(all(c("enabled", "timeStep", "equation") %in% names(sumConstraints)))
   })
 })
+
+
+describe("Both operator", {
+  it ("returns a data.frame describing the constraints", {
+    constraints <- readBindingConstraints(opts)
+    constraints[[1]]$operator <- "both"
+    sumConstraints <- summary(constraints)
+    expect_is(sumConstraints, "data.frame")
+    expect_true(all(c("enabled", "timeStep", "equation") %in% names(sumConstraints)))
+  })
+})
+
+
 })

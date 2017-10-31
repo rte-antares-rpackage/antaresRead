@@ -12,6 +12,9 @@
 #' 
 #' @inheritParams readAntares
 #'
+#' @param xyCompare
+#'   Use when passing multiple opts, can be "union" or "intersect".
+#'   
 #' @return A list with three elements:
 #' \item{areas: }{A data.frame containing the name, the color and the coordinate
 #'    of each area}
@@ -22,7 +25,7 @@
 #'    
 #' By default, \code{readLayout} reads the layout for the current default
 #' antares study. It is possible to specify another study with the parameter
-#' \code{opts}.
+#' \code{opts}. And we can pass multiple studies using a \code{list} of opts.
 #'
 #' @examples
 #' \dontrun{
@@ -40,13 +43,56 @@
 #' 
 #' @export
 #'
-readLayout <- function(opts = simOptions()) {
+readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) {
+  
+  # single opts
+  if(class(opts) %in% "simOptions"){
+    
+    return(.readLayout(opts = opts))
+    
+  } else if(is.list(opts)){
+    
+    xyCompare <- match.arg(xyCompare)
+    
+    if(!all(sapply(opts, function(x){class(opts) %in% "simOptions"}))){
+      stop("Invalid opts argument. Must be a simOptions or a list of simOptions")
+    }
+    
+    init_layout <- .readLayout(opts[[1]])
+    if(length(opts) > 1){
+      for(i in 2:length(opts)){
+        tmp_layout <- .readLayout(opts[[i]])
+        if(xyCompare %in% "union"){
+          for(ar in names(init_layout)){
+            init_layout[[ar]] <- rbindlist(
+              list(init_layout[[ar]][-nrow(init_layout[[ar]])],
+                   tmp_layout[[ar]], init_layout[[ar]][nrow(init_layout[[ar]])])
+            )
+            init_layout[[ar]] <- unique(init_layout[[ar]], by = colnames(init_layout[[ar]])[1])
+          }
+        } else {
+          for(ar in names(init_layout)){
+            col_id <- colnames(init_layout[[ar]])[1]
+            init_layout[[ar]] <- init_layout[[ar]][which(get(col_id) %in% tmp_layout[[ar]][[col_id]])]
+          }
+        }
+      }
+    }
+    return(init_layout)
+  } else {
+    stop("Invalid opts argument. Must be a simOptions or a list of simOptions")
+  }
+}
+
+.readLayout <- function(opts = simOptions()) {
+  
+  stopifnot(class(opts) %in% "simOptions")
   
   if(isH5Opts(opts)){
-    if(requireNamespace("antaresHdf5", quietly = TRUE)){
-      return(antaresHdf5::h5ReadLayout(opts))
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+      return(h5ReadLayout(opts))
     } else {
-      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+      stop(rhdf5_message)
     }
   }
   
@@ -54,11 +100,11 @@ readLayout <- function(opts = simOptions()) {
   path <- file.path(opts$inputPath, "areas")
   areas <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
-
+    
     res <- as.data.frame(readIniFile(file.path(path, f, "ui.ini"))$ui)
     res$area <- f
     res$color <- rgb(res$color_r, res$color_g, res$color_b, maxColorValue = 255)
-
+    
     res[, c("area", "x", "y", "color")]
   })
   areas <- data.table(areas)
@@ -75,7 +121,7 @@ readLayout <- function(opts = simOptions()) {
     districts <- districts[, .(x = mean(x), y = mean(y), color = meanCol(color)), 
                            by = district]
   }
-
+  
   # links
   if (nrow(opts$linksDef) == 0) {
     links <- NULL
@@ -109,6 +155,6 @@ readLayout <- function(opts = simOptions()) {
                              suffixes = c("0", "1")) 
     }
   }
-
-  list(areas = areas, districts = districts, links=links, districtLinks = districtLinks)
+  
+  list(areas = areas, districts = districts, links = links, districtLinks = districtLinks)
 }

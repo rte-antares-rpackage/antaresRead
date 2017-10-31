@@ -173,7 +173,7 @@ setRam <- function(x){
   clusWithData <- data.table()
   if(!is.null(clusters))
   {
-    clusWithData  <- antaresRead::readClusterDesc()
+    clusWithData  <- readClusterDesc()
     if("all" %in% clusters){
       enabled <- TRUE
       if("enabled" %in% names(clusWithData))

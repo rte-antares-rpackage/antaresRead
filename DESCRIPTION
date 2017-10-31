@@ -25,11 +25,13 @@ Imports:
     stringr,
     shiny
 Suggests:
+    rhdf5 (>= 2.20.0),
     testthat,
     knitr,
     rmarkdown,
     foreach,
-    antaresHdf5 (>= 0.1.1)
+    parallel
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8
+biocViews: Infrastructure, DataImport

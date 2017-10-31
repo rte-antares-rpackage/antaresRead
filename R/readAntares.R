@@ -243,8 +243,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if(isH5Opts(opts)){
     
-    if(requireNamespace("antaresHdf5", quietly = TRUE)){
-      return(antaresHdf5::h5ReadAntares(path = opts$h5path, 
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+      return(.h5ReadAntares(path = opts$h5path, 
                                         areas = areas,
                                         links = links,
                                         clusters = clusters,
@@ -263,7 +263,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                         showProgress = showProgress,
                                         simplify = simplify))
     } else {
-      stop("You need to install 'antaresHdf5' package before use 'antaresRead' with .h5 file.")
+      stop(rhdf5_message)
     }
   }
   

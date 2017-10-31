@@ -71,6 +71,8 @@
 #'     named \code{*_virtual} where "\code{*}" is a type of 
 #'     production (wind, solar, nuclear, ...). Productions that are zero for
 #'     all virtual areas are omited.
+#'     If virtual production areas contains clusters then they will be move to the
+#'     real area. 
 #'   
 #'   \item Finally, virtual areas and the links connected to them are removed
 #'     from the data. 
@@ -333,14 +335,19 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   }
   
   # Put clusters of the virtual areas in the corresponding real areas
-  if (!is.null(x$clusters) & !is.null(x$production)) {
-    linkListProd <- linkList[varea %in% production]
-    linkListProd$area <- linkListProd$varea
-    x$clusters <- merge(x$clusters, linkListProd[, mget(c(byarea, "rarea"))],
-                        by = byarea, all.x = TRUE)
-    x$clusters[!is.na(rarea), area := rarea]
-    x$clusters$to <- rarea
-  }
+  #TODO we must rename production virtual areas to productionVirual 
+  # cluster has a "production" column 
+  productionVirual<-production
+  if (!is.null(x$clusters)){
+    if (length(unique(x$clusters[area %in% productionVirual, area])) > 0){
+      linkListProdVirtual <- linkListProd[varea %in% productionVirual]
+      linkListProdVirtual$area <- linkListProdVirtual$varea
+      x$clusters <- merge(x$clusters, linkListProdVirtual[, mget(c(byarea, "rarea"))],
+                          by = byarea, all.x = TRUE)
+      x$clusters[!is.na(rarea), area := rarea]
+      x$clusters[, rarea := NULL]
+    }
+  } 
   
   # Remove all data about virtual areas in x
   for (n in names(x)) {
@@ -401,7 +408,8 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   x$links <- x$links[!link %in% linkList$link]
   
-  if(!is.null(x$districts) && length(storageFlexibility) > 0){
+  if(!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
+    
     stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
     stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
     
