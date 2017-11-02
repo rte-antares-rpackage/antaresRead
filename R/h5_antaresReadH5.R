@@ -26,57 +26,71 @@
 #' @export
 # Need to be export for antaresViz
 .h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
-                          districts = NULL, mcYears = NULL,
-                          misc = FALSE, thermalAvailabilities = FALSE,
-                          hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
-                          linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
-                          timeStep = "hourly", select = NULL, showProgress = TRUE,
-                          simplify = TRUE, perf = FALSE){
-
+                           districts = NULL, mcYears = NULL,
+                           misc = FALSE, thermalAvailabilities = FALSE,
+                           hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
+                           linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
+                           timeStep = "hourly", select = NULL, showProgress = TRUE,
+                           simplify = TRUE, perf = FALSE){
+  
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
-  if(is.null(select))
+  if(!is.list(select))
   {
-  if(!is.null(areas))
-  {
-  if(areas[1] == "all"){
-    select <- c("all", select)
-  }}
-  
-  if(!is.null(links))
-  {
-    if(links[1] == "all"){
-      select <- c("all", select)
-    }}
-  
-  if(!is.null(clusters))
-  {
-    if(clusters[1] == "all"){
-      select <- c("all", select)
-    }}
-  if(!is.null(districts))
-  {
-    if(districts[1] == "all"){
-      select <- c("all", select)
-    }}
+    if(is.null(select))
+    {
+      if(!is.null(areas))
+      {
+        if(areas[1] == "all"){
+          select <- c("all", select)
+        }}
+      
+      if(!is.null(links))
+      {
+        if(links[1] == "all"){
+          select <- c("all", select)
+        }}
+      
+      if(!is.null(clusters))
+      {
+        if(clusters[1] == "all"){
+          select <- c("all", select)
+        }}
+      if(!is.null(districts))
+      {
+        if(districts[1] == "all"){
+          select <- c("all", select)
+        }}
+    }else{
+      if("allAreas" %in% select){
+        select <- c(select, pkgEnvAntareasH5$varAreas)
+      }
+      
+      if("allLinks" %in% select){
+        select <- c(select, pkgEnvAntareasH5$varLinks)
+      }
+      
+      if("allDistricts" %in% select){
+        select <- c(select, pkgEnvAntareasH5$varDistricts)
+      }
+    }
   }
   
   
-  
   if(!file.exists(path)){
-   stop(paste0("File ", path, " not exist."))
+    stop(paste0("File ", path, " not exist."))
   }
   
   if(perf){
     Beg <- Sys.time()
   }
-
+  
   ctrlselectlist <- FALSE
   if(!is.list(select)){
     ctrlselectlist <- TRUE
   }
-
-
+  
+  
   if(ctrlselectlist){
     if(misc){
       select <- c(select, "misc")
@@ -103,8 +117,8 @@
       select <- c(select, "thermalModulation")
     }
   }
-
-
+  
+  
   if(is.null(select)){
     select <- "all"
   }
@@ -118,12 +132,12 @@
   if(ctrlselectlist){
     select$clusters <- c(pkgEnvAntareasH5$varClusters, select$areas)
   }
-
-
+  
+  
   unselect <- reqInfos$unselect
-
-
-
+  
+  
+  
   allCompute <- pkgEnv$allCompute
   computeAdd <- unlist(select)[unlist(select) %in% allCompute]
   computeAdd <- unique(computeAdd)
@@ -133,13 +147,13 @@
       assign(i, TRUE)
     }
   }
-
+  
   for(i in allCompute){
     if(get(i)){
       select <- .addColumns(select, i)
     }
   }
-
+  
   select <- sapply(names(select), function(X){
     as.vector(unlist(sapply(select[[X]], function(Y){
       if(is.null(pkgEnvAntareasH5$varAliasCreated[[Y]][[X]])){
@@ -149,7 +163,7 @@
       }
     })))
   }, simplify = FALSE)
-
+  
   ctrl <- FALSE
   if(!is.null(select$areas))
   {
@@ -161,7 +175,7 @@
   {
     select$areas <- c(pkgEnvAntareasH5$varAreas,select$areas)
   }
-
+  
   ctrl <- FALSE
   if(!is.null(select$links))
   {
@@ -169,12 +183,12 @@
       ctrl <- TRUE
     }
   }
-
+  
   if(is.null(select$links)| ctrl)
   {
     select$links <- c(pkgEnvAntareasH5$varLinks, select$links)
   }
-
+  
   ctrl <- FALSE
   if(!is.null(select$districts))
   {
@@ -182,7 +196,7 @@
       ctrl <- TRUE
     }
   }
-
+  
   if(is.null(select$districts) | ctrl)
   {
     select$districts <- c(pkgEnvAntareasH5$varDistricts,  select$districts )
@@ -194,20 +208,20 @@
       ctrl <- TRUE
     }
   }
-
+  
   if(is.null(select$clusters) | ctrl)
   {
     select$clusters <- c(pkgEnvAntareasH5$varClusters, select$clusters )
   }
-
-
+  
+  
   for(i in names(select)){
     if(length(which(! select[[i]] %in% unselect[[i]])) > 0)
     {
       select[[i]] <- select[[i]][which(! select[[i]] %in% unselect[[i]])]
     }
   }
-
+  
   for(i in 1:length(select)){
     if(length(select[[i]]) > 1){
       if(length(which(select[[i]] == "all")) > 0){
@@ -215,7 +229,7 @@
       }
     }
   }
-
+  
   ##End give select
   
   areas <- reqInfos$areas
@@ -224,24 +238,24 @@
   districts <- reqInfos$districts
   mcYears <- reqInfos$mcYears
   synthesis <- reqInfos$synthesis
-
+  
   synthesis <- is.null(mcYears)
-
+  
   GP <- timeStep
-
+  
   ##Open connection to h5 file
   fid <- rhdf5::H5Fopen(path)
-
+  
   #Load attibutes
   attrib <- .loadAttributes(fid, timeStep)
-
+  
   if(is.null(mcYears)){
     mcType <- "mcAll"
     mcYears <- "mcAll"
   }else{
     mcType <- "mcInd"
   }
-
+  
   ##Load areas
   listOut <- list()
   areas <- .loadAreas(areas = areas,
@@ -257,7 +271,7 @@
     listOut$areas <- areas
     rm(areas)
   }
-
+  
   links <- .loadLinks(links = links,
                       fid = fid,
                       select = select$links,
@@ -267,12 +281,12 @@
                       synthesis = synthesis,
                       simplify = simplify,
                       attrib = attrib)
-
+  
   if(!is.null(links)){
     listOut$links <- links
     rm(links)
   }
-
+  
   districts <- .loadDistricts(districts = districts,
                               fid = fid,
                               select = select$districts,
@@ -282,7 +296,7 @@
                               synthesis = synthesis,
                               simplify = simplify,
                               attrib = attrib)
-
+  
   if(!is.null(districts)){
     listOut$districts <- districts
     rm(districts)
@@ -296,14 +310,14 @@
                             synthesis = synthesis,
                             simplify = simplify,
                             attrib = attrib)
-
+  
   if(!is.null(clusters)){
     listOut$clusters <- clusters
     rm(clusters)
   }
-
+  
   if(length(listOut) == 1){
-
+    
     if(perf){
       TotalTime <-Sys.time() - Beg
       cat(paste0("Time for loading : ", round(TotalTime, 3), "\n"))
@@ -313,7 +327,7 @@
       dtaloded <- sum(unlist(lapply(listOut, function(X)prod(dim(X)))))
       cat(paste0("Data loaded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
     }
-
+    
     listOut[[1]]
   }else{
     listOut <- .addClassAndAttributes(listOut, synthesis, timeStep,
@@ -327,7 +341,7 @@
       dtaloded <- sum(unlist(lapply(listOut, function(X)prod(dim(X)))))
       cat(paste0("Data loaded/s : ", round(dtaloded/ as.numeric(TotalTime) / 1000000, 2), " Millions", "\n"))
     }
-
+    
     listOut
   }
 }
@@ -374,7 +388,7 @@
   if(is.null(index)){
     return(rhdf5::H5Dread(did))
   }else{
-
+    
     h5spaceFile <- rhdf5::H5Dget_space(did)
     maxSize <- rev(rhdf5::H5Sget_simple_extent_dims(h5spaceFile)$size)
     
@@ -387,11 +401,11 @@
     size <- unlist(lapply(K,length))
     h5spaceMem = rhdf5::H5Screate_simple(size)
     W <- rhdf5::H5Screate_simple(rhdf5::H5Sselect_index(h5spaceFile, as.list(K)))@ID
-
+    
     rhdf5::H5Dread(did,  h5spaceFile = h5spaceFile,
-            h5spaceMem = h5spaceMem)
+                   h5spaceMem = h5spaceMem)
   }
-
+  
 }
 
 #' Give request stucture
@@ -410,19 +424,19 @@
   if(is.null(selectedCol)){
     selectedCol <- "all"
   }
-
+  
   typeS <- paste0(type, "s")
   struct <- .getstructure(fid, paste0(GP, "/", typeS, "/", mcType, "/structure"))
-
+  
   compname <- NULL
   if(type == "cluster"){
     splitClust <- strsplit(struct[[type]], "/")
     clusterClean <- unlist(lapply(splitClust, function(X){X[1]}))
     struct[[type]] <- clusterClean
     compname <- unlist(lapply(splitClust, function(X){X[2]}))
-
+    
   }
-
+  
   if(selectedRow[1] == "all"){
     indexType  <- NULL
     Name <- struct[[type]]
@@ -479,14 +493,14 @@
                        synthesis,
                        simplify,
                        attrib){
-
+  
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(areas)){
-
+    
     if(rhdf5::H5Lexists(fid, paste0(GP, "/areas/", mcType, "/structure")))
     {
-
+      
       struct  <- .makeStructure(type = "area",
                                 selectedRow = areas,
                                 selectedCol = select,
@@ -494,8 +508,8 @@
                                 GP = GP,
                                 mcType = mcType,
                                 mcYears = mcYears)
-
-
+      
+      
       if(all(unlist(lapply(struct$index, is.null)))){
         areas <-  .optimH5Read(fid = fid,
                                GP = paste0(GP, "/areas/", mcType, "/data"))
@@ -503,17 +517,17 @@
         areas <- .optimH5Read(fid = fid,
                               index = struct$index,
                               GP = paste0(GP, "/areas/", mcType, "/data"))
-
+        
       }
-
-
+      
+      
       #Format array
       areas <- .formatArray(data = areas, struct = struct, nameColumns = "area", mcType = mcType)
-
+      
       #Add time
       tim <- getAllDateInfoFromDate(fid, GP)
       areas[,c(names(tim)):=tim]
-
+      
       .addClassAndAttributes(areas,
                              synthesis,
                              attrib$timeStep,
@@ -553,11 +567,11 @@
   
   ##Load links
   if(!is.null(links)){
-
+    
     if(rhdf5::H5Lexists(fid, paste0(GP, "/links/", mcType, "/structure")))
     {
-
-
+      
+      
       struct  <- .makeStructure(type = "link",
                                 selectedRow = links,
                                 selectedCol = select,
@@ -565,8 +579,8 @@
                                 GP = GP,
                                 mcType = mcType,
                                 mcYears = mcYears)
-
-
+      
+      
       if(all(unlist(lapply(struct$index, is.null)))){
         links <-  .optimH5Read(fid = fid,
                                GP = paste0(GP, "/links/", mcType, "/data"))
@@ -574,16 +588,16 @@
         links <- .optimH5Read(fid = fid,
                               index = struct$index,
                               GP = paste0(GP, "/links/", mcType, "/data"))
-
+        
       }
-
+      
       #Format array
       links <- .formatArray(data = links, struct = struct, nameColumns = "link", mcType = mcType)
-
+      
       #Add time
       tim <- getAllDateInfoFromDate(fid, GP)
       links[,c(names(tim)):=tim]
-
+      
       .addClassAndAttributes(links,
                              synthesis,
                              attrib$timeStep,
@@ -625,10 +639,10 @@
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(districts)){
-
+    
     if(rhdf5::H5Lexists(fid, paste0(GP, "/districts/", mcType, "/structure")))
     {
-
+      
       struct  <- .makeStructure(type = "district",
                                 selectedRow = districts,
                                 selectedCol = select,
@@ -636,8 +650,8 @@
                                 GP = GP,
                                 mcType = mcType,
                                 mcYears = mcYears)
-
-
+      
+      
       if(all(unlist(lapply(struct$index, is.null)))){
         districts <-  .optimH5Read(fid = fid,
                                    GP = paste0(GP, "/districts/", mcType, "/data"))
@@ -645,17 +659,17 @@
         districts <- .optimH5Read(fid = fid,
                                   index = struct$index,
                                   GP = paste0(GP, "/districts/", mcType, "/data"))
-
+        
       }
-
-
+      
+      
       districts <- .formatArray(data = districts, struct = struct, nameColumns = "district", mcType = mcType)
-
+      
       tim <- getAllDateInfoFromDate(fid, GP)
-
+      
       #Add time
       districts[,c(names(tim)):=tim]
-
+      
       .addClassAndAttributes(districts,
                              synthesis,
                              attrib$timeStep,
@@ -697,11 +711,11 @@
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   if(!is.null(clusters)){
-
+    
     if(rhdf5::H5Lexists(fid, paste0(GP, "/clusters/", mcType, "/structure")))
     {
-
-
+      
+      
       struct  <- .makeStructure(type = "cluster",
                                 selectedRow = clusters,
                                 selectedCol = select,
@@ -709,7 +723,7 @@
                                 GP = GP,
                                 mcType = mcType,
                                 mcYears = mcYears)
-
+      
       if(all(unlist(lapply(struct$index, is.null)))){
         clusters <-  .optimH5Read(fid = fid,
                                   GP = paste0(GP, "/clusters/", mcType, "/data"))
@@ -717,20 +731,20 @@
         clusters <- .optimH5Read(fid = fid,
                                  index = struct$index,
                                  GP = paste0(GP, "/clusters/", mcType, "/data"))
-
+        
       }
-
-
+      
+      
       dimclusters <- dim(clusters)
       clusters <- .formatArray(data = clusters, struct = struct, nameColumns = "area", mcType = mcType)
-
+      
       compname <- as.factor(struct$compname)
       clusters[, "cluster" := rep(rep(compname, each = dimclusters[1]), dimclusters[4])]
       tim <- getAllDateInfoFromDate(fid, GP)
-
+      
       #Add time
       clusters[,c(names(tim)):=tim]
-
+      
       .addClassAndAttributes(clusters,
                              synthesis,
                              attrib$timeStep,
@@ -796,11 +810,11 @@
   
   if(rhdf5::H5Lexists(fid, paste0(timeStep, "/attrib")))
   {
-
+    
     did <- rhdf5::H5Dopen(fid, paste0(timeStep, "/attrib"))
     attrib <- unserialize(charToRaw(rhdf5::H5Dread(did)))
     rhdf5::H5Dclose(did)
-
+    
     if(!is.null(attrib$opts$linksDef)){
       attrib$opts$linksDef <- data.table(attrib$opts$linksDef)
     }
