@@ -28,7 +28,9 @@ http://bioconductor.org/packages/release/bioc/html/rhdf5.html
 
 ## Avantages of h5 transformation
 
-With h5 file, ``antaresRead`` will be running faster. Your reading will take between **2 and 4 times** less time. An other avantage is the **compression**, a study can pass from **15Go** in txt to **2.5Go** in h5. Furthermore, a h5 transformation convert lot of txt file in a single h5 file, it will be **easier to move** it. Finally, you can use in the same way function of ``antaresProcessing`` and ``antaresViz`` packages. You can also use ``addProcessingH5`` function to add columns to your h5 file.
+With h5 file, ``antaresRead`` will be running faster. Your reading will take between **2 and 4 times** less time. An other avantage is the **compression**, a study can pass from **15Go** in txt to **2.5Go** in h5. Furthermore, a h5 transformation convert lot of txt file in a single h5 file, it will be **easier to move** it, a copy/paste of a study with 137 thousand files (15Go) takes 45 minutes in txt and 30 seconds in h5. 
+
+Finally, you can use in the same way function of ``antaresProcessing`` and ``antaresViz`` packages. You can also use ``addProcessingH5`` function to add columns to your h5 file.
 
 
 ## Write h5 file from antares study
@@ -50,6 +52,11 @@ writeAntaresH5(misc = TRUE, thermalAvailabilities = TRUE,
   hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
   linkCapacity = TRUE, mustRun = TRUE, thermalModulation = TRUE,
   writeAllSimulations = TRUE)
+
+#with a shorcut 
+writeAntaresH5(allData = TRUE,
+  writeAllSimulations = TRUE)
+
 ```
 
 ### Overwrite 
@@ -77,7 +84,6 @@ readAntares()
 readAntares(areas = "all", links = "all")
 readAntares(areas = "all", mcYears = "all")
 readAntares(timeStep = "weekly")
-# example
 ```
 
 
@@ -87,6 +93,7 @@ readAntares(timeStep = "weekly")
 You can use function ```addProcessingH5``` from ``antaresProcessing`` package. 
 
 ```
+ library(antaresProcessing)
  opts <- setSimulationPath("mySim.h5")
  addProcessingH5(opts = opts,  mcY = "mcInd",
                 addDownwardMargin = TRUE,
@@ -98,8 +105,8 @@ You can use function ```addProcessingH5``` from ``antaresProcessing`` package.
 For read data after adding **addDownwardMargin**, you can use alias ``Out_addDownwardMargin``, use ```showAliases()``` to see them.
 
 ```
-readAntares(mcyears = "all", select = c("Tota", "Tota2"))
-readAntares(mcyears = "all", select = "Out_addDownwardMargin")
+readAntares(mcYears = "all", select = c("Tota", "Tota2"))
+readAntares(mcYears = "all", select = "Out_addDownwardMargin")
 ```
 
 ## Use h5 opts for vizualisation
@@ -107,13 +114,14 @@ readAntares(mcyears = "all", select = "Out_addDownwardMargin")
 It's possible to use opts from **h5** with all ``antaresViz`` modules.
 
 ```
+library(antaresViz)
 opts <- setSimulationPath("mySim.h5")
 
-antaresViz::prodStack(opts)
-antaresViz::plot(opts)
-antaresViz::exchangesStack(opts)
+prodStack(opts)
+plot(opts)
+exchangesStack(opts)
 
 #Run on more than one opts :
 opts2 <- setSimulationPath("mySim2.h5")
-antaresViz::plot(list(opts, opts2))
+plot(list(opts, opts2))
 ```
