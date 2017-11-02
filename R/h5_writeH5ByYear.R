@@ -162,7 +162,13 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         ), envir = environment())
         
         parallel::parSapplyLB(cl, studieSToWrite, function(X){
-          opts <- setSimulationPath(studyPath, X)
+          if(supressMessages)
+          {
+            opts <- suppressWarnings(suppressMessages(setSimulationPath(studyPath, X)))
+          }else{
+            opts <- setSimulationPath(studyPath, X)
+          }
+          
           if(!is.null(path)){
             pathStud <- paste0(path, "/", X, ".h5")
           }
@@ -202,7 +208,13 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         
       }else{
         sapply(studieSToWrite, function(X){
-          opts <- setSimulationPath(studyPath, X)
+          if(supressMessages)
+          {
+            opts <- suppressWarnings(suppressMessages(setSimulationPath(studyPath, X)))
+          }else{
+            opts <- setSimulationPath(studyPath, X)
+          }
+          
           if(!is.null(path)){
             pathStud <- paste0(path, "/", X, ".h5")
           }
