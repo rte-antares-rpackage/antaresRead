@@ -35,7 +35,6 @@
 
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
-  
   if(is.null(select))
   {
   if(!is.null(areas))
