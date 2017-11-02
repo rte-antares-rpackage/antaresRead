@@ -35,6 +35,35 @@
 
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
+  
+  if(is.null(select))
+  {
+  if(!is.null(areas))
+  {
+  if(areas[1] == "all"){
+    select <- c("all", select)
+  }}
+  
+  if(!is.null(links))
+  {
+    if(links[1] == "all"){
+      select <- c("all", select)
+    }}
+  
+  if(!is.null(clusters))
+  {
+    if(clusters[1] == "all"){
+      select <- c("all", select)
+    }}
+  if(!is.null(districts))
+  {
+    if(districts[1] == "all"){
+      select <- c("all", select)
+    }}
+  }
+  
+  
+  
   if(!file.exists(path)){
    stop(paste0("File ", path, " not exist."))
   }
