@@ -341,11 +341,19 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       }
       
       if(removeVirtualAreas){
+        if(messageS){
         res <- removeVirtualAreas(res,
                            storageFlexibility = storageFlexibility,
                            production = production,
                            reassignCosts = reassignCosts,
                            newCols = newCols)
+        }else{
+          res <-  suppressWarnings(suppressMessages(removeVirtualAreas(res,
+                                    storageFlexibility = storageFlexibility,
+                                    production = production,
+                                    reassignCosts = reassignCosts,
+                                    newCols = newCols)))
+        }
       }
       
       if(writeStructure & !mcAll){
@@ -370,13 +378,26 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         
         ###Write inputs
         rhdf5::h5createGroup(path, paste0(timeStep, "/inputs"))
-        layout <- readLayout()
+        if(messageS){
+          layout <- readLayout()
+        }else{
+        layout <- suppressWarnings(suppressMessages(readLayout()))
+        }
         s <- serialize(layout, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
-        cldesc <- readClusterDesc()
+        
+        if(messageS){
+          cldesc <- readClusterDesc()
+        }else{
+        cldesc <- suppressWarnings(suppressMessages(readClusterDesc()))
+        }
         s <- serialize(cldesc, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
-        bc <- readBindingConstraints()
+        if(messageS){
+          bc <- readBindingConstraints()
+        }else{
+        bc <- suppressWarnings(suppressMessages(readBindingConstraints()))
+        }
         s <- serialize(bc, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
         
