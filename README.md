@@ -138,6 +138,9 @@ tar(
 )
 ```
 
+## ANTARES :
+ Antares is a powerful software developed by RTE to simulate and study electric power systems (more information about Antares here : <https://antares.rte-france.com>).
+
 ## License Information:
 
 Copyright 2015-2016 RTE (France)
