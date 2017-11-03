@@ -4,7 +4,7 @@
 
 #' Specify RAM limit
 #' 
-#' This function specify RAM limit (in Go)
+#' This function specify RAM limit (in Go) of the value returned by \link[antaresRead]{readAntares}.
 #' 
 #' @param x \code{numeric} RAM limit in Go
 #' 

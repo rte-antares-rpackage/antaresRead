@@ -10,7 +10,7 @@ setRam(x)
 \item{x}{\code{numeric} RAM limit in Go}
 }
 \description{
-This function specify RAM limit (in Go)
+This function specify RAM limit (in Go) of the value returned by \link[antaresRead]{readAntares}.
 }
 \examples{
 \dontrun{
