@@ -1,6 +1,6 @@
 #' Read Optimization Criteria
 #' 
-#' This function can be used to read the value of the criteria optimized by
+#' This function can be used to read the value of the criteria optimized by ANTARES.
 #' Notice that these values are only available in "Xpansion" mode or when option
 #' "Export mps" is turned on.
 #' 
