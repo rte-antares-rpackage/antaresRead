@@ -2,7 +2,7 @@
 
 #' Test if opts is h5
 #'
-#' @description Test if opts is h5
+#' @description Test if the value returned by setSimulationPath() is referring to an h5 file
 #' 
 #' @param opts , opts
 #' @export
