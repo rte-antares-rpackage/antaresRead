@@ -1,9 +1,19 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-Changes in version 1.1.5 (XXXX-XX-XX)
+Changes in version 2.0.0 (2017-11-03)
+
+NEW FEATURES:
+* New function "writeAntaresH5()" convert ANTARES outputs to h5 files.
+* The path parameter of "setSimulationPath()" can be a h5 file.
+* New function "isH5Opts()" test if the value returned by setSimulationPath() is referring to an h5 file.
+* New function "readOptimCriteria()" read the value of the criteria optimized by ANTARES.
+* New function "setRam()" specify RAM limit (in Go) of the value returned by readAntares, initially it is 10Go. 
+* New vignette "antaresH5" is available.
+
 BUGFIXES:
 * removeVirtualAreas() was not moving clusters from virtual production area to the real area. 
+* antaresRead() sometimes returned a antaresDataList with element "thermalModulation". (#51) 
 
 Changes in version 1.1.4 (2017-07-07)
 
