@@ -9,16 +9,14 @@ if(requireNamespace("rhdf5")){
   
   dir.create(tptpDir)
   test_that("h5 : write more than one studies mono thread", {
-    writeAntaresH5(path = tptpDir,
-                   timeSteps = "annual", writeAllSimulations = TRUE, nbCores = 1, 
-                   opts = optsG)
+    writeAntaresH5(path = tptpDir, timeSteps = "annual", 
+                   writeAllSimulations = TRUE, nbCores = 1, opts = optsG)
     
   })
-  unlink(tptpDir, recursive = TRUE)
-  
-  dir.create(tptpDir)
-  test_that("h5 : write more than one studies multi-thread", {
-    writeAntaresH5(path = tptpDir,
+
+
+  test_that("h5 : overwrite + alldata + multi-thread", {
+    writeAntaresH5(path = tptpDir, overwrite = TRUE, allData = TRUE, 
                    timeSteps = "annual", writeAllSimulations = TRUE, 
                    nbCores = 2, opts = optsG)
     
