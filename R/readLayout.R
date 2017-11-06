@@ -54,7 +54,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
     
     xyCompare <- match.arg(xyCompare)
     
-    if(!all(sapply(opts, function(x){class(opts) %in% "simOptions"}))){
+    if(!all(sapply(opts, function(x){class(x) %in% "simOptions"}))){
       stop("Invalid opts argument. Must be a simOptions or a list of simOptions")
     }
     
