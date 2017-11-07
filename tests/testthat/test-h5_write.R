@@ -21,6 +21,8 @@ if(requireNamespace("rhdf5")){
                    nbCores = 2, opts = optsG)
     
   })
+  
+  
   unlink(tptpDir, recursive = TRUE)
   
   test_that("h5 : Bad path", {
