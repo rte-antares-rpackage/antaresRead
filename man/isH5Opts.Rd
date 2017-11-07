@@ -10,5 +10,5 @@ isH5Opts(opts)
 \item{opts}{, opts}
 }
 \description{
-Test if opts is h5
+Test if the value returned by setSimulationPath() is referring to an h5 file
 }
