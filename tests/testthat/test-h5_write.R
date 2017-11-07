@@ -21,6 +21,13 @@ if(requireNamespace("rhdf5")){
                    nbCores = 2, opts = optsG)
     
   })
+
+  
+  test_that("h5 : overwrite + removeVirtualAreas", {
+    writeAntaresH5(path = tptpDir, overwrite = TRUE, opts = optsG, timeSteps = "hourly",removeVirtualAreas = TRUE,
+                   storageFlexibility = "a")
+    
+  })
   
   
   unlink(tptpDir, recursive = TRUE)
