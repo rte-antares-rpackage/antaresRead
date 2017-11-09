@@ -267,6 +267,10 @@
                       synthesis = synthesis,
                       simplify = simplify,
                       attrib = attrib)
+  # if("virtualNodes" %in% names(attrib)){
+  #   attr(areas, "virtualNodes") <- attrib$virtualNodes
+  # }
+  # 
   if(!is.null(areas)){
     listOut$areas <- areas
     rm(areas)
@@ -282,6 +286,7 @@
                       simplify = simplify,
                       attrib = attrib)
   
+
   if(!is.null(links)){
     listOut$links <- links
     rm(links)
@@ -332,6 +337,10 @@
   }else{
     listOut <- .addClassAndAttributes(listOut, synthesis, timeStep,
                                       attrib$opts, simplify)
+    if("virtualNodes" %in% names(attrib)){
+      attr(listOut, "virtualNodes") <- attrib$virtualNodes
+    }
+    
     if(perf){
       TotalTime <-Sys.time() - Beg
       cat(paste0("Time for loading : ", round(TotalTime, 3), "\n"))
