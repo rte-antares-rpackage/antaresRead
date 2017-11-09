@@ -10,6 +10,12 @@ describe("readLayout", {
     expect_true(all(c("areas", "links") %in% names(l)))
     expect_equal(names(l$areas), c("area", "x", "y", "color"))
     expect_equal(names(l$links), c("link", "from", "to", "x0", "y0", "x1", "y1"))
+    
+    l <- readLayout(list(opts, opts))
+    expect_true(all(c("areas", "links") %in% names(l)))
+    expect_equal(names(l$areas), c("area", "x", "y", "color"))
+    expect_equal(names(l$links), c("link", "from", "to", "x0", "y0", "x1", "y1"))
+    
   })
   
   if(!isH5Opts(opts))

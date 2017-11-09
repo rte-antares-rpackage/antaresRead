@@ -89,11 +89,11 @@
   if(!is.null((getDefaultReactiveDomain())))
   {
     n <- nrow(args)
-    withProgress(message = 'Making plot', value = 0, {
+    withProgress(message = 'antaresRead', value = 0, {
   res <- llply(
     1:nrow(args), 
     function(i) {
-      incProgress(1/n, detail = paste0("antaresRead : importing ", folder, " data"))
+      incProgress(1/n, detail = paste0("Importing ", folder, " data"))
       
       if (!sameNames) {
         colNames <- .getOutputHeader(args$path[i], objectName)
