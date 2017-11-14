@@ -13,7 +13,10 @@ install:
 environment:
   matrix:
   - R_VERSION: devel
+  - R_VERSION: stable
+  - R_VERSION: 3.4.2
   - R_VERSION: 3.3.1
+  - R_VERSION: 3.2.1
 # Adapt as necessary starting from here
 # environment:
 #   matrix:
