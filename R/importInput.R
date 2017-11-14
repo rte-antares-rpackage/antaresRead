@@ -108,6 +108,34 @@
   
 }
 
+
+.importThermalOutages <- function(area, timeStep, opts, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
+  
+  names <- c("FODuration", "PODuration", "FORate", "PORate", "NPOMin", "NPOMax")
+
+  
+  
+  clusters <- list.files(file.path(opts$inputPath, "thermal/series", area))
+  
+  ldply(clusters, function(cl) {
+    filePattern <- sprintf("%s/%s/%%s/data.txt", "thermal/prepro", area)
+    res <- .importInputTS(cl, timeStep, opts, filePattern,
+                          colnames = names,
+                          inputTimeStep = "daily", fun = "mean", type = "simple")
+    
+    if (is.null(res)) return(NULL)
+    
+    res$area <- area
+    res$cluster <- cl
+    setcolorder(res, c("area", "cluster", "timeId", setdiff(names(res), c("area", "cluster", "timeId"))))
+    
+    
+  })
+  
+}
+
+
 .importROR <- function(area, timeStep, opts, ...) {
   .importInputTS(area, timeStep, opts, "hydro/series/%s/ror.txt", "ror", 
                  inputTimeStep = "hourly", type = "matrix")
