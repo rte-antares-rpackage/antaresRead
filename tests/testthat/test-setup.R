@@ -82,16 +82,16 @@ test_that("setSimulationPath works if synthesis and some MC years are not saved 
 
 # Simulation selection #########################################################
 
-test_that("Interactive mode if no study path provided", {
-  skip_if_not(exists("choose.dir", getNamespace("utils")))
-  with_mock(
-    `utils::choose.dir` = function(...) {studyPath},
-    {
-      opts <- setSimulationPath()
-      expect_equal(opts[names(trueOpts)], trueOpts)
-    }
-  )
-})
+# test_that("Interactive mode if no study path provided", {
+#   skip_if_not(exists("choose.dir", getNamespace("utils")))
+#   with_mock(
+#     `utils::choose.dir` = function(...) {studyPath},
+#     {
+#       opts <- setSimulationPath()
+#       expect_equal(opts[names(trueOpts)], trueOpts)
+#     }
+#   )
+# })
 
 # Create a fake simulation (just an empty directory)
 dir.create(file.path(studyPath, "output/30000101-0000fake"))
@@ -116,26 +116,26 @@ test_that("select simulation with negative index", {
   opts <- setSimulationPath(studyPath, -2)
   expect_equal(opts[names(trueOpts)], trueOpts)
 })
-
-test_that("select simulation interactively (number)", {
-  with_mock(
-    `base::scan` = function(...) {"1"},
-    {
-      expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
-      expect_equal(opts[names(trueOpts)], trueOpts)
-    }
-  )
-})
-
-test_that("select simulation interactively (name)", {
-  with_mock(
-    scan = function(...) {"eco-test"},
-    {
-      expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
-      expect_equal(opts[names(trueOpts)], trueOpts)
-    }
-  )
-})
+# 
+# test_that("select simulation interactively (number)", {
+#   with_mock(
+#     `base::scan` = function(...) {"1"},
+#     {
+#       expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
+#       expect_equal(opts[names(trueOpts)], trueOpts)
+#     }
+#   )
+# })
+# 
+# test_that("select simulation interactively (name)", {
+#   with_mock(
+#     scan = function(...) {"eco-test"},
+#     {
+#       expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
+#       expect_equal(opts[names(trueOpts)], trueOpts)
+#     }
+#   )
+# })
 
 # Remove fake study
 unlink(file.path(studyPath, "output/30000101-0000fake"), TRUE, TRUE)
