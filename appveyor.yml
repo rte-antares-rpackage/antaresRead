@@ -74,9 +74,11 @@ environment:
   
 build_script:
   - travis-tool.sh install_deps
-  - travis-tool.sh install_bioc zlibbioc
-  - travis-tool.sh install_bioc rhdf5
+  - ./travis-tool.sh install_github Bioconductor-mirror/zlibbioc
+  - ./travis-tool.sh install_github Bioconductor-mirror/rhdf5
   
+
+
 test_script:
   - travis-tool.sh run_tests
 
