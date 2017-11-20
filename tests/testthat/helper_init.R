@@ -4,6 +4,7 @@
 
 path <- tempdir()
 sourcedir <- system.file("inst/testdata", package = "antaresRead")
+testH5 <- TRUE
 if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead")}
 
 

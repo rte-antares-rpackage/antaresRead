@@ -33,3 +33,6 @@ opts <- setSimulationPath(studyPath)
 #   )
 # })
 })
+
+
+unlink(tpDir, recursive = TRUE)
