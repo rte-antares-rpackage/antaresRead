@@ -240,7 +240,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   
   
-  
+  if(!is.null(select)){
+    if(!is.list(select)){
+      if("all" %in% select){
+        select <- c("all", select[!"all" == select])
+      }
+    }
+  }
   if(isH5Opts(opts)){
     
     if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
