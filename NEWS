@@ -1,5 +1,9 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.0.1 (2017-11-14)
+
+BUGFIXES:
+* readLayout() was not taking a list of simOptions. 
 
 Changes in version 2.0.0 (2017-11-03)
 
