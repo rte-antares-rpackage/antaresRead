@@ -4,4 +4,10 @@ require(testthat)
 require(antaresRead)
 require(plyr)
 
-test_check("antaresRead")
+
+
+is.solaris<-function()grepl('SunOS',Sys.info()['sysname'])
+
+if(!is.solaris()){
+  test_check("antaresRead")
+}

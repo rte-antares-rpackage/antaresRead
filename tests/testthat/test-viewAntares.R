@@ -33,3 +33,7 @@ opts <- setSimulationPath(studyPath)
 #   )
 # })
 })
+if(requireNamespace("rhdf5")){
+  rhdf5::H5close()
+}
+unlink(tpDir, recursive = TRUE)
