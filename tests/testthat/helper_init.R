@@ -21,7 +21,7 @@ if (sourcedir != "") {
   
   if(requireNamespace("rhdf5", quietly = TRUE)){
     
-    opts <- setSimulationPath(paste0(path, "/test_case"))
+    opts <- setSimulationPath(file.path(path, "/test_case"))
     suppressMessages({
       suppressWarnings({
         writeAntaresH5(path = path, 
@@ -78,7 +78,7 @@ if (sourcedir != "") {
     
     assign("silentf", silentf, envir = globalenv())
     assign("tpDir", path, envir = globalenv())
-    assign("pathF", paste0(path, "/", h5file), envir = globalenv())
+    assign("pathF", file.path(path, "/", h5file), envir = globalenv())
     assign("h5file", h5file, envir = globalenv())
     assign("alias", alias, envir = globalenv())
     assign("compareValue", compareValue, envir = globalenv())
