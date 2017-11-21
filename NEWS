@@ -1,5 +1,10 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.0.2 (2017-11-21)
+
+BUGFIXES:
+* Some tests failed in some platforms on CRAN.
+
 Changes in version 2.0.1 (2017-11-14)
 
 BUGFIXES:
