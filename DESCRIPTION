@@ -32,7 +32,9 @@ Suggests:
     knitr,
     rmarkdown,
     foreach,
-    parallel
+    parallel,
+    DT,
+    htmltools
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8
