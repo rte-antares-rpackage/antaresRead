@@ -34,10 +34,10 @@ environment:
 #     RTOOLS_VERSION: 32
 #     CRAN: http://cran.rstudio.com
 
-  - R_VERSION: 3.1.0
-    RTOOLS_VERSION: 32
-    CRAN: http://cran.rstudio.com
-    PKGTYPE: source
+#   - R_VERSION: 3.1.0
+#     RTOOLS_VERSION: 32
+#     CRAN: http://cran.rstudio.com
+#     PKGTYPE: source
 
 
 # Adapt as necessary starting from here
