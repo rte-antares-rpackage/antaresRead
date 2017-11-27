@@ -24,7 +24,7 @@ addDateTimeColumns <- function(x) {
     
     newCols <- data.table(time = timestamp,
                           day = lubridate::day(timestamp),
-                          month = as.factor(toupper(lubridate::month(timestamp, TRUE, TRUE))),
+                          month = as.factor(toupper(lubridate::month(timestamp, TRUE, TRUE, locale = "C"))),
                           hour = as.factor(format(timestamp, format = "%H:%M")))
     
   } else if (timeStep == "daily") {
@@ -34,7 +34,7 @@ addDateTimeColumns <- function(x) {
     
     newCols <- data.table(time = date,
                           day = lubridate::day(date),
-                          month = as.factor(toupper(lubridate::month(date, TRUE, TRUE))))
+                          month = as.factor(toupper(lubridate::month(date, TRUE, TRUE, locale = "C"))))
     
   } else if (timeStep == "weekly") {
     
@@ -57,7 +57,7 @@ addDateTimeColumns <- function(x) {
     monthId <- .getTimeId(1:(24*365), "monthly", opts)
     month <- tapply(timestamp, monthId, function(x) format(min(x), format = "%Y-%m"))
     
-    monthName <- tapply(timestamp, monthId, function(x) toupper(lubridate::month(min(x), TRUE, TRUE)))
+    monthName <- tapply(timestamp, monthId, function(x) toupper(lubridate::month(min(x), TRUE, TRUE, locale = "C")))
     
     newCols <- data.table(time = month, 
                           month = as.factor(toupper(monthName)))
