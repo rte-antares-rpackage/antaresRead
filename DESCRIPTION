@@ -34,8 +34,7 @@ Suggests:
     foreach,
     parallel,
     DT,
-    htmltools,
-    rmarkdown
+    htmltools
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Encoding: UTF-8
