@@ -13,7 +13,6 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 AutoAppendNewline: Yes
-
 LineEndingConversion: Posix
 
 BuildType: Package
