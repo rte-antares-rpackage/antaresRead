@@ -1,5 +1,19 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.0.3 (2017-12-07)
+
+BUGFIXES:
+* Correction of some bugs due to the new lubridate version
+
+Changes in version 2.0.2 (2017-11-21)
+
+BUGFIXES:
+* Some tests failed in some platforms on CRAN.
+
+Changes in version 2.0.1 (2017-11-14)
+
+BUGFIXES:
+* readLayout() was not taking a list of simOptions. 
 
 Changes in version 2.0.0 (2017-11-03)
 
