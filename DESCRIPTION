@@ -1,8 +1,8 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an Antares Simulation
-Version: 2.0.0
-Date: 2017-11-03
+Version: 2.0.3
+Date: 2017-12-07
 Authors@R: c(
     person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = c("aut", "cre")),
     person("Francois", "Guillem", , "francois.guillem@rte-france.com", role = "aut"),
@@ -20,7 +20,7 @@ License: GPL (>= 2) | file LICENSE
 LazyData: TRUE
 Imports:
     data.table (>= 1.9.6),
-    lubridate,
+    lubridate (>= 1.7.1),
     plyr,
     methods,
     stats,
