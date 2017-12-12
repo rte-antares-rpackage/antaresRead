@@ -129,7 +129,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   if(!is.null(storageFlexibility))
     {
-      if(!any(storageFlexibility %in% unique(x$areas))){
+      if(!any(storageFlexibility %in% unique(x$areas$area))){
         warning("no one of you storageFlexibility areas are load in data")
       }
   }
@@ -137,7 +137,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   if(!is.null(production))
   {
-    if(!any(production %in% unique(x$areas))){
+    if(!any(production %in% unique(x$areas$area))){
       warning("no one of you production areas are load in data")
     }
   }
