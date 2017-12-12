@@ -127,6 +127,22 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   if (is.null(storageFlexibility) & is.null(production))
     stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
+  if(!is.null(storageFlexibility))
+    {
+      if(!any(storageFlexibility %in% unique(x$areas))){
+        warning("no one of you storageFlexibility areas are load in data")
+      }
+  }
+  
+  
+  if(!is.null(production))
+  {
+    if(!any(production %in% unique(x$areas))){
+      warning("no one of you production areas are load in data")
+    }
+  }
+  
+  
   opts <- simOptions(x)
   
   # Keep only virtual areas present in data. Note, that for storage/flexibility 
