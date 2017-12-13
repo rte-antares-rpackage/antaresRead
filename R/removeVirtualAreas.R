@@ -290,9 +290,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
       # created.
       if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
       
-      psp <- flows[varea %in% storageFlexibility, 
+      psp <- copy(flows[varea %in% storageFlexibility, 
                    corrPSP := sum(flow), 
-                   by = c(byarea)]
+                   by = c(byarea)])
       
       psp[ , setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
       .mergeByRef(x$areas, psp)
