@@ -344,8 +344,13 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     v <- paste0(prodVars, "_virtual")
     x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
     
+    # Prod are integers
+    x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
+    
     if (!newCols) {
-      x$areas[, c(prodVars) := mapply(function(x, y) get(x) + get(y), prodVars, v)]
+      for(i in prodVars){
+        x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
+      }
       x$areas[, c(v) := NULL]
     }
   }
