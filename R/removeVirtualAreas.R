@@ -294,6 +294,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
                    corrPSP := sum(flow), 
                    by = c(byarea)]
       
+      psp[ , setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
       .mergeByRef(x$areas, psp)
       x$areas[, `:=`(
         PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
@@ -372,7 +373,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Remove all data about virtual areas in x
   for (n in names(x)) {
-    if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
+    if (!is.null(x[[n]]$area)){
+      x[[n]] <- x[[n]][!area %in% vareas]
+    }
   }
   
   # Remove virtual links but if present keep the capacity of the links connected
