@@ -4,19 +4,16 @@
 \alias{readInputTS}
 \title{Read Input time series}
 \usage{
-readInputTS(load = NULL, thermalAvailabilities = NULL,
-  thermalOutages = NULL, ror = NULL, hydroStorage = NULL,
-  hydroStorageMaxPower = NULL, wind = NULL, solar = NULL, misc = NULL,
-  reserve = NULL, linkCapacity = NULL, opts = simOptions(),
-  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-  simplify = TRUE, parallel = FALSE, showProgress = TRUE)
+readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
+  hydroStorage = NULL, hydroStorageMaxPower = NULL, wind = NULL,
+  solar = NULL, misc = NULL, reserve = NULL, linkCapacity = NULL,
+  opts = simOptions(), timeStep = c("hourly", "daily", "weekly", "monthly",
+  "annual"), simplify = TRUE, parallel = FALSE, showProgress = TRUE)
 }
 \arguments{
 \item{load}{vector of areas names for which load time series must be read.}
 
 \item{thermalAvailabilities}{vector of areas names for which thermal availabilities of clusters must be read.}
-
-\item{thermalOutages}{vector of areas names for which thermal outages characteristics of clusters must be read.}
 
 \item{ror}{vector of areas names for which run of river time series must be read.}
 
@@ -94,4 +91,3 @@ matplot(myArea[, - (1:2), with = FALSE], type = "l")
 \code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }
-
