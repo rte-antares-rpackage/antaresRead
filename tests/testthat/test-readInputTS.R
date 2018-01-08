@@ -77,12 +77,5 @@ test_that("Link capacity importation works", {
   expect_gt(nrow(input), 0)
   expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
 })
-
-test_that("Thermal outages importation works", {
-  input <- readInputTS(thermalOutages = "all", showProgress = FALSE)
-  expect_is(input, "antaresDataTable")
-  expect_gt(nrow(input), 0)
-  expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
-})
 }
 })

@@ -11,8 +11,6 @@
 #'   vector of areas names for which load time series must be read.
 #' @param thermalAvailabilities
 #'   vector of areas names for which thermal availabilities of clusters must be read.
-#' @param thermalOutages
-#'   vector of areas names for which thermal outages characteristics of clusters must be read.
 #' @param ror
 #'   vector of areas names for which run of river time series must be read.
 #' @param hydroStorage
@@ -71,10 +69,10 @@
 #' }
 #' 
 #' @export
-readInputTS <- function(load = NULL, thermalAvailabilities = NULL, thermalOutages = NULL, 
-                        ror = NULL, hydroStorage = NULL, hydroStorageMaxPower = NULL, 
+readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL, 
+                        hydroStorage = NULL, hydroStorageMaxPower = NULL, 
                         wind = NULL, solar = NULL, misc = NULL,
-                        reserve = NULL, linkCapacity = NULL,opts = simOptions(),
+                        reserve = NULL, linkCapacity = NULL, opts = simOptions(),
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         simplify = TRUE, parallel = FALSE,
                         showProgress = TRUE) {
@@ -90,7 +88,6 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, thermalOutage
   # Manage special value "all"
   if(identical(load, "all")) load <- opts$areaList
   if(identical(thermalAvailabilities, "all")) thermalAvailabilities <- opts$areasWithClusters
-  if(identical(thermalOutages, "all")) thermalOutages <- opts$areaList
   if(identical(ror, "all")) ror <- opts$areaList
   if(identical(hydroStorage, "all")) hydroStorage <- opts$areaList
   if(identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$areaList
@@ -125,7 +122,6 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, thermalOutage
   # defined in the file "readInputHelpers.R"
   .addOutputToRes("load", load, .importLoad)
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermalAvailabilities)
-  .addOutputToRes("thermalOutages", thermalOutages, .importThermalOutages)
   .addOutputToRes("ror", ror, .importROR)
   .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorageInput)
   .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower)
