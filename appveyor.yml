@@ -15,7 +15,7 @@ install:
 environment:
   matrix:
 
-  - R_VERSION: devel
+  - R_VERSION: patched
     R_ARCH: x64
     GCC_PATH: mingw_64
 
