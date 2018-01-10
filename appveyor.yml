@@ -30,9 +30,9 @@ environment:
 
   - R_VERSION: patched
   
-#  - R_ARCH: x64
+  - R_ARCH: x64
 
-#  - GCC_PATH: mingw_32
+  - GCC_PATH: mingw_32
 
 #   - R_VERSION: oldrel
 #     RTOOLS_VERSION: 33
