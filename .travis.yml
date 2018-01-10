@@ -18,6 +18,8 @@ bioc_packages:
 
 r_packages:
   - covr
+  - devtools
+  - roxygen2
 
 include:
   - r: release
@@ -26,3 +28,4 @@ include:
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
+  - Rscript -e 'devtools::install();devtools::test()'
