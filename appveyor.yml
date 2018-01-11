@@ -18,7 +18,6 @@ environment:
   - R_VERSION: oldrel
     RTOOLS_VERSION: 33
     CRAN: http://cran.rstudio.com
-    _R_CHECK_FORCE_SUGGESTS: false
 
   - R_VERSION: devel
     R_ARCH: x64
@@ -83,6 +82,7 @@ environment:
 
   
 build_script:
+  - set _R_CHECK_FORCE_SUGGESTS_=false
   - travis-tool.sh install_deps
 #before  - ./travis-tool.sh install_github Bioconductor-mirror/zlibbioc
 #  - ./travis-tool.sh install_github Bioconductor-mirror/rhdf5
