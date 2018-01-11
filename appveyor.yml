@@ -18,12 +18,12 @@ environment:
   - R_VERSION: oldrel
     RTOOLS_VERSION: 33
     CRAN: http://cran.rstudio.com
-    _R_CHECK_FORCE_SUGGESTS:false
+    _R_CHECK_FORCE_SUGGESTS: false
 
   - R_VERSION: devel
     R_ARCH: x64
     GCC_PATH: mingw_64
-
+    
   - R_VERSION: patched
     R_ARCH: x64
     GCC_PATH: mingw_64
