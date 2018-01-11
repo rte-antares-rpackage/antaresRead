@@ -18,8 +18,6 @@ bioc_packages:
 
 r_packages:
   - covr
-  - devtools
-  - roxygen2
 
 include:
   - r: release
