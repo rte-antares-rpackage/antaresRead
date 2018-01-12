@@ -14,14 +14,13 @@ install:
 
 environment:
   matrix:
-
-  - R_VERSION: oldrel
-    RTOOLS_VERSION: 33
-    CRAN: http://cran.rstudio.com
-
   - R_VERSION: devel
     R_ARCH: x64
     GCC_PATH: mingw_64
+    
+  - R_VERSION: oldrel
+    RTOOLS_VERSION: 33
+    CRAN: http://cran.rstudio.com
     
   - R_VERSION: patched
     R_ARCH: x64
@@ -88,7 +87,8 @@ build_script:
 #  - ./travis-tool.sh install_github Bioconductor-mirror/rhdf5
 #after 
   - travis-tool.sh install_bioc_deps
-
+  - travis-tool.sh install_github Rdatatable/data.table
+  
 
 test_script:
   - travis-tool.sh run_tests
