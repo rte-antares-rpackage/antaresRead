@@ -148,11 +148,14 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
                                             .(fromDistrict, toDistrict)])
       
       # Add coordinates of origin and destination
-      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                             by.x = "toDistrict", by.y = "district")
-      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                             by.x = "fromDistrict", by.y = "district", 
-                             suffixes = c("0", "1")) 
+      if(!dim(districtLinks)[1]==0){
+        districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                               by.x = "toDistrict", by.y = "district")
+        districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                               by.x = "fromDistrict", by.y = "district", 
+                               suffixes = c("0", "1")) 
+      }
+
     }
   }
   
