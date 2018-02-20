@@ -18,11 +18,11 @@
 #' @param writeAllSimulations \code{boolean}, write all simulations of your antares study.
 #' @param nbCores \code{numeric}, number of cores to use, only used if writeAllSimulations is TRUE
 #' @param removeVirtualAreas \code{boolean}, remove virtual areas, see \link[antaresRead]{removeVirtualAreas}
-#' @param storageFlexibility \code{character}, see \link[antaresRead]{removeVirtualAreas}
-#' @param production \code{character}, see \link[antaresRead]{removeVirtualAreas}
-#' @param reassignCosts \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
-#' @param newCols \code{boolean}, see \link[antaresRead]{removeVirtualAreas}
-#' @param overwrite \code{boolean}, overwrite old file
+#' @param storageFlexibility \code{character or list}, see \link[antaresRead]{removeVirtualAreas}
+#' @param production \code{character or list}, see \link[antaresRead]{removeVirtualAreas}
+#' @param reassignCosts \code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}
+#' @param newCols \code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}
+#' @param overwrite \code{boolean or list}, overwrite old file
 #' @param supressMessages \code{boolean}, supress messages from \link[antaresRead]{readAntares} and \link[antaresRead]{removeVirtualAreas}
 #' 
 #' @examples
@@ -48,6 +48,19 @@
 #' 
 #' # Write all data with a shorcut 
 #' writeAntaresH5(allData = TRUE)
+#' 
+#' #Remove virtuals areas
+#' 
+#' writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
+#'                writeMcAll = FALSE, removeVirtualAreas = TRUE,
+#'                storageFlexibility =  "psp in-2",
+#'                production =  NULL, reassignCosts =FALSE, newCols = TRUE)
+#'                
+#' #Remove virtuals areas more than one call
+#' writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
+#'                writeMcAll = FALSE, removeVirtualAreas = TRUE, storageFlexibility = list("psp out", "psp in-2"),
+#'                production = list(NULL, NULL), reassignCosts = list(TRUE, FALSE), newCols = list(FALSE, TRUE))
+#'
 #'
 #' }
 #' @export
@@ -140,25 +153,25 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
           library(antaresRead)
         })
         parallel::clusterExport(cl, c("path","opts","studyPath",
-                            "timeSteps",
-                            "writeMcAll",
-                            "compress",
-                            "misc",
-                            "thermalAvailabilities",
-                            "hydroStorage",
-                            "hydroStorageMaxPower",
-                            "reserve",
-                            "linkCapacity",
-                            "mustRun",
-                            "thermalModulation",
-                            "removeVirtualAreas",
-                            "storageFlexibility",
-                            "production",
-                            "reassignCosts",
-                            "newCols", 
-                            "overwrite",
-                            ".writeAntaresH5Fun",
-                            "supressMessages"
+                                      "timeSteps",
+                                      "writeMcAll",
+                                      "compress",
+                                      "misc",
+                                      "thermalAvailabilities",
+                                      "hydroStorage",
+                                      "hydroStorageMaxPower",
+                                      "reserve",
+                                      "linkCapacity",
+                                      "mustRun",
+                                      "thermalModulation",
+                                      "removeVirtualAreas",
+                                      "storageFlexibility",
+                                      "production",
+                                      "reassignCosts",
+                                      "newCols", 
+                                      "overwrite",
+                                      ".writeAntaresH5Fun",
+                                      "supressMessages"
         ), envir = environment())
         
         parallel::parSapplyLB(cl, studieSToWrite, function(X){
@@ -183,24 +196,24 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
           
           
           .writeAntaresH5Fun(path = pathStud,
-                                           timeSteps = timeSteps,
-                                           opts = opts,
-                                           writeMcAll = writeMcAll,
-                                           compress = compress,
-                                           misc = misc,
-                                           thermalAvailabilities = thermalAvailabilities,
-                                           hydroStorage = hydroStorage,
-                                           hydroStorageMaxPower = hydroStorageMaxPower,
-                                           reserve = reserve,
-                                           linkCapacity = linkCapacity,
-                                           mustRun = mustRun,
-                                           thermalModulation = thermalModulation,
-                                           removeVirtualAreas = removeVirtualAreas,
-                                           storageFlexibility = storageFlexibility,
-                                           production = production,
-                                           reassignCosts = reassignCosts,
-                                           newCols = newCols,
-                                           supressMessages = supressMessages)
+                             timeSteps = timeSteps,
+                             opts = opts,
+                             writeMcAll = writeMcAll,
+                             compress = compress,
+                             misc = misc,
+                             thermalAvailabilities = thermalAvailabilities,
+                             hydroStorage = hydroStorage,
+                             hydroStorageMaxPower = hydroStorageMaxPower,
+                             reserve = reserve,
+                             linkCapacity = linkCapacity,
+                             mustRun = mustRun,
+                             thermalModulation = thermalModulation,
+                             removeVirtualAreas = removeVirtualAreas,
+                             storageFlexibility = storageFlexibility,
+                             production = production,
+                             reassignCosts = reassignCosts,
+                             newCols = newCols,
+                             supressMessages = supressMessages)
           
           
         })
@@ -282,7 +295,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                                reassignCosts,
                                newCols,
                                supressMessages){
-   
+  
   if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
   
   
@@ -326,20 +339,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
       
       #Read data
       if(messageS){
-      res <- readAntares(areas = "all" ,
-                         links = "all",
-                         clusters = "all",
-                         districts = "all",
-                         mcYears = mcY,
-                         timeStep = timeStep, opts = opts, showProgress = FALSE,
-                         misc = misc, thermalAvailabilities = thermalAvailabilities,
-                         hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
-                         reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
-                         thermalModulation = thermalModulation)
-      
-      
-      }else{
-        res <- suppressWarnings(suppressMessages(readAntares(areas = "all" ,
+        res <- readAntares(areas = "all" ,
                            links = "all",
                            clusters = "all",
                            districts = "all",
@@ -348,23 +348,51 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
                            misc = misc, thermalAvailabilities = thermalAvailabilities,
                            hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
                            reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
-                           thermalModulation = thermalModulation)))
+                           thermalModulation = thermalModulation)
+        
+        
+      }else{
+        res <- suppressWarnings(suppressMessages(readAntares(areas = "all" ,
+                                                             links = "all",
+                                                             clusters = "all",
+                                                             districts = "all",
+                                                             mcYears = mcY,
+                                                             timeStep = timeStep, opts = opts, showProgress = FALSE,
+                                                             misc = misc, thermalAvailabilities = thermalAvailabilities,
+                                                             hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower,
+                                                             reserve = reserve, linkCapacity = linkCapacity, mustRun = mustRun,
+                                                             thermalModulation = thermalModulation)))
         
       }
       
       if(removeVirtualAreas){
-        if(messageS){
-        res <- removeVirtualAreas(res,
-                           storageFlexibility = storageFlexibility,
-                           production = production,
-                           reassignCosts = reassignCosts,
-                           newCols = newCols)
+        if(!(is.list(storageFlexibility)))
+        {
+          if(messageS){
+            res <- removeVirtualAreas(res,
+                                      storageFlexibility = storageFlexibility,
+                                      production = production,
+                                      reassignCosts = reassignCosts,
+                                      newCols = newCols)
+          }else{
+            res <-  suppressWarnings(suppressMessages(removeVirtualAreas(res,
+                                                                         storageFlexibility = storageFlexibility,
+                                                                         production = production,
+                                                                         reassignCosts = reassignCosts,
+                                                                         newCols = newCols)))
+          }
         }else{
-          res <-  suppressWarnings(suppressMessages(removeVirtualAreas(res,
-                                    storageFlexibility = storageFlexibility,
-                                    production = production,
-                                    reassignCosts = reassignCosts,
-                                    newCols = newCols)))
+          
+          for(i in 1:length(storageFlexibility)){
+            res <-  suppressWarnings(
+              suppressMessages(
+                removeVirtualAreas(res,
+                                   storageFlexibility = storageFlexibility[[i]],
+                                   production = production[[i]],
+                                   reassignCosts = reassignCosts[[i]],
+                                   newCols = newCols[[i]])))
+          }
+          
         }
       }
       
@@ -393,7 +421,7 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         if(messageS){
           layout <- readLayout()
         }else{
-        layout <- suppressWarnings(suppressMessages(readLayout()))
+          layout <- suppressWarnings(suppressMessages(readLayout()))
         }
         s <- serialize(layout, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
@@ -401,14 +429,14 @@ writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "wee
         if(messageS){
           cldesc <- readClusterDesc()
         }else{
-        cldesc <- suppressWarnings(suppressMessages(readClusterDesc()))
+          cldesc <- suppressWarnings(suppressMessages(readClusterDesc()))
         }
         s <- serialize(cldesc, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
         if(messageS){
           bc <- readBindingConstraints()
         }else{
-        bc <- suppressWarnings(suppressMessages(readBindingConstraints()))
+          bc <- suppressWarnings(suppressMessages(readBindingConstraints()))
         }
         s <- serialize(bc, NULL, ascii = TRUE)
         rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))

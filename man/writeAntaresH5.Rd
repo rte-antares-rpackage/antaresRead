@@ -50,15 +50,15 @@ reserve, linkCapacity, mustRun, thermalModulation).}
 
 \item{removeVirtualAreas}{\code{boolean}, remove virtual areas, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{storageFlexibility}{\code{character}, see \link[antaresRead]{removeVirtualAreas}}
+\item{storageFlexibility}{\code{character or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{production}{\code{character}, see \link[antaresRead]{removeVirtualAreas}}
+\item{production}{\code{character or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{reassignCosts}{\code{boolean}, see \link[antaresRead]{removeVirtualAreas}}
+\item{reassignCosts}{\code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{newCols}{\code{boolean}, see \link[antaresRead]{removeVirtualAreas}}
+\item{newCols}{\code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{overwrite}{\code{boolean}, overwrite old file}
+\item{overwrite}{\code{boolean or list}, overwrite old file}
 
 \item{supressMessages}{\code{boolean}, supress messages from \link[antaresRead]{readAntares} and \link[antaresRead]{removeVirtualAreas}}
 }
@@ -88,6 +88,19 @@ writeAntaresH5(timeSteps = "hourly",
 
 # Write all data with a shorcut 
 writeAntaresH5(allData = TRUE)
+
+#Remove virtuals areas
+
+writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
+               writeMcAll = FALSE, removeVirtualAreas = TRUE,
+               storageFlexibility =  "psp in-2",
+               production =  NULL, reassignCosts =FALSE, newCols = TRUE)
+               
+#Remove virtuals areas more than one call
+writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
+               writeMcAll = FALSE, removeVirtualAreas = TRUE, storageFlexibility = list("psp out", "psp in-2"),
+               production = list(NULL, NULL), reassignCosts = list(TRUE, FALSE), newCols = list(FALSE, TRUE))
+
 
 }
 }
