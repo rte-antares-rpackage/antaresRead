@@ -57,9 +57,16 @@
 #'                production =  NULL, reassignCosts =FALSE, newCols = TRUE)
 #'                
 #' #Remove virtuals areas more than one call
-#' writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
-#'                writeMcAll = FALSE, removeVirtualAreas = TRUE, storageFlexibility = list("psp out", "psp in-2"),
-#'                production = list(NULL, NULL), reassignCosts = list(TRUE, FALSE), newCols = list(FALSE, TRUE))
+#' writeAntaresH5(
+#'                timeSteps = "hourly", 
+#'                overwrite = TRUE,
+#'                writeMcAll = FALSE, 
+#'                removeVirtualAreas = TRUE, 
+#'                storageFlexibility = list("psp out", "psp in-2"),
+#'                production = list(NULL, NULL), 
+#'                reassignCosts = list(TRUE, FALSE), 
+#'                newCols = list(FALSE, TRUE)
+#'                )
 #'
 #'
 #' }
