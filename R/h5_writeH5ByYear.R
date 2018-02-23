@@ -1,6 +1,6 @@
 #' Convert antares output to h5 file
 #'
-#' @param path \code{character} folder where h5 file will be write (default getwd())
+#' @param path \code{character} folder where h5 file will be write (default NULL)
 #' @param timeSteps \code{character} timeSteps
 #' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}. Defaut to \code{antaresRead::simOptions()}
 #' @param writeMcAll \code{boolean} write mc-all
@@ -30,34 +30,35 @@
 #' \dontrun{
 #' # Write simulation one by one
 #' setSimulationPath("C:/Users/MyUser/Mystudy", 1)
-#' writeAntaresH5()
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY")
 #'
 #' # Write all simulations
 #' setSimulationPath("C:/Users/MyUser/Mystudy")
-#' writeAntaresH5(writeAllSimulations = TRUE)
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY", writeAllSimulations = TRUE)
 #'
 #' # Choose timestep to write
 #' setSimulationPath("C:/Users/MyUser/Mystudy", 1)
-#' writeAntaresH5(timeSteps = "hourly")
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly")
 #'
 #' # Write with additionnal information
-#' writeAntaresH5(timeSteps = "hourly",
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly",
 #'    misc = TRUE, thermalAvailabilities = TRUE,
 #'    hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
 #'    linkCapacity = TRUE, mustRun = TRUE, thermalModulation = TRUE)
 #' 
 #' # Write all data with a shorcut 
-#' writeAntaresH5(allData = TRUE)
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY", allData = TRUE)
 #' 
 #' #Remove virtuals areas
 #' 
-#' writeAntaresH5(timeSteps = "hourly", overwrite = TRUE,
+#' writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly", overwrite = TRUE,
 #'                writeMcAll = FALSE, removeVirtualAreas = TRUE,
 #'                storageFlexibility =  "psp in-2",
 #'                production =  NULL, reassignCosts =FALSE, newCols = TRUE)
 #'                
 #' #Remove virtuals areas more than one call
 #' writeAntaresH5(
+#'                path="PATH_TO_YOUR_STUDY", 
 #'                timeSteps = "hourly", 
 #'                overwrite = TRUE,
 #'                writeMcAll = FALSE, 
@@ -71,7 +72,7 @@
 #'
 #' }
 #' @export
-writeAntaresH5 <- function(path = getwd(), timeSteps = c("hourly", "daily", "weekly", "monthly", "annual"),
+writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly", "monthly", "annual"),
                            opts = simOptions(),
                            writeMcAll = TRUE,
                            compress = 1,

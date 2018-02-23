@@ -36,7 +36,7 @@ if(requireNamespace("rhdf5")){
   unlink(tptpDir, recursive = TRUE)
   
   test_that("h5 : Bad path", {
-    expect_error( writeAntaresH5('badPath'), "Folder badPath not found.")
+    expect_error( writeAntaresH5(path='badPath'), "Folder badPath not found.")
     
   })
   
