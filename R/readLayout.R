@@ -89,7 +89,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   stopifnot(class(opts) %in% "simOptions")
   
   if(isH5Opts(opts)){
-    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
       return(h5ReadLayout(opts))
     } else {
       stop(rhdf5_message)

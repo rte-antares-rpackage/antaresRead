@@ -149,7 +149,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   # Get study, simulation and input paths
   if(grepl(".h5$", path)){
     if(file.exists(path)){
-      if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+      if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
         return(setSimulationPathH5(path))
       } else {
         stop(rhdf5_message)
@@ -160,7 +160,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   }
   res <- .getPaths(path, simulation)
   if(res[1] == "H5"){
-    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
       return(setSimulationPathH5(path, simulation))
     } else {
       stop(rhdf5_message)
