@@ -16,10 +16,14 @@ environment:
   matrix:
   - R_VERSION: devel
     R_ARCH: x64
+    #needed for data.table : Package data.table has compiled code, but no suitable compiler(s) were found
+    USE_RTOOLS: true
     
   - R_VERSION: devel
     R_ARCH: x64
     GCC_PATH: mingw_64
+    #needed for data.table :  Package data.table has compiled code, but no suitable compiler(s) were found
+    USE_RTOOLS: true
     
   - R_VERSION: oldrel
     RTOOLS_VERSION: 33
