@@ -36,7 +36,10 @@ opts <- setSimulationPath(studyPath)
 if(requireNamespace("rhdf5")){
   rhdf5::H5close()
 }
-if(dir.exists(tpDir))
-{
-  unlink(tpDir, recursive = TRUE)
+
+if(requireNamespace("rhdf5")){
+  if(dir.exists(tpDir))
+  {
+    unlink(tpDir, recursive = TRUE)
+  }
 }
