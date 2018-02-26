@@ -5,9 +5,13 @@ require(antaresRead)
 require(plyr)
 
 
+#Maybe include this in some test-file.R 
+#is.solaris<-function(){
+#  grepl('SunOS',Sys.info()['sysname'])
+#}
 
-is.solaris<-function()grepl('SunOS',Sys.info()['sysname'])
+#if(!is.solaris()){
 
-if(!is.solaris()){
-  test_check("antaresRead")
-}
+test_check("antaresRead")
+
+# }

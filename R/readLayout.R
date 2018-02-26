@@ -89,7 +89,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   stopifnot(class(opts) %in% "simOptions")
   
   if(isH5Opts(opts)){
-    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
       return(h5ReadLayout(opts))
     } else {
       stop(rhdf5_message)
@@ -148,11 +148,14 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
                                             .(fromDistrict, toDistrict)])
       
       # Add coordinates of origin and destination
-      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                             by.x = "toDistrict", by.y = "district")
-      districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
-                             by.x = "fromDistrict", by.y = "district", 
-                             suffixes = c("0", "1")) 
+      if(!dim(districtLinks)[1]==0){
+        districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                               by.x = "toDistrict", by.y = "district")
+        districtLinks <- merge(districtLinks, districts[, .(district, x, y)], 
+                               by.x = "fromDistrict", by.y = "district", 
+                               suffixes = c("0", "1")) 
+      }
+
     }
   }
   

@@ -9,8 +9,12 @@ r: bioc-devel
 
 r_github_packages:
  - hadley/devtools#1263
- - Bioconductor-mirror/zlibbioc
- - Bioconductor-mirror/rhdf5
+#before - Bioconductor-mirror/zlibbioc
+# - Bioconductor-mirror/rhdf5
+#after 
+bioc_packages:
+  - rhdf5
+  - zlibbioc 
 
 r_packages:
   - covr

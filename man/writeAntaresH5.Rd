@@ -4,7 +4,7 @@
 \alias{writeAntaresH5}
 \title{Convert antares output to h5 file}
 \usage{
-writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
+writeAntaresH5(path = NULL, timeSteps = c("hourly", "daily", "weekly",
   "monthly", "annual"), opts = simOptions(), writeMcAll = TRUE,
   compress = 1, misc = FALSE, thermalAvailabilities = FALSE,
   hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
@@ -15,7 +15,7 @@ writeAntaresH5(path = getwd(), timeSteps = c("hourly", "daily", "weekly",
   overwrite = FALSE, supressMessages = FALSE)
 }
 \arguments{
-\item{path}{\code{character} folder where h5 file will be write (default getwd())}
+\item{path}{\code{character} folder where h5 file will be write (default NULL)}
 
 \item{timeSteps}{\code{character} timeSteps}
 
@@ -50,15 +50,15 @@ reserve, linkCapacity, mustRun, thermalModulation).}
 
 \item{removeVirtualAreas}{\code{boolean}, remove virtual areas, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{storageFlexibility}{\code{character}, see \link[antaresRead]{removeVirtualAreas}}
+\item{storageFlexibility}{\code{character or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{production}{\code{character}, see \link[antaresRead]{removeVirtualAreas}}
+\item{production}{\code{character or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{reassignCosts}{\code{boolean}, see \link[antaresRead]{removeVirtualAreas}}
+\item{reassignCosts}{\code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{newCols}{\code{boolean}, see \link[antaresRead]{removeVirtualAreas}}
+\item{newCols}{\code{boolean or list}, see \link[antaresRead]{removeVirtualAreas}}
 
-\item{overwrite}{\code{boolean}, overwrite old file}
+\item{overwrite}{\code{boolean or list}, overwrite old file}
 
 \item{supressMessages}{\code{boolean}, supress messages from \link[antaresRead]{readAntares} and \link[antaresRead]{removeVirtualAreas}}
 }
@@ -70,24 +70,45 @@ Convert antares output to h5 file
 \dontrun{
 # Write simulation one by one
 setSimulationPath("C:/Users/MyUser/Mystudy", 1)
-writeAntaresH5()
+writeAntaresH5(path="PATH_TO_YOUR_STUDY")
 
 # Write all simulations
 setSimulationPath("C:/Users/MyUser/Mystudy")
-writeAntaresH5(writeAllSimulations = TRUE)
+writeAntaresH5(path="PATH_TO_YOUR_STUDY", writeAllSimulations = TRUE)
 
 # Choose timestep to write
 setSimulationPath("C:/Users/MyUser/Mystudy", 1)
-writeAntaresH5(timeSteps = "hourly")
+writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly")
 
 # Write with additionnal information
-writeAntaresH5(timeSteps = "hourly",
+writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly",
    misc = TRUE, thermalAvailabilities = TRUE,
    hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
    linkCapacity = TRUE, mustRun = TRUE, thermalModulation = TRUE)
 
 # Write all data with a shorcut 
-writeAntaresH5(allData = TRUE)
+writeAntaresH5(path="PATH_TO_YOUR_STUDY", allData = TRUE)
+
+#Remove virtuals areas
+
+writeAntaresH5(path="PATH_TO_YOUR_STUDY", timeSteps = "hourly", overwrite = TRUE,
+               writeMcAll = FALSE, removeVirtualAreas = TRUE,
+               storageFlexibility =  "psp in-2",
+               production =  NULL, reassignCosts =FALSE, newCols = TRUE)
+               
+#Remove virtuals areas more than one call
+writeAntaresH5(
+               path="PATH_TO_YOUR_STUDY", 
+               timeSteps = "hourly", 
+               overwrite = TRUE,
+               writeMcAll = FALSE, 
+               removeVirtualAreas = TRUE, 
+               storageFlexibility = list("psp out", "psp in-2"),
+               production = list(NULL, NULL), 
+               reassignCosts = list(TRUE, FALSE), 
+               newCols = list(FALSE, TRUE)
+               )
+
 
 }
 }

@@ -97,7 +97,7 @@ writeDataType <- function(data,
   if(writeStructure){
     rhdf5::h5createGroup(path, Group)
   }
-
+  # print(data)
   #Give structure for data
   dimPreBuild <- names(data)[!names(data)%in%c("mcYear", "V1")]
   dimStructure <- list()

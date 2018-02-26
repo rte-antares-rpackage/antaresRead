@@ -1,5 +1,15 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.1.0 (2018-02-23)
+
+NEW FEATURES:
+* readInputTS() has a new parameter "thermalOutages" that permits to read thermal outages characteristics
+* Call removeVirtualAreas several times in writeAntaresH5()
+
+BUGFIXES:
+* Correction of some bugs in removeVirtualAreas when there is several virtual nodes of production and storageFlexibility 
+* Correction of some bugs due to the new lubridate version
+
 Changes in version 2.0.2 (2017-11-21)
 
 BUGFIXES:

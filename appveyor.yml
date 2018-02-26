@@ -15,29 +15,47 @@ install:
 environment:
   matrix:
   - R_VERSION: devel
-    GCC_PATH: mingw_32
-
+    R_ARCH: x64
+    #needed for data.table : Package data.table has compiled code, but no suitable compiler(s) were found
+    USE_RTOOLS: true
+    
   - R_VERSION: devel
     R_ARCH: x64
     GCC_PATH: mingw_64
+    #needed for data.table :  Package data.table has compiled code, but no suitable compiler(s) were found
+    USE_RTOOLS: true
+    
+  - R_VERSION: oldrel
+    RTOOLS_VERSION: 33
+    CRAN: http://cran.rstudio.com
+    
+  - R_VERSION: patched
+    R_ARCH: x64
+    GCC_PATH: mingw_64
+
+  - R_ARCH: x64
+    GCC_PATH: mingw_64
+    
+  - R_VERSION: release
+    GCC_PATH: mingw_32
 
   - R_VERSION: release
     R_ARCH: x64
 
   - R_VERSION: patched
+  
+  - R_ARCH: x64
 
-  - R_VERSION: oldrel
-    RTOOLS_VERSION: 33
-    CRAN: http://cran.rstudio.com
+  - GCC_PATH: mingw_32
 
-  - R_VERSION: 3.1.3
-    RTOOLS_VERSION: 32
-    CRAN: http://cran.rstudio.com
+#   - R_VERSION: 3.1.3
+#     RTOOLS_VERSION: 32
+#     CRAN: http://cran.rstudio.com
 
-  - R_VERSION: 3.1.0
-    RTOOLS_VERSION: 32
-    CRAN: http://cran.rstudio.com
-    PKGTYPE: source
+#   - R_VERSION: 3.1.0
+#     RTOOLS_VERSION: 32
+#     CRAN: http://cran.rstudio.com
+#     PKGTYPE: source
 
 
 # Adapt as necessary starting from here
@@ -46,9 +64,6 @@ environment:
 #   - R_VERSION: devel
 #     GCC_PATH: mingw_32
 # 
-#   - R_VERSION: devel
-#     R_ARCH: x64
-#     GCC_PATH: mingw_64
 # 
 #   - R_VERSION: release
 #     R_ARCH: x64
@@ -73,11 +88,14 @@ environment:
 
   
 build_script:
+  - set _R_CHECK_FORCE_SUGGESTS_=false
   - travis-tool.sh install_deps
-  - ./travis-tool.sh install_github Bioconductor-mirror/zlibbioc
-  - ./travis-tool.sh install_github Bioconductor-mirror/rhdf5
+#before  - ./travis-tool.sh install_github Bioconductor-mirror/zlibbioc
+#  - ./travis-tool.sh install_github Bioconductor-mirror/rhdf5
+#after 
+  - travis-tool.sh install_bioc_deps
+  - travis-tool.sh install_github Rdatatable/data.table
   
-
 
 test_script:
   - travis-tool.sh run_tests

@@ -127,6 +127,22 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   if (is.null(storageFlexibility) & is.null(production))
     stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
+  if(!is.null(storageFlexibility))
+    {
+      if(!any(storageFlexibility %in% unique(x$areas$area))){
+        warning("no one of you storageFlexibility areas are load in data")
+      }
+  }
+  
+  
+  if(!is.null(production))
+  {
+    if(!any(production %in% unique(x$areas$area))){
+      warning("no one of you production areas are load in data")
+    }
+  }
+  
+  
   opts <- simOptions(x)
   
   # Keep only virtual areas present in data. Note, that for storage/flexibility 
@@ -274,11 +290,14 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
       # created.
       if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
       
-      psp <- flows[varea %in% storageFlexibility, 
+      psp <- copy(flows[varea %in% storageFlexibility, 
                    corrPSP := sum(flow), 
-                   by = c(byarea)]
+                   by = c(byarea)])
       
-      .mergeByRef(x$areas, psp)
+      psp<-psp[varea %in% storageFlexibility]
+      
+      psp[ , setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
+      .mergeByRef(x$areas, psp, on = byarea)
       x$areas[, `:=`(
         PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
         corrPSP = NULL
@@ -328,8 +347,13 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     v <- paste0(prodVars, "_virtual")
     x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
     
+    # Prod are integers
+    x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
+    
     if (!newCols) {
-      x$areas[, c(prodVars) := mapply(function(x, y) get(x) + get(y), prodVars, v)]
+      for(i in prodVars){
+        x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
+      }
       x$areas[, c(v) := NULL]
     }
   }
@@ -351,7 +375,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Remove all data about virtual areas in x
   for (n in names(x)) {
-    if (!is.null(x[[n]]$area)) x[[n]] <- x[[n]][!area %in% vareas]
+    if (!is.null(x[[n]]$area)){
+      x[[n]] <- x[[n]][!area %in% vareas]
+    }
   }
   
   # Remove virtual links but if present keep the capacity of the links connected

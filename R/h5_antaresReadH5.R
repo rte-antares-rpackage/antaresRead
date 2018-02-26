@@ -286,7 +286,7 @@
                       simplify = simplify,
                       attrib = attrib)
   
-
+  
   if(!is.null(links)){
     listOut$links <- links
     rm(links)
@@ -793,7 +793,12 @@
   
   if(length(integerVariableS)){
     ordervar <- names(data)[ match(integerVariableS, names(data))]
-    data[,c(ordervar) := lapply(.SD, as.integer), .SDcols = ordervar]
+    minmax <- data[,lapply(.SD, max), .SDcols = ordervar]>2*10^9
+    ordervar <- colnames(minmax)[!minmax]
+    if(length(ordervar)>0)
+    {
+      data[,c(ordervar) := lapply(.SD, as.integer), .SDcols = ordervar]
+    }
   }
   data
 }

@@ -1,0 +1,261 @@
+group;name;otype;dclass;dim
+/;annual;H5I_GROUP;;
+/annual;areas;H5I_GROUP;;
+/annual/areas;mcAll;H5I_GROUP;;
+/annual/areas/mcAll;data;H5I_DATASET;FLOAT;1 x 99 x 18 x 1
+/annual/areas/mcAll;structure;H5I_GROUP;;
+/annual/areas/mcAll/structure;area;H5I_DATASET;STRING;18
+/annual/areas/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/annual/areas/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/areas/mcAll/structure;variable;H5I_DATASET;STRING;99
+/annual/areas;mcInd;H5I_GROUP;;
+/annual/areas/mcInd;data;H5I_DATASET;FLOAT;1 x 30 x 18 x 29
+/annual/areas/mcInd;structure;H5I_GROUP;;
+/annual/areas/mcInd/structure;area;H5I_DATASET;STRING;18
+/annual/areas/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/annual/areas/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/areas/mcInd/structure;variable;H5I_DATASET;STRING;30
+/annual;attrib;H5I_DATASET;STRING;1
+/annual;clusters;H5I_GROUP;;
+/annual/clusters;mcAll;H5I_GROUP;;
+/annual/clusters/mcAll;data;H5I_DATASET;FLOAT;1 x 4 x 114 x 1
+/annual/clusters/mcAll;structure;H5I_GROUP;;
+/annual/clusters/mcAll/structure;cluster;H5I_DATASET;STRING;114
+/annual/clusters/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/annual/clusters/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/clusters/mcAll/structure;variable;H5I_DATASET;STRING;4
+/annual/clusters;mcInd;H5I_GROUP;;
+/annual/clusters/mcInd;data;H5I_DATASET;FLOAT;1 x 4 x 114 x 29
+/annual/clusters/mcInd;structure;H5I_GROUP;;
+/annual/clusters/mcInd/structure;cluster;H5I_DATASET;STRING;114
+/annual/clusters/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/annual/clusters/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/clusters/mcInd/structure;variable;H5I_DATASET;STRING;4
+/annual;inputs;H5I_GROUP;;
+/annual/inputs;buildingcte;H5I_DATASET;STRING;1
+/annual/inputs;cldesc;H5I_DATASET;STRING;1
+/annual/inputs;layout;H5I_DATASET;STRING;1
+/annual;links;H5I_GROUP;;
+/annual/links;mcAll;H5I_GROUP;;
+/annual/links/mcAll;data;H5I_DATASET;FLOAT;1 x 28 x 45 x 1
+/annual/links/mcAll;structure;H5I_GROUP;;
+/annual/links/mcAll/structure;link;H5I_DATASET;STRING;45
+/annual/links/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/annual/links/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/links/mcAll/structure;variable;H5I_DATASET;STRING;28
+/annual/links;mcInd;H5I_GROUP;;
+/annual/links/mcInd;data;H5I_DATASET;FLOAT;1 x 10 x 45 x 29
+/annual/links/mcInd;structure;H5I_GROUP;;
+/annual/links/mcInd/structure;link;H5I_DATASET;STRING;45
+/annual/links/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/annual/links/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/annual/links/mcInd/structure;variable;H5I_DATASET;STRING;10
+/annual;time;H5I_DATASET;COMPOUND;1
+/;daily;H5I_GROUP;;
+/daily;areas;H5I_GROUP;;
+/daily/areas;mcAll;H5I_GROUP;;
+/daily/areas/mcAll;data;H5I_DATASET;FLOAT;364 x 99 x 18 x 1
+/daily/areas/mcAll;structure;H5I_GROUP;;
+/daily/areas/mcAll/structure;area;H5I_DATASET;STRING;18
+/daily/areas/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/daily/areas/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/areas/mcAll/structure;variable;H5I_DATASET;STRING;99
+/daily/areas;mcInd;H5I_GROUP;;
+/daily/areas/mcInd;data;H5I_DATASET;FLOAT;364 x 30 x 18 x 29
+/daily/areas/mcInd;structure;H5I_GROUP;;
+/daily/areas/mcInd/structure;area;H5I_DATASET;STRING;18
+/daily/areas/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/daily/areas/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/areas/mcInd/structure;variable;H5I_DATASET;STRING;30
+/daily;attrib;H5I_DATASET;STRING;1
+/daily;clusters;H5I_GROUP;;
+/daily/clusters;mcAll;H5I_GROUP;;
+/daily/clusters/mcAll;data;H5I_DATASET;FLOAT;364 x 4 x 114 x 1
+/daily/clusters/mcAll;structure;H5I_GROUP;;
+/daily/clusters/mcAll/structure;cluster;H5I_DATASET;STRING;114
+/daily/clusters/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/daily/clusters/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/clusters/mcAll/structure;variable;H5I_DATASET;STRING;4
+/daily/clusters;mcInd;H5I_GROUP;;
+/daily/clusters/mcInd;data;H5I_DATASET;FLOAT;364 x 4 x 114 x 29
+/daily/clusters/mcInd;structure;H5I_GROUP;;
+/daily/clusters/mcInd/structure;cluster;H5I_DATASET;STRING;114
+/daily/clusters/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/daily/clusters/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/clusters/mcInd/structure;variable;H5I_DATASET;STRING;4
+/daily;inputs;H5I_GROUP;;
+/daily/inputs;buildingcte;H5I_DATASET;STRING;1
+/daily/inputs;cldesc;H5I_DATASET;STRING;1
+/daily/inputs;layout;H5I_DATASET;STRING;1
+/daily;links;H5I_GROUP;;
+/daily/links;mcAll;H5I_GROUP;;
+/daily/links/mcAll;data;H5I_DATASET;FLOAT;364 x 28 x 45 x 1
+/daily/links/mcAll;structure;H5I_GROUP;;
+/daily/links/mcAll/structure;link;H5I_DATASET;STRING;45
+/daily/links/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/daily/links/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/links/mcAll/structure;variable;H5I_DATASET;STRING;28
+/daily/links;mcInd;H5I_GROUP;;
+/daily/links/mcInd;data;H5I_DATASET;FLOAT;364 x 10 x 45 x 29
+/daily/links/mcInd;structure;H5I_GROUP;;
+/daily/links/mcInd/structure;link;H5I_DATASET;STRING;45
+/daily/links/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/daily/links/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/daily/links/mcInd/structure;variable;H5I_DATASET;STRING;10
+/daily;time;H5I_DATASET;COMPOUND;364
+/;hourly;H5I_GROUP;;
+/hourly;areas;H5I_GROUP;;
+/hourly/areas;mcAll;H5I_GROUP;;
+/hourly/areas/mcAll;data;H5I_DATASET;FLOAT;8736 x 99 x 18 x 1
+/hourly/areas/mcAll;structure;H5I_GROUP;;
+/hourly/areas/mcAll/structure;area;H5I_DATASET;STRING;18
+/hourly/areas/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/hourly/areas/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/areas/mcAll/structure;variable;H5I_DATASET;STRING;99
+/hourly/areas;mcInd;H5I_GROUP;;
+/hourly/areas/mcInd;data;H5I_DATASET;FLOAT;8736 x 40 x 18 x 29
+/hourly/areas/mcInd;structure;H5I_GROUP;;
+/hourly/areas/mcInd/structure;area;H5I_DATASET;STRING;18
+/hourly/areas/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/hourly/areas/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/areas/mcInd/structure;variable;H5I_DATASET;STRING;30
+/hourly;attrib;H5I_DATASET;STRING;1
+/hourly;clusters;H5I_GROUP;;
+/hourly/clusters;mcAll;H5I_GROUP;;
+/hourly/clusters/mcAll;data;H5I_DATASET;FLOAT;8736 x 4 x 114 x 1
+/hourly/clusters/mcAll;structure;H5I_GROUP;;
+/hourly/clusters/mcAll/structure;cluster;H5I_DATASET;STRING;114
+/hourly/clusters/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/hourly/clusters/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/clusters/mcAll/structure;variable;H5I_DATASET;STRING;4
+/hourly/clusters;mcInd;H5I_GROUP;;
+/hourly/clusters/mcInd;data;H5I_DATASET;FLOAT;8736 x 10 x 114 x 29
+/hourly/clusters/mcInd;structure;H5I_GROUP;;
+/hourly/clusters/mcInd/structure;cluster;H5I_DATASET;STRING;114
+/hourly/clusters/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/hourly/clusters/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/clusters/mcInd/structure;variable;H5I_DATASET;STRING;4
+/hourly;inputs;H5I_GROUP;;
+/hourly/inputs;buildingcte;H5I_DATASET;STRING;1
+/hourly/inputs;cldesc;H5I_DATASET;STRING;1
+/hourly/inputs;layout;H5I_DATASET;STRING;1
+/hourly;links;H5I_GROUP;;
+/hourly/links;mcAll;H5I_GROUP;;
+/hourly/links/mcAll;data;H5I_DATASET;FLOAT;8736 x 28 x 45 x 1
+/hourly/links/mcAll;structure;H5I_GROUP;;
+/hourly/links/mcAll/structure;link;H5I_DATASET;STRING;45
+/hourly/links/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/hourly/links/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/links/mcAll/structure;variable;H5I_DATASET;STRING;28
+/hourly/links;mcInd;H5I_GROUP;;
+/hourly/links/mcInd;data;H5I_DATASET;FLOAT;8736 x 10 x 45 x 29
+/hourly/links/mcInd;structure;H5I_GROUP;;
+/hourly/links/mcInd/structure;link;H5I_DATASET;STRING;45
+/hourly/links/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/hourly/links/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/hourly/links/mcInd/structure;variable;H5I_DATASET;STRING;10
+/hourly;time;H5I_DATASET;COMPOUND;8736
+/;monthly;H5I_GROUP;;
+/monthly;areas;H5I_GROUP;;
+/monthly/areas;mcAll;H5I_GROUP;;
+/monthly/areas/mcAll;data;H5I_DATASET;FLOAT;12 x 99 x 18 x 1
+/monthly/areas/mcAll;structure;H5I_GROUP;;
+/monthly/areas/mcAll/structure;area;H5I_DATASET;STRING;18
+/monthly/areas/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/monthly/areas/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/areas/mcAll/structure;variable;H5I_DATASET;STRING;99
+/monthly/areas;mcInd;H5I_GROUP;;
+/monthly/areas/mcInd;data;H5I_DATASET;FLOAT;12 x 30 x 18 x 29
+/monthly/areas/mcInd;structure;H5I_GROUP;;
+/monthly/areas/mcInd/structure;area;H5I_DATASET;STRING;18
+/monthly/areas/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/monthly/areas/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/areas/mcInd/structure;variable;H5I_DATASET;STRING;30
+/monthly;attrib;H5I_DATASET;STRING;1
+/monthly;clusters;H5I_GROUP;;
+/monthly/clusters;mcAll;H5I_GROUP;;
+/monthly/clusters/mcAll;data;H5I_DATASET;FLOAT;12 x 4 x 114 x 1
+/monthly/clusters/mcAll;structure;H5I_GROUP;;
+/monthly/clusters/mcAll/structure;cluster;H5I_DATASET;STRING;114
+/monthly/clusters/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/monthly/clusters/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/clusters/mcAll/structure;variable;H5I_DATASET;STRING;4
+/monthly/clusters;mcInd;H5I_GROUP;;
+/monthly/clusters/mcInd;data;H5I_DATASET;FLOAT;12 x 4 x 114 x 29
+/monthly/clusters/mcInd;structure;H5I_GROUP;;
+/monthly/clusters/mcInd/structure;cluster;H5I_DATASET;STRING;114
+/monthly/clusters/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/monthly/clusters/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/clusters/mcInd/structure;variable;H5I_DATASET;STRING;4
+/monthly;inputs;H5I_GROUP;;
+/monthly/inputs;buildingcte;H5I_DATASET;STRING;1
+/monthly/inputs;cldesc;H5I_DATASET;STRING;1
+/monthly/inputs;layout;H5I_DATASET;STRING;1
+/monthly;links;H5I_GROUP;;
+/monthly/links;mcAll;H5I_GROUP;;
+/monthly/links/mcAll;data;H5I_DATASET;FLOAT;12 x 28 x 45 x 1
+/monthly/links/mcAll;structure;H5I_GROUP;;
+/monthly/links/mcAll/structure;link;H5I_DATASET;STRING;45
+/monthly/links/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/monthly/links/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/links/mcAll/structure;variable;H5I_DATASET;STRING;28
+/monthly/links;mcInd;H5I_GROUP;;
+/monthly/links/mcInd;data;H5I_DATASET;FLOAT;12 x 10 x 45 x 29
+/monthly/links/mcInd;structure;H5I_GROUP;;
+/monthly/links/mcInd/structure;link;H5I_DATASET;STRING;45
+/monthly/links/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/monthly/links/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/monthly/links/mcInd/structure;variable;H5I_DATASET;STRING;10
+/monthly;time;H5I_DATASET;COMPOUND;12
+/;weekly;H5I_GROUP;;
+/weekly;areas;H5I_GROUP;;
+/weekly/areas;mcAll;H5I_GROUP;;
+/weekly/areas/mcAll;data;H5I_DATASET;FLOAT;53 x 99 x 18 x 1
+/weekly/areas/mcAll;structure;H5I_GROUP;;
+/weekly/areas/mcAll/structure;area;H5I_DATASET;STRING;18
+/weekly/areas/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/weekly/areas/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/areas/mcAll/structure;variable;H5I_DATASET;STRING;99
+/weekly/areas;mcInd;H5I_GROUP;;
+/weekly/areas/mcInd;data;H5I_DATASET;FLOAT;53 x 30 x 18 x 29
+/weekly/areas/mcInd;structure;H5I_GROUP;;
+/weekly/areas/mcInd/structure;area;H5I_DATASET;STRING;18
+/weekly/areas/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/weekly/areas/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/areas/mcInd/structure;variable;H5I_DATASET;STRING;30
+/weekly;attrib;H5I_DATASET;STRING;1
+/weekly;clusters;H5I_GROUP;;
+/weekly/clusters;mcAll;H5I_GROUP;;
+/weekly/clusters/mcAll;data;H5I_DATASET;FLOAT;53 x 4 x 114 x 1
+/weekly/clusters/mcAll;structure;H5I_GROUP;;
+/weekly/clusters/mcAll/structure;cluster;H5I_DATASET;STRING;114
+/weekly/clusters/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/weekly/clusters/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/clusters/mcAll/structure;variable;H5I_DATASET;STRING;4
+/weekly/clusters;mcInd;H5I_GROUP;;
+/weekly/clusters/mcInd;data;H5I_DATASET;FLOAT;53 x 4 x 114 x 29
+/weekly/clusters/mcInd;structure;H5I_GROUP;;
+/weekly/clusters/mcInd/structure;cluster;H5I_DATASET;STRING;114
+/weekly/clusters/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/weekly/clusters/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/clusters/mcInd/structure;variable;H5I_DATASET;STRING;4
+/weekly;inputs;H5I_GROUP;;
+/weekly/inputs;buildingcte;H5I_DATASET;STRING;1
+/weekly/inputs;cldesc;H5I_DATASET;STRING;1
+/weekly/inputs;layout;H5I_DATASET;STRING;1
+/weekly;links;H5I_GROUP;;
+/weekly/links;mcAll;H5I_GROUP;;
+/weekly/links/mcAll;data;H5I_DATASET;FLOAT;53 x 28 x 45 x 1
+/weekly/links/mcAll;structure;H5I_GROUP;;
+/weekly/links/mcAll/structure;link;H5I_DATASET;STRING;45
+/weekly/links/mcAll/structure;mcYear;H5I_DATASET;STRING;1
+/weekly/links/mcAll/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/links/mcAll/structure;variable;H5I_DATASET;STRING;28
+/weekly/links;mcInd;H5I_GROUP;;
+/weekly/links/mcInd;data;H5I_DATASET;FLOAT;53 x 10 x 45 x 29
+/weekly/links/mcInd;structure;H5I_GROUP;;
+/weekly/links/mcInd/structure;link;H5I_DATASET;STRING;45
+/weekly/links/mcInd/structure;mcYear;H5I_DATASET;FLOAT;29
+/weekly/links/mcInd/structure;reCalcVar;H5I_DATASET;STRING;300
+/weekly/links/mcInd/structure;variable;H5I_DATASET;STRING;10
+/weekly;time;H5I_DATASET;COMPOUND;53

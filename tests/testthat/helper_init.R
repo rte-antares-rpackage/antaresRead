@@ -27,7 +27,8 @@ if (sourcedir != "") {
         writeAntaresH5(path = path, 
                        misc = TRUE, thermalAvailabilities = TRUE,
                        hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
-                       linkCapacity = TRUE,mustRun = TRUE, thermalModulation = TRUE)
+                       linkCapacity = TRUE,mustRun = TRUE, thermalModulation = TRUE,
+					   overwrite=TRUE)
       })
     })
     

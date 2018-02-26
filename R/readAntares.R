@@ -404,6 +404,16 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                              showProgress, opts, mustRun = FALSE, parallel = parallel)
   } else {
     clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
+    if(length(clustersAugmented) == 0)
+    {
+      if (!is.null(res$areas)) {
+        res$areas$thermalPmin <- 0
+        res$areas$mustRun <- 0
+        res$areas$mustRunPartial <- 0
+        res$areas$mustRunTotal <- 0
+      }
+    }
+    else{
     res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = TRUE, parallel = parallel)
     
@@ -443,6 +453,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     } else if (length(clustersAugmented) > length(clusters)) {
       res$clusters <- res$clusters[area %in% clusters]
     }
+    
+  }
   }
   
   # Add input time series
