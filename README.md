@@ -131,11 +131,15 @@ Contributions to the library are welcome and can be submitted in the form of pul
 The folder test_case contains a test Antares study used to run automatic tests. If you modifies it, you need to run the following command to include the modifications in the tests:
 
 ```r
+saveWd<-getwd()
+setwd('inst/testdata/')
 tar(
-  tarfile = "inst/testdata/antares-test-study.tar.gz", 
+  tarfile = "antares-test-study.tar.gz", 
   files = "test_case", 
   compression = "gzip"
 )
+
+setwd(saveWd)
 ```
 
 ## ANTARES :
