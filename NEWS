@@ -1,5 +1,13 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.1.1 (2018-XX-XX)
+
+NEW FEATURES:
+* 
+
+BUGFIXES:
+* readInputTS() was sending bad values for hydroStorage. (#58)
+
 Changes in version 2.1.0 (2018-02-23)
 
 NEW FEATURES:

@@ -60,7 +60,7 @@
       inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
     }
     
-    
+    inputTS<-.reorderInputTSHydroStorage(inputTS, path, opts)
     inputTS <- inputTS[timeRange[1]:timeRange[2]]
   }
   
