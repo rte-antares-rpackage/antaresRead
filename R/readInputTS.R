@@ -119,7 +119,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   }
   
   # Add input to res object. The ".import****" functions are
-  # defined in the file "readInputHelpers.R"
+  # defined in the file "importInput.R"
   .addOutputToRes("load", load, .importLoad)
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermalAvailabilities)
   .addOutputToRes("ror", ror, .importROR)
