@@ -13,7 +13,7 @@ describe("readOptimCriteria", {
     expect_is(optimCrit, "antaresDataTable")
     expect_equal(attr(optimCrit, "type"), "optimCriteria")
     expect_equal(attr(optimCrit, "synthesis"), FALSE)
-    expect_equal(attr(optimCrit, "timeStep"), "daily")
+    expect_equal(attr(optimCrit, "timeStep"), "weekly")
   })
 })
 }
