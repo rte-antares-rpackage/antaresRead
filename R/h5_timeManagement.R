@@ -32,7 +32,7 @@ getTime <- function(data, timeStep){
 getAllDateInfoFromDate <- function(fid, group){
   # affectation des classes
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   groupT <- paste0(group, "/time")
   did <- rhdf5::H5Dopen(fid, groupT)
@@ -125,7 +125,7 @@ getAllDateInfoFromDate <- function(fid, group){
 #'
 #' @noRd
 writeTime <- function(data, path, group){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   time <- getTime(data, group)
   group <- paste0(group, "/time")
   rhdf5::h5write.default(time, path, group)

@@ -33,7 +33,7 @@
                            timeStep = "hourly", select = NULL, showProgress = TRUE,
                            simplify = TRUE, perf = FALSE){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(!is.list(select))
   {
@@ -391,7 +391,7 @@
 #' @noRd
 .optimH5Read <- function(fid, index = NULL, GP){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   did <- rhdf5::H5Dopen(fid,  GP)
   if(is.null(index)){
@@ -503,7 +503,7 @@
                        simplify,
                        attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(!is.null(areas)){
     
@@ -572,7 +572,7 @@
                        simplify,
                        attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   ##Load links
   if(!is.null(links)){
@@ -645,7 +645,7 @@
                            simplify,
                            attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(!is.null(districts)){
     
@@ -717,7 +717,7 @@
                           simplify,
                           attrib){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(!is.null(clusters)){
     
@@ -820,7 +820,7 @@
 
 .loadAttributes <- function(fid, timeStep){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(rhdf5::H5Lexists(fid, paste0(timeStep, "/attrib")))
   {
@@ -843,7 +843,7 @@
 
 
 .getstructure <- function(fid, strgp){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   gid <- rhdf5::H5Gopen(fid,  strgp)
   data <- rhdf5::h5dump(gid)
   rhdf5::H5Gclose(gid)

@@ -110,7 +110,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
     thermalModulation <- TRUE
   }
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   rhdf5::H5close()
   
@@ -304,7 +304,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
                                newCols,
                                supressMessages){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   
   if(is.null(path)){

@@ -93,7 +93,9 @@ rhdf5_message <- "This function require 'rhdf5' (>= 2.20.0) package.
          source('https://bioconductor.org/biocLite.R')
          biocLite('rhdf5')"
 
-
+.requireRhdf5_Antares<-function(){
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+}
 
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
 
