@@ -39,21 +39,31 @@ test_that("mustRun is greater than 0 for clusters in 'must run' mode", {
 test_that("Time aggregation of mustRun works", {
   totalMustRun <- sum(areas$mustRunTotal)
   for (t in c("daily", "weekly", "monthly", "annual")) {
-    tmp <- readAntares(select="", mustRun=TRUE, showProgress=FALSE, timeStep = t)
+    tmp <- suppressWarnings(readAntares(select="", mustRun=TRUE, showProgress=FALSE, timeStep = t))
     expect_equal(sum(tmp$mustRunTotal), totalMustRun, info = t)
+    
+    #expect warning when we aggregate synthetic hourly data into daily, weekly, annual data
+    #expect_warning(res<-readAntares(select="", mustRun=TRUE, showProgress=FALSE, timeStep = t))
   }
 })
 
 test_that("mustRun also works when synthesis = FALSE", {
   totalMustRun <- sum(areas$mustRunTotal)
-  byYear <- readAntares(clusters = "all", mustRun = TRUE, showProgress=FALSE, 
-                        timeStep = "daily", mcYears = "all")
+  byYear <- suppressWarnings(readAntares(clusters = "all", mustRun = TRUE, showProgress=FALSE, 
+                        timeStep = "daily", mcYears = "all"))
   
   # average mustRun should be very close to the one in the synthetic results
   expect_lt(abs(sum(byYear$mustRunTotal)/length(opts$mcYears) / totalMustRun - 1), 0.001)
   
   # mustRun should vary between Monte-Carlo scenarii
   expect_false(all(byYear[mcYear == 1]$mustRunTotal == byYear[mcYear == 2]$mustRunTotal))
+  
+  #expect warning when we aggregate hourly data into daily, weekly, annual data
+  #for (t in c("daily", "weekly", "monthly", "annual")) {
+  #  expect_warning(res<-readAntares(clusters = "all", mustRun = TRUE, showProgress=FALSE, 
+                               #timeStep = t, mcYears = "all"))
+  #}
+  
 })
 
 test_that("table 'thermalModulation' is removed from the returned object (#51)", {

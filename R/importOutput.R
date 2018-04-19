@@ -290,6 +290,26 @@
     } else {
       
       # Worst case ! We have to !
+      #
+      if(timeStep!="hourly"){
+        warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
+        
+        #copy of warning in ChangeTimeStep
+        warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
+        
+        messageWarningMcYears<-paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
+        
+        if( is.null(mcYears) ){
+          warning(messageWarningMcYears, call. = FALSE)
+        }else if (is.character(mcYears)){
+          if (mcYears=="all"){
+            warning(messageWarningMcYears, call. = FALSE)
+          }
+        }else if (length(mcYears) > 1){
+          warning(messageWarningMcYears, call. = FALSE)
+        }
+      }
+      
       mod[is.na(minGenModulation), minGenModulation := 0]
       
       .mergeByRef(mod, clusterDesc)
