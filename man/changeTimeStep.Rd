@@ -17,7 +17,7 @@ monthly and annual.}
 class \code{antaresData} because the time step of the data is stored inside
 the object}
 
-\item{fun}{Character vector with one element per column to (des)agregate indicating 
+\item{fun}{Character vector with one element per column to (des)aggregate indicating 
 the function to use ("sum", "mean", "min" or "max") for this column. It can
 be a single element, in that case the same function is applied to every 
 columns.}
@@ -31,12 +31,8 @@ class of \code{x}
 }
 \description{
 This function changes the timestep of a table or an \code{antaresData} object
-and performs the required aggregation or desaggregation.Notice that
-currently, the function performs the same operation on all the columns of a
-table (either sum or mean). Check that this is effectively what you want to
-do. If it is not the case, either select only the columns on which yo uwant
-to perform the same operation or do not use it at all ! In future versions,
-this function may have a smarter behavior.
+and performs the required aggregation or desaggregation. We can specify
+(des)aggregate functions by columns, see the param `fun`.
 }
 \examples{
 \dontrun{
@@ -45,7 +41,7 @@ setSimulationPath()
 areasH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
 areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 
-areasDAgg <- changeTimeStep(areasH, "daily")
+areasDAgg <- changeTimeStep(areasH, "daily", "hourly")
 
 all.equal(areasDAgg$LOAD, areasD$LOAD)
 
