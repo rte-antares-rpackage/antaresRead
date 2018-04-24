@@ -33,7 +33,7 @@ if (sourcedir != "") {
     })
     
     #if you change the tar file then you must also change this file
-    h5file <- "20180406-1522eco-test.h5"
+    h5file <- "20180423-1734eco-test.h5"
     
     deprintize<-function(f){
       return(function(...) {capture.output(w<-f(...));return(w);});
@@ -93,5 +93,8 @@ if (sourcedir != "") {
     assign("studyPathS", file.path(path, "test_case"), envir = globalenv())
   }
   
-  assign("nweeks", 15, envir = globalenv())
+  assign("nweeks", 2, envir = globalenv())
+  assign("nmonths", 2, envir = globalenv())
+  assign("firstDay", 113, envir = globalenv())
+  assign("lastDay", 126, envir = globalenv())
 }
