@@ -1,3 +1,6 @@
 .Rhistory
 .Rproj.user
 inst/doc
+.RData
+inst/testdata/antares-test-study.tar
+inst/testdata/test_case/*

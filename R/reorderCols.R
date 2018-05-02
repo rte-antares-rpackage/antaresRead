@@ -22,3 +22,29 @@
   setcolorder(x, neworder)
   invisible(x)
 }
+
+#' reorder the row of inputTSHydro
+#' 
+#' This function reorder the data of hydroStorage according to parameters "first day" and "last day"
+#' 
+#' @noRd
+#' 
+#' 
+.reorderInputTSHydroStorage<-function(inputTSHydro=NULL, path=NULL, opts=NULL){
+  if(is.null(inputTSHydro) | is.null(path) | is.null(opts) ){
+    stop("One parameter is missing")
+  }else if(grepl(pattern = "hydro", x=path) & grepl(pattern = "mod", x=path)){
+    firstMonth<-lubridate::month(opts$start)
+    inputTSTemp<-copy(inputTSHydro)
+    rowNum<-NULL
+    inputTSTemp[, c("rowNum"):=1:12]
+    inputTSFirstPart<-inputTSTemp[rowNum >= firstMonth,]
+    inputTSFirstPart<-inputTSFirstPart[rowNum >= firstMonth, rowNum:=as.integer(rowNum-(firstMonth-1))]
+    inputTSSecondPart<-inputTSTemp[rowNum < firstMonth,]
+    inputTSSecondPart<-inputTSSecondPart[rowNum < firstMonth, rowNum:=as.integer(rowNum+(firstMonth-1))]
+    inputTSHydro<-rbind(inputTSFirstPart, inputTSSecondPart)   
+    inputTSHydro<-inputTSHydro[, rowNum:=NULL]
+  }
+  
+  invisible(inputTSHydro)
+}

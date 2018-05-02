@@ -63,7 +63,7 @@ writeDataType <- function(data,
                       compress = 0){
 
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   
   if(!mcAll)
   {

@@ -53,7 +53,7 @@ for (timeStep in c("hourly", "daily", "weekly", "monthly", "annual")) {
                          hourly = 24 * 7 * nweeks,
                          daily = 7 * nweeks,
                          weekly = nweeks,
-                         monthly = 1,
+                         monthly = nmonths,
                          annual = 1)
   
   test_that(sprintf("one can import %s Misc input", timeStep), {

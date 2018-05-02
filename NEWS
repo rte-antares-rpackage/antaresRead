@@ -1,5 +1,12 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.1.1 (2018-04-28)
+
+BUGFIXES:
+* readInputTS() was sending bad values for hydroStorage. (#58)
+* changeTimeStep() will print a warning if the user want to aggregate data. (#54)
+* readAntares() will print warnings when an user want to aggregate mustRun data (#54)
+
 Changes in version 2.1.0 (2018-02-23)
 
 NEW FEATURES:

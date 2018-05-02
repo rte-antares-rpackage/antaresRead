@@ -3,12 +3,8 @@
 #' Change the timestep of an output
 #' 
 #' This function changes the timestep of a table or an \code{antaresData} object
-#' and performs the required aggregation or desaggregation.Notice that
-#' currently, the function performs the same operation on all the columns of a
-#' table (either sum or mean). Check that this is effectively what you want to
-#' do. If it is not the case, either select only the columns on which yo uwant
-#' to perform the same operation or do not use it at all ! In future versions,
-#' this function may have a smarter behavior.
+#' and performs the required aggregation or desaggregation. We can specify
+#' (des)aggregate functions by columns, see the param `fun`.
 #' 
 #' @param x
 #'   data.table with a column "timeId" or an object of class "antaresDataList"
@@ -20,7 +16,7 @@
 #'   class \code{antaresData} because the time step of the data is stored inside
 #'   the object
 #' @param fun
-#'   Character vector with one element per column to (des)agregate indicating 
+#'   Character vector with one element per column to (des)aggregate indicating 
 #'   the function to use ("sum", "mean", "min" or "max") for this column. It can
 #'   be a single element, in that case the same function is applied to every 
 #'   columns.
@@ -37,7 +33,7 @@
 #' areasH <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1)
 #' areasD <- readAntares(select = "LOAD", synthesis = FALSE, mcYears = 1, timeStep ="daily")
 #' 
-#' areasDAgg <- changeTimeStep(areasH, "daily")
+#' areasDAgg <- changeTimeStep(areasH, "daily", "hourly")
 #' 
 #' all.equal(areasDAgg$LOAD, areasD$LOAD)
 #' 
@@ -66,6 +62,8 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   if (newTimeStep == oldTimeStep) return(x)
   
+  .checkIfWeWantToAggregate(newTimeStep, oldTimeStep)
+  
   if (is(x, "antaresDataList")) {
     for (i in 1:length(x)) {
       x[[i]] <- changeTimeStep(x[[i]], newTimeStep, oldTimeStep, fun, opts)
@@ -90,7 +88,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   if (!is.null(x$week)) x$week <- NULL
   if (!is.null(x$month)) x$month <- NULL
   
-  # Strategy: if newTimeStep is not hourly, first desagregate data at hourly
+  # Strategy: if oldTimeStep is not hourly, first desagregate data at hourly
   # level. Then, in all cases aggregate hourly data at the desired level.
   refTime <- data.table(
     oldTimeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, oldTimeStep, opts),
@@ -128,6 +126,7 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   
   # Aggregation
   if (newTimeStep != "hourly") {
+    
     idVars <- .idCols(x)
     
     if (length(fun) == 1) fun <- rep(fun, ncol(x) - length(idVars))
@@ -182,4 +181,25 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
     return(timeRef$timeId[hourId])
   }
   
+}
+
+.checkIfWeWantToAggregate<-function(newTimeStep, oldTimeStep){
+  
+  yesWeWantToAggregate<-FALSE
+  if(oldTimeStep=="hourly" & oldTimeStep!=newTimeStep){
+    yesWeWantToAggregate<-TRUE
+  } else if (oldTimeStep=="daily" & (newTimeStep=="weekly" | newTimeStep=="monthly" | newTimeStep=="annual" )){
+    yesWeWantToAggregate<-TRUE
+  } else if (oldTimeStep=="weekly" & (newTimeStep=="monthly" | newTimeStep=="annual")){
+    yesWeWantToAggregate<-TRUE
+  } else if (oldTimeStep=="monthly" & (newTimeStep=="annual")){
+    yesWeWantToAggregate<-TRUE
+  } else{
+    yesWeWantToAggregate<-FALSE
+  }
+  
+  if(yesWeWantToAggregate){
+    warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
+  }
+
 }

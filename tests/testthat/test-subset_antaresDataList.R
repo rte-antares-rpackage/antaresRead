@@ -11,6 +11,7 @@ mydata <- readAntares(areas = "all", links = "all", clusters = "all",
 
 myarea <- "a"
 mylinks <- getLinks(myarea)
+firstTimeId<-unique(mydata$areas$timeId)[1]
 
 describe("subset.antaresDataTable", {
   
@@ -26,7 +27,7 @@ describe("subset.antaresDataTable", {
   })
   
   it ("filters time ids", {
-    mytimeIds <- 9
+    mytimeIds <- firstTimeId
     mysubset <- subset(mydata, timeIds = mytimeIds)
     expect_true(all(mysubset$areas$timeId %in% mytimeIds))
     expect_true(all(mysubset$links$timeId %in% mytimeIds))
@@ -42,7 +43,7 @@ describe("subset.antaresDataTable", {
   })
   
   it ("filters all three variables together", {
-    mysubset <- subset(mydata, areas = myarea, timeIds = 9, mcYears = 1) 
+    mysubset <- subset(mydata, areas = myarea, timeIds = firstTimeId, mcYears = 1) 
     expect_true(nrow(mysubset$areas) == 1)
     expect_true(nrow(mysubset$links) == length(mylinks))
   })

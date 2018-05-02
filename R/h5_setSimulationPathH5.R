@@ -63,7 +63,7 @@ setSimulationPathH5 <- function(path, simulation = NULL){
 # Need to be export for antaresViz
 .getOptionsH5 <- function(path){
   
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   fid <- rhdf5::H5Fopen(path)
   attributes <- .loadAttributes(fid, "hourly")
   attributes <- attributes$opts

@@ -7,7 +7,7 @@
 #'
 #' @noRd
 h5ReadBindingConstraints <- function(opts){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/buildingcte"))))
@@ -26,7 +26,7 @@ h5ReadBindingConstraints <- function(opts){
 #'
 #' @noRd
 h5ReadLayout <- function(opts){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/layout"))))
@@ -45,7 +45,7 @@ h5ReadLayout <- function(opts){
 #' @noRd
 #' 
 h5ReadClusterDesc <- function(opts){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+  .requireRhdf5_Antares()
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/cldesc"))))
