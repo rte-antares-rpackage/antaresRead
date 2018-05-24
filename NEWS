@@ -1,5 +1,10 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.1.2 (2018-XX-XX)
+
+BUGFIXES:
+* getLinks() was sending an error when there are no links in the study. 
+
 Changes in version 2.1.1 (2018-04-28)
 
 BUGFIXES:

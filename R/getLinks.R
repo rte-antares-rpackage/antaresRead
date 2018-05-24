@@ -73,6 +73,11 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
 
   if(is.null(areas)) areas <- getAreas(opts = opts)
   
+  #There are no links -> return NULL
+  if(is.null(opts$linksDef$from)){
+    return(NULL)
+  }
+  
   if (internalOnly) links <- opts$linksDef[from %in% areas & to %in% areas]
   else links <- opts$linksDef[from %in% areas | to %in% areas]
   
