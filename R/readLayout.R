@@ -45,13 +45,6 @@
 #'
 readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) {
   
-  
-  #if there are no areas return NULL
-  if(length(opts$areaList)==0 | opts$areaList==""){
-    warning("There are no areas in your study.")
-    return(NULL)
-  }
-  
   # single opts
   if(class(opts) %in% "simOptions"){
     
@@ -101,6 +94,12 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
     } else {
       stop(rhdf5_message)
     }
+  }
+  
+  #if there are no areas return NULL
+  if(length(opts$areaList)==0 | identical(opts$areaList,"")) {
+    warning("There are no areas in your study.")
+    return(NULL)
   }
   
   # areas
