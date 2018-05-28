@@ -1,8 +1,8 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
-Version: 2.1.1
-Date: 2018-04-28
+Version: 2.1.2.900
+Date: 2018-05-24
 Authors@R: c(
     person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = c("aut", "cre")),
     person("Francois", "Guillem", , "francois.guillem@rte-france.com", role = "aut"),
