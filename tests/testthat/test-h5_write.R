@@ -22,6 +22,8 @@ if(requireNamespace("rhdf5")){
       writeAntaresH5(path = tptpDir, overwrite = TRUE, allData = TRUE, 
                      timeSteps = "annual", writeAllSimulations = TRUE, 
                      nbCores = 2, opts = optsG)
+      filesTptpDir<-dir(tptpDir)
+      expect_true(TRUE %in% grepl("h5", filesTptpDir))
       
     })
   }
@@ -29,6 +31,8 @@ if(requireNamespace("rhdf5")){
   test_that("h5 : overwrite + removeVirtualAreas", {
     writeAntaresH5(path = tptpDir, overwrite = TRUE, opts = optsG, timeSteps = "hourly",removeVirtualAreas = TRUE,
                    storageFlexibility = "a")
+    filesTptpDir<-dir(tptpDir)
+    expect_true(TRUE %in% grepl("h5", filesTptpDir))
     
   })
   

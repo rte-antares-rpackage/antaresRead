@@ -34,5 +34,6 @@ sapply(studyPathS, function(studyPath){
   test_that("extractDataList on areas, links clusters",{
     allData <- readAntares(areas = "all", links = "all", clusters = "all", showProgress=FALSE)
     extractDataList(allData)
+    expect_true(is(allData, "antaresDataList"))
   })
 })
