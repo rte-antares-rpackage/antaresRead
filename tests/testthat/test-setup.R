@@ -5,7 +5,7 @@ context("Setup functions")
 sapply(studyPathS, function(studyPath){
   
 suppressPackageStartupMessages(require(lubridate))
-suppressPackageStartupMessages(require(data.table))
+suppressWarnings(suppressPackageStartupMessages(require(data.table)))
 
 # Reading of study options #####################################################
 
@@ -147,17 +147,17 @@ unlink(file.path(studyPath, "output/30000101-0000fake"), TRUE, TRUE)
 # results
 file.rename(file.path(studyPath, "output"), file.path(studyPath, "outputBack"))
 
-test_that("No simulation", {
-  test_that("Error if the user tries to read simulation results", {
+describe("No simulation", {
+  it("Error if the user tries to read simulation results", {
     expect_error(setSimulationPath(studyPath, 1))
   })
   
-  test_that("User can read input data", {
+  it("User can read input data", {
     expect_silent(opts <- setSimulationPath(studyPath, 0))
     expect_equal(opts$mode, "Input")
   })
   
-  test_that("Read input data by default", {
+  it("Read input data by default", {
     expect_silent(opts <- setSimulationPath(studyPath))
     expect_equal(opts$mode, "Input")
   })
