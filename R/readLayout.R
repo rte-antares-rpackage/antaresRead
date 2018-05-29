@@ -98,7 +98,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   
   #if there are no areas return NULL
   if(length(opts$areaList)==0 | identical(opts$areaList,"")) {
-    warning("There are no areas in your study.")
+    warning("There is no area in your study.")
     return(NULL)
   }
   
