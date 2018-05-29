@@ -7,6 +7,14 @@ sourcedir <- system.file("inst/testdata", package = "antaresRead")
 testH5 <- TRUE
 if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead")}
 
+## force tests to be executed if in dev release which we define as
+## having a sub-release, eg 0.9.15.5 is one whereas 0.9.16 is not
+## we test dev version locally, on travis and appveyor but not in CRAN
+if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3) { 
+  Sys.setenv("RunAllAntaresReadTests"="yes")
+}
+.runThisTest <- Sys.getenv("RunAllAntaresReadTests") == "yes"
+
 
 # Hack: For some unknown reason, this script is executed at some point of
 # the R CMD CHECK before package is correctly installed and tests actually run. 
@@ -24,11 +32,18 @@ if (sourcedir != "") {
     opts <- setSimulationPath(file.path(path, "/test_case"))
     suppressMessages({
       suppressWarnings({
+
+        #On cran we have only 2 threads so nbCore <- 1  
+        if(.runThisTest){
+          nbCoresTestHelper<-4
+        }else{
+          nbCoresTestHelper<-1
+        }
         writeAntaresH5(path = path, 
                        misc = TRUE, thermalAvailabilities = TRUE,
                        hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
                        linkCapacity = TRUE,mustRun = TRUE, thermalModulation = TRUE,
-					   overwrite=TRUE)
+					   overwrite=TRUE, nbCores = nbCoresTestHelper)
       })
     })
     
