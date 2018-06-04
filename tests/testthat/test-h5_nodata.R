@@ -1,6 +1,6 @@
 context("h5 : No data")
 
-if(requireNamespace("rhdf5")){
+if(requireNamespace("rhdf5") & .runThisTest){
   test_that("h5 : no data", {
     rhdf5::h5createFile("testnodata.h5")
     rhdf5::h5createGroup("testnodata.h5", "hourly")

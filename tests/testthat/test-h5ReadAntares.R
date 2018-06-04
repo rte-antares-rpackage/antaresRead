@@ -1,6 +1,6 @@
 context(".h5ReadAntares")
 
-if(requireNamespace("rhdf5")){
+if(requireNamespace("rhdf5") & .runThisTest){
   sapply(pkgEnv$allCompute, function(X){
     test_that(paste0("Select : ", X, " timeStep : "),{
       param1 <- list(path = pathF, areas = "a", mcYears = 1, select = X)

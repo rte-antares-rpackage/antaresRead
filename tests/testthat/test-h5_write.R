@@ -3,7 +3,7 @@ context("h5 : write data")
 # for use travis in parallel
 Sys.unsetenv("R_TESTS")
 
-if(requireNamespace("rhdf5")){
+if(requireNamespace("rhdf5") & .runThisTest){
   tpDir2 <- gsub("[\\]", "/", tpDir)
   tptpDir <- file.path(tpDir2, "/tpDir")
   
