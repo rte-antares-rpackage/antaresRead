@@ -66,7 +66,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
           for(ar in names(init_layout)){
             init_layout[[ar]] <- rbindlist(
               list(init_layout[[ar]][-nrow(init_layout[[ar]])],
-                   tmp_layout[[ar]], init_layout[[ar]][nrow(init_layout[[ar]])])
+                   tmp_layout[[ar]], init_layout[[ar]][nrow(init_layout[[ar]])]), fill = TRUE
             )
             init_layout[[ar]] <- unique(init_layout[[ar]], by = colnames(init_layout[[ar]])[1])
           }
