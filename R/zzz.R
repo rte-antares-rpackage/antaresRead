@@ -1,6 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 #' @import data.table
+#' @import bit64
 #' @import plyr
 #' @importFrom shiny withProgress incProgress getDefaultReactiveDomain
 #' @importFrom methods is

@@ -20,6 +20,7 @@ License: GPL (>= 2) | file LICENSE
 LazyData: TRUE
 Imports:
     data.table (>= 1.9.6),
+    bit64,
     lubridate (>= 1.7.1),
     plyr,
     methods,
