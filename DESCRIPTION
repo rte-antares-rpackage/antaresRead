@@ -27,7 +27,7 @@ Imports:
     stringr,
     shiny
 Suggests:
-    rhdf5 (>= 2.20.0),
+    rhdf5 (>= 2.24.0),
     testthat,
     knitr,
     rmarkdown,
