@@ -112,7 +112,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
   
   .requireRhdf5_Antares()
   
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   
   if(!writeAllSimulations){
     simName <- unlist(strsplit(opts$simPath, "/"))
@@ -314,7 +314,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
   }
   
   #Close connection if exist
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   
   #Create h5 file
   rhdf5::h5createFile(path)
@@ -408,12 +408,12 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
         
         
         # Create group
-        rhdf5::H5close()
+        rhdf5::h5closeAll()
         rhdf5::h5createGroup(path, timeStep)
-        rhdf5::H5close()
+        rhdf5::h5closeAll()
         #Write time
         writeTime(res, path, timeStep)
-        rhdf5::H5close()
+        rhdf5::h5closeAll()
         #Write attributes
         
         attrib <- attributes(res)
@@ -486,7 +486,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
       writeAntaresData(res, path, timeStep, writeStructure, mcAll, compress)
     })
   })
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   message(paste0("File .h5 writed : ", path, "\n"))
   invisible()
 }

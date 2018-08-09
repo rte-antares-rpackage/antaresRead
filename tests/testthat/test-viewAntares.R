@@ -34,7 +34,7 @@ opts <- setSimulationPath(studyPath)
 # })
 })
 if(requireNamespace("rhdf5")){
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
 }
 
 if(requireNamespace("rhdf5")){
