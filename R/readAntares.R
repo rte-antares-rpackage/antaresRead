@@ -249,7 +249,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   if(isH5Opts(opts)){
     
-    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = "2.20.0"))){
+    if(.requireRhdf5_Antares(stopP = FALSE)){
       return(.h5ReadAntares(path = opts$h5path, 
                                         areas = areas,
                                         links = links,
