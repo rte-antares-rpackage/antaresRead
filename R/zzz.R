@@ -88,14 +88,22 @@ utils::globalVariables(
 
 is.installed <- function(mypkg) is.element(mypkg, utils::installed.packages()[,1])
 
-rhdf5_version <- "2.20.0"
-rhdf5_message <- "This function require 'rhdf5' (>= 2.20.0) package.
+rhdf5_version <- "2.24.0"
+rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
          This is a bioconductor package. You can install it with :
          source('https://bioconductor.org/biocLite.R')
          biocLite('rhdf5')"
 
-.requireRhdf5_Antares<-function(){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+.requireRhdf5_Antares<-function(stopP = TRUE){
+  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
+    if(stopP){
+      stop(rhdf5_message)
+    }else{
+      return(FALSE)
+    }
+  }else{
+    return(TRUE)
+  } 
 }
 
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes

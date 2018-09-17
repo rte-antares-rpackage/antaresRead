@@ -1,7 +1,7 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
-Version: 2.1.3
+Version: 2.1.2.902
 Date: 2018-06-01
 Authors@R: c(
     person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = c("aut", "cre")),
@@ -28,7 +28,7 @@ Imports:
     stringr,
     shiny
 Suggests:
-    rhdf5 (>= 2.20.0),
+    rhdf5 (>= 2.24.0),
     testthat,
     knitr,
     rmarkdown,

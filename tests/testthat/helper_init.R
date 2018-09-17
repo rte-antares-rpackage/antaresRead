@@ -27,7 +27,7 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
   }
   
-  if(requireNamespace("rhdf5", quietly = TRUE)){
+  if(.requireRhdf5_Antares(stopP = FALSE)){
     
     opts <- setSimulationPath(file.path(path, "/test_case"))
     suppressMessages({

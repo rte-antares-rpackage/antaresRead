@@ -49,7 +49,7 @@
 readClusterDesc <- function(opts = simOptions()) {
   
   if(isH5Opts(opts)){
-    if(requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
+    if(.requireRhdf5_Antares(stopP = FALSE)){
       return(h5ReadClusterDesc(opts))
     } else {
       stop(rhdf5_message)

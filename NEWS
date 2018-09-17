@@ -1,10 +1,12 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.1.3 (2018-07-03)
+Changes in version 2.1.3 (2018-09-17)
 
 BUGFIXES:
 * readLayout : prevent bug reading multiple studies
 * readAntares : prevent bug dealing with integer64
+* writeAntaresH5() was not working anymore due to a new version of rhdf5 (h5close() does not work anymore).
+
 
 Changes in version 2.1.2 (2018-06-01)
 
