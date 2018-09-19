@@ -168,14 +168,9 @@ removeVirtualAreas <- function(x,
   prodAreas <- x$areas[area %in% production]
   storageAreas <- x$areas[area %in% storageFlexibility]
   
-  # Aliases used for aggregation
-  if (attr(x, "synthesis")) {
-    by <- c("timeId")
-  } else {
-    by <- c("mcYear", "timeId")
-  }
-  bylink <- c("link", by)
-  byarea <- c("area", by)
+  by <- .get_by(x)
+  byarea <- .get_by_area(x)
+  bylink <- .get_by_link(x)
   
   # Table with the definition of the links
   linkList <- getLinks(vareas, namesOnly = FALSE, withDirection = TRUE)
@@ -237,7 +232,7 @@ removeVirtualAreas <- function(x,
   )]
   
   # Correct balance
-  if (! is.null(x$areas$BALANCE)) {
+  if (!is.null(x$areas$BALANCE)) {
     x$areas[, BALANCE := as.numeric(BALANCE)]
     
     corrections <- flows[, .(correction = sum(flow)), keyby = byarea]
@@ -247,9 +242,6 @@ removeVirtualAreas <- function(x,
       BALANCE = BALANCE + ifelse(is.na(correction), 0, correction),
       correction = NULL
     )]
-    x <- .merge_Col_Area_D(x, 
-                           colMerge = "BALANCE",
-                           opts = opts)
   }
   
   # Correct costs and CO2
@@ -462,12 +454,21 @@ removeVirtualAreas <- function(x,
   
   x$links <- x$links[!link %in% linkList$link]
   
+  #correct district data 
   if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
     x <- .merge_Col_Area_D(x, 
                            colMerge = c("pumpingCapacity", "storageCapacity"),
                            opts = opts)
   }
   
+  #correct balance district but only at the end, 
+  # with the final x (after removing veryVirtualAreas) so we must keep all.y
+  if (!is.null(x$areas$BALANCE)){
+    x <- .merge_Col_Area_D(x, 
+                           colMerge = "BALANCE",
+                           opts = opts,
+                           allX = FALSE)
+  }
   
   # Store in attributes the name of the virtuals nodes
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
@@ -488,11 +489,14 @@ removeVirtualAreas <- function(x,
     #  no visible binding for global variable 'ROW BAL.'
     `ROW BAL.` <- NULL
     if (!is.null(x$areas$`ROW BAL.`)){
-      x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
-      x$areas[, `ROW BAL.` := 0]
-      x <- .merge_Col_Area_D(x, 
-                             colMerge = c("BALANCE", "ROW BAL."),
-                             opts = opts)
+      # edit BALANCE if ROW BAL is not always null
+      if(min(unique(x$area$`ROW BAL.`)) > 1){
+        x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
+        x$areas[, `ROW BAL.` := 0]
+        x <- .merge_Col_Area_D(x, 
+                               colMerge = c("BALANCE", "ROW BAL."),
+                               opts = opts)
+      }
     }
   }
   

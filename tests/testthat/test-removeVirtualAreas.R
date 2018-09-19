@@ -301,4 +301,22 @@ test_that("RemoveVirtualAreas corrects column 'BALANCE' if rowBal is TRUE", {
   expect_false("ROW BAL..x" %in% names(dataCorrected$areas))
 })
 
+test_that("add pumpingCapacity and storageCapacity to district if storageFlex is not NULL", {
+  mydata <- suppressWarnings({readAntares(areas = "all",
+                                          districts ="all",
+                                          links = "all",
+                                          showProgress = FALSE,
+                                          hydroStorageMaxPower = TRUE,
+                                          linkCapacity = TRUE,
+                                          mcYears = 1)})
+  mydataCorrected <- removeVirtualAreas(mydata,
+                                        storageFlexibility = c(getAreas("psp"),
+                                                               getAreas("hub")))
+  
+  expect_false(is.null(mydataCorrected$areas$pumpingCapacity))
+  expect_false(is.null(mydataCorrected$areas$storageCapacity))
+  expect_false(is.null(mydataCorrected$districts$pumpingCapacity))
+  expect_false(is.null(mydataCorrected$districts$storageCapacity))
+})
+
 })
