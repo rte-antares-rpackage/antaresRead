@@ -214,3 +214,28 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
 .tidymess <- function(..., prefix = " ", initial = ""){
   as.character(strwrap(..., prefix = prefix, initial = initial))
 }
+
+.get_by <- function(x = NULL){
+  if (attr(x, "synthesis")) {
+    by <- c("timeId")
+  } else {
+    by <- c("mcYear", "timeId")
+  }
+  by
+}
+
+.get_by_area <- function(x = NULL){
+  # Aliases used for aggregation
+  byarea <- c("area", .get_by(x))
+  return(byarea)
+}
+
+.get_by_link <- function(x = NULL){
+  bylink <- c("link", .get_by(x))
+  return(bylink)
+}
+
+.get_by_district <- function(x = NULL){
+  bydistrict <- c("district", .get_by(x))
+  return(bydistrict)
+}
