@@ -463,26 +463,9 @@ removeVirtualAreas <- function(x,
   x$links <- x$links[!link %in% linkList$link]
   
   if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
-    
-    stoPumAreas <- x$areas[, .(pumpingCapacity, storageCapacity), by = c("timeId", "area")]
-    stoPumDistricts <- .groupByDistrict(stoPumAreas, opts)
-    
-    #the columns pumpingCapacity doesnt exist when we trade very virtual area
-    if (is.null(x$districts$pumpingCapacity)){
-      x$districts <- merge(x$districts, stoPumDistricts, by = c("timeId", "district"))
-    }else {
-      #for simple virtual areas take into account the previous merge
-      x$districts <- merge(x$districts, stoPumDistricts, all.x = TRUE, by = c("timeId", "district"))
-      
-      x$districts[, ':=' (
-        pumpingCapacity = pumpingCapacity.x + pumpingCapacity.y, 
-        storageCapacity = storageCapacity.x + storageCapacity.y
-      )]
-      
-      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x", "storageCapacity.y"
-                      ) := NULL]
-      
-    }
+    x <- .merge_Col_Area_D(x, 
+                           colMerge = c("pumpingCapacity", "storageCapacity"),
+                           opts = opts)
   }
   
   
@@ -490,7 +473,7 @@ removeVirtualAreas <- function(x,
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
                                   production = production)
   
-  if (attr(data, "synthesis")){
+  if (attr(x, "synthesis")){
     colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
     colMustChange <- c("BALANCE", colCostToCorrect, "virtualProd")
     warningMessage <- .tidymess(paste0("Colmuns : ", paste(colMustChange, collapse = ", "), " will 
