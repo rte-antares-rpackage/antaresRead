@@ -1,6 +1,6 @@
 context("h5 : read inputs")
 
-if(.requireRhdf5_Antares(stopP = FALSE) & .runThisTest){
+if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   test_that("h5 : h5ReadBindingConstraints", {
     optsH5 <- setSimulationPathH5(tpDir, h5file)
     re1 <- h5ReadBindingConstraints(optsH5)
