@@ -30,8 +30,13 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   }
   
   test_that("h5 : overwrite + removeVirtualAreas", {
-    writeAntaresH5(path = tptpDir, overwrite = TRUE, opts = optsG, timeSteps = "hourly",removeVirtualAreas = TRUE,
-                   storageFlexibility = "a", nbCores = 1)
+    writeAntaresH5(path = tptpDir, 
+                   overwrite = TRUE, 
+                   opts = optsG, 
+                   timeSteps = "hourly",
+                   removeVirtualAreas = TRUE,
+                   storageFlexibility = "c", 
+                   nbCores = 1)
     filesTptpDir<-dir(tptpDir)
     expect_true(TRUE %in% grepl("h5", filesTptpDir))
     

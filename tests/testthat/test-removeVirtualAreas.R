@@ -46,7 +46,9 @@ test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
 })
 
 test_that("RemoveVirtualAreas removes production areas", {
-  dataCorrected <- removeVirtualAreas(data, production = "a_offshore", reassignCosts = TRUE)
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       production = "a_offshore", 
+                                                       reassignCosts = TRUE))
   
   expect_equal(dataCorrected$areas[area == "a", `OP. COST`], 
                data$areas[area == "a", `OP. COST`] + data$areas[area == "a_offshore", `OP. COST`])
@@ -56,19 +58,25 @@ test_that("RemoveVirtualAreas removes production areas", {
 })
 
 test_that("RemoveVirtualAreas() corrects production columns if newCols = FALSE", {
-  dataCorrected <- removeVirtualAreas(data, production = "a_offshore")
+  dataCorrected <- suppressWarnings(removeVirtualAreas(data, 
+                                      production = "a_offshore"))
   wind1 <- dataCorrected$areas[, WIND + WIND_virtual]
-  dataCorrected2 <- removeVirtualAreas(data, production = "a_offshore", newCols = FALSE)
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(data, 
+                                                        production = "a_offshore", 
+                                                        newCols = FALSE))
   wind2 <- dataCorrected2$areas$WIND
   expect_true(is.null(dataCorrected2$areas$WIND_virtual))
   expect_equal(wind1, wind2)
 })
 
 test_that("Hub management works", {
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("hub", vareas))
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       storageFlexibility = c("hub", vareas)))
   
-  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = c(vareas))
-  dataCorrected2 <- removeVirtualAreas(dataCorrected2, storageFlexibility = "hub")
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(data, 
+                                                        storageFlexibility = c(vareas)))
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(x = dataCorrected2, 
+                                                        storageFlexibility = "hub"))
   
   expect_equal(dataCorrected$areas$BALANCE, dataCorrected2$areas$BALANCE)
   expect_equal(dataCorrected$areas$`OP. COST`, dataCorrected2$areas$`OP. COST`)
@@ -90,8 +98,9 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
 })
 
 test_that("reassignCosts works correctly", {
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("psp out"),
-                                      reassignCosts = TRUE)
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       storageFlexibility = c("psp out"),
+                                      reassignCosts = TRUE))
   # NOTE: this test fails if flows at some timeId are equal to 0 but costs are 
   # greater than 0
   
@@ -115,8 +124,9 @@ test_that("reassignCosts works correctly", {
 
 test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
   psp1 <- dataCorrected$areas[, PSP + `psp in-2` + `psp out-2`]
-  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = vareas, 
-                                       newCols = FALSE)
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                        storageFlexibility = vareas, 
+                                       newCols = FALSE))
   psp2 <- dataCorrected2$areas$PSP
   
   expect_equal(psp1, psp2)
@@ -143,7 +153,8 @@ test_that("removeVirtualAreas removes virtual links, but keeps the data needed t
 })
 
 test_that("removeVirtualAreas compute storage and pumping capacities", {
-  dataCorrectedStep <- removeVirtualAreas(data, storageFlexibility = getAreas("psp"))
+  dataCorrectedStep <- suppressWarnings(removeVirtualAreas(x = data, 
+                                          storageFlexibility = getAreas("psp")))
   
   expect_equal(unique(dataCorrectedStep$areas[area=="a", pumpingCapacity]), 3000)
   expect_equal(unique(dataCorrectedStep$areas[area=="a", storageCapacity]), 3000)
