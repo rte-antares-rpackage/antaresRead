@@ -484,6 +484,9 @@ removeVirtualAreas <- function(x,
   }
   
   if (rowBal){
+    # for R CMD Check 
+    #  no visible binding for global variable 'ROW BAL.'
+    `ROW BAL.` <- NULL
     if (!is.null(x$areas$`ROW BAL.`)){
       x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
       x$areas[, `ROW BAL.` := 0]
