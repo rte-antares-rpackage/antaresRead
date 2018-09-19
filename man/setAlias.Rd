@@ -27,8 +27,6 @@ import.}
 data.frame with columns "name", "desc" and "select".
 }
 \description{
-show aliases for variables
-
 Aliases are short names that can be used in the \code{select} parameter in 
 function \code{\link{readAntares}} to tell the function which columns and/or
 type of data to import. 

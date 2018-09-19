@@ -6,11 +6,12 @@
 \usage{
 readAntares(areas = NULL, links = NULL, clusters = NULL,
   districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
-  hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
-  linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
-  select = NULL, mcYears = NULL, timeStep = c("hourly", "daily", "weekly",
-  "monthly", "annual"), opts = simOptions(), parallel = FALSE,
-  simplify = TRUE, showProgress = TRUE)
+  hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
+  reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
+  thermalModulation = FALSE, select = NULL, mcYears = NULL,
+  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+  opts = simOptions(), parallel = FALSE, simplify = TRUE,
+  showProgress = TRUE)
 }
 \arguments{
 \item{areas}{Vector containing the names of the areas to import. If

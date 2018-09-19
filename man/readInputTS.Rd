@@ -7,8 +7,9 @@
 readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   hydroStorage = NULL, hydroStorageMaxPower = NULL, wind = NULL,
   solar = NULL, misc = NULL, reserve = NULL, linkCapacity = NULL,
-  opts = simOptions(), timeStep = c("hourly", "daily", "weekly", "monthly",
-  "annual"), simplify = TRUE, parallel = FALSE, showProgress = TRUE)
+  opts = simOptions(), timeStep = c("hourly", "daily", "weekly",
+  "monthly", "annual"), simplify = TRUE, parallel = FALSE,
+  showProgress = TRUE)
 }
 \arguments{
 \item{load}{vector of areas names for which load time series must be read.}
