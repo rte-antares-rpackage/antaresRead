@@ -137,17 +137,17 @@ removeVirtualAreas <- function(x,
   if (is.null(storageFlexibility) & is.null(production))
     stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
-  if(!is.null(storageFlexibility))
+  if (!is.null(storageFlexibility))
     {
-      if(!any(storageFlexibility %in% unique(x$areas$area))){
+      if (!any(storageFlexibility %in% unique(x$areas$area))){
         warning("no one of you storageFlexibility areas are load in data")
       }
   }
   
   
-  if(!is.null(production))
+  if (!is.null(production))
   {
-    if(!any(production %in% unique(x$areas$area))){
+    if (!any(production %in% unique(x$areas$area))){
       warning("no one of you production areas are load in data")
     }
   }
@@ -268,7 +268,7 @@ removeVirtualAreas <- function(x,
     
     # Compute the proportion of the cost to repercute on each real area
     costs[, c("totalFlow", "N") := list(sum(abs(flow)), .N), by = byarea]
-    costs[, prop := ifelse(totalFlow == 0, 1/N, abs(flow / totalFlow))]
+    costs[, prop := ifelse(totalFlow == 0, 1 / N, abs(flow / totalFlow))]
     
     # Aggregate corrections by real area
     costs$area <- costs$rarea
@@ -279,7 +279,7 @@ removeVirtualAreas <- function(x,
     setkeyv(x$areas, byarea)
     x$areas[costs, 
             c(varCost) := as.data.table(mget(varCost)) + 
-                            as.data.table(mget(paste0("i.",varCost)))]
+                            as.data.table(mget(paste0("i.", varCost)))]
     x <- .merge_Col_Area_D(x, 
                            colMerge = colCostToCorrect,
                            opts = opts)
@@ -315,9 +315,9 @@ removeVirtualAreas <- function(x,
                    corrPSP := sum(flow), 
                    by = c(byarea)])
       
-      psp<-psp[varea %in% storageFlexibility]
+      psp <- psp[varea %in% storageFlexibility]
       
-      psp[ , setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
+      psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
       .mergeByRef(x$areas, psp, on = byarea)
       x$areas[, `:=`(
         PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
@@ -332,8 +332,6 @@ removeVirtualAreas <- function(x,
   # Aggregate production of production virtual areas and add columns for each 
   # type of production.
   if (length(production) > 0) {
-    .prodNodes <- production # Just to prevent name conflicts with columns of x$areas
-    
     linkListProd <- flows[varea %in% production]
     
     # Add virtual productions columns to x$areas
@@ -347,7 +345,7 @@ removeVirtualAreas <- function(x,
     
     # Remove columns containing only zeros
     for (v in prodVars) {
-      if(all(virtualProd[[v]] == 0)) virtualProd[, c(v) := NULL]
+      if (all(virtualProd[[v]] == 0)) virtualProd[, c(v) := NULL]
     }
     prodVars <- prodVars[prodVars %in% names(virtualProd)]
     
@@ -375,7 +373,7 @@ removeVirtualAreas <- function(x,
     x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
     
     if (!newCols) {
-      for(i in prodVars){
+      for (i in prodVars){
         x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
       }
       x <- .merge_Col_Area_D(x, 
@@ -392,7 +390,7 @@ removeVirtualAreas <- function(x,
   # Put clusters of the virtual areas in the corresponding real areas
   #TODO we must rename production virtual areas to productionVirual 
   # cluster has a "production" column 
-  productionVirual<-production
+  productionVirual <- production
   if (!is.null(x$clusters)){
     if (length(unique(x$clusters[area %in% productionVirual, area])) > 0){
       linkListProdVirtual <- linkListProd[varea %in% productionVirual]
@@ -415,7 +413,6 @@ removeVirtualAreas <- function(x,
   # to storage flexibility areas. These capacities are needed to compute 
   # upward and downward margins.
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
-    l <- linkList[area %in% storageFlexibility, link]
     idColsLinks <- .idCols(x$links)
     
     pspCapacity <- merge(
@@ -465,25 +462,25 @@ removeVirtualAreas <- function(x,
   
   x$links <- x$links[!link %in% linkList$link]
   
-  if(!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
+  if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
     
-    stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
-    stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
+    stoPumAreas <- x$areas[, .(pumpingCapacity, storageCapacity), by = c("timeId", "area")]
+    stoPumDistricts <- .groupByDistrict(stoPumAreas, opts)
     
     #the columns pumpingCapacity doesnt exist when we trade very virtual area
-    if(is.null(x$districts$pumpingCapacity)){
-      x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
+    if (is.null(x$districts$pumpingCapacity)){
+      x$districts <- merge(x$districts, stoPumDistricts, by = c("timeId", "district"))
     }else {
       #for simple virtual areas take into account the previous merge
-      x$districts<-merge(x$districts, stoPumDistricts, all.x=TRUE, by=c("timeId", "district"))
+      x$districts <- merge(x$districts, stoPumDistricts, all.x = TRUE, by = c("timeId", "district"))
       
       x$districts[, ':=' (
-        pumpingCapacity=pumpingCapacity.x + pumpingCapacity.y , 
-        storageCapacity=storageCapacity.x + storageCapacity.y
+        pumpingCapacity = pumpingCapacity.x + pumpingCapacity.y, 
+        storageCapacity = storageCapacity.x + storageCapacity.y
       )]
       
-      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x" , "storageCapacity.y"
-                      ):= NULL]
+      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x", "storageCapacity.y"
+                      ) := NULL]
       
     }
   }
@@ -493,7 +490,7 @@ removeVirtualAreas <- function(x,
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
                                   production = production)
   
-  if(attr(data, "synthesis")){
+  if (attr(data, "synthesis")){
     colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
     colMustChange <- c("BALANCE", colCostToCorrect, "virtualProd")
     warningMessage <- .tidymess(paste0("Colmuns : ", paste(colMustChange, collapse = ", "), " will 
@@ -503,9 +500,9 @@ removeVirtualAreas <- function(x,
     warning(warningMessage)
   }
   
-  if(rowBal){
-    if(!is.null(x$areas$`ROW BAL.`)){
-      x$areas[ , BALANCE := BALANCE - `ROW BAL.`, by = byarea]
+  if (rowBal){
+    if (!is.null(x$areas$`ROW BAL.`)){
+      x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
       x$areas[, `ROW BAL.` := 0]
       x <- .merge_Col_Area_D(x, 
                              colMerge = c("BALANCE", "ROW BAL."),
@@ -515,4 +512,3 @@ removeVirtualAreas <- function(x,
   
   x
 }
-
