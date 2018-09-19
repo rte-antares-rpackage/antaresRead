@@ -46,3 +46,31 @@
     by = idVars]
 
 }
+
+.merge_Col_Area_D <- function(x = NULL, colMerge = NULL, opts=NULL){
+  if (!is.null(x$districts)){
+    for(oneCol in colMerge){
+      ColAreas <- x$areas[, mget(oneCol), by=c("timeId", "area")]
+      ColDistricts <- .groupByDistrict(ColAreas, opts)
+      
+      if(is.null(x$districts$oneCol)){
+        x$districts <- merge(x$districts, 
+                             ColDistricts, 
+                             by=c("timeId", "district"))
+      }else{
+        x$districts <- merge(x$districts, 
+                             ColDistricts, 
+                             by=c("timeId", "district"),
+                             all.x=TRUE)
+        x$districts[, mget(oneCol):= mget(paste0(oneCol,".x")) + 
+                      mget(paste0(oneCol,".y"))]
+      }
+      
+      if(paste0(oneCol,".x") %in% names(x$districts)){
+        x$districts[, c(paste0(oneCol,".x")) := NULL]
+        x$districts[, c(paste0(oneCol,".y")) := NULL]
+      }
+    }
+  }
+  return(x)
+}

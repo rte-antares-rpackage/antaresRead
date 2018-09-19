@@ -209,3 +209,8 @@ pkgEnvAntareasH5$varAliasCreated$thermalModulation$clusters <- c("marginalCostMo
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
                                 function(X){paste0(X, collapse = "")}))
+
+
+.tidymess <- function(..., prefix = " ", initial = ""){
+  as.character(strwrap(..., prefix = prefix, initial = initial))
+}

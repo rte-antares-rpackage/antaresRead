@@ -1,6 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("removeVirtualAreas function")
+
 sapply(studyPathS, function(studyPath){
   
 opts <- setSimulationPath(studyPath)
@@ -10,7 +11,8 @@ data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "
 
 vareas <- c("psp in-2", "psp out-2")
 
-dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
+dataCorrected <- suppressWarnings(removeVirtualAreas(data, 
+                                                     storageFlexibility = vareas))
 
 test_that("removeVirtualAreas effectively removes virtual areas", {
   expect_false(any(dataCorrected$areas$area %in% vareas))
@@ -169,5 +171,123 @@ test_that("removeVirtualAreas move the cluster from virtual areas to real areas"
   expect_equal(as.character(rarea), "hub")
 })
 
+test_that("bug #119, removeVirtualAreas correct district data", {
+  
+  for(i in c(1, 2, NULL)){
+    data <- suppressWarnings(readAntares(areas = "all", 
+                                         links = "all", 
+                                         districts = "all" , 
+                                         showProgress = FALSE,
+                                         linkCapacity = TRUE, 
+                                         select = "nostat",
+                                         mcYears = i))
+    
+    vareas <- getAreas(select = c("psp", "hub"))
+    dataCorrected <- removeVirtualAreas(data, 
+                                        storageFlexibility = vareas,
+                                        production = getAreas("off"))
+    
+    ### BEFORE : COMPARE BALANCE DISTRICT(AREAS) WITH LINC B-C
+    oldDistrict <- c("a", "b", "a_offshore", "psp in", "psp out")
+    data$areas[area %in% oldDistrict, SumDistrictBefore := sum(BALANCE), by = c("timeId")]
+    
+    resSup <- data$areas[area %in% oldDistrict[1], SumDistrictBefore] > data$links[link=="b - c", `FLOW LIN.`]+1
+    resInf <- data$areas[area %in% oldDistrict[1], SumDistrictBefore] < data$links[link=="b - c", `FLOW LIN.`]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ### AFTER : COMPARE BALANCE DISTRICT(AREAS) WITH LINC B-C
+    newAreas <- c("a", "b")
+    dataCorrected$areas[area %in% newAreas, SumDistrictAfter:= sum(BALANCE), by = c("timeId")]
+    
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] > data$links[link=="b - c", `FLOW LIN.`]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] < data$links[link=="b - c", `FLOW LIN.`]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ## BEFORE AND AFTER : COMPARE BALANCE DISTRICT(AREAS)
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] > data$areas[area %in% oldDistrict[1], SumDistrictBefore]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] < data$areas[area %in% oldDistrict[1], SumDistrictBefore]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ## BEFORE : COMPARE BALANCE DISTRICT(DISTRICT) AND AREAS
+    data$areas[area %in% newAreas, SumDistrictBefore:= sum(BALANCE), by = c("timeId")]
+    resSup <- data$areas[area %in% newAreas, SumDistrictBefore] > data$districts[, BALANCE]+1
+    resInf <- data$areas[area %in% newAreas, SumDistrictBefore] < data$districts[, BALANCE]-1
+    expect_false(TRUE %in% c(resSup, resInf))    
+    
+    ## AFTER :  COMPARE BALANCE DISTRICT(DISTRICT) AND AREAS
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter]  > dataCorrected$districts[, BALANCE]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter]  < dataCorrected$districts[, BALANCE]-1
+    expect_false(TRUE %in% c(resSup, resInf))  
+    
+    ## BALANCE OF DISTRICT MUST CHANGE
+    expect_error(expect_equal(dataCorrected$districts[, BALANCE],
+                 data$districts[, BALANCE]))
+  
+  }
+  colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
+  colMustChange <- c("PSP", "WIND", "BALANCE", colCostToCorrect)
+  
+  data <- suppressWarnings(readAntares(areas = "all", 
+                                       links = "all", 
+                                       districts = "all" , 
+                                       showProgress = FALSE,
+                                       linkCapacity = TRUE, 
+                                       mcYears = 2))
+  
+  
+  vareas <- getAreas(select = c("psp", "hub"))
+  dataCorrected <- removeVirtualAreas(data, 
+                                      storageFlexibility = vareas,
+                                      production = getAreas("off"))
+  
+  for(i in colMustChange){
+    varSumCal <- paste0("sum", i)
+    dataCorrected$areas[area %in% newAreas, c(varSumCal):= sum(get(i)), by = c("timeId")]
+    resSup <- dataCorrected$areas[area %in% newAreas[1], get(varSumCal)]  > dataCorrected$districts[, get(i)]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], get(varSumCal)]  < dataCorrected$districts[, get(i)]-1
+    expect_false(TRUE %in% c(resSup, resInf),
+                 paste0("pb with : ", i))  
+  }
+})
+
+test_that("RemoveVirtualAreas corrects column 'BALANCE' if rowBal is TRUE", {
+  data <- suppressWarnings(readAntares(areas = "all", 
+                                       links = "all", 
+                                       districts = "all", 
+                                       showProgress = FALSE, 
+                                       mcYears = "all", 
+                                       linkCapacity = TRUE, 
+                                       select = "nostat"))
+  byArea <- c("area", "mcYear", "timeId")
+  data$areas[, `ROW BAL.`:= as.integer(rnorm(1,mean = 2000, sd = 5)), 
+             by = byArea]
+  dataCorrected <- removeVirtualAreas(data, 
+                                      storageFlexibility = c("psp in-2"),
+                                      rowBal = TRUE)
+  data$areas[, BALANCE := BALANCE -`ROW BAL.`, by = byArea]
+
+  realAreas <- c("a", "b", "c")
+  for(realA in realAreas){
+    expect_true(all.equal(dataCorrected$areas[area %in% realA,
+                                                BALANCE , 
+                                                by = byArea],
+                          data$areas[area %in% realA, 
+                                       BALANCE, 
+                                       by = byArea],
+                          check.attributes = FALSE))
+    
+    expect_equal(unique(dataCorrected$areas[area %in% realA, 
+                                            `ROW BAL.`]),
+                 0)
+  }
+  
+  expect_false("BALANCE.x" %in% names(dataCorrected$areas))
+  expect_false("BALANCE.x" %in% names(dataCorrected$districts))
+  expect_false("ROW BAL..x" %in% names(dataCorrected$areas))
+  expect_false("ROW BAL..x" %in% names(dataCorrected$areas))
+})
 
 })
