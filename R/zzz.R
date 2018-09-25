@@ -94,16 +94,39 @@ rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
          source('https://bioconductor.org/biocLite.R')
          biocLite('rhdf5')"
 
+# !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
 .requireRhdf5_Antares<-function(stopP = TRUE){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))){
-    if(stopP){
-      stop(rhdf5_message)
-    }else{
-      return(FALSE)
+  if(.check_rhdf5(stopP = stopP)){
+    if(.check_rhdf5_version(stopP = stopP)){
+      return(TRUE)
     }
+  }
+  
+  return(FALSE)
+}
+
+.stop_rhdf5_version <- function(stopP = TRUE) {
+  if(stopP){
+    stop(rhdf5_message)
   }else{
+    return(FALSE)
+  }
+}
+
+.check_rhdf5 <- function(stopP = TRUE){
+  if(requireNamespace("rhdf5")){
     return(TRUE)
-  } 
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
+}
+
+.check_rhdf5_version <- function(stopP = TRUE){
+  if(utils::packageVersion("rhdf5") >= rhdf5_version){
+    return(TRUE)
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
 }
 
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
