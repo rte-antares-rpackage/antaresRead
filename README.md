@@ -147,7 +147,7 @@ You must also change the h5 file [here](https://github.com/rte-antares-rpackage/
 ## ANTARES :
  Antares is a powerful software developed by RTE to simulate and study electric power systems (more information about Antares here : <https://antares.rte-france.com>).
  
-ANTARES is now an open-source project, you can download the sources [here](https://github.com/AntaresSimulatorTeam/Antares_Simulator) if you want to use this package. 
+ANTARES is now an open-source project (since 2018), you can download the sources [here](https://github.com/AntaresSimulatorTeam/Antares_Simulator) if you want to use this package. 
 
 ## License Information:
 
