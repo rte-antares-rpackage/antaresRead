@@ -1,5 +1,19 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.0 (2018-09-28)
+
+BREAKING CHANGES:
+* "removeVirtualAres()" : as a new logical parameter rowBal, if is TRUE (default) then BALANCE will be corrected by ROW. BAL (#antaresProcessing33)
+
+NEW FEATURES:
+* "removeVirtualAres()" : now correct BALANCE, COST and production of disticts.(#119)
+
+BUGFIXES:
+* "readLayout()" : prevent bug reading multiple studies
+* "readAntares()" : prevent bug dealing with integer64
+* "writeAntaresH5()" was not working anymore due to a new version of rhdf5 (h5close() does not work anymore). (#110)
+
+
 Changes in version 2.1.2 (2018-06-01)
 
 BUGFIXES:

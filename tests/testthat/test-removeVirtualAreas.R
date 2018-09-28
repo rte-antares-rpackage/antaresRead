@@ -1,6 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 context("removeVirtualAreas function")
+
 sapply(studyPathS, function(studyPath){
   
 opts <- setSimulationPath(studyPath)
@@ -10,7 +11,8 @@ data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "
 
 vareas <- c("psp in-2", "psp out-2")
 
-dataCorrected <- removeVirtualAreas(data, storageFlexibility = vareas)
+dataCorrected <- suppressWarnings(removeVirtualAreas(data, 
+                                                     storageFlexibility = vareas))
 
 test_that("removeVirtualAreas effectively removes virtual areas", {
   expect_false(any(dataCorrected$areas$area %in% vareas))
@@ -44,7 +46,9 @@ test_that("RemoveVirtualAreas corrects column 'area' in the table 'clusters'", {
 })
 
 test_that("RemoveVirtualAreas removes production areas", {
-  dataCorrected <- removeVirtualAreas(data, production = "a_offshore", reassignCosts = TRUE)
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       production = "a_offshore", 
+                                                       reassignCosts = TRUE))
   
   expect_equal(dataCorrected$areas[area == "a", `OP. COST`], 
                data$areas[area == "a", `OP. COST`] + data$areas[area == "a_offshore", `OP. COST`])
@@ -54,19 +58,25 @@ test_that("RemoveVirtualAreas removes production areas", {
 })
 
 test_that("RemoveVirtualAreas() corrects production columns if newCols = FALSE", {
-  dataCorrected <- removeVirtualAreas(data, production = "a_offshore")
+  dataCorrected <- suppressWarnings(removeVirtualAreas(data, 
+                                      production = "a_offshore"))
   wind1 <- dataCorrected$areas[, WIND + WIND_virtual]
-  dataCorrected2 <- removeVirtualAreas(data, production = "a_offshore", newCols = FALSE)
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(data, 
+                                                        production = "a_offshore", 
+                                                        newCols = FALSE))
   wind2 <- dataCorrected2$areas$WIND
   expect_true(is.null(dataCorrected2$areas$WIND_virtual))
   expect_equal(wind1, wind2)
 })
 
 test_that("Hub management works", {
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("hub", vareas))
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       storageFlexibility = c("hub", vareas)))
   
-  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = c(vareas))
-  dataCorrected2 <- removeVirtualAreas(dataCorrected2, storageFlexibility = "hub")
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(data, 
+                                                        storageFlexibility = c(vareas)))
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(x = dataCorrected2, 
+                                                        storageFlexibility = "hub"))
   
   expect_equal(dataCorrected$areas$BALANCE, dataCorrected2$areas$BALANCE)
   expect_equal(dataCorrected$areas$`OP. COST`, dataCorrected2$areas$`OP. COST`)
@@ -88,8 +98,9 @@ test_that("RemoveVirtualAreas also works on non-synthesis results", {
 })
 
 test_that("reassignCosts works correctly", {
-  dataCorrected <- removeVirtualAreas(data, storageFlexibility = c("psp out"),
-                                      reassignCosts = TRUE)
+  dataCorrected <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                       storageFlexibility = c("psp out"),
+                                      reassignCosts = TRUE))
   # NOTE: this test fails if flows at some timeId are equal to 0 but costs are 
   # greater than 0
   
@@ -113,8 +124,9 @@ test_that("reassignCosts works correctly", {
 
 test_that("removeVirtualAreas corrects variable PSP if newCols=FALSE", {
   psp1 <- dataCorrected$areas[, PSP + `psp in-2` + `psp out-2`]
-  dataCorrected2 <- removeVirtualAreas(data, storageFlexibility = vareas, 
-                                       newCols = FALSE)
+  dataCorrected2 <- suppressWarnings(removeVirtualAreas(x = data, 
+                                                        storageFlexibility = vareas, 
+                                       newCols = FALSE))
   psp2 <- dataCorrected2$areas$PSP
   
   expect_equal(psp1, psp2)
@@ -141,7 +153,8 @@ test_that("removeVirtualAreas removes virtual links, but keeps the data needed t
 })
 
 test_that("removeVirtualAreas compute storage and pumping capacities", {
-  dataCorrectedStep <- removeVirtualAreas(data, storageFlexibility = getAreas("psp"))
+  dataCorrectedStep <- suppressWarnings(removeVirtualAreas(x = data, 
+                                          storageFlexibility = getAreas("psp")))
   
   expect_equal(unique(dataCorrectedStep$areas[area=="a", pumpingCapacity]), 3000)
   expect_equal(unique(dataCorrectedStep$areas[area=="a", storageCapacity]), 3000)
@@ -169,5 +182,141 @@ test_that("removeVirtualAreas move the cluster from virtual areas to real areas"
   expect_equal(as.character(rarea), "hub")
 })
 
+test_that("bug #119, removeVirtualAreas correct district data", {
+  
+  for(i in c(1, 2, NULL)){
+    data <- suppressWarnings(readAntares(areas = "all", 
+                                         links = "all", 
+                                         districts = "all" , 
+                                         showProgress = FALSE,
+                                         linkCapacity = TRUE, 
+                                         select = "nostat",
+                                         mcYears = i))
+    
+    vareas <- getAreas(select = c("psp", "hub"))
+    dataCorrected <- removeVirtualAreas(data, 
+                                        storageFlexibility = vareas,
+                                        production = getAreas("off"))
+    
+    ### BEFORE : COMPARE BALANCE DISTRICT(AREAS) WITH LINC B-C
+    oldDistrict <- c("a", "b", "a_offshore", "psp in", "psp out")
+    data$areas[area %in% oldDistrict, SumDistrictBefore := sum(BALANCE), by = c("timeId")]
+    
+    resSup <- data$areas[area %in% oldDistrict[1], SumDistrictBefore] > data$links[link=="b - c", `FLOW LIN.`]+1
+    resInf <- data$areas[area %in% oldDistrict[1], SumDistrictBefore] < data$links[link=="b - c", `FLOW LIN.`]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ### AFTER : COMPARE BALANCE DISTRICT(AREAS) WITH LINC B-C
+    newAreas <- c("a", "b")
+    dataCorrected$areas[area %in% newAreas, SumDistrictAfter:= sum(BALANCE), by = c("timeId")]
+    
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] > data$links[link=="b - c", `FLOW LIN.`]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] < data$links[link=="b - c", `FLOW LIN.`]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ## BEFORE AND AFTER : COMPARE BALANCE DISTRICT(AREAS)
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] > data$areas[area %in% oldDistrict[1], SumDistrictBefore]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter] < data$areas[area %in% oldDistrict[1], SumDistrictBefore]-1
+    
+    expect_false(TRUE %in% c(resSup, resInf))
+    
+    ## BEFORE : COMPARE BALANCE DISTRICT(DISTRICT) AND AREAS
+    data$areas[area %in% newAreas, SumDistrictBefore:= sum(BALANCE), by = c("timeId")]
+    resSup <- data$areas[area %in% newAreas, SumDistrictBefore] > data$districts[, BALANCE]+1
+    resInf <- data$areas[area %in% newAreas, SumDistrictBefore] < data$districts[, BALANCE]-1
+    expect_false(TRUE %in% c(resSup, resInf))    
+    
+    ## AFTER :  COMPARE BALANCE DISTRICT(DISTRICT) AND AREAS
+    resSup <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter]  > dataCorrected$districts[, BALANCE]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], SumDistrictAfter]  < dataCorrected$districts[, BALANCE]-1
+    expect_false(TRUE %in% c(resSup, resInf))  
+    
+    ## BALANCE OF DISTRICT MUST CHANGE
+    expect_error(expect_equal(dataCorrected$districts[, BALANCE],
+                 data$districts[, BALANCE]))
+  
+  }
+  colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
+  colMustChange <- c("PSP", "WIND", "BALANCE", colCostToCorrect)
+  
+  data <- suppressWarnings(readAntares(areas = "all", 
+                                       links = "all", 
+                                       districts = "all" , 
+                                       showProgress = FALSE,
+                                       linkCapacity = TRUE, 
+                                       mcYears = 2))
+  
+  
+  vareas <- getAreas(select = c("psp", "hub"))
+  dataCorrected <- removeVirtualAreas(data, 
+                                      storageFlexibility = vareas,
+                                      production = getAreas("off"))
+  
+  for(i in colMustChange){
+    varSumCal <- paste0("sum", i)
+    dataCorrected$areas[area %in% newAreas, c(varSumCal):= sum(get(i)), by = c("timeId")]
+    resSup <- dataCorrected$areas[area %in% newAreas[1], get(varSumCal)]  > dataCorrected$districts[, get(i)]+1
+    resInf <- dataCorrected$areas[area %in% newAreas[1], get(varSumCal)]  < dataCorrected$districts[, get(i)]-1
+    expect_false(TRUE %in% c(resSup, resInf),
+                 paste0("pb with : ", i))  
+  }
+})
+
+test_that("RemoveVirtualAreas corrects column 'BALANCE' if rowBal is TRUE", {
+  data <- suppressWarnings(readAntares(areas = "all", 
+                                       links = "all", 
+                                       districts = "all", 
+                                       showProgress = FALSE, 
+                                       mcYears = "all", 
+                                       linkCapacity = TRUE, 
+                                       select = "nostat"))
+  byArea <- c("area", "mcYear", "timeId")
+  data$areas[, `ROW BAL.`:= as.integer(rnorm(1,mean = 2000, sd = 5)), 
+             by = byArea]
+  dataCorrected <- removeVirtualAreas(data, 
+                                      storageFlexibility = c("psp in-2"),
+                                      rowBal = TRUE)
+  data$areas[, BALANCE := BALANCE -`ROW BAL.`, by = byArea]
+
+  realAreas <- c("a", "b", "c")
+  for(realA in realAreas){
+    expect_true(all.equal(dataCorrected$areas[area %in% realA,
+                                                BALANCE , 
+                                                by = byArea],
+                          data$areas[area %in% realA, 
+                                       BALANCE, 
+                                       by = byArea],
+                          check.attributes = FALSE))
+    
+    expect_equal(unique(dataCorrected$areas[area %in% realA, 
+                                            `ROW BAL.`]),
+                 0)
+  }
+  
+  expect_false("BALANCE.x" %in% names(dataCorrected$areas))
+  expect_false("BALANCE.x" %in% names(dataCorrected$districts))
+  expect_false("ROW BAL..x" %in% names(dataCorrected$areas))
+  expect_false("ROW BAL..x" %in% names(dataCorrected$areas))
+})
+
+test_that("add pumpingCapacity and storageCapacity to district if storageFlex is not NULL", {
+  mydata <- suppressWarnings({readAntares(areas = "all",
+                                          districts ="all",
+                                          links = "all",
+                                          showProgress = FALSE,
+                                          hydroStorageMaxPower = TRUE,
+                                          linkCapacity = TRUE,
+                                          mcYears = 1)})
+  mydataCorrected <- removeVirtualAreas(mydata,
+                                        storageFlexibility = c(getAreas("psp"),
+                                                               getAreas("hub")))
+  
+  expect_false(is.null(mydataCorrected$areas$pumpingCapacity))
+  expect_false(is.null(mydataCorrected$areas$storageCapacity))
+  expect_false(is.null(mydataCorrected$districts$pumpingCapacity))
+  expect_false(is.null(mydataCorrected$districts$storageCapacity))
+})
 
 })

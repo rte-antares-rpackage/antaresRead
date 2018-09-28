@@ -129,5 +129,5 @@ writeTime <- function(data, path, group){
   time <- getTime(data, group)
   group <- paste0(group, "/time")
   rhdf5::h5write.default(time, path, group)
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
 }

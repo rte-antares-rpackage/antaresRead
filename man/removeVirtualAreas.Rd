@@ -5,7 +5,7 @@
 \title{Remove virtual areas}
 \usage{
 removeVirtualAreas(x, storageFlexibility = NULL, production = NULL,
-  reassignCosts = FALSE, newCols = TRUE)
+  reassignCosts = FALSE, newCols = TRUE, rowBal = TRUE)
 }
 \arguments{
 \item{x}{An object of class \code{antaresDataList} with at least components 
@@ -25,6 +25,9 @@ hub and then the costs of the hub are reallocated to the real areas.}
 \item{newCols}{If \code{TRUE}, new columns containing the production of the virtual
 areas are added. If FALSE their production is added to the production of
 the real areas they are connected to.}
+
+\item{rowBal}{If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
+BALANCE := BALANCE - "ROW. BAL"}
 }
 \value{
 An \code{antaresDataList} object in which virtual areas have been removed and
@@ -53,7 +56,7 @@ of modeling in Antares and different types of post-treatment to do:
 \code{removeVirtualAreas} performs different corrections:
   
 \itemize{ 
-  \item Correct the balance of the real areas by removing the flows
+  \item Correct the balance of the real areas (and districts) by removing the flows
     to or from virtual areas.
   
   \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
@@ -63,6 +66,7 @@ of modeling in Antares and different types of post-treatment to do:
     all its costs are attributed to the real area. If it is connected to
     several real areas, then costs at a given time step are divided between
     them proportionally to the flows between them and the virtual area.
+    An aggregation is done at the end to correct districts costs. 
   
   \item For each storage/flexibility area, a column named like the area is 
     created. It contains the values of the flow between the virtual area and 
@@ -71,6 +75,7 @@ of modeling in Antares and different types of post-treatment to do:
     area is positive and negative otherwise. If parameter \code{newCols} is
     \code{FALSE}, the values are added to the variable \code{PSP} and the 
     columns is removed.
+    An aggregation is done at the end to add virtual storage/flexibility to districts. 
     
   \item If the parameter \code{production} is specified, then the non null
     productions of the virtual areas are either added to the ones of the real 
@@ -81,12 +86,13 @@ of modeling in Antares and different types of post-treatment to do:
     all virtual areas are omited.
     If virtual production areas contains clusters then they will be move to the
     real area. 
+    An aggregation is done at the end to add virtual production to districts. 
   
   \item Finally, virtual areas and the links connected to them are removed
     from the data. 
 }
   
-The functions makes a few assumptions about the network. if they are
+The functions makes a few assumptions about the network. If they are
 violated it will not act correctly: 
   
 \itemize{ 

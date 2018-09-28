@@ -3,7 +3,7 @@ context("h5 : write data")
 # for use travis in parallel
 Sys.unsetenv("R_TESTS")
 
-if(requireNamespace("rhdf5") & .runThisTest){
+if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   tpDir2 <- gsub("[\\]", "/", tpDir)
   tptpDir <- file.path(tpDir2, "/tpDir")
   
@@ -30,8 +30,13 @@ if(requireNamespace("rhdf5") & .runThisTest){
   }
   
   test_that("h5 : overwrite + removeVirtualAreas", {
-    writeAntaresH5(path = tptpDir, overwrite = TRUE, opts = optsG, timeSteps = "hourly",removeVirtualAreas = TRUE,
-                   storageFlexibility = "a", nbCores = 1)
+    writeAntaresH5(path = tptpDir, 
+                   overwrite = TRUE, 
+                   opts = optsG, 
+                   timeSteps = "hourly",
+                   removeVirtualAreas = TRUE,
+                   storageFlexibility = "c", 
+                   nbCores = 1)
     filesTptpDir<-dir(tptpDir)
     expect_true(TRUE %in% grepl("h5", filesTptpDir))
     

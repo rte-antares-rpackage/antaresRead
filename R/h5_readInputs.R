@@ -11,7 +11,7 @@ h5ReadBindingConstraints <- function(opts){
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/buildingcte"))))
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   out
 }
 
@@ -30,7 +30,7 @@ h5ReadLayout <- function(opts){
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/layout"))))
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   out
 }
 
@@ -49,6 +49,6 @@ h5ReadClusterDesc <- function(opts){
   fid <- rhdf5::H5Fopen(opts$h5path)
   timestep <- .getTimeStep(fid)[1]
   out <- unserialize(charToRaw(rhdf5::h5read(fid, paste0(timestep , "/inputs/cldesc"))))
-  rhdf5::H5close()
+  rhdf5::h5closeAll()
   out
 }

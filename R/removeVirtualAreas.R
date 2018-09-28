@@ -20,7 +20,10 @@
 #'   If \code{TRUE}, new columns containing the production of the virtual
 #'   areas are added. If FALSE their production is added to the production of
 #'   the real areas they are connected to.
-#'
+#' @param rowBal
+#'   If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
+#'   BALANCE := BALANCE - "ROW. BAL"
+#'   
 #' @inheritParams readAntares
 #'   
 #' @return 
@@ -45,7 +48,7 @@
 #' \code{removeVirtualAreas} performs different corrections:
 #'   
 #' \itemize{ 
-#'   \item Correct the balance of the real areas by removing the flows
+#'   \item Correct the balance of the real areas (and districts) by removing the flows
 #'     to or from virtual areas.
 #'   
 #'   \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
@@ -55,6 +58,7 @@
 #'     all its costs are attributed to the real area. If it is connected to
 #'     several real areas, then costs at a given time step are divided between
 #'     them proportionally to the flows between them and the virtual area.
+#'     An aggregation is done at the end to correct districts costs. 
 #'   
 #'   \item For each storage/flexibility area, a column named like the area is 
 #'     created. It contains the values of the flow between the virtual area and 
@@ -63,6 +67,7 @@
 #'     area is positive and negative otherwise. If parameter \code{newCols} is
 #'     \code{FALSE}, the values are added to the variable \code{PSP} and the 
 #'     columns is removed.
+#'     An aggregation is done at the end to add virtual storage/flexibility to districts. 
 #'     
 #'   \item If the parameter \code{production} is specified, then the non null
 #'     productions of the virtual areas are either added to the ones of the real 
@@ -73,12 +78,13 @@
 #'     all virtual areas are omited.
 #'     If virtual production areas contains clusters then they will be move to the
 #'     real area. 
+#'     An aggregation is done at the end to add virtual production to districts. 
 #'   
 #'   \item Finally, virtual areas and the links connected to them are removed
 #'     from the data. 
 #' }
 #'   
-#' The functions makes a few assumptions about the network. if they are
+#' The functions makes a few assumptions about the network. If they are
 #' violated it will not act correctly: 
 #'   
 #' \itemize{ 
@@ -117,8 +123,12 @@
 #' 
 #' @export
 #' 
-removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL, 
-                               reassignCosts = FALSE, newCols = TRUE) {
+removeVirtualAreas <- function(x, 
+                               storageFlexibility = NULL, 
+                               production = NULL, 
+                               reassignCosts = FALSE, 
+                               newCols = TRUE,
+                               rowBal = TRUE) {
   
   # check x is an antaresData object with elements areas and links
   if (!is(x, "antaresDataList") || is.null(x$areas) || is.null(x$links))
@@ -127,17 +137,17 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   if (is.null(storageFlexibility) & is.null(production))
     stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
-  if(!is.null(storageFlexibility))
+  if (!is.null(storageFlexibility))
     {
-      if(!any(storageFlexibility %in% unique(x$areas$area))){
+      if (!any(storageFlexibility %in% unique(x$areas$area))){
         warning("no one of you storageFlexibility areas are load in data")
       }
   }
   
   
-  if(!is.null(production))
+  if (!is.null(production))
   {
-    if(!any(production %in% unique(x$areas$area))){
+    if (!any(production %in% unique(x$areas$area))){
       warning("no one of you production areas are load in data")
     }
   }
@@ -158,14 +168,9 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   prodAreas <- x$areas[area %in% production]
   storageAreas <- x$areas[area %in% storageFlexibility]
   
-  # Aliases used for aggregation
-  if (attr(x, "synthesis")) {
-    by <- c("timeId")
-  } else {
-    by <- c("mcYear", "timeId")
-  }
-  bylink <- c("link", by)
-  byarea <- c("area", by)
+  by <- .get_by(x)
+  byarea <- .get_by_area(x)
+  bylink <- .get_by_link(x)
   
   # Table with the definition of the links
   linkList <- getLinks(vareas, namesOnly = FALSE, withDirection = TRUE)
@@ -227,7 +232,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   )]
   
   # Correct balance
-  if (! is.null(x$areas$BALANCE)) {
+  if (!is.null(x$areas$BALANCE)) {
     x$areas[, BALANCE := as.numeric(BALANCE)]
     
     corrections <- flows[, .(correction = sum(flow)), keyby = byarea]
@@ -241,7 +246,8 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   # Correct costs and CO2
   if (reassignCosts) {
-    varCost <- intersect(names(x$areas), c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"))
+    colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
+    varCost <- intersect(names(x$areas), colCostToCorrect)
     
     costs <- rbind(prodAreas, storageAreas)
     costs <- costs[area %in% vareas, c(byarea, varCost), with = FALSE]
@@ -254,7 +260,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     
     # Compute the proportion of the cost to repercute on each real area
     costs[, c("totalFlow", "N") := list(sum(abs(flow)), .N), by = byarea]
-    costs[, prop := ifelse(totalFlow == 0, 1/N, abs(flow / totalFlow))]
+    costs[, prop := ifelse(totalFlow == 0, 1 / N, abs(flow / totalFlow))]
     
     # Aggregate corrections by real area
     costs$area <- costs$rarea
@@ -265,7 +271,10 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     setkeyv(x$areas, byarea)
     x$areas[costs, 
             c(varCost) := as.data.table(mget(varCost)) + 
-                            as.data.table(mget(paste0("i.",varCost)))]
+                            as.data.table(mget(paste0("i.", varCost)))]
+    x <- .merge_Col_Area_D(x, 
+                           colMerge = colCostToCorrect,
+                           opts = opts)
   }
   
   # Add a column for each storage/flexibility area
@@ -284,6 +293,10 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
       # Replace NA values by zeros
       v <- storageFlexibility
       x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
+      # correct values for district
+      x <- .merge_Col_Area_D(x, 
+                             colMerge = v,
+                             opts = opts)
       
     } else {
       # Add the virtual flows to column PSP. If column PSP does not exist, it is
@@ -294,22 +307,23 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
                    corrPSP := sum(flow), 
                    by = c(byarea)])
       
-      psp<-psp[varea %in% storageFlexibility]
+      psp <- psp[varea %in% storageFlexibility]
       
-      psp[ , setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
+      psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
       .mergeByRef(x$areas, psp, on = byarea)
       x$areas[, `:=`(
         PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
         corrPSP = NULL
       )]
+      x <- .merge_Col_Area_D(x, 
+                             colMerge = "PSP",
+                             opts = opts)
     }
   }
   
   # Aggregate production of production virtual areas and add columns for each 
   # type of production.
   if (length(production) > 0) {
-    .prodNodes <- production # Just to prevent name conflicts with columns of x$areas
-    
     linkListProd <- flows[varea %in% production]
     
     # Add virtual productions columns to x$areas
@@ -323,7 +337,7 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     
     # Remove columns containing only zeros
     for (v in prodVars) {
-      if(all(virtualProd[[v]] == 0)) virtualProd[, c(v) := NULL]
+      if (all(virtualProd[[v]] == 0)) virtualProd[, c(v) := NULL]
     }
     prodVars <- prodVars[prodVars %in% names(virtualProd)]
     
@@ -351,17 +365,24 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
     x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
     
     if (!newCols) {
-      for(i in prodVars){
+      for (i in prodVars){
         x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
       }
+      x <- .merge_Col_Area_D(x, 
+                             colMerge = prodVars,
+                             opts = opts)
       x$areas[, c(v) := NULL]
+    }else{
+      x <- .merge_Col_Area_D(x, 
+                             colMerge = v,
+                             opts = opts)
     }
   }
   
   # Put clusters of the virtual areas in the corresponding real areas
   #TODO we must rename production virtual areas to productionVirual 
   # cluster has a "production" column 
-  productionVirual<-production
+  productionVirual <- production
   if (!is.null(x$clusters)){
     if (length(unique(x$clusters[area %in% productionVirual, area])) > 0){
       linkListProdVirtual <- linkListProd[varea %in% productionVirual]
@@ -384,7 +405,6 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   # to storage flexibility areas. These capacities are needed to compute 
   # upward and downward margins.
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
-    l <- linkList[area %in% storageFlexibility, link]
     idColsLinks <- .idCols(x$links)
     
     pspCapacity <- merge(
@@ -434,33 +454,51 @@ removeVirtualAreas <- function(x, storageFlexibility = NULL, production = NULL,
   
   x$links <- x$links[!link %in% linkList$link]
   
-  if(!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
-    
-    stoPumAreas<-x$areas[, .(pumpingCapacity, storageCapacity), by=c("timeId", "area")]
-    stoPumDistricts<-.groupByDistrict(stoPumAreas, opts)
-    
-    #the columns pumpingCapacity doesnt exist when we trade very virtual area
-    if(is.null(x$districts$pumpingCapacity)){
-      x$districts<-merge(x$districts, stoPumDistricts, by=c("timeId", "district"))
-    }else {
-      #for simple virtual areas take into account the previous merge
-      x$districts<-merge(x$districts, stoPumDistricts, all.x=TRUE, by=c("timeId", "district"))
-      
-      x$districts[, ':=' (
-        pumpingCapacity=pumpingCapacity.x + pumpingCapacity.y , 
-        storageCapacity=storageCapacity.x + storageCapacity.y
-      )]
-      
-      x$districts[, c("pumpingCapacity.x", "pumpingCapacity.y", "storageCapacity.x" , "storageCapacity.y"
-                      ):= NULL]
-      
-    }
+  #correct district data 
+  if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
+    x <- .merge_Col_Area_D(x, 
+                           colMerge = c("pumpingCapacity", "storageCapacity"),
+                           opts = opts)
+  }
+  
+  #correct balance district but only at the end, 
+  # with the final x (after removing veryVirtualAreas) so we must keep all.y
+  if (!is.null(x$areas$BALANCE)){
+    x <- .merge_Col_Area_D(x, 
+                           colMerge = "BALANCE",
+                           opts = opts,
+                           allX = FALSE)
   }
   
   # Store in attributes the name of the virtuals nodes
   attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
                                   production = production)
   
+  if (attr(x, "synthesis")){
+    colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
+    colMustChange <- c("BALANCE", colCostToCorrect, "virtualProd")
+    warningMessage <- .tidymess(paste0("Colmuns : ", paste(colMustChange, collapse = ", "), " will 
+                   be corrected but no statistical variables like BALANCE_min, BALANCE_max and 
+                   BALANCE_std. If you want an accurate result, use removeVirtualAreas with 
+                   detailed results and then use antaresProcessing::synthesize"))
+    warning(warningMessage)
+  }
+  
+  if (rowBal){
+    # for R CMD Check 
+    #  no visible binding for global variable 'ROW BAL.'
+    `ROW BAL.` <- NULL
+    if (!is.null(x$areas$`ROW BAL.`)){
+      # edit BALANCE if ROW BAL is not always null
+      if(min(unique(x$area$`ROW BAL.`)) > 1){
+        x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
+        x$areas[, `ROW BAL.` := 0]
+        x <- .merge_Col_Area_D(x, 
+                               colMerge = c("BALANCE", "ROW BAL."),
+                               opts = opts)
+      }
+    }
+  }
+  
   x
 }
-

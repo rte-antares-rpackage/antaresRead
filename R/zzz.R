@@ -1,6 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 #' @import data.table
+#' @import bit64
 #' @import plyr
 #' @importFrom shiny withProgress incProgress getDefaultReactiveDomain
 #' @importFrom methods is
@@ -87,14 +88,45 @@ utils::globalVariables(
 
 is.installed <- function(mypkg) is.element(mypkg, utils::installed.packages()[,1])
 
-rhdf5_version <- "2.20.0"
-rhdf5_message <- "This function require 'rhdf5' (>= 2.20.0) package.
+rhdf5_version <- "2.24.0"
+rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
          This is a bioconductor package. You can install it with :
          source('https://bioconductor.org/biocLite.R')
          biocLite('rhdf5')"
 
-.requireRhdf5_Antares<-function(){
-  if(!requireNamespace("rhdf5", versionCheck = list(op = ">=", version = rhdf5_version))) stop(rhdf5_message)
+# !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
+.requireRhdf5_Antares<-function(stopP = TRUE){
+  if(.check_rhdf5(stopP = stopP)){
+    if(.check_rhdf5_version(stopP = stopP)){
+      return(TRUE)
+    }
+  }
+  
+  return(FALSE)
+}
+
+.stop_rhdf5_version <- function(stopP = TRUE) {
+  if(stopP){
+    stop(rhdf5_message)
+  }else{
+    return(FALSE)
+  }
+}
+
+.check_rhdf5 <- function(stopP = TRUE){
+  if(requireNamespace("rhdf5")){
+    return(TRUE)
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
+}
+
+.check_rhdf5_version <- function(stopP = TRUE){
+  if(utils::packageVersion("rhdf5") >= rhdf5_version){
+    return(TRUE)
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
 }
 
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
@@ -200,3 +232,33 @@ pkgEnvAntareasH5$varAliasCreated$thermalModulation$clusters <- c("marginalCostMo
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
                                 function(X){paste0(X, collapse = "")}))
+
+
+.tidymess <- function(..., prefix = " ", initial = ""){
+  as.character(strwrap(..., prefix = prefix, initial = initial))
+}
+
+.get_by <- function(x = NULL){
+  if (attr(x, "synthesis")) {
+    by <- c("timeId")
+  } else {
+    by <- c("mcYear", "timeId")
+  }
+  by
+}
+
+.get_by_area <- function(x = NULL){
+  # Aliases used for aggregation
+  byarea <- c("area", .get_by(x))
+  return(byarea)
+}
+
+.get_by_link <- function(x = NULL){
+  bylink <- c("link", .get_by(x))
+  return(bylink)
+}
+
+.get_by_district <- function(x = NULL){
+  bydistrict <- c("district", .get_by(x))
+  return(bydistrict)
+}

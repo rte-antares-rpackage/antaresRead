@@ -46,3 +46,39 @@
     by = idVars]
 
 }
+
+.merge_Col_Area_D <- function(x = NULL, colMerge = NULL, opts=NULL, allX = TRUE){
+  if (!is.null(x$districts)){
+    for(oneCol in colMerge){
+      byarea <- .get_by_area(x)
+      bydistrict <- .get_by_district(x)
+      ColAreas <- x$areas[, mget(oneCol), by = byarea]
+      ColDistricts <- .groupByDistrict(ColAreas, opts)
+      if(!(oneCol %in% names(x$districts))){
+        x$districts <- merge(x$districts, 
+                             ColDistricts, 
+                             by = bydistrict)
+      }else{
+        x$districts <- merge(x$districts, 
+                             ColDistricts, 
+                             by = bydistrict,
+                             all.x = allX,
+                             all.y = !allX)
+      }
+      
+      if(paste0(oneCol,".x") %in% names(x$districts)){
+        
+        if(!(oneCol %in% names(x$districts))){
+          if(allX){
+            x$districts[, c(oneCol):= get(paste0(oneCol,".x"))]
+          }else{
+            x$districts[, c(oneCol):= get(paste0(oneCol,".y"))]
+          }
+        }
+        x$districts[, c(paste0(oneCol,".x")) := NULL]
+        x$districts[, c(paste0(oneCol,".y")) := NULL]
+      }
+    }
+  }
+  return(x)
+}

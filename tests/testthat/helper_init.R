@@ -13,7 +13,7 @@ if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead
 if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3) { 
   Sys.setenv("RunAllAntaresReadTests"="yes")
 }
-.runThisTest <- Sys.getenv("RunAllAntaresReadTests") == "yes"
+.runH5Test <- Sys.getenv("RunAllAntaresReadTests") == "yes"
 
 
 # Hack: For some unknown reason, this script is executed at some point of
@@ -27,14 +27,14 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
   }
   
-  if(requireNamespace("rhdf5", quietly = TRUE)){
+  if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
     
     opts <- setSimulationPath(file.path(path, "/test_case"))
     suppressMessages({
       suppressWarnings({
 
         #On cran we have only 2 threads so nbCore <- 1  
-        if(.runThisTest){
+        if(.runH5Test){
           nbCoresTestHelper<-4
         }else{
           nbCoresTestHelper<-1

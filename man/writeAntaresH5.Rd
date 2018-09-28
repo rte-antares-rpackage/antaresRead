@@ -7,9 +7,10 @@
 writeAntaresH5(path = NULL, timeSteps = c("hourly", "daily", "weekly",
   "monthly", "annual"), opts = simOptions(), writeMcAll = TRUE,
   compress = 1, misc = FALSE, thermalAvailabilities = FALSE,
-  hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
-  linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE,
-  allData = FALSE, writeAllSimulations = FALSE, nbCores = 4,
+  hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
+  reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
+  thermalModulation = FALSE, allData = FALSE,
+  writeAllSimulations = FALSE, nbCores = 4,
   removeVirtualAreas = FALSE, storageFlexibility = NULL,
   production = NULL, reassignCosts = FALSE, newCols = TRUE,
   overwrite = FALSE, supressMessages = FALSE)
