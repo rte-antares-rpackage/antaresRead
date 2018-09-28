@@ -1,6 +1,6 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.1.3 (2018-09-17)
+Changes in version 2.2.0 (2018-09-28)
 
 BREAKING CHANGES:
 * "removeVirtualAres()" : as a new logical parameter rowBal, if is TRUE (default) then BALANCE will be corrected by ROW. BAL (#antaresProcessing33)
