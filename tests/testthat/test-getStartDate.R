@@ -79,6 +79,16 @@ test_that(".getStartDate must work with leap year ", {
   
   start <- suppressWarnings(.getStartDate(params))
   expect_equal(start, as.POSIXct("2020-01-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2020,
+    `first-month-in-year` = "july",
+    leapyear = FALSE,
+    january.1st = "Friday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2020-07-01", tz ="UTC"))
 })
 
 
