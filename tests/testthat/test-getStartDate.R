@@ -7,7 +7,7 @@ sapply(studyPathS, function(studyPath){
 # Correction of start date #####################################################
 
 describe(".getStartDate", {
-  mNames <- c("january", "february", "march", "april", "may", "june", "july",
+  mNames <- c("january", "february", "march", "april", "may", "june", "july","august",
               "september", "october", "november", "december")
   dNames <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
               "Saturday")
@@ -44,7 +44,6 @@ describe(".getStartDate", {
     }
   }
 })
-  
   
 test_that(".getStartDate must work with default param", {
   params <- list(general = list(
@@ -91,5 +90,47 @@ test_that(".getStartDate must work with leap year ", {
   expect_equal(start, as.POSIXct("2020-07-01", tz ="UTC"))
 })
 
+test_that(".getStartDate must work with a month different from July", {
+  params <- list(general = list(
+    horizon = 2018,
+    `first-month-in-year` = "october",
+    leapyear = FALSE,
+    january.1st = "Tuesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2018-10-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2018,
+    `first-month-in-year` = "august",
+    leapyear = FALSE,
+    january.1st = "Tuesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2018-08-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2019,
+    `first-month-in-year` = "february",
+    leapyear = FALSE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2019-02-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2020,
+    `first-month-in-year` = "january",
+    leapyear = TRUE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2020-01-01", tz ="UTC"))
+  
+})
 
 })

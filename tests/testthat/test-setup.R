@@ -171,47 +171,5 @@ test_that("Folder 'maps' is not interpreted as a study (#49)", {
   expect_silent(opts <- setSimulationPath(studyPath, -1))
 })
 
-# Correction of start date #####################################################
-
-describe(".getStartDate", {
-  mNames <- c("january", "february", "march", "april", "may", "june", "july",
-              "september", "october", "november", "december")
-  dNames <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
-              "Saturday")
-  
-  for (month in mNames) {
-    for (day in dNames) {
-      for (leapyear in c(FALSE, TRUE)) {
-        params <- list(general = list(
-          horizon = 2018,
-          `first-month-in-year` = month,
-          leapyear = leapyear,
-          january.1st = day
-        ))
-        
-        describe(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
-          start <- suppressWarnings(.getStartDate(params))
-          # start compatible with january.1st?
-          if (month == "january") {
-            expect_equal(wday(start), which(dNames == day))
-          } else {
-            start2 <- start
-            year(start2) <- year(start) + 1
-            month(start2) <- 1
-            expect_equal(wday(start2), which(dNames == day))
-          }
-          # Start compatible with leapyear?horizon = 2018, 
-          if (month %in% c("january", "february")) {
-            expect_equal(leap_year(year(start)), leapyear)
-          } else {
-            expect_equal(leap_year(year(start) + 1), leapyear)
-          }
-        })
-      }
-    }
-  }
-})
-
-
 }
 })
