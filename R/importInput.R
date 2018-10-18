@@ -69,7 +69,7 @@
   inputTS$timeId <- timeRange[1]:timeRange[2]
   .reorderCols(inputTS)
   
-  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun)
+  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun, opts = opts)
   
   # If the data is a matrix of time series melt the data
   if (type == "matrix") {
