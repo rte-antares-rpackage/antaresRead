@@ -129,6 +129,8 @@ rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
   }
 }
 
+
+
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
 
 pkgEnvAntareasH5 <- new.env()
@@ -261,4 +263,89 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
 .get_by_district <- function(x = NULL){
   bydistrict <- c("district", .get_by(x))
   return(bydistrict)
+}
+
+
+.check_x <- function(x = NULL){
+  if ("list" %in% class(x)){
+    for (elementI in x){
+      .check_x(elementI)
+    }
+  }else{
+    if (!(!.isSimOpts(x) | !.isAntaresData(x))){
+      stop("'x' should be an object of class 'antaresData' (or 'simOptions') created with 'readAntares()' (or 'setSimulationPath()')")
+    }else{
+      return(TRUE)
+    } 
+  }
+}
+
+.check_x_simOptions <- function(x = NULL){
+  if (!.isSimOpts(x)){
+    stop("'x' should be an object of class 'simOptions' created with 'setSimulationPath()'")
+  }else {
+    return(TRUE)
+  }
+}
+
+#' Test opst
+#' 
+#' @param test if x is simOptions class
+#' 
+#' @noRd
+.isSimOpts <- function(x){
+  if ("simOptions" %in% class(x)){
+    if (!is.null(x$h5path)){
+      if (!file.exists(x$h5path)){
+        warning(paste0("h5file does not exists for this study :",
+                       x$studyName))
+        return(FALSE)
+      }else{
+        return(TRUE)
+      }
+    }else{
+      #opts but no h5 (TXT)
+      return(TRUE)
+    }
+  }else{
+    return(FALSE)
+  }
+}
+
+#' Test lits opst
+#' 
+#' @param test if x is list of simOptions class
+#' 
+#' @noRd
+.isListSimOpts <- function(x){
+  if ("list" %in% class(x)){
+    if (length(x) > 0){
+      if (.isSimOpts(x[[1]])){
+        return(TRUE)
+      }else{
+        return(FALSE)
+      }
+    }else{
+      return(FALSE)
+    }
+  }else{
+    return(FALSE)
+  }
+}
+
+#' Test antaresData
+#' 
+#' @param x if x is antaresData class
+#' 
+#' @noRd
+.isAntaresData <- function(x){
+  "antaresData" %in% class(x)
+}
+
+.check_x_antaresData <- function(x = NULL){
+  if (!.isAntaresData(x)){
+    stop("'x' should be an object of class 'antaresData created with readAntares()' or an opts")
+  }else {
+    return(TRUE)
+  }
 }
