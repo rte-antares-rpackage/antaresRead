@@ -43,6 +43,7 @@ pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
 pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "mcYear", "timeId", "time", "day", "week", "month", "hour")
 
 pkgEnv$idTimeVars <- c("timeId", "time", "day", "week", "month", "hour")
+pkgEnv$timeStepPosible <- c("hourly", "daily", "weekly", "monthly", "annual")
 
 setAlias("economy", "Production costs, prices, exchanges and spilled energy",
          c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE", "SPIL. ENRG"))
@@ -272,7 +273,7 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
       .check_x(elementI)
     }
   }else{
-    if (!(!.isSimOpts(x) | !.isAntaresData(x))){
+    if (!(.isSimOpts(x) | .isAntaresData(x))){
       stop("'x' should be an object of class 'antaresData' (or 'simOptions') created with 'readAntares()' (or 'setSimulationPath()')")
     }else{
       return(TRUE)
@@ -348,4 +349,98 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
   }else {
     return(TRUE)
   }
+}
+
+
+
+#' edit h5 file for TEST
+#' currently for all data except clusters
+#'
+#' @param pathH5 path H5 file
+#' @param instanceData character name of one instance 
+#' @param classData character name of class instance 
+#' @param timeId timeId to change
+#' @param antVar antares Variable to change
+#' @param newValue the newValue
+#'
+#' @noRd
+.h5Antares_edit_variable <- function(pathH5 = NULL,
+                                     instanceData = NULL,
+                                     classData = NULL,
+                                     timeId = 1,
+                                     antVar = NULL,
+                                     newValue = NULL,
+                                     mcYear = NULL,
+                                     allTimeId = FALSE,
+                                     timeStep = "hourly"){
+  
+  if (is.null(instanceData) | is.null(classData)){
+    stop("instanceData and classData must be set together")
+  }
+  
+  if (classData=="areas"){
+    classDataS <- "area"
+  }else if(classData=="links"){
+    classDataS <- "link"
+  }else{
+    classDataS <- "district"
+  }
+  
+  if (is.null(mcYear)){
+    typeOfData <- "/mcAll"
+  }else{
+    typeOfData <- "/mcInd"
+  }
+  timeStepType <- paste0("/",paste(timeStep, classData, sep = "/"))
+  typeOfDataTime <- paste0(timeStepType, typeOfData)
+  nameStructure <- paste0(typeOfDataTime, "/structure")
+  
+  H5locAntaresh5 <- rhdf5::H5Fopen(name = pathH5)
+  resStruc <- rhdf5::h5ls(H5locAntaresh5)
+  dimData <- resStruc[ resStruc$group == typeOfDataTime & resStruc$name == "data", ]$dim
+  hourlyDataStructure <- rhdf5::h5read(H5locAntaresh5, name = nameStructure)
+  
+  indexCateroryInstance <- grep(instanceData, hourlyDataStructure[[classDataS]])[1]
+  
+  indexAntVar <- grep(antVar, hourlyDataStructure$variable)[1]
+  if(is.na(indexAntVar)){
+    indexAntVar <- grep(antVar, hourlyDataStructure$reCalcVar)[1]
+    if(is.na(indexAntVar)){
+      stop("error index")
+    }else{
+      indexAntVar <- indexAntVar + length(hourlyDataStructure$variable)
+    }
+  }
+  if(allTimeId){
+    maxTimeId <- as.integer(strsplit(dimData, "x")[[1]][1])
+    indexTimeId <- 1:maxTimeId
+  }else{
+    indexTimeId <- timeId
+  }
+  
+  if (is.null(mcYear)){
+    indexMcYear <- 1
+  }else{
+    indexMcYear <- grep(mcYear, hourlyDataStructure$mcYear)[1]
+  }
+  
+  listIndex <- list(indexTimeId, indexAntVar, indexCateroryInstance, indexMcYear)
+  #debug print(listIndex)
+  
+  hourlyData <- rhdf5::h5read(
+    H5locAntaresh5,
+    name = paste0(typeOfDataTime, "/data"),
+    index = listIndex)
+  
+  hourlyData[,,,] <- newValue
+  
+  rhdf5::h5writeDataset.array(
+    obj = hourlyData,
+    h5loc = H5locAntaresh5,
+    name = paste0(typeOfDataTime, "/data"),
+    index = listIndex
+  )
+  
+  rhdf5::H5Fclose(h5file = H5locAntaresh5)
+  rhdf5::h5closeAll()
 }
