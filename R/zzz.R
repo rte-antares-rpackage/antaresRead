@@ -274,7 +274,8 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
     }
   }else{
     if (!(.isSimOpts(x) | .isAntaresData(x))){
-      stop("'x' should be an object of class 'antaresData' (or 'simOptions') created with 'readAntares()' (or 'setSimulationPath()')")
+      stop(paste0(substitute(x), 
+                  " should be an object of class 'antaresData' (or 'simOptions') created with 'readAntares()' (or 'setSimulationPath()')"))
     }else{
       return(TRUE)
     } 
