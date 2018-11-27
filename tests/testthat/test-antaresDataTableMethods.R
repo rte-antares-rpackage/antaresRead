@@ -7,7 +7,7 @@ l <- list.files()
 sapply(studyPathS, function(studyPath){
   
 
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 mydata <- readAntares(areas = "all", showProgress = FALSE)
 

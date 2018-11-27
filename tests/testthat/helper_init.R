@@ -13,7 +13,7 @@ if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead
 if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3) { 
   Sys.setenv("RunAllAntaresReadTests"="yes")
 }
-.runH5Test <- Sys.getenv("RunAllAntaresReadTests") == "yes"
+.runH5Test <- Sys.getenv("RunAllAntaresReadTests") == "no"
 
 
 # Hack: For some unknown reason, this script is executed at some point of

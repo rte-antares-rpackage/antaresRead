@@ -4,7 +4,7 @@ context("Function readAntares (add inputs)")
 
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
   
 test_that("Misc importation is ok", {
   suppressWarnings(misc <- readAntares(areas="all", misc = TRUE, showProgress = FALSE))

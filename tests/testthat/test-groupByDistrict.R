@@ -3,7 +3,7 @@ context("Function .groupByDistrict")
 
 sapply(studyPathS, function(studyPath){
 
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
   
 describe(".groupByDistrict", {
 

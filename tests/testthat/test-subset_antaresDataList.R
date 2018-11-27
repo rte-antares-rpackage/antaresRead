@@ -3,7 +3,7 @@
 context("Subsetting antaresDataList")
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 mydata <- readAntares(areas = "all", links = "all", clusters = "all",
                       timeStep = "daily", mcYears = "all",

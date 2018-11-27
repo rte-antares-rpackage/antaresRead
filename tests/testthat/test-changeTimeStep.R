@@ -4,7 +4,7 @@ context("Function changeTimeStep")
 sapply(studyPathS, function(studyPath){
   
 
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 areas <- readAntares(select = "LOAD", showProgress = FALSE, mcYears = "all")
 areas$day <- areas$month <- areas$hour <- NULL

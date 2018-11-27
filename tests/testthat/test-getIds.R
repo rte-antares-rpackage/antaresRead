@@ -4,7 +4,7 @@ context("getIds")
 
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 test_that("It only accepts antaresDataTable input", {
   

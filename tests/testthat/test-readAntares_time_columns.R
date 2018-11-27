@@ -3,7 +3,7 @@
 context("Function readAntares (date-time columns)")
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 test_that("readAntares add date-time columns at hourly time step", {
   output <- readAntares("a", showProgress = FALSE)

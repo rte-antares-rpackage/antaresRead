@@ -5,7 +5,7 @@ context("Function readAntares")
 sapply(studyPathS, function(studyPath){
   
   
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   
   test_that("Areas importation is ok", {
     areas <- readAntares(areas = opts$areaList, showProgress = FALSE)

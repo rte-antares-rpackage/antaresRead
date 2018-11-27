@@ -4,7 +4,7 @@ context("removeVirtualAreas function")
 
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , showProgress = FALSE,
                                      linkCapacity = TRUE, select = "nostat"))

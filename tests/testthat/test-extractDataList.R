@@ -5,7 +5,7 @@ context("Function extractDataList")
 sapply(studyPathS, function(studyPath){
   
   
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   
   areas <- readAntares("all", showProgress=FALSE)
   

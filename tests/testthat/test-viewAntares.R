@@ -2,7 +2,7 @@ context("viewAntares")
 
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 # describe("viewAntares", {
 #   with_mock(

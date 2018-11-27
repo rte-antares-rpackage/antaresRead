@@ -5,7 +5,7 @@ context("Remove input column(s)")
 sapply(studyPathS, function(studyPath){
   
   
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   V <- suppressWarnings({readAntares(areas = "all", select = c("misc", "-GeoThermal"), showProgress = FALSE)})
   V2 <- suppressWarnings({readAntares(areas = "all", select = c("misc"), showProgress = FALSE)})
   V2[,GeoThermal:=NULL] 
@@ -27,13 +27,6 @@ sapply(studyPathS, function(studyPath){
   
   expect_true(identical(V, V2))
   
-  
-  #hydroStorageMaxPower
-  V <-  suppressWarnings({readAntares(areas = "all",  select = c("hydroStorageMaxPower", "-hstorPMaxHigh"), showProgress = FALSE)})
-  V2 <- suppressWarnings({readAntares(areas = "all", select = c("hydroStorageMaxPower"), showProgress = FALSE)})
-  V2[,hstorPMaxHigh:=NULL] 
-  
-  expect_true(identical(V, V2))
   
   #linkCapacity
   V <-  suppressWarnings({readAntares(links = "all",  select = c("linkCapacity", "-transCapacityIndirect"), showProgress = FALSE)})

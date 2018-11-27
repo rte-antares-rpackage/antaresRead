@@ -10,14 +10,14 @@ suppressWarnings(suppressPackageStartupMessages(require(data.table)))
 # Reading of study options #####################################################
 
 trueOpts <- list(
-  studyName = "Test_packages_R",
+  studyName = "test_case",
   name = "test",
   mode = "Economy",
   synthesis = TRUE,
   yearByYear = TRUE,
   scenarios = TRUE,
   mcYears = c(1,2),
-  antaresVersion = 600L,
+  antaresVersion = 650L,
   timeIdMin = (firstDay-1) * 24 + 1,
   timeIdMax = lastDay*24,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
@@ -33,15 +33,15 @@ trueOpts <- list(
 )
 
 test_that("setSimulationPath reads correct values", {
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   expect_equal(opts[names(trueOpts)], trueOpts)
 })
 
 test_that("R option 'antares' is set", {
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   expect_identical(opts, getOption("antares"))
 })
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 if(!isH5Opts(opts))
 {
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
@@ -49,7 +49,7 @@ test_that("setSimulationPath fails if path is not an antares Ouput directory", {
 })
 }
 
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 if(!isH5Opts(opts))
 {
 test_that("setSimulationPath can read info in input", {
@@ -62,14 +62,14 @@ test_that("setSimulationPath can read info in input", {
 })
 
 test_that("setSimulationPath works if synthesis and some MC years are not saved (#31)", {
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   
   file.rename(file.path(opts$simDataPath, "mc-all"), 
               file.path(opts$simDataPath, "mc-all_back"))
   file.rename(file.path(opts$simDataPath, "mc-ind/00001"), 
               file.path(opts$simDataPath, "mc-ind/00001_back"))
   
-  opts <- setSimulationPath(studyPath)
+  opts <- setSimulationPath(studyPath, -1)
   trueOpts$synthesis <- FALSE
   trueOpts$mcYears <- 2
   expect_equal(opts[names(trueOpts)], trueOpts)
@@ -121,7 +121,7 @@ test_that("select simulation with negative index", {
 #   with_mock(
 #     `base::scan` = function(...) {"1"},
 #     {
-#       expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
+#       expect_output(opts <- setSimulationPath(studyPath, -1), "choose a simulation")
 #       expect_equal(opts[names(trueOpts)], trueOpts)
 #     }
 #   )
@@ -131,7 +131,7 @@ test_that("select simulation with negative index", {
 #   with_mock(
 #     scan = function(...) {"eco-test"},
 #     {
-#       expect_output(opts <- setSimulationPath(studyPath), "choose a simulation")
+#       expect_output(opts <- setSimulationPath(studyPath, -1), "choose a simulation")
 #       expect_equal(opts[names(trueOpts)], trueOpts)
 #     }
 #   )

@@ -3,7 +3,7 @@
 context("Function readAntares (mustRun)")
 sapply(studyPathS, function(studyPath){
   
-opts <- setSimulationPath(studyPath)
+opts <- setSimulationPath(studyPath, -1)
 
 output <- readAntares(areas = "all", clusters = "all", mustRun = TRUE, 
                       showProgress = FALSE, select = "")
