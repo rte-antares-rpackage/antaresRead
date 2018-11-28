@@ -27,9 +27,9 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
   }
   
-  if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
+  opts <- setSimulationPath(file.path(path, "/test_case"))
+  if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test & opts$antaresVersion < 650){
     
-    opts <- setSimulationPath(file.path(path, "/test_case"))
     suppressMessages({
       suppressWarnings({
 

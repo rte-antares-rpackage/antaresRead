@@ -98,6 +98,10 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
     stop(paste0("Folder ", path, " not found."))
   }
   
+  if(opts$antaresVersion >= 650){
+    stop("Currently writeAntaresH5 does not work for antares 651")
+  }
+  
   if(allData){
     writeMcAll <- TRUE
     misc <- TRUE
