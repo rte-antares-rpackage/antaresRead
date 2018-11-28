@@ -185,13 +185,28 @@ pkgEnvAntareasH5$varAliasCreated$hydroStorage$areas <- c("hydroStorage")
 pkgEnvAntareasH5$varAliasCreated$hydroStorage$districts <- c("hydroStorage")
 
 #hydroStorageMaxPower
-pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$areas <- c("hstorPMaxLow",
-                                                                 "hstorPMaxAvg",
-                                                                 "hstorPMaxHigh")
+if(opts$antaresVersion >= 650){
+  pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$areas <- c("generatingMaxPower", 
+                                                                   "generatingMaxEnergy", 
+                                                                   "pumpingMaxPower", 
+                                                                   "pumpingMaxEnergy")
+}else{
+  pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$areas <- c("hstorPMaxLow",
+                                                                   "hstorPMaxAvg",
+                                                                   "hstorPMaxHigh")
+}
 
-pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$districts <- c("hstorPMaxLow",
-                                                                     "hstorPMaxAvg",
-                                                                     "hstorPMaxHigh")
+#hydroStorageMaxPower
+if(opts$antaresVersion >= 650){
+  pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$districts <- c("generatingMaxPower", 
+                                                                   "generatingMaxEnergy", 
+                                                                   "pumpingMaxPower", 
+                                                                   "pumpingMaxEnergy")
+}else{
+  pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$districts <- c("hstorPMaxLow",
+                                                                   "hstorPMaxAvg",
+                                                                   "hstorPMaxHigh")
+}
 
 #reserve
 pkgEnvAntareasH5$varAliasCreated$reserve$areas <- c("primaryRes",

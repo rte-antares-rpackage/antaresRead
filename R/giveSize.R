@@ -111,7 +111,11 @@ setRam <- function(x){
     nbVarsAreas <- nbVarsAreas + 8
   }
   if(hydroStorageMaxPower){
-    nbVarsAreas <- nbVarsAreas + 3
+    if(opts$antaresVersion >= 650){
+      nbVarsAreas <- nbVarsAreas + 4
+    }else{
+      nbVarsAreas <- nbVarsAreas + 3
+    }
   }
   if(reserve){
     nbVarsAreas <- nbVarsAreas + 4 
