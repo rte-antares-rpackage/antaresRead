@@ -1,15 +1,14 @@
 ---
-title: "The 'antaresRead' Package"
+title: "Use h5 file format with 'antaresRead'"
 author: "Titouan Robert"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 css: vignette.css
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Use h5 file format with 'antaresRead'}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 
 This document describes use of the `antaresRead` package with h5 file format.
 
