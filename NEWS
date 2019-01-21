@@ -1,5 +1,10 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.2 (2019-01-15)
+BUGFIXES:
+* Duplicated vignette title
+
+
 Changes in version 2.2.1 (2018-10-16)
 BUGFIXES:
 * ".getStartDate()" : was not working correctly with a first-month not equal to "July" (#121)
