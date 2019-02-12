@@ -493,6 +493,8 @@
 #' @param attrib \code{list}
 #' 
 #' @noRd
+#' 
+#' @importFrom stats setNames
 .loadAreas <- function(areas,
                        fid,
                        select,
@@ -535,7 +537,10 @@
       
       #Add time
       tim <- getAllDateInfoFromDate(fid, GP)
-      areas[,c(names(tim)):=tim]
+      areas[, c(names(tim)) := lapply(
+        X = setNames(tim, names(tim)),
+        FUN = rep, length.out = .N
+      )]
       
       .addClassAndAttributes(areas,
                              synthesis,
@@ -562,6 +567,8 @@
 #' @param attrib \code{list}
 #' 
 #' @noRd
+#' 
+#' @importFrom stats setNames
 .loadLinks <- function(links,
                        fid,
                        select,
@@ -605,7 +612,10 @@
       
       #Add time
       tim <- getAllDateInfoFromDate(fid, GP)
-      links[,c(names(tim)):=tim]
+      links[, c(names(tim)) := lapply(
+        X = setNames(tim, names(tim)),
+        FUN = rep, length.out = .N
+      )]
       
       .addClassAndAttributes(links,
                              synthesis,
@@ -635,6 +645,8 @@
 #' @param attrib \code{list}
 #' 
 #' @noRd
+#' 
+#' @importFrom stats setNames
 .loadDistricts <- function(districts,
                            fid,
                            select,
@@ -677,7 +689,10 @@
       tim <- getAllDateInfoFromDate(fid, GP)
       
       #Add time
-      districts[,c(names(tim)):=tim]
+      districts[, c(names(tim)) := lapply(
+        X = setNames(tim, names(tim)),
+        FUN = rep, length.out = .N
+      )]
       
       .addClassAndAttributes(districts,
                              synthesis,
@@ -707,6 +722,8 @@
 #' @param attrib \code{list}
 #' 
 #' @noRd
+#' 
+#' @importFrom stats setNames
 .loadClusters <- function(clusters,
                           fid,
                           select,
@@ -752,7 +769,10 @@
       tim <- getAllDateInfoFromDate(fid, GP)
       
       #Add time
-      clusters[,c(names(tim)):=tim]
+      clusters[, c(names(tim)) := lapply(
+        X = setNames(tim, names(tim)),
+        FUN = rep, length.out = .N
+      )]
       
       .addClassAndAttributes(clusters,
                              synthesis,
