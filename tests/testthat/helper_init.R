@@ -2,7 +2,13 @@
 
 # Copy the test study in a temporary folder
 
-path <- tempdir()
+path0 <- tempdir()
+dir.create(file.path(path0, "v6"))
+dir.create(file.path(path0, "v7"))
+
+path <- file.path(path0, "v6")
+pathv7 <- file.path(path0, "v7")
+
 sourcedir <- system.file("inst/testdata", package = "antaresRead")
 testH5 <- TRUE
 if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead")}
@@ -21,10 +27,11 @@ if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3)
 # The following "if" prevents errors at this step
 if (sourcedir != "") {
   if (Sys.info()['sysname'] == "Windows") {
-    untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path, 
-          extras = "--force-local")
+    untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
+    untar(file.path(sourcedir, "antares-test-study-v7.tar.gz"), exdir = pathv7)
   } else {
     untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
+    untar(file.path(sourcedir, "antares-test-study-v7.tar.gz"), exdir = pathv7)
   }
   
   if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
@@ -106,6 +113,10 @@ if (sourcedir != "") {
     
   } else {
     assign("studyPathS", file.path(path, "test_case"), envir = globalenv())
+    assign("studyPathSv7", file.path(pathv7, "test_case"), envir = globalenv())
+    assign("studyPathS", 
+           c(file.path(path, "test_case"), file.path(pathv7, "test_case")),
+           envir = globalenv())
   }
   
   assign("nweeks", 2, envir = globalenv())
