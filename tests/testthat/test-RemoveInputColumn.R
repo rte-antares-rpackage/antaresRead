@@ -28,13 +28,6 @@ sapply(studyPathS, function(studyPath){
   expect_true(identical(V, V2))
   
   
-  #hydroStorageMaxPower
-  V <-  suppressWarnings({readAntares(areas = "all",  select = c("hydroStorageMaxPower", "-hstorPMaxHigh"), showProgress = FALSE)})
-  V2 <- suppressWarnings({readAntares(areas = "all", select = c("hydroStorageMaxPower"), showProgress = FALSE)})
-  V2[,hstorPMaxHigh:=NULL] 
-  
-  expect_true(identical(V, V2))
-  
   #linkCapacity
   V <-  suppressWarnings({readAntares(links = "all",  select = c("linkCapacity", "-transCapacityIndirect"), showProgress = FALSE)})
   V2 <- suppressWarnings({readAntares(links = "all", select = c("linkCapacity"), showProgress = FALSE)})

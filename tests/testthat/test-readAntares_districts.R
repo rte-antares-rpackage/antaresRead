@@ -21,7 +21,10 @@ test_that("readAntares adds hydro storage to districts", {
 })
 
 test_that("readAntares adds hydro storage max power to districts", {
-  expect_false(is.null(districts$hstorPMaxHigh))
+  if (opts$antaresVersion < 650)
+    expect_false(is.null(districts$hstorPMaxHigh))
+  else
+    expect_false(is.null(districts$generatingMaxPower))
 })
 
 test_that("readAntares adds reserve to districts", {

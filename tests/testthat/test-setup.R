@@ -17,7 +17,7 @@ trueOpts <- list(
   yearByYear = TRUE,
   scenarios = TRUE,
   mcYears = c(1,2),
-  antaresVersion = 600L,
+  antaresVersion = if (basename(dirname(studyPath)) == "v6") 600L else 700L,
   timeIdMin = (firstDay-1) * 24 + 1,
   timeIdMax = lastDay*24,
   start = as.POSIXlt("2018-01-01", tz = "UTC"),
