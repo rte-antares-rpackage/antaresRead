@@ -493,7 +493,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     }
     if (length(areas) == 0) return(NULL)
     
-    data.frame(district = n, area = areas)
+    data.frame(district = tolower(n), area = tolower(areas))
   })
   data.table(res)
 }
