@@ -1,5 +1,10 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.4 (2019-02-13)
+FEATURES:
+* Compatibility with Antares v7
+
+
 Changes in version 2.2.3 (2019-02-13)
 BUGFIXES:
 * Error with next data.table release
