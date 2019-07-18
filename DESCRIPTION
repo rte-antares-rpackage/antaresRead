@@ -3,9 +3,10 @@ Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
 Version: 2.2.4
 Authors@R: c(
+    person("Veronique", "Bachelier", email = "veronique.bachelier@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", , "jalal-edine.zawam@rte-france.com", role = "aut"),
     person("Frederic", "Breant", email = "frederic.breant@rte-france.com", role = "aut"),
-    person("Victor", "Perrier", email = "victor.perrier@dreamRs.fr", role = c("aut", "cre")),
+    person("Victor", "Perrier", email = "victor.perrier@dreamRs.fr", role = c("aut")),
     person("Francois", "Guillem", , "francois.guillem@rte-france.com", role = "aut"),
     person("Benoit", "Thieurmel", email = "benoit.thieurmel@datastorm.fr", role = "aut"),
     person(given = "Titouan", family = "Robert", email = "titouan.robert@datastorm.fr", role = "aut"),
