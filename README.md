@@ -1,10 +1,14 @@
+# antaresRead
+
+> Read data from an Antares study with R package 'antaresRead'
+
 [![Build Status](https://travis-ci.org/rte-antares-rpackage/antaresRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antaresRead)
 [![Build status](https://ci.appveyor.com/api/projects/status/010n9as7tokv7f70?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antaresread)
 [![codecov](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master/graph/badge.svg)](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
-
-# Read data from an Antares study with R package 'antaresRead'
 
 
 ## Installation
@@ -16,7 +20,7 @@ install.packages("antaresRead")
 
 You can also install the last development version from Github:
 ```r
-devtools::install_github("rte-antares-rpackage/antaresRead", ref ="develop")
+devtools::install_github("rte-antares-rpackage/antaresRead")
 ```
 
 To display the help of the package and see all the functions it provides, type:
@@ -30,6 +34,8 @@ vignette("antares")
 ```
 
 Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antaresRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
+
+
 
 
 ## Initialisation
