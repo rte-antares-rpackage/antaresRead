@@ -100,6 +100,8 @@
 #'   Should reserve be imported ?
 #' @param linkCapacity
 #'   Should link capacities be imported ?
+#' @param fun
+#'   agregation function, among c("sum", "mean", "min", "max")
 #' @param mustRun
 #'   Should must run productions be added to the result? If TRUE,
 #'   then four columns are added: \code{mustRun} contains the production of 
@@ -203,6 +205,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         select = NULL,
                         mcYears = NULL,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                        fun = "sum",
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
   
@@ -251,23 +254,23 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     
     if(.requireRhdf5_Antares(stopP = FALSE)){
       return(.h5ReadAntares(path = opts$h5path, 
-                                        areas = areas,
-                                        links = links,
-                                        clusters = clusters,
-                                        districts = districts,
-                                        misc = misc,
-                                        thermalAvailabilities = thermalAvailabilities,
-                                        hydroStorage = hydroStorage,
-                                        hydroStorageMaxPower = hydroStorageMaxPower,
-                                        reserve = reserve,
-                                        linkCapacity = linkCapacity,
-                                        mustRun = mustRun,
-                                        thermalModulation = thermalModulation,
-                                        select = select,
-                                        mcYears = mcYears,
-                                        timeStep = timeStep[1],
-                                        showProgress = showProgress,
-                                        simplify = simplify))
+                            areas = areas,
+                            links = links,
+                            clusters = clusters,
+                            districts = districts,
+                            misc = misc,
+                            thermalAvailabilities = thermalAvailabilities,
+                            hydroStorage = hydroStorage,
+                            hydroStorageMaxPower = hydroStorageMaxPower,
+                            reserve = reserve,
+                            linkCapacity = linkCapacity,
+                            mustRun = mustRun,
+                            thermalModulation = thermalModulation,
+                            select = select,
+                            mcYears = mcYears,
+                            timeStep = timeStep[1],
+                            showProgress = showProgress,
+                            simplify = simplify))
     } else {
       stop(rhdf5_message)
     }
@@ -358,7 +361,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   colSelect = NULL
   res <- list()
   # local function that add a type of output to the object "res"
-  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep) {
+  .addOutputToRes <- function(name, ids, outputFun, select, ts = timeStep,
+                              fun = get("fun", envir = parent.frame())) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
     
     if (showProgress) cat(sprintf("Importing %s\n", name))
@@ -366,6 +370,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     tmp <- suppressWarnings(
       llply(ids, function(x, ...) outputFun(x, ...),
             synthesis=synthesis, mcYears=mcYears,timeStep=ts,
+            fun = get("fun", envir = parent.frame()),
             opts=opts, select = select,
             colSelect = colSelect,
             names = names,
@@ -414,47 +419,47 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       }
     }
     else{
-    res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = TRUE, parallel = parallel)
-    
-    if (!is.null(res$areas)) {
-      tmp <- copy(res$clusters)
-      tmp[, cluster := NULL]
-      tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
-                    mustRun = sum(mustRun),
-                    mustRunPartial = sum(mustRunPartial),
-                    mustRunTotal = sum(mustRunTotal)),
-                 keyby = c(.idCols(tmp))]
-      res$areas <- .mergeByRef(res$areas, tmp)
+      res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
+                                               showProgress, opts, mustRun = TRUE, parallel = parallel)
       
-      res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
-    }
-    
-    if (!is.null(districts)) {
-      if(nrow(districts ) > 0)
-      {
+      if (!is.null(res$areas)) {
         tmp <- copy(res$clusters)
-        tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
-        tmp[, area := NULL]
         tmp[, cluster := NULL]
         tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
                       mustRun = sum(mustRun),
                       mustRunPartial = sum(mustRunPartial),
                       mustRunTotal = sum(mustRunTotal)),
                    keyby = c(.idCols(tmp))]
-        res$districts <- .mergeByRef(res$districts, tmp)
-        res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
+        res$areas <- .mergeByRef(res$areas, tmp)
+        
+        res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
       }
+      
+      if (!is.null(districts)) {
+        if(nrow(districts ) > 0)
+        {
+          tmp <- copy(res$clusters)
+          tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
+          tmp[, area := NULL]
+          tmp[, cluster := NULL]
+          tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
+                        mustRun = sum(mustRun),
+                        mustRunPartial = sum(mustRunPartial),
+                        mustRunTotal = sum(mustRunTotal)),
+                     keyby = c(.idCols(tmp))]
+          res$districts <- .mergeByRef(res$districts, tmp)
+          res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
+        }
+      }
+      
+      # Suppress that has not been asked
+      if (is.null(clusters)) {
+        res$clusters <- NULL
+      } else if (length(clustersAugmented) > length(clusters)) {
+        res$clusters <- res$clusters[area %in% clusters]
+      }
+      
     }
-    
-    # Suppress that has not been asked
-    if (is.null(clusters)) {
-      res$clusters <- NULL
-    } else if (length(clustersAugmented) > length(clusters)) {
-      res$clusters <- res$clusters[area %in% clusters]
-    }
-    
-  }
   }
   
   # Add input time series

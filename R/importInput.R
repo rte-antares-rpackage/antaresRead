@@ -55,7 +55,7 @@
     
     if(is.null(colSelect))
     {
-    inputTS <- fread(path, integer64 = "numeric", header = FALSE)
+      inputTS <- fread(path, integer64 = "numeric", header = FALSE)
     }else{
       inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
     }
@@ -72,7 +72,7 @@
   inputTS$timeId <- timeRange[1]:timeRange[2]
   .reorderCols(inputTS)
   
-  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = fun, opts = opts)
+  inputTS <- changeTimeStep(inputTS, timeStep, inputTimeStep, fun = get("fun", envir = parent.frame()), opts = opts)
   
   # If the data is a matrix of time series melt the data
   if (type == "matrix") {
@@ -86,12 +86,12 @@
   inputTS
 }
 
-.importLoad <- function(area, timeStep, opts, ...) {
+.importLoad <- function(area, timeStep, opts, fun, ...) {
   .importInputTS(area, timeStep, opts, "load/series/load_%s.txt", "load", 
-                 inputTimeStep = "hourly", type = "matrix")
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), type = "matrix")
 }
 
-.importThermalAvailabilities <- function(area, timeStep, opts, ...) {
+.importThermalAvailabilities <- function(area, timeStep, opts, fun, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
   
   clusters <- list.files(file.path(opts$inputPath, "thermal/series", area))
@@ -99,7 +99,7 @@
   ldply(clusters, function(cl) {
     filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", area)
     res <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
-                          inputTimeStep = "hourly", type = "matrix")
+                          inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), type = "matrix")
     
     if (is.null(res)) return(NULL)
     
@@ -111,18 +111,18 @@
   
 }
 
-.importROR <- function(area, timeStep, opts, ...) {
+.importROR <- function(area, timeStep, opts, fun, ...) {
   .importInputTS(area, timeStep, opts, "hydro/series/%s/ror.txt", "ror", 
-                 inputTimeStep = "hourly", type = "matrix")
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), type = "matrix")
 }
 
-.importHydroStorageInput <- function(area, timeStep, opts, ...) {
+.importHydroStorageInput <- function(area, timeStep, opts, fun, ...) {
   inputTimeStepV <- ifelse(opts$antaresVersion >= 650, yes = "hourly", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
-                 inputTimeStep = inputTimeStepV, type = "matrix")
+                 inputTimeStep = inputTimeStepV, fun = get("fun", envir = parent.frame()), type = "matrix")
 }
-  
-.importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
+
+.importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, fun, ...) {
   
   unselect = unselect$areas
   if (opts$antaresVersion >= 650) {
@@ -146,17 +146,17 @@
   
 }
 
-.importWind <- function(area, timeStep, opts, ...) {
+.importWind <- function(area, timeStep, opts, fun, ...) {
   .importInputTS(area, timeStep, opts, "wind/series/wind_%s.txt", "wind", 
-                 inputTimeStep = "hourly", type = "matrix")
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), type = "matrix")
 }
 
-.importSolar <- function(area, timeStep, opts, ...) {
+.importSolar <- function(area, timeStep, opts, fun, ...) {
   .importInputTS(area, timeStep, opts, "solar/series/solar_%s.txt", "solar", 
-                 inputTimeStep = "hourly", type = "matrix")
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), type = "matrix")
 }
 
-.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect = NULL, ...) {
+.importMisc <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect = NULL, fun, ...) {
   
   unselect = unselect$areas
   if(!is.null(unselect)){
@@ -173,11 +173,11 @@
   }
   .importInputTS(area, timeStep, opts, "misc-gen/miscgen-%s.txt", 
                  colnames=names,
-                 inputTimeStep = "hourly", colSelect = colSelect)
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), colSelect = colSelect)
   
 }
 
-.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect =NULL, ...) {
+.importReserves <- function(area, timeStep, opts, colSelect = NULL, names = NULL, unselect =NULL, fun, ...) {
   beginName <- c("primaryRes", "strategicRes", "DSM", "dayAhead")
   unselect = unselect$areas
   
@@ -191,11 +191,11 @@
   
   .importInputTS(area, timeStep, opts, "reserves/%s.txt", 
                  colnames=names,
-                 inputTimeStep = "hourly", colSelect = colSelect)
+                 inputTimeStep = "hourly", fun = get("fun", envir = parent.frame()), colSelect = colSelect)
   
 }
 
-.importLinkCapacity <- function(link, timeStep, opts, unselect = NULL, ...) {
+.importLinkCapacity <- function(link, timeStep, opts, unselect = NULL, fun, ...) {
   
   areas <- strsplit(link, " - ")[[1]]
   
@@ -242,7 +242,7 @@
   clusters <- list.files(path)
   
   beginName <- c("marginalCostModulation", "marketBidModulation", 
-      "capacityModulation", "minGenModulation")
+                 "capacityModulation", "minGenModulation")
   if(!is.null(unselect)){
     colSelect <- which(!beginName%in%unselect)
     names <- beginName[colSelect]
@@ -255,7 +255,7 @@
   res <- ldply(clusters, function(cl) {
     if(is.null(colSelect))
     {
-    modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+      modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
     }else{
       modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
     }
