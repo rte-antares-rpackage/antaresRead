@@ -12,25 +12,27 @@ getLinks(areas = NULL, exclude = NULL, opts = simOptions(),
 in. If \code{NULL}, all areas of the study are used.}
 
 \item{exclude}{Vector containing area names. If not \code{NULL}, all links connected to 
-one of these areas are omited.}
+one of these areas are omitted.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
-\item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
-If not, the function may return links that connect an area from the list with 
+\item{internalOnly}{If \code{TRUE}, only links that connect two areas from parameter \code{areas} are returned. 
+If not, the function also returns all the links that connect an area from the list with 
 an area outside the list.}
 
 \item{namesOnly}{If \code{TRUE}, the function returns a vector with link names, else it
 returns a table containing the name, the origin and the destination of each
 selected link.}
 
-\item{withDirection}{Used only if \code{namesOnly = TRUE}. If \code{FALSE}, then the function
-returns a table with one line per link, containing the link name the 
-origin and the destination of the link. If \code{FALSE}, then it returns a
-table with columns area, link, to and direction which is equal is equal to
-1 if the link connects "area" to "to" and -1 if it connects "to" to "area".
-The column area contains only areas that are compatible with parameters 
+\item{withDirection}{Used only if \code{namesOnly = FALSE}. If \code{FALSE}, then the function
+returns a table with one line per link, containing the link name, the 
+origin and the destination of the link. If \code{TRUE}, then it returns a
+table with columns \code{area}, \code{link}, \code{to} and \code{direction}
+which is equal is equal to
+1 if the link connects \code{area} to \code{to} and -1 if it connects
+\code{to} to \code{area}.
+The column \code{area} contains only areas that are compatible with parameters 
 \code{areas} and \code{exclude}. Note that the same link can appear twice 
 in the table with different directions.}
 }
@@ -38,36 +40,38 @@ in the table with different directions.}
 If \code{namesOnly = TRUE} the function returns a vector containing link names 
 
 If \code{namesOnly = FALSE} and \code{withDirection = FALSE}, it returns a
-\code{data.table} with exactly one line per link and with three columns:
-\item{link}{link name}
-\item{from}{first area connected to the link}
-\item{to}{second area connected to the link}
+\code{data.table} with \strong{exactly one line per link} and with three columns:
+\item{link}{Link name}
+\item{from}{First area connected to the link}
+\item{to}{Second area connected to the link}
 
-If \code{namesOnly = FALSE} and \code{withDirection = FALSE}, it returns a
-\code{data.table} with one or two lines per link and with four columns:
+If \code{namesOnly = FALSE} and \code{withDirection = TRUE}, it returns a
+\code{data.table} with \strong{one or two lines per link} and with four columns:
 \item{area}{Area name}
 \item{link}{Link name}
-\item{to}{Area connected to "area" by "link"}
-\item{direction}{1 if the link connects "area" to "to" else -1}
+\item{to}{Area connected to \code{area} by \code{link}}
+\item{direction}{1 if the link connects \code{area} to \code{to} else -1}
 }
 \description{
-This function find the name of the links connected to a set of areas.
+This function finds the names of the links connected to a set of areas.
 }
 \examples{
 \dontrun{
+
 # Get all links of a study
 getLinks()
 
-# Get all links with their origin and their destination
+# Get all links with their origins and destinations
+getLinks(namesOnly = FALSE)
 
-# Get all links connected to french areas (assuming their name contains "fr")
+# Get all links connected to French areas (assuming their names contain "fr")
 getLinks(getAreas("fr"))
 
-# Same but with only links connecting two french areas
+# Same but with only links connecting two French areas
 getLinks(getAreas("fr"), internalOnly = TRUE)
 
 # Exclude links connecting real areas with pumped storage virtual areas
-# (assuming their name contains "psp")
+# (assuming their names contain "psp")
 getLinks(getAreas("fr"), exclude = getAreas("psp"))
 
 }
