@@ -15,8 +15,8 @@ in. If \code{NULL}, all areas of the study are used.}
 
 \item{clusters}{should the clusters of the areas be imported ?}
 
-\item{internalOnly}{If TRUE, only links that connect two areas from parameter \code{area} are returned. 
-If not, the function may return links that connect an area from the list with 
+\item{internalOnly}{If \code{TRUE}, only links that connect two areas from parameter \code{areas} are returned. 
+If not, the function also returns all the links that connect an area from the list with 
 an area outside the list.}
 
 \item{opts}{list of simulation parameters returned by the function
