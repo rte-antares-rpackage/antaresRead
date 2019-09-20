@@ -89,9 +89,14 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
   
   if (namesOnly) return(links$link)
   if (!withDirection) return(links)
-  
-  links <- rbind(links[, .(area = from, link, to = to, direction = 1)], 
-                 links[, .(area = to, link, to = from, direction = -1)])
+
+  outward_links <- links[, .(area = from, link, to = to)]
+  outward_links[, direction := 1]
+
+  inward_links <- links[, .(area = to, link, to = from)]
+  inward_links[, direction := -1]
+
+  links <- rbind(outward_links, inward_links)
   
   links[area %in% areas]
 }
