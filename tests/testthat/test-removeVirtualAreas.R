@@ -341,6 +341,15 @@ test_that("removeVirtualAreas works on isolated areas", {
                                           storageFlexibility = c("a", "b")),
     NA
   )
+  
+  # links to 'a' are created again in order to allow next tests (in particular test-setup.R)
+  #   to run correctly.
+  mapply(
+    FUN = antaresEditObject::createLink,
+    from = a_links$from,
+    to = a_links$to
+  )
+  
 })
 
 })
