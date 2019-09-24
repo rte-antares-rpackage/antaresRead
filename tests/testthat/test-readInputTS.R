@@ -48,6 +48,17 @@ test_that("Wind importation works", {
   expect_is(input, "antaresDataTable")
   expect_gt(nrow(input), 0)
   expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
+  
+  input_mean_hourly <- readInputTS(wind = "all", fun = "mean", showProgress = FALSE)
+  expect_identical(input, input_mean_hourly)
+  
+  input_mean_weekly <- suppressWarnings(
+    readInputTS(wind = "all", timeStep = "weekly", 
+                fun = "mean", showProgress = FALSE)
+  )
+  expect_false(identical(input, input_mean_weekly))
+  expect_gt(nrow(input_mean_weekly), 0)
+  expect_equal(nrow(input) %% nweeks, 0)
 })
 
 test_that("Solar importation works", {

@@ -101,7 +101,9 @@
 #' @param linkCapacity
 #'   Should link capacities be imported ?
 #' @param fun
-#'   agregation function, among c("sum", "mean", "min", "max")
+#'   Aggregation function, among c("sum", "mean", "min", "max"). NB: \code{mean}
+#'   is always used for \code{ThermalModulation}, \code{LinkCapacity} and
+#'   \code{HydroStorageMaxPower}.
 #' @param mustRun
 #'   Should must run productions be added to the result? If TRUE,
 #'   then four columns are added: \code{mustRun} contains the production of 
