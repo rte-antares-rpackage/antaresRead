@@ -319,7 +319,8 @@ removeVirtualAreas <- function(x,
         corrPSP = NULL
       )]
       x <- .merge_Col_Area_D(x, 
-                             colMerge = "PSP",
+                             colMerge = "PSP", 
+                             allX = FALSE,
                              opts = opts)
     }
   }
