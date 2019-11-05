@@ -291,7 +291,10 @@ removeVirtualAreas <- function(x,
       x$areas <- .mergeByRef(x$areas, tmp, on = byarea)
       
       # Replace NA values by zeros
-      v <- storageFlexibility
+      v <- storageFlexibility[vapply( # areas with at least one link
+        storageFlexibility,
+        FUN = function(x) length(getLinks(x)) > 0,
+        FUN.VALUE = logical(1))]
       x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
       # correct values for district
       x <- .merge_Col_Area_D(x, 
