@@ -54,6 +54,7 @@
       bydistrict <- .get_by_district(x)
       ColAreas <- x$areas[, mget(oneCol), by = byarea]
       ColDistricts <- .groupByDistrict(ColAreas, opts)
+      class(ColDistricts) <- c("data.table", "data.frame")
       if(!(oneCol %in% names(x$districts))){
         x$districts <- merge(x$districts, 
                              ColDistricts, 
