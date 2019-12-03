@@ -7,3 +7,6 @@ cheat_sheet
 test_case
 ^appveyor\.yml$
 ^\.travis\.yml$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
