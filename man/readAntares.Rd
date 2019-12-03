@@ -10,8 +10,8 @@ readAntares(areas = NULL, links = NULL, clusters = NULL,
   reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
   thermalModulation = FALSE, select = NULL, mcYears = NULL,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-  opts = simOptions(), parallel = FALSE, simplify = TRUE,
-  showProgress = TRUE)
+  fun = "sum", opts = simOptions(), parallel = FALSE,
+  simplify = TRUE, showProgress = TRUE)
 }
 \arguments{
 \item{areas}{Vector containing the names of the areas to import. If
@@ -79,6 +79,8 @@ simulations.}
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
+
+\item{fun}{agregation function, among c("sum", "mean", "min", "max")}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}

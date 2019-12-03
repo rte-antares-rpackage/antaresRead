@@ -8,8 +8,8 @@ readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   hydroStorage = NULL, hydroStorageMaxPower = NULL, wind = NULL,
   solar = NULL, misc = NULL, reserve = NULL, linkCapacity = NULL,
   opts = simOptions(), timeStep = c("hourly", "daily", "weekly",
-  "monthly", "annual"), simplify = TRUE, parallel = FALSE,
-  showProgress = TRUE)
+  "monthly", "annual"), fun = "sum", simplify = TRUE,
+  parallel = FALSE, showProgress = TRUE)
 }
 \arguments{
 \item{load}{vector of areas names for which load time series must be read.}
@@ -37,6 +37,8 @@ readInputTS(load = NULL, thermalAvailabilities = NULL, ror = NULL,
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
+
+\item{fun}{agregation function, among c("sum", "mean", "min", "max")}
 
 \item{simplify}{If TRUE and only one type of output is imported then a
 data.table is returned. If FALSE, the result will always be a list of class

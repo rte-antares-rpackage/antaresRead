@@ -27,6 +27,8 @@
 #'   vector of areas names for which reserve time series must be read
 #' @param linkCapacity
 #'   vector of links names for which links characteristics time series must be read
+#' @param fun
+#'   agregation function, among c("sum", "mean", "min", "max")
 #' @inheritParams readAntares
 #' 
 #' @return 
@@ -74,6 +76,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
                         wind = NULL, solar = NULL, misc = NULL,
                         reserve = NULL, linkCapacity = NULL, opts = simOptions(),
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                        fun = "sum",
                         simplify = TRUE, parallel = FALSE,
                         showProgress = TRUE) {
   
@@ -100,12 +103,12 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   res <- list() # Object the function will return
   
   # local function that add a type of output to the object "res"
-  .addOutputToRes <- function(name, ids, outputFun, ts = timeStep) {
+  .addOutputToRes <- function(name, ids, outputFun, ts = timeStep, fun = get("fun", envir = parent.frame())) {
     if (is.null(ids) | length(ids) == 0) return(NULL)
     if (showProgress) cat(sprintf("Importing %s\n", name))
     
     tmp <- llply(ids, function(x, ...) outputFun(x, ...),
-                 timeStep=ts, opts=opts,
+                 timeStep=ts, fun = get("fun", envir = parent.frame()), opts=opts,
                  .progress = ifelse(showProgress, "text", "none"),
                  .parallel = parallel,
                  .paropts = list(.packages="antaresRead"))
