@@ -4,14 +4,27 @@
 \alias{readAntares}
 \title{Read the data of an Antares simulation}
 \usage{
-readAntares(areas = NULL, links = NULL, clusters = NULL,
-  districts = NULL, misc = FALSE, thermalAvailabilities = FALSE,
-  hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
-  reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
-  thermalModulation = FALSE, select = NULL, mcYears = NULL,
+readAntares(
+  areas = NULL,
+  links = NULL,
+  clusters = NULL,
+  districts = NULL,
+  misc = FALSE,
+  thermalAvailabilities = FALSE,
+  hydroStorage = FALSE,
+  hydroStorageMaxPower = FALSE,
+  reserve = FALSE,
+  linkCapacity = FALSE,
+  mustRun = FALSE,
+  thermalModulation = FALSE,
+  select = NULL,
+  mcYears = NULL,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-  opts = simOptions(), parallel = FALSE, simplify = TRUE,
-  showProgress = TRUE)
+  opts = simOptions(),
+  parallel = FALSE,
+  simplify = TRUE,
+  showProgress = TRUE
+)
 }
 \arguments{
 \item{areas}{Vector containing the names of the areas to import. If
@@ -70,7 +83,9 @@ all variables for areas or for links. Since version 1.0, values "misc",
 "linkCapacity", "mustRun", "thermalModulation" are also accepted and can
 replace the corresponding arguments. The list of available variables can be
 seen with the command \code{simOptions()$variables}.  Id variables like
-\code{area}, \code{link} or \code{timeId} are automatically imported.}
+\code{area}, \code{link} or \code{timeId} are automatically imported.
+Note that \code{select} is *not* taken into account when importing cluster
+data.}
 
 \item{mcYears}{Index of the Monte-Carlo years to import. If \code{NULL}, synthetic results
 are read, else the specified Monte-Carlo simulations are imported. The 

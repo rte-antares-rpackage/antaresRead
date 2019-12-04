@@ -4,8 +4,14 @@
 \alias{readAntaresAreas}
 \title{Read output for a list of areas}
 \usage{
-readAntaresAreas(areas, links = TRUE, clusters = TRUE,
-  internalOnly = FALSE, opts = simOptions(), ...)
+readAntaresAreas(
+  areas,
+  links = TRUE,
+  clusters = TRUE,
+  internalOnly = FALSE,
+  opts = simOptions(),
+  ...
+)
 }
 \arguments{
 \item{areas}{Vector containing area names. It represents the set of areas we are interested

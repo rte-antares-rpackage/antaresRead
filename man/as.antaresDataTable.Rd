@@ -7,8 +7,7 @@
 \usage{
 as.antaresDataTable(x, ...)
 
-\method{as.antaresDataTable}{data.frame}(x, synthesis, timeStep, type,
-  opts = simOptions(), ...)
+\method{as.antaresDataTable}{data.frame}(x, synthesis, timeStep, type, opts = simOptions(), ...)
 }
 \arguments{
 \item{x}{object to convert to a an \code{antaresDataList}.}
