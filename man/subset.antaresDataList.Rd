@@ -4,8 +4,7 @@
 \alias{subset.antaresDataList}
 \title{Subset an antaresDataList}
 \usage{
-\method{subset}{antaresDataList}(x, y = NULL, areas = NULL,
-  timeIds = NULL, mcYears = NULL, ...)
+\method{subset}{antaresDataList}(x, y = NULL, areas = NULL, timeIds = NULL, mcYears = NULL, ...)
 }
 \arguments{
 \item{x}{Object of class \code{antaresDataList} created with 

@@ -4,8 +4,14 @@
 \alias{getLinks}
 \title{Retrieve links connected to a set of areas}
 \usage{
-getLinks(areas = NULL, exclude = NULL, opts = simOptions(),
-  internalOnly = FALSE, namesOnly = TRUE, withDirection = FALSE)
+getLinks(
+  areas = NULL,
+  exclude = NULL,
+  opts = simOptions(),
+  internalOnly = FALSE,
+  namesOnly = TRUE,
+  withDirection = FALSE
+)
 }
 \arguments{
 \item{areas}{Vector containing area names. It represents the set of areas we are interested
