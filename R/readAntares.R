@@ -120,6 +120,8 @@
 #'   replace the corresponding arguments. The list of available variables can be
 #'   seen with the command \code{simOptions()$variables}.  Id variables like
 #'   \code{area}, \code{link} or \code{timeId} are automatically imported.
+#'   Note that \code{select} is *not* taken into account when importing cluster
+#'   data.
 #' @param thermalModulation
 #'   Should thermal modulation time series be imported ? If \code{TRUE}, the
 #'   columns "marginalCostModulation", "marketBidModulation", "capacityModulation"

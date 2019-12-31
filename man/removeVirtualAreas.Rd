@@ -4,8 +4,14 @@
 \alias{removeVirtualAreas}
 \title{Remove virtual areas}
 \usage{
-removeVirtualAreas(x, storageFlexibility = NULL, production = NULL,
-  reassignCosts = FALSE, newCols = TRUE, rowBal = TRUE)
+removeVirtualAreas(
+  x,
+  storageFlexibility = NULL,
+  production = NULL,
+  reassignCosts = FALSE,
+  newCols = TRUE,
+  rowBal = TRUE
+)
 }
 \arguments{
 \item{x}{An object of class \code{antaresDataList} with at least components 
@@ -116,7 +122,7 @@ violated it will not act correctly:
 #  offshore
 #     |
 # real area - psp in
-#           \\
+#           \
 #             psp out
 #
 

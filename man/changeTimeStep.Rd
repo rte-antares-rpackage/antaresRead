@@ -4,8 +4,7 @@
 \alias{changeTimeStep}
 \title{Change the timestep of an output}
 \usage{
-changeTimeStep(x, newTimeStep, oldTimeStep, fun = "sum",
-  opts = simOptions())
+changeTimeStep(x, newTimeStep, oldTimeStep, fun = "sum", opts = simOptions())
 }
 \arguments{
 \item{x}{data.table with a column "timeId" or an object of class "antaresDataList"}

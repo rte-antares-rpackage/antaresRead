@@ -10,8 +10,15 @@ as.antaresDataList(x, ...)
 
 \method{as.antaresDataList}{antaresDataTable}(x, name = NULL, ...)
 
-\method{as.antaresDataList}{data.frame}(x, synthesis, timeStep, type,
-  opts = simOptions(), name = type, ...)
+\method{as.antaresDataList}{data.frame}(
+  x,
+  synthesis,
+  timeStep,
+  type,
+  opts = simOptions(),
+  name = type,
+  ...
+)
 }
 \arguments{
 \item{x}{Data.frame or data.table to convert to a an antaresDataTable.}
