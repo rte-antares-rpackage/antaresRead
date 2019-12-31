@@ -4,10 +4,10 @@
 
 path0 <- tempdir()
 dir.create(file.path(path0, "v6"))
-dir.create(file.path(path0, "v7"))
+dir.create(file.path(path0, "latest"))
 
-path <- file.path(path0, "v6")
-pathv7 <- file.path(path0, "v7")
+path_v6 <- file.path(path0, "v6")
+path_latest <- file.path(path0, "latest")
 
 sourcedir <- system.file("inst/testdata", package = "antaresRead")
 testH5 <- TRUE
@@ -26,26 +26,26 @@ if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3)
 # the R CMD CHECK before package is correctly installed and tests actually run. 
 # The following "if" prevents errors at this step
 if (sourcedir != "") {
-  untar(file.path(sourcedir, "antares-test-study.tar.gz"), exdir = path)
-  untar(file.path(sourcedir, "antares-test-study-v7.tar.gz"), exdir = pathv7)
+  untar(file.path(sourcedir, "antares-test-study-v6.tar.gz"), exdir = path_v6)
+  untar(file.path(sourcedir, "antares-test-study-latest.tar.gz"), exdir = path_latest)
   
   if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
     
-    opts <- setSimulationPath(file.path(path, "/test_case"))
+    opts <- setSimulationPath(file.path(path_v6, "/test_case"))
     suppressMessages({
       suppressWarnings({
-
+        
         #On cran we have only 2 threads so nbCore <- 1  
         if(.runH5Test){
           nbCoresTestHelper<-4
         }else{
           nbCoresTestHelper<-1
         }
-        writeAntaresH5(path = path, 
+        writeAntaresH5(path = path_v6, 
                        misc = TRUE, thermalAvailabilities = TRUE,
                        hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
                        linkCapacity = TRUE,mustRun = TRUE, thermalModulation = TRUE,
-					   overwrite=TRUE, nbCores = nbCoresTestHelper)
+                       overwrite=TRUE, nbCores = nbCoresTestHelper)
       })
     })
     
@@ -75,17 +75,9 @@ if (sourcedir != "") {
             TRUE
           }else{
             if(class(A[[X]]) %in% c("integer", "numeric")){
-              if(identical(as.numeric(A[[X]]), as.numeric(B[[X]]))){
-                TRUE
-              } else {
-                FALSE
-              }
+              identical(as.numeric(A[[X]]), as.numeric(B[[X]]))
             } else if(class(A[[X]]) %in% c("character", "factor")){
-              if(identical(as.character(A[[X]]), as.character(B[[X]]))){
-                TRUE
-              } else {
-                FALSE
-              }
+              identical(as.character(A[[X]]), as.character(B[[X]]))
             } else {
               FALSE
             }
@@ -97,22 +89,21 @@ if (sourcedir != "") {
     timeStep <-  c("hourly", "daily", "weekly", "monthly", "annual")
     
     assign("silentf", silentf, envir = globalenv())
-    assign("tpDir", path, envir = globalenv())
-    assign("pathF", file.path(path, "/", h5file), envir = globalenv())
+    assign("tpDir", path_v6, envir = globalenv())
+    assign("pathF", file.path(path_v6, "/", h5file), envir = globalenv())
     assign("h5file", h5file, envir = globalenv())
     assign("alias", alias, envir = globalenv())
     assign("compareValue", compareValue, envir = globalenv())
     assign("timeStep", timeStep, envir = globalenv())
     assign("optsG", opts, envir = globalenv())
     
-    # assign("studyPathS", c(file.path(path), file.path(path, "test_case")), envir = globalenv())
-    assign("studyPathS", c(file.path(path, "test_case"), file.path(pathv7, "test_case")), envir = globalenv())
-    
-  } else {
-    assign("studyPathS", 
-           c(file.path(path, "test_case"), file.path(pathv7, "test_case")),
-           envir = globalenv())
-  }
+  } 
+  
+  assign("studyPathS", c(
+    file.path(path_v6, "test_case"),
+    file.path(path_latest, "test_case")
+  ),
+  envir = globalenv())
   
   assign("nweeks", 2, envir = globalenv())
   assign("nmonths", 2, envir = globalenv())
