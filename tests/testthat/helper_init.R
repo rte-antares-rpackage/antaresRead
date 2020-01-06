@@ -116,3 +116,14 @@ if (sourcedir != "") {
   assign("firstDay", 113, envir = globalenv())
   assign("lastDay", 126, envir = globalenv())
 }
+
+skip_according_to_options <- function() {
+  if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
+    skip_on_cran()
+  if (isTRUE(getOption("antaresRead.skip_h5")))
+    skip("h5 test skipped")
+  if (isTRUE(getOption("antaresRead.skip_h5_on_travis")))
+    skip_on_travis()
+  if (isTRUE(getOption("antaresRead.skip_h5_on_appveyor")))
+    skip_on_appveyor()
+}

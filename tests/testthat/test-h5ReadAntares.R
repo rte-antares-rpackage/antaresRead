@@ -3,8 +3,7 @@ context(".h5ReadAntares")
 if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   sapply(pkgEnv$allCompute, function(X){
     test_that(paste0("Select : ", X, " timeStep : "),{
-      if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-        skip_on_cran()
+      skip_according_to_options()
       
       param1 <- list(path = pathF, areas = "a", mcYears = 1, select = X)
       param2 <- list(path = pathF, areas = "a", mcYears = 1)
@@ -51,8 +50,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   
   sapply(names(paramComparaison), function(Z){
     test_that(paste(Z), {
-      if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-        skip_on_cran()
+      skip_according_to_options()
       
       param1 <- paramComparaison[[Z]]
       param2 <- param1
@@ -71,8 +69,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Show perf", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     param1 <- list(areas = "all")
     param2 <- param1
@@ -89,8 +86,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Show perf multi request", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     param1 <- list(areas = "all", links = "all")
     param2 <- param1
@@ -131,8 +127,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
       options(warn = -1)
       
       test_that(paste(X, Z), {
-        if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-          skip_on_cran()
+        skip_according_to_options()
         
         param1 <- paramComparaison[[X]]
         param1$timeStep <- Z
@@ -171,8 +166,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Bad path", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     expect_error(.h5ReadAntares("toto"), "File toto not exist.")
     

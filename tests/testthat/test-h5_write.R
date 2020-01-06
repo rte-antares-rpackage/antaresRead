@@ -9,8 +9,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   
   dir.create(tptpDir)
   test_that("h5 : write more than one studies mono thread", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     writeAntaresH5(path = tptpDir, timeSteps = "annual", 
                    writeAllSimulations = TRUE, nbCores = 1, opts = optsG)
@@ -23,6 +22,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   {
     test_that("h5 : overwrite + alldata + multi-thread", {
       skip_on_cran()
+      skip_according_to_options()
+      
       writeAntaresH5(path = tptpDir, overwrite = TRUE, allData = TRUE, 
                      timeSteps = "annual", writeAllSimulations = TRUE, 
                      nbCores = 2, opts = optsG)
@@ -33,8 +34,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   }
   
   test_that("h5 : overwrite + removeVirtualAreas", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     writeAntaresH5(path = tptpDir, 
                    overwrite = TRUE, 
@@ -52,8 +52,7 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   unlink(tptpDir, recursive = TRUE)
   
   test_that("h5 : Bad path", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     expect_error( writeAntaresH5(path='badPath'), "Folder badPath not found.")
     

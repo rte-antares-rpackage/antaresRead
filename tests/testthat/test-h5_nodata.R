@@ -2,8 +2,7 @@ context("h5 : No data")
 
 if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   test_that("h5 : no data", {
-    if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-      skip_on_cran()
+    skip_according_to_options()
     
     rhdf5::h5createFile("testnodata.h5")
     rhdf5::h5createGroup("testnodata.h5", "hourly")
