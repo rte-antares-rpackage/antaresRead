@@ -105,7 +105,8 @@
         data <- data.table(timeId = timeIds)
       } else {
         data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                      select = selectCol, integer64 = "numeric")
+                      select = selectCol, integer64 = "numeric",
+                      na.strings = "N/A")
         
         # fix data.table bug on integer64
         any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
@@ -145,7 +146,8 @@
           data <- data.table(timeId = timeIds)
         } else {
           data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                        select = selectCol, integer64 = "numeric")
+                        select = selectCol, integer64 = "numeric",
+                        na.strings = "N/A")
           
           # fix data.table bug on integer64
           any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
