@@ -7,8 +7,6 @@ dist: trusty
 
 r: bioc-devel
 
-r_github_packages:
- - hadley/devtools#1263
 #before - Bioconductor-mirror/zlibbioc
 # - Bioconductor-mirror/rhdf5
 #after 
