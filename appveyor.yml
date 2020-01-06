@@ -31,6 +31,12 @@ environment:
     CRAN: http://cran.rstudio.com
     USE_RTOOLS: true
     
+  - R_VERSION: oldrel
+    RTOOLS_VERSION: 35
+    CRAN: http://cran.rstudio.com
+    USE_RTOOLS: true
+    BIOC_USE_DEVEL: false
+    
   - R_VERSION: patched
     R_ARCH: x64
     GCC_PATH: mingw_64
