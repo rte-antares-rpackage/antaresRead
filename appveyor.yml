@@ -35,7 +35,7 @@ environment:
     RTOOLS_VERSION: 35
     CRAN: http://cran.rstudio.com
     USE_RTOOLS: true
-    BIOC_USE_DEVEL: false
+    BIOC_USE_DEVEL: "FALSE"
     
   - R_VERSION: patched
     R_ARCH: x64
