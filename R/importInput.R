@@ -60,7 +60,7 @@
       inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
     }
     
-    if (opts$antaresVersion < 650) {
+    if (.getInputOptions(opts)$antaresVersion < 650) {
       inputTS <- .reorderInputTSHydroStorage(inputTS, path, opts)
     }
     
@@ -117,7 +117,7 @@
 }
 
 .importHydroStorageInput <- function(area, timeStep, opts, ...) {
-  inputTimeStepV <- ifelse(opts$antaresVersion >= 650, yes = "hourly", no = "monthly")
+  inputTimeStepV <- ifelse(.getInputOptions(opts)$antaresVersion >= 650, yes = "hourly", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
                  inputTimeStep = inputTimeStepV, type = "matrix")
 }
@@ -125,7 +125,7 @@
 .importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
   
   unselect = unselect$areas
-  if (opts$antaresVersion >= 650) {
+  if (.getInputOptions(opts)$antaresVersion >= 650) {
     beginName <- c("generatingMaxPower", "generatingMaxEnergy", 
                    "pumpingMaxPower", "pumpingMaxEnergy")
   } else {
@@ -203,7 +203,7 @@
   
   #TODO DEL after some antaresVersion, by example, del this check after Antares
   #version 8 and check in readAntares the version
-  if (opts$antaresVersion >= 650) {
+  if (.getInputOptions(opts)$antaresVersion >= 650) {
     beginName <- c("transCapacityDirect", "transCapacityIndirect",
                    "hurdlesCostDirect", "hurdlesCostIndirect",
                    "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")    
