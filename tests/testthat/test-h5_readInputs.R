@@ -2,6 +2,8 @@ context("h5 : read inputs")
 
 if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   test_that("h5 : h5ReadBindingConstraints", {
+    skip_according_to_options()
+    
     optsH5 <- setSimulationPathH5(tpDir, h5file)
     re1 <- h5ReadBindingConstraints(optsH5)
     re2 <- antaresRead::readBindingConstraints(opts)
@@ -15,6 +17,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   
   
   test_that("h5 : h5ReadLayout", {
+    skip_according_to_options()
+    
     optsH5 <- setSimulationPathH5(tpDir, h5file)
     re1 <- h5ReadLayout(optsH5)
     re2 <- antaresRead::readLayout(opts)
@@ -27,6 +31,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("h5 : h5ReadClusterDesc", {
+    skip_according_to_options()
+    
     optsH5 <- setSimulationPathH5(tpDir, h5file)
     re1 <- data.frame(h5ReadClusterDesc(optsH5))
     re2 <- data.frame(antaresRead::readClusterDesc(opts))

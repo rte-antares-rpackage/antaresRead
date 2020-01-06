@@ -3,6 +3,8 @@ context(".h5ReadAntares")
 if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   sapply(pkgEnv$allCompute, function(X){
     test_that(paste0("Select : ", X, " timeStep : "),{
+      skip_according_to_options()
+      
       param1 <- list(path = pathF, areas = "a", mcYears = 1, select = X)
       param2 <- list(path = pathF, areas = "a", mcYears = 1)
       param2[[X]] <- TRUE
@@ -48,6 +50,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   
   sapply(names(paramComparaison), function(Z){
     test_that(paste(Z), {
+      skip_according_to_options()
+      
       param1 <- paramComparaison[[Z]]
       param2 <- param1
       
@@ -65,6 +69,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Show perf", {
+    skip_according_to_options()
+    
     param1 <- list(areas = "all")
     param2 <- param1
     
@@ -80,6 +86,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Show perf multi request", {
+    skip_according_to_options()
+    
     param1 <- list(areas = "all", links = "all")
     param2 <- param1
     
@@ -119,6 +127,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
       options(warn = -1)
       
       test_that(paste(X, Z), {
+        skip_according_to_options()
+        
         param1 <- paramComparaison[[X]]
         param1$timeStep <- Z
         param2 <- param1
@@ -156,6 +166,8 @@ if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
   })
   
   test_that("Bad path", {
+    skip_according_to_options()
+    
     expect_error(.h5ReadAntares("toto"), "File toto not exist.")
     
   })

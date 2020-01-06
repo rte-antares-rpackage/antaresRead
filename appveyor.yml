@@ -30,32 +30,40 @@ environment:
     RTOOLS_VERSION: 35
     CRAN: http://cran.rstudio.com
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
     
   - R_VERSION: patched
     R_ARCH: x64
     GCC_PATH: mingw_64
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
   - R_ARCH: x64
     GCC_PATH: mingw_64
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
     
   - R_VERSION: release
     GCC_PATH: mingw_32
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
   - R_VERSION: release
     R_ARCH: x64
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
   - R_VERSION: patched
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
   - R_ARCH: x64
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
   - GCC_PATH: mingw_32
     USE_RTOOLS: true
+    BIOC_USE_DEVEL: "FALSE"
 
 #   - R_VERSION: 3.1.3
 #     RTOOLS_VERSION: 32

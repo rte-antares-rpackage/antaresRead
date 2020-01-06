@@ -1,5 +1,11 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
+options("antaresRead.skip_h5_on_cran" = TRUE)
+options("antaresRead.skip_h5" = TRUE)
+options("antaresRead.skip_h5_on_travis" = TRUE)
+options("antaresRead.skip_h5_on_appveyor" = TRUE)
+
+
 # Copy the test study in a temporary folder
 
 path0 <- tempdir()
@@ -109,4 +115,15 @@ if (sourcedir != "") {
   assign("nmonths", 2, envir = globalenv())
   assign("firstDay", 113, envir = globalenv())
   assign("lastDay", 126, envir = globalenv())
+}
+
+skip_according_to_options <- function() {
+  if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
+    skip_on_cran()
+  if (isTRUE(getOption("antaresRead.skip_h5")))
+    skip("h5 test skipped")
+  if (isTRUE(getOption("antaresRead.skip_h5_on_travis")))
+    skip_on_travis()
+  if (isTRUE(getOption("antaresRead.skip_h5_on_appveyor")))
+    skip_on_appveyor()
 }
