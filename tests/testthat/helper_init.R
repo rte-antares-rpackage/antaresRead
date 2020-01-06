@@ -1,5 +1,11 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
+options("antaresRead.skip_h5_on_cran" = TRUE)
+options("antaresRead.skip_h5" = TRUE)
+options("antaresRead.skip_h5_on_travis" = TRUE)
+options("antaresRead.skip_h5_on_appveyor" = TRUE)
+
+
 # Copy the test study in a temporary folder
 
 path0 <- tempdir()
