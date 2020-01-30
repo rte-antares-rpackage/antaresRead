@@ -10,3 +10,4 @@ test_case
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^inst/testdata/antares_test-study_v6.tar.gz$
