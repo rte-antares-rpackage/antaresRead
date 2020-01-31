@@ -30,10 +30,10 @@ if (sourcedir != "") {
   
   studies <- list.files(
     path = sourcedir,
-    pattern = "antares\\-test\\-study\\-.*\\.tar\\.gz"
+    pattern = "^antares-test-study.*\\.tar\\.gz$"
   )
   
-  studies_names <- sub(".*antares\\-test\\-study\\-", "", studies)
+  studies_names <- basename(studies)
   studies_names <- sub("\\.tar\\.gz$", "", studies_names)
   
   for (s in seq_along(studies)) {

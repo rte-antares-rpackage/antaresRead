@@ -6,10 +6,10 @@ Authors@R: c(
     person("Veronique", "Bachelier", email = "veronique.bachelier@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", role = "aut"),
     person("Frederic", "Breant", role = "ctb"),
-    person("Victor", "Perrier", role = "ctb"),
     person("Francois", "Guillem", role = "aut"),
     person("Benoit", "Thieurmel", role = "aut"),
     person("Titouan", "Robert", role = "aut"),
+    person("Victor", "Perrier", role = "ctb"),
     person("Etienne", "Sanchez", role = "ctb"),
     person("RTE", role = "cph")
     )
