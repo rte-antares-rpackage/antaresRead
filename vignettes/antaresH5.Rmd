@@ -10,20 +10,33 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+
 This document describes use of the `antaresRead` package with h5 file format.
+
 
 ## Installation
 
 To use **h5** file format, you must install packages ``zlibbioc`` and ``rhdf5 (>= 2.20.0)`` from **bioconductor**. If your proxy allows it, you can use :
 
+With R < 3.5.0, use:
+
 ```r
-source('https://bioconductor.org/biocLite.R')
-biocLite('rhdf5')
+source("https://bioconductor.org/biocLite.R')
+biocLite("rhdf5')
 ```
+
+With R >= 3.5.0 :
+
+```r
+install.packages("BiocManager")
+BiocManager::install("rhdf5")
+```
+
 
 An other solution is to install manualy this two packages from zip file. They are available here :
 https://bioconductor.org/packages/release/bioc/html/zlibbioc.html
 http://bioconductor.org/packages/release/bioc/html/rhdf5.html
+
 
 ## Avantages of h5 transformation
 

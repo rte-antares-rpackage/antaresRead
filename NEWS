@@ -1,5 +1,12 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.5
+FEATURES:
+* Fixed bugs in `removeVirtualAreas()` in `getLinks()`
+* Updated documentation & added pkgdown website 
+
+
+
 Changes in version 2.2.4 (2019-02-13)
 FEATURES:
 * Compatibility with Antares v7
