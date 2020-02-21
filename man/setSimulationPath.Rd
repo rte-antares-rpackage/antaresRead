@@ -20,7 +20,7 @@ values to select a simulation from the last one: for instance -1 will
 select the most recent simulation, -2 will the penultimate one, etc. There 
 are two special values 0 and "input" that tells the function that the user
 is not interested by the results of any simulation, but only by the inputs.
-In such a case, the function \code{\link{readAntares}} is anavailable.}
+In such a case, the function \code{\link{readAntares}} is unavailable.}
 }
 \value{
 A list containing various information about the simulation, in particular:
@@ -63,7 +63,7 @@ the Antares simulation to work on and other useful options (list of areas,
 links, areas with clusters, variables, etc.).
 }
 \details{
-The simulation choosen with \code{setSimulationPath} becomes the default
+The simulation chosen with \code{setSimulationPath} becomes the default
 simulation for all functions of the package. This behavior is fine when
 working on only one simulation, but it may become problematic when working
 on multiple simulations at same time.

@@ -117,13 +117,13 @@ areas[, .(area, timeId, netLoad = LOAD - `ROW BAL.` - PSP - MISC. - NDG -
                                     H. ROR - WIND - SOLAR)]
 ```
 
-One can also compute agregated statistics. For instance, the following code will compute the total load of all areas per `timeId`:
+One can also compute aggregated statistics. For instance, the following code will compute the total load of all areas per `timeId`:
 
 ```r
 areas[, .(totalLoad = sum(LOAD)), by = .(timeId)]
 ```
 
-Of course, agregation also works with filters. For instance to compute the total load only for french areas (assuming their names contain "fr"):
+Of course, aggregation also works with filters. For instance to compute the total load only for french areas (assuming their names contain "fr"):
 
 ```r
 areas[area %in% getAreas("fr"), .(totalLoad = sum(LOAD)), by = .(timeId)]

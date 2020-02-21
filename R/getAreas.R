@@ -30,7 +30,7 @@
 #' @inheritParams readAntares
 #'   
 #' @return 
-#' A character vector containg the name of the areas/districts satisfying the 
+#' A character vector containing the name of the areas/districts satisfying the 
 #' rules defined by the parameters.
 #' 
 #' @seealso \code{\link{getLinks}}

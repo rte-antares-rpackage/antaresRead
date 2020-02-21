@@ -35,7 +35,7 @@ writeAntaresH5(
 
 \item{timeSteps}{\code{character} timeSteps}
 
-\item{opts}{\code{list} of simulation parameters returned by the function \link{setSimulationPath}. Defaut to \code{antaresRead::simOptions()}}
+\item{opts}{\code{list} of simulation parameters returned by the function \link{setSimulationPath}. Default to \code{antaresRead::simOptions()}}
 
 \item{writeMcAll}{\code{boolean} write mc-all}
 

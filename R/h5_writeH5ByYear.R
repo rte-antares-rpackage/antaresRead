@@ -2,7 +2,7 @@
 #'
 #' @param path \code{character} folder where h5 file will be write (default NULL)
 #' @param timeSteps \code{character} timeSteps
-#' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}. Defaut to \code{antaresRead::simOptions()}
+#' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}. Default to \code{antaresRead::simOptions()}
 #' @param writeMcAll \code{boolean} write mc-all
 #' @param compress \code{numeric} compress level
 #' @param misc \code{boolean} see \link[antaresRead]{readAntares}
