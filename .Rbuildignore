@@ -11,3 +11,4 @@ test_case
 ^docs$
 ^pkgdown$
 ^inst/testdata/antares-test-study-v6\.tar\.gz$
+^revdep$

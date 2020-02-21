@@ -4,3 +4,6 @@ inst/doc
 .RData
 inst/testdata/antares-test-study.tar
 inst/testdata/test_case/*
+revdep/checks/
+revdep/data.sqlite
+revdep/library/
