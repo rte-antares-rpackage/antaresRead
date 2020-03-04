@@ -309,7 +309,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     if (length(to) == 0) return(NULL)
     
-    data.frame(link = paste(f, "-", to), from = f, to = to)
+    data.frame(link = paste(f, "-", to), from = f, to = to, stringsAsFactors = TRUE)
   })
   linksDef <- data.table(linksDef)
   
@@ -493,7 +493,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     }
     if (length(areas) == 0) return(NULL)
     
-    data.frame(district = tolower(n), area = tolower(areas))
+    data.frame(district = tolower(n), area = tolower(areas), stringsAsFactors = TRUE)
   })
   data.table(res)
 }

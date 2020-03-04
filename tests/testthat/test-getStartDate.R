@@ -7,6 +7,7 @@ sapply(studyPathS, function(studyPath){
 # Correction of start date #####################################################
 
 describe(".getStartDate", {
+  library(lubridate)
   mNames <- c("january", "february", "march", "april", "may", "june", "july","august",
               "september", "october", "november", "december")
   dNames <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 

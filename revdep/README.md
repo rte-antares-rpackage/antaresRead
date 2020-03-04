@@ -10,13 +10,14 @@
 |collate  |French_France.1252           |
 |ctype    |French_France.1252           |
 |tz       |Europe/Berlin                |
-|date     |2020-02-21                   |
+|date     |2020-03-03                   |
 
 # Dependencies
 
 |package     |old   |new   |<U+0394>  |
 |:-----------|:-----|:-----|:--|
 |antaresRead |2.2.4 |2.2.5 |*  |
+|rlang       |NA    |0.4.5 |*  |
 
 # Revdeps
 
