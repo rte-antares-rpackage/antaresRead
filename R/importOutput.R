@@ -470,6 +470,7 @@
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
   tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
+  if(length(mcYears) == 0) {mcYears <- c(1:length(tsIds))}
   tsIds <- tsIds[mcYears]
   
   # Input time series
