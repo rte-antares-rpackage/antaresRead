@@ -219,7 +219,7 @@ removeVirtualAreas <- function(x,
   #     virtual nodes
   flows <- merge(linkList, 
                  x$links[, c(bylink, "FLOW LIN."), with = FALSE], 
-                 by = "link")
+                 by = "link", allow.cartesian = TRUE)
   
   flows[, `:=`(
     flow = `FLOW LIN.` * direction, # Change sign of flows when links are in wrong direction
