@@ -1,4 +1,4 @@
-## ---- echo=FALSE---------------------------------------------------------
+## ---- echo=FALSE--------------------------------------------------------------
   siZ <- readRDS(system.file("vignetteData/size.rds",package = "antaresRead"))
   TimeSel <- readRDS(system.file("vignetteData/Time.rds",package = "antaresRead"))
 
