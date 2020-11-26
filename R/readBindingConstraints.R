@@ -44,8 +44,12 @@ readBindingConstraints <- function(opts=simOptions()) {
     }
   }
   
-  path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
-  bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
+  if(opts$typeLoad == 'api'){
+    bindingConstraints <- readjsonAntares(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"))
+  }else{
+    path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
+    bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
+  }
   
   if(length(bindingConstraints) == 0) {
     warning("It looks like there is no binding constraints is this study.")

@@ -56,21 +56,45 @@ readClusterDesc <- function(opts = simOptions()) {
     }
   }
   
+  
+  
   path <- file.path(opts$inputPath, "thermal/clusters")
-
+  
+  if(opts$typeLoad == 'api'){
+    jsoncld <- readjsonAntares(paste0(path, "?depth=4"))
+    res <-  rbindlist(mapply(function(X1, Y1){
+      clusters <- rbindlist(
+        mapply(function(X, Y){
+          out <- as.data.frame(X)
+          if(nrow(out) == 0)return(NULL)
+          out$area = Y
+          out
+        }, X1$list, names(X1$list), SIMPLIFY = FALSE), fill = TRUE)
+      if(is.null(clusters))return(NULL)
+      if(nrow(clusters)==0)return(NULL)
+      clusters$area <- Y1
+      clusters[, .SD, .SDcols = order(names(clusters))]
+    },jsoncld, names(jsoncld)), fill = TRUE)
+    
+    res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
+    
+  }else{
+  
   areas <- list.files(path)
-
+  
   res <- ldply(areas, function(x) {
     clusters <- readIniFile(file.path(path, x, "list.ini"))
-
+    
     if (length(clusters) == 0) return(NULL)
-
+    
     clusters <- ldply(clusters, as.data.frame)
     clusters$.id <- NULL
     clusters$area <- x
-
+    
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })
+  
+  }
   
   if(length(res) == 0) stop("Cannot find cluster description.")
   
@@ -78,6 +102,6 @@ readClusterDesc <- function(opts = simOptions()) {
   setnames(res, "name", "cluster")
   
   res$cluster <- as.factor(tolower(res$cluster))
-
+  
   res
 }

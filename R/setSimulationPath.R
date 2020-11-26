@@ -190,12 +190,34 @@ setSimulationPath <- function(path, simulation = NULL) {
   # Other informations that has to be read in input folder
   res$districtsDef <- .readDistrictsDef(res$inputPath, res$areaList)
   res$energyCosts <- .readEnergyCosts(res$inputPath)
-  
+  res$typeLoad <- "txt"
   class(res) <- c("simOptions")
 
   options(antares=res)
 
   res
+}
+
+.giv_sim <- function(simulation, simNames, path){
+  if (is.numeric(simulation)) {
+    if (simulation > 0) sim <- simNames[simulation]
+    else sim <- rev(simNames)[abs(simulation)]
+  } else {
+    if (any(simNames == simulation)) sim <- simulation
+    else {
+      sim <- simNames[grep(paste0("(^\\d{8}-\\d{4})?", simulation, "$"), simNames, ignore.case = TRUE)]
+      if (length(sim) == 0) stop ("Cannot find the simulation called ", simulation)
+      if (length(sim) > 1) warning("Several simulations have the same name. The most recent will be used")
+      sim <- last(sim)
+    }
+  }
+  
+  studyPath <- path
+  simPath <- file.path(path, "output", sim[1])
+  inputPath <- file.path(studyPath, "input")
+  return(list(studyPath = studyPath,
+              simPath = simPath,
+              inputPath = inputPath))
 }
 
 # Private function that extracts study, simulation and input paths from the
@@ -264,23 +286,7 @@ setSimulationPath <- function(path, simulation = NULL) {
       inputPath <- file.path(studyPath, "input")
       
     } else {
-      
-      if (is.numeric(simulation)) {
-        if (simulation > 0) sim <- simNames[simulation]
-        else sim <- rev(simNames)[abs(simulation)]
-      } else {
-        if (any(simNames == simulation)) sim <- simulation
-        else {
-          sim <- simNames[grep(paste0("(^\\d{8}-\\d{4})?", simulation, "$"), simNames, ignore.case = TRUE)]
-          if (length(sim) == 0) stop ("Cannot find the simulation called ", simulation)
-          if (length(sim) > 1) warning("Several simulations have the same name. The most recent will be used")
-          sim <- last(sim)
-        }
-      }
-      
-      studyPath <- path
-      simPath <- file.path(path, "output", sim[1])
-      inputPath <- file.path(studyPath, "input")
+      return(.giv_sim(simulation, simNames, path))
     }
   }
   
@@ -406,6 +412,9 @@ setSimulationPath <- function(path, simulation = NULL) {
     variables$links <- setdiff(v, pkgEnv$idVars)
   }
   
+  lines <- readLines(file.path(simPath, "about-the-study/links.txt"))
+  linksDef <- .readLinksDef(lines)
+  
   list(
     simDataPath = simDataPath,
     name = as.character(info$name),
@@ -418,7 +427,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     areaList = areaList,
     districtList = gsub("^@ ?", "", districtList),
     linkList = linkList,
-    linksDef = .readLinksDef(simPath),
+    linksDef = linksDef,
     areasWithClusters = areasWithClusters,
     variables = variables,
     parameters = params
@@ -506,8 +515,7 @@ setSimulationPath <- function(path, simulation = NULL) {
        spilled = unlist(costs$spilledenergycost))
 }
 
-.readLinksDef <- function(simPath) {
-  lines <- readLines(file.path(simPath, "about-the-study/links.txt"))
+.readLinksDef <- function(lines) {
   
   from <- character()
   to <- character()
