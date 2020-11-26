@@ -18,6 +18,9 @@ dt2 <-  readAntares(opts = opts2)
 
 data.table::fsetequal(dt1, dt2) 
 
+system.time( readAntares(opts = opts))
+system.time( readAntares(opts = opts2))
+
 ## Les layout
 ly2 <- readLayout(opts = opts)
 ly1 <- readLayout(opts = opts2)
