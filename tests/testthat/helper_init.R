@@ -134,3 +134,5 @@ skip_according_to_options <- function() {
   if (isTRUE(getOption("antaresRead.skip_h5_on_appveyor")))
     skip_on_appveyor()
 }
+
+pathAPI <- "http://localhost:8080/studies/antaresStd/"
