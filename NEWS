@@ -1,5 +1,9 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.6
+FEATURES:
+* Fixed bugs in `readInputTS()` for `hydroStorage`
+
 Changes in version 2.2.5
 FEATURES:
 * Fixed bugs in `removeVirtualAreas()` in `getLinks()`

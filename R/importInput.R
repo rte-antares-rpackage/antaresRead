@@ -117,7 +117,7 @@
 }
 
 .importHydroStorageInput <- function(area, timeStep, opts, ...) {
-  inputTimeStepV <- ifelse(.getInputOptions(opts)$antaresVersion >= 650, yes = "hourly", no = "monthly")
+  inputTimeStepV <- ifelse(.getInputOptions(opts)$antaresVersion >= 650, yes = "daily", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
                  inputTimeStep = inputTimeStepV, type = "matrix")
 }
