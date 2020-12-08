@@ -11,6 +11,10 @@ path <- file.path("http://localhost:8080", "studies/antaresStd")
 # 
 # opts <- .setSimulationPathAPI(path, "input")
 opts <- .setSimulationPathAPI(path, 1)
+
+readInputTS(load = "all")
+
+
 readAntares(opts = opts)
 areas = NULL
 links = NULL
