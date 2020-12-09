@@ -14,8 +14,6 @@ sapply(studyPathS, function(studyPath){
   
   expect_true(attributes(dt$areas)$hvdcAreas ==  as.character(unique(dt$areas$area)[1]))
   
-  
-  
   dtar <- setHvdcAreas(dt$areas, as.character(unique(dt$areas$area)[1]))
   expect_true(attributes(dtar)$hvdcAreas ==  as.character(unique(dt$areas$area)[1]))
   
