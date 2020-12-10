@@ -42,7 +42,7 @@ hvdcModification <- function(data, removeHvdcAreas = TRUE, reafectLinks = FALSE)
     }
     data <-  .reafectLinks(data)
     areasHvdc <- attributes(data$areas)$hvdcAreas
-    lkSupr <- getLinks(areaHvdc)
+    lkSupr <- getLinks(areasHvdc)
     data$links <- data$links[!link %in% lkSupr]
   }
   
