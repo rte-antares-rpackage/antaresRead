@@ -13,6 +13,11 @@
 #'
 readIniFile <- function(file, stringsAsFactors=FALSE) {
   X <- readLines(file)
+  .convertR(X, stringsAsFactors)
+}
+
+.convertR <- function(X, stringsAsFactors){
+  
   sections <- grep("^\\[.*\\]$", X)
   starts <- sections + 1
   ends <- c(sections[-1] - 1, length(X))
@@ -23,7 +28,7 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
-
+    
     key <- sapply(pairs, function(p) gsub("^ +| +$","", p[1]))
     value <- lapply(pairs, function(p) {
       v <- gsub("^ +| +$","", p[2])
@@ -31,7 +36,7 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
       if (v == "false") return(FALSE)
       type.convert(v, as.is = !stringsAsFactors)
     })
-
+    
     L[[i]] <- value
     names(L[[i]]) <- key
   }

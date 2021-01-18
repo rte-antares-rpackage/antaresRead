@@ -48,23 +48,30 @@
                       daily=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts)), 
                       monthly=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts)))
   
-  if (!file.exists(path) || file.size(path) == 0) {
-    if (type == "matrix") return(NULL)
-    inputTS <- data.table(matrix(0L, timeRange[2] - timeRange[1] + 1,length(colnames)))
-  } else {
-    
+  if(opts$typeLoad == "api"){
+    path <- .changeNameInput(path, opts)
+  }
+  
+  
+
+
+  if (opts$typeLoad == 'api' || file.exists(path) || !file.size(path) == 0) {
     if(is.null(colSelect))
     {
-    inputTS <- fread(path, integer64 = "numeric", header = FALSE)
+      inputTS <- fread(path, integer64 = "numeric", header = FALSE, showProgress = FALSE)
     }else{
-      inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect)
+      inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect, showProgress = FALSE)
     }
     
-    if (.getInputOptions(opts)$antaresVersion < 650) {
+    if (opts$typeLoad == 'api' || opts$antaresVersion < 650) {
+      
       inputTS <- .reorderInputTSHydroStorage(inputTS, path, opts)
     }
     
     inputTS <- inputTS[timeRange[1]:timeRange[2]]
+  } else {
+    if (type == "matrix") return(NULL)
+    inputTS <- data.table(matrix(0L, timeRange[2] - timeRange[1] + 1,length(colnames)))
   }
   
   # Add area and timeId columns and put it at the begining of the table
@@ -275,4 +282,9 @@
     
     changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
   })
+}
+
+.changeNameInput <- function(path, opts){
+  out <- sub(pattern = "studies", "file", path)
+  out <- gsub(" ", "%20", out)
 }

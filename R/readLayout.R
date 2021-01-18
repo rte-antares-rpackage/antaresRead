@@ -102,8 +102,23 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
     return(NULL)
   }
   
+  
   # areas
   path <- file.path(opts$inputPath, "areas")
+  
+  
+  if(opts$typeLoad == 'api'){
+    areas <- read_json(paste0(path, "?depth=4"))
+    areas <- areas[names(areas) %in% opts$areaList]
+    areas <- rbindlist(mapply(function(X, Y){
+      res <- data.table(area = Y)
+      res$area <- Y
+      res$x <- X$ui$ui$x
+      res$y <- X$ui$ui$y
+      res$color <- rgb(X$ui$ui$color_r, X$ui$ui$color_g, X$ui$ui$color_b, maxColorValue = 255)
+      res
+    },areas, names(areas), SIMPLIFY = FALSE))
+  }else{
   areas <- ldply(list.files(path), function(f) {
     if (!dir.exists(file.path(path, f))) return(NULL)
     
@@ -114,6 +129,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
     res[, c("area", "x", "y", "color")]
   })
   areas <- data.table(areas)
+  }
   
   # districts
   if (is.null(opts$districtsDef)) {

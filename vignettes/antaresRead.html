@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="François Guillem" />
+
+<meta name="date" content="2020-09-24" />
+
+<title>The ‘antaresRead’ Package</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">The ‘antaresRead’ Package</h1>
+<h4 class="author">François Guillem</h4>
+<h4 class="date">2020-09-24</h4>
+
+
+
+<p>This document describes a typical use of the <code>antaresRead</code> package.</p>
+<p>This package has been designed to read the results of an Antares simulation in an easy and convivial way. It can of course read any output files of a simulation at any desired time step, read synthetic results or detailed Monte Carlo scenarios but it can also add input time series to the results and perform some basic treatments like removing virtual areas.</p>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>The <code>antaresRead</code> package depends on the packages <code>data.table</code>, <code>plyr</code> and <code>lubridate</code>. If you have not already got them you can install them with the following command:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">&quot;data.table&quot;</span>, <span class="st">&quot;plyr&quot;</span>, <span class="st">&quot;lubridate&quot;</span>))</span></code></pre></div>
+<p>Then you can install the <code>antaresRead</code> package either with the Rstudio assistant in the “Packages” tab or with the following command:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">install.packages</span>(<span class="st">&quot;path_to_the_package/antaresRead_***.zip&quot;</span>)</span></code></pre></div>
+</div>
+<div id="before-reading-data" class="section level2">
+<h2>Before reading data</h2>
+<p>First, when you start a new R session, you need to load the package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">library</span>(antaresRead)</span></code></pre></div>
+<p>To display the list of all the functions of the package and access their help pages, type in the R console:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">help</span>(<span class="dt">package =</span> <span class="st">&quot;antaresRead&quot;</span>)</span></code></pre></div>
+<p>Then you can start using the package. The first function to use is <code>setSimulationPath</code>.</p>
+<p>This function needs to be called at least once during each R session. It stores important informations that are used by most of the functions of the package. While it has not been run, these functions will not work.</p>
+<p>Without any argument, <code>setSimulationPath</code> asks interactively to choose a directory containing an antares study. If the study contains multiple simulation results, it will also asks the user to choose one of them. This function stores the path to the output and reads some useful information about the simulation: type of output available, list of areas, links and clusters in the simulation, variables present in the output files, etc.</p>
+<p><code>setSimulationPath</code> can also be used in a non-interactive way with one of these syntaxes:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Specify full path</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path/output/simulation_name&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Specify the name of the simulation</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, simulation_name)</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a><span class="co"># Select a simulation by order</span></span>
+<span id="cb5-8"><a href="#cb5-8"></a><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, <span class="dv">1</span>) <span class="co"># first simulation</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a></span>
+<span id="cb5-10"><a href="#cb5-10"></a><span class="co"># Select a simulation by reverse order</span></span>
+<span id="cb5-11"><a href="#cb5-11"></a><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, <span class="dv">-1</span>) <span class="co"># last simulation</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co"># It is possible to store in a variable the result of the function</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>opts &lt;-<span class="st"> </span><span class="kw">setSimulationPath</span>(<span class="st">&quot;study_path&quot;</span>, <span class="dv">1</span>)</span></code></pre></div>
+<p>The function returns an object containing informations about the selected simulation. You can store this object in a variable for later use but this is not necessary because at any moment you can retrieve these informations.</p>
+</div>
+<div id="reading-time-series" class="section level2">
+<h2>Reading time series</h2>
+<p>Once <code>setSimulationPath</code> has been run, you can start reading data. Function <code>readAntares</code> is there for that !</p>
+<p><code>readAntares</code> is the main function of the package. It is used to read every possible time series and it performs a few treatments on them to make your life easier. The result of the function will have the simplest structure possible: either a simple table or a list of tables if you asks data for differents elements (for instance links and areas)</p>
+<p>It has a huge number of parameters to control exactly what you get, but all of them are optional. Without any argument the function will still works and it will read the synthetic results for all the areas. But you can import other kind of output. here are some examples:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Synthetic results for all links</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">readAntares</span>(<span class="dt">links=</span><span class="st">&quot;all&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#Synthetic results for all clusters</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="kw">readAntares</span>(<span class="dt">clusters=</span><span class="st">&quot;all&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6"></a></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Areas and links at the same time</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="kw">readAntares</span>(<span class="dt">areas=</span><span class="st">&quot;all&quot;</span>, <span class="dt">links=</span><span class="st">&quot;all&quot;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9"></a></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co"># Select only a few columns. </span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="kw">readAntares</span>(<span class="dt">select =</span> <span class="kw">c</span>(<span class="st">&quot;OV. COST&quot;</span>, <span class="st">&quot;OP. COST&quot;</span>, <span class="st">&quot;LOAD&quot;</span>))</span></code></pre></div>
+<p>You can also choose what elements to import and what level of details you want. For instance, the following command reads the first 10 Monte-Carlo scenarii data at monthly time step for the areas named “area1”, “area2” and “area3”.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">readAntares</span>(<span class="dt">areas=</span><span class="kw">c</span>(<span class="st">&quot;area1&quot;</span>, <span class="st">&quot;area2&quot;</span>, <span class="st">&quot;area3&quot;</span>), <span class="dt">timeStep=</span><span class="st">&quot;monthly&quot;</span>,</span>
+<span id="cb7-2"><a href="#cb7-2"></a>            <span class="dt">synthesis=</span><span class="ot">FALSE</span>, <span class="dt">mcYears =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>)</span></code></pre></div>
+<p>Finally many arguments of <code>readAntares</code> can be used to add input time series to the object returned by the function. For instance, <code>misc=TRUE</code> will add columns containing miscelaneous productions for the imported areas.</p>
+</div>
+<div id="manipulating-data" class="section level2">
+<h2>Manipulating data</h2>
+<p><code>readAntares</code> returns either a single table or a list of tables depending on the query of the user. More precisely the tables are <code>data.table</code> objects. It is then possible to use the powerful syntax offered by the package <code>data.table</code>.</p>
+<p>The general syntax is like:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>name_of_the_table[filter_rows, select_columns, group_by]</span></code></pre></div>
+<p>For instance, <code>areas[area == &quot;08_fr&quot;, .(timeId, LOAD)]</code> will return a table containing columns <code>timeId</code> and <code>LOAD</code> for the area names “08_fr”. In the select statement, it is also possible to calculate new columns. For instance, one can compute the net load like this:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>areas[, .(area, timeId, <span class="dt">netLoad =</span> LOAD <span class="op">-</span><span class="st"> `</span><span class="dt">ROW BAL.</span><span class="st">`</span> <span class="op">-</span><span class="st"> </span>PSP <span class="op">-</span><span class="st"> </span>MISC. <span class="op">-</span><span class="st"> </span>NDG <span class="op">-</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="st">                                    </span>H. ROR <span class="op">-</span><span class="st"> </span>WIND <span class="op">-</span><span class="st"> </span>SOLAR)]</span></code></pre></div>
+<p>One can also compute aggregated statistics. For instance, the following code will compute the total load of all areas per <code>timeId</code>:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>areas[, .(<span class="dt">totalLoad =</span> <span class="kw">sum</span>(LOAD)), by =<span class="st"> </span>.(timeId)]</span></code></pre></div>
+<p>Of course, aggregation also works with filters. For instance to compute the total load only for french areas (assuming their names contain “fr”):</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>areas[area <span class="op">%in%</span><span class="st"> </span><span class="kw">getAreas</span>(<span class="st">&quot;fr&quot;</span>), .(<span class="dt">totalLoad =</span> <span class="kw">sum</span>(LOAD)), by =<span class="st"> </span>.(timeId)]</span></code></pre></div>
+<p>If you are not familiar with package <code>data.table</code>, you should have a look at the documentation and especially at the vignettes of the package:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">help</span>(<span class="dt">package=</span><span class="st">&quot;data.table&quot;</span>)</span></code></pre></div>
+</div>
+<div id="other-useful-functions" class="section level2">
+<h2>Other useful functions</h2>
+<p><code>readAntares</code> can import almost everything but not everything because some data is not time series. Other functions exist to read this specific data: <code>readBindingConstraints</code> to read binding constraints, <code>readClusterDesc</code> to read cluster characteristics and <code>readLayout</code> to get the coordinates of the areas in the user interface of Antares.</p>
+<p>Some parameters in <code>readAntares</code> and other functions wait for vectors of area names or link names. On large projects with lots of areas. It may be painful to specify by hand a long list of areas or links. Hopefully, the functions <code>getAreas</code>and <code>getLinks</code> can be used to select or exclude areas using regular expressions. For instance, let us assume that the name of all areas located in France start with the characters“fr”, then the following command returns the list of all french areas:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">getAreas</span>(<span class="st">&quot;fr&quot;</span>)</span></code></pre></div>
+<p>To exclude offshore production areas (assuming their name contains the word “offshore”) one can use:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">getAreas</span>(<span class="st">&quot;fr&quot;</span>, <span class="dt">exclude=</span><span class="st">&quot;offshore&quot;</span>)</span></code></pre></div>
+<p>A few other functions are provided by the package. To see a list of them, type in the console:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">help</span>(<span class="dt">package =</span> <span class="st">&quot;antaresRead&quot;</span>)</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

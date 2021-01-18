@@ -54,14 +54,23 @@
                          opts$simDataPath, args$mcYear, folder, args$id, fileName, timeStep)
   }
   
-  outputMissing <- !file.exists(args$path)
   
+  
+  
+  if(opts$typeLoad == "api"){
+    args$path <- sapply(args$path, .changeName, opts = opts)
+    # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
+    # print(outputMissing)
+     outputMissing <- rep(FALSE, nrow(args))
+  }else{
+  outputMissing <- !file.exists(args$path)
+  }
   if (all(outputMissing)) {
     message("No data corresponding to your query.")
     return(NULL)
   } else if (any(outputMissing)) {
     message("Some requested output files are missing.")
-    args <- args[file.exists(args$path), ]
+    args <- args[outputMissing, ]
   }
   
   # columns to retrieve
@@ -94,7 +103,8 @@
     1:nrow(args), 
     function(i) {
       incProgress(1/n, detail = paste0("Importing ", folder, " data"))
-      
+      data <- NULL
+      try({
       if (!sameNames) {
         colNames <- .getOutputHeader(args$path[i], objectName)
         selectCol <- which(!colNames %in% pkgEnv$idVars)
@@ -124,6 +134,8 @@
       if (!is.null(processFun)) data <- processFun(data)
       
       data
+      })
+      data
     }, 
     .progress = ifelse(showProgress, "text", "none"),
     .parallel = parallel,
@@ -147,7 +159,7 @@
         } else {
           data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
                         select = selectCol, integer64 = "numeric",
-                        na.strings = "N/A")
+                        na.strings = "N/A", showProgress = FALSE)
           
           # fix data.table bug on integer64
           any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
@@ -523,4 +535,12 @@
   res
   
 }
+
+.changeName <- function(path, opts){
+  path_rev <- strsplit(strsplit(path, "output/")[[1]][2], "/")[[1]]
+  path_rev <- paste0(path_rev[2:length(path_rev)], collapse = "/")
+  out <- sub(pattern = "studies", "file", paste0(opts$studyPath , "/output/", opts$simOutputName,"/", path_rev))
+  out <- gsub(" ", "%20", out)
+}
+
 
