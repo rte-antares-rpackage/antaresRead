@@ -1,7 +1,7 @@
-context(".setSimulationPathAPI")
+context("setSimulationPathAPI")
 suppressWarnings(suppressPackageStartupMessages(require(lubridate)))
 
-describe(".setSimulationPathAPI", {
+describe("setSimulationPathAPI", {
   
   ##Test identical OPTS
   testIdenticalOpts <- function(opts, opts2){
@@ -24,7 +24,7 @@ describe(".setSimulationPathAPI", {
   path = "http://localhost:8080/studies/antaresStd/"
   path2 <- "C:/Users/TitouanRobert/Desktop/antaresStd"
   
-  opts <- .setSimulationPathAPI(path, 1)
+  opts <- setSimulationPathAPI(path, 1)
   opts2 <- setSimulationPath("C:/Users/TitouanRobert/Desktop/antaresStd", 1)
 
   testIdenticalOpts(opts, opts2)
@@ -32,7 +32,7 @@ describe(".setSimulationPathAPI", {
   
   
   
-  opts <- .setSimulationPathAPI(path, "input")
+  opts <- setSimulationPathAPI(path, "input")
   opts2 <- setSimulationPath("C:/Users/TitouanRobert/Desktop/antaresStd", "input")
   
   testIdenticalOpts(opts, opts2)

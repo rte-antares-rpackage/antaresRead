@@ -246,7 +246,19 @@ readjsonAntares <- function(path){
   
 }
 
-.setSimulationPathAPI <- function(path, simulation = NULL) {
+
+#' Set simualtion path for API
+#'
+#' @description
+#' \code{setSimulationPathAPI} see setSimulationPath function 
+#'
+#'
+#' @param path \code{character} see setSimulationPath help
+#' @param simulation \code{character, numeric} see setSimulationPath help
+#' 
+#' @import httr jsonlite
+#' @export
+setSimulationPathAPI <- function(path, simulation = NULL) {
   
   if (missing(path)) {
     if (exists("choose.dir", getNamespace("utils"))) {
