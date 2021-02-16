@@ -20,6 +20,7 @@ readAntares(
   select = NULL,
   mcYears = NULL,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+  mcWeights = NULL,
   opts = simOptions(),
   parallel = FALSE,
   simplify = TRUE,
@@ -94,6 +95,8 @@ simulations.}
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
+
+\item{mcWeights}{Weight for mcYears.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
