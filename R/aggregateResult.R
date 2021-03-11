@@ -141,7 +141,7 @@ aggregateResult <- function(opts, verbose = 1,
   }
   
   if(length(mcWeights)!=length(numMc)){
-    stop('length of mcYears must be same than mcWeights')
+    stop('length of mcWeights must be the same as mcYears')
   }
   
   coef_div_mc_pond <- sum(mcWeights)
