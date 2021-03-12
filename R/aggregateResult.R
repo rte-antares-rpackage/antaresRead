@@ -98,7 +98,11 @@ aggregateResult <- function(opts, verbose = 1,
                             mcWeights = NULL,
                             mcYears = NULL){
   
-  
+  if(writeOutput == FALSE){
+    coef = 1.4
+  }else{
+    coef = 1
+  }
   
   if(writeOutput == FALSE & length(timestep)>1){
     stop("If you want data return you must choose a unique timestep")
@@ -120,7 +124,7 @@ aggregateResult <- function(opts, verbose = 1,
   options(warn = oldw)
   
   #Version which readAntares
-  linkTable <- try(data.table::fread(system.file("/format_output/tableOutput.csv", package = "antaresEditObject")),
+  linkTable <- try(data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead")),
                    silent = TRUE)
   .errorTest(linkTable, verbose, "Load of link table")
   
@@ -130,8 +134,10 @@ aggregateResult <- function(opts, verbose = 1,
   # dtaMc <- paste0(opts$simDataPath, "/mc-ind")
   if(!is.null(mcYears)){
     numMc <- mcYears
-    if(numMc%in% c("all", "All")){
-      numMc <- opts$mcYears
+    if(length(numMc) == 1){
+      if(numMc%in% c("all", "All")){
+        numMc <- opts$mcYears
+      }
     }
   }else{
     numMc <- opts$mcYears
@@ -229,7 +235,7 @@ aggregateResult <- function(opts, verbose = 1,
             struct$areas$timeId <- as.numeric(substr(struct$areas$time, nchar(as.character(struct$areas$time[1]))-1,
                                                      nchar(as.character(struct$areas$time[1]))))
             struct$links$timeId <- as.numeric(substr(struct$link$time, nchar(as.character(struct$link$time[1]))-1,
-                                                    nchar(as.character(struct$link$time[1]))))
+                                                     nchar(as.character(struct$link$time[1]))))
             struct$clusters$timeId <- as.numeric(substr(struct$clusters$time, nchar(as.character(struct$clusters$time[1]))-1,
                                                         nchar(as.character(struct$clusters$time[1]))))
           }
@@ -249,7 +255,7 @@ aggregateResult <- function(opts, verbose = 1,
                                           paste0("0", struct$clusters$day),
                                           as.character(struct$clusters$day))
           }
-          
+          print(struct)
           b <- Sys.time()
           #value structure
           value <- .giveValue(dta, SDcolsStartareas, SDcolsStartClust)
@@ -259,7 +265,7 @@ aggregateResult <- function(opts, verbose = 1,
           if(verbose>0)
           {
             try({
-              .progBar(pb, type, 1, N)
+              .progBar(pb, type, 1, N, coef)
             })
           }
           #sequentially add values
@@ -311,7 +317,7 @@ aggregateResult <- function(opts, verbose = 1,
               if(verbose>0)
               {
                 try({
-                  .progBar(pb, type, i, N)
+                  .progBar(pb, type, i, N, coef)
                 })
               }
             }
@@ -561,8 +567,20 @@ aggregateResult <- function(opts, verbose = 1,
       struct[[i]]$TPmerge <- 1:nrow(struct[[i]])
       struct[[i]] <- merge(struct[[i]], out[[i]], by = 'TPmerge')
       struct[[i]]$TPmerge <- NULL
+      suppressWarnings(
+      struct[[i]][, c("mcYear", "OV. COST_min","CO2 EMIS._min", "ROW BAL._min", "PSP_min","MISC. NDG_min", "LOLP_min", "OV. COST_max", "CO2 EMIS._max",
+                      "ROW BAL._max", "PSP_max", "MISC. NDG_max", "LOLP_max","OV. COST_std", "CO2 EMIS._std", "ROW BAL._std", "PSP_std", "MISC. NDG_std", "LOLP_std",
+                      "LOOP FLOW_min", "FLOW QUAD._min", "CONG. PROB +_min", "CONG. PROB -_min", "LOOP FLOW_max", "FLOW QUAD._max", "CONG. PROB +_max", "CONG. PROB -_max", 
+                      "LOOP FLOW_std", "FLOW QUAD._std", "CONG. PROB +_std", "CONG. PROB -_std" ) := NULL]
+      )
+      if(i == "clusters"){
+        
+        suppressWarnings(
+          
+        struct[[i]][, c( "production_min", "NP Cost_min", "NODU_min", "production_max", "NP Cost_max", "NODU_max", "production_std", "NP Cost_std", "NODU_std") := NULL]
+        )
+      }
       
-      struct[[i]][, c("mcYear", "time") := NULL]
       
     }
   }
@@ -617,10 +635,10 @@ aggregateResult <- function(opts, verbose = 1,
   XP = X * pond
   res <- list(sum = XP, min = X, max = X, sumC = XP*XP)
   
-  names(res$sum) <- paste(names(X), "EXP")
-  names(res$min) <- paste(names(X), "min")
-  names(res$max) <- paste(names(X), "max")
-  names(res$sumC) <- paste(names(X), "std")
+  names(res$sum) <- paste(names(X))
+  names(res$min) <- paste0(names(X), "_min")
+  names(res$max) <- paste0(names(X), "_max")
+  names(res$sumC) <- paste0(names(X), "_std")
   res
 }
 
@@ -773,14 +791,14 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #' @return progress bar update
 #'
 #' @noRd
-.progBar <- function(pb, timeStep, mcALLNum, nbmcallTOT)
+.progBar <- function(pb, timeStep, mcALLNum, nbmcallTOT, coef = 1)
 {
   
   usalTime <- data.frame(period = c("start","annual", "daily", "hourly", "monthly", "weekly"),
                          value = c(0, 20, 200, 600, 800, 1000))
   per <- which(usalTime$period == timeStep)
   dif <- usalTime$value[per] - usalTime$value[per - 1]
-  approxEnd <- mcALLNum/nbmcallTOT
+  approxEnd <- mcALLNum*coef/nbmcallTOT
   i = (dif * approxEnd + usalTime$value[per - 1]) / usalTime$value[length( usalTime$value)]
   setTxtProgressBar(pb, i)
   
