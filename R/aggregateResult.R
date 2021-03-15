@@ -98,6 +98,16 @@ aggregateResult <- function(opts, verbose = 1,
                             mcWeights = NULL,
                             mcYears = NULL){
   
+  
+  # opts
+  # verbose = 1
+  # filtering = FALSE
+  # selected = NULL
+  # timestep = "houry"
+  # writeOutput = FALSE
+  # mcWeights = c(1, 2)
+  # mcYears = c(1, 3)
+  # 
   if(writeOutput == FALSE){
     coef = 1.4
   }else{
@@ -151,6 +161,8 @@ aggregateResult <- function(opts, verbose = 1,
   }
   
   coef_div_mc_pond <- sum(mcWeights)
+  coef_div_mc_pond_2 <- sum(mcWeights * mcWeights)
+  
   #sapply on timeStep
   #allTyped <- c("annual", "daily", "hourly", "monthly", "weekly")
   #allTyped <- 'hourly'
@@ -255,12 +267,21 @@ aggregateResult <- function(opts, verbose = 1,
                                           paste0("0", struct$clusters$day),
                                           as.character(struct$clusters$day))
           }
-          print(struct)
           b <- Sys.time()
           #value structure
           value <- .giveValue(dta, SDcolsStartareas, SDcolsStartClust)
           N <- length(numMc)
-          value <- lapply(value, function(X){.creatStats(X, mcWeights[1])})
+          
+          W_sum = 0
+          w_sum2 = 0
+          mean_m = 0
+          S = 0
+          
+          value <- lapply(value, function(X){.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
+          
+          
+          
+          
           btot <- as.numeric(Sys.time() - b)
           if(verbose>0)
           {
@@ -307,11 +328,15 @@ aggregateResult <- function(opts, verbose = 1,
               aTot <- aTot + as.numeric(Sys.time() - a)
               b <- Sys.time()
               valueTP <- .giveValue(dtaTP, SDcolsStartareas, SDcolsStartClust)
-              valueTP <- lapply(valueTP, function(X){.creatStats(X, mcWeights[i])})
+              
+              
+              valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
               
               value$areas <- .updateStats(value$areas, valueTP$areas)
               value$links <- .updateStats(value$links, valueTP$links)
               value$clusters <- .updateStats(value$clusters, valueTP$clusters)
+              
+              
               
               btot <- btot + as.numeric(Sys.time() - b)
               if(verbose>0)
@@ -327,17 +352,19 @@ aggregateResult <- function(opts, verbose = 1,
           oldw <- getOption("warn")
           options(warn = -1)
           b <- Sys.time()
-          value$areas$std <- sqrt((value$areas$sumC - ((value$areas$sum * value$areas$sum)/coef_div_mc_pond))/(coef_div_mc_pond))
+
+          coef_div_var = (coef_div_mc_pond )#- coef_div_mc_pond_2 / coef_div_mc_pond
+          value$areas$std <- sqrt(value$areas$var / coef_div_var)
           #nan due to round
           for (i in names(value$areas$std))
             value$areas$std[is.nan(get(i)), (i) := 0]
           
-          value$links$std <- sqrt((value$links$sumC - ((value$links$sum * value$links$sum)/coef_div_mc_pond))/(coef_div_mc_pond))
+          value$links$std <- sqrt(value$links$var / coef_div_var)
           #nan due to round
           for (i in names(value$links$std))
             value$links$std[is.nan(get(i)), (i) := 0]
           
-          value$clusters$std <- sqrt((value$clusters$sumC - ((value$clusters$sum * value$clusters$sum)/coef_div_mc_pond))/(coef_div_mc_pond))
+          value$clusters$std <- sqrt(value$clusters$var / coef_div_var)
           #nan due to round
           for (i in names(value$clusters$std))
             value$clusters$std[is.nan(get(i)), (i) := 0]
@@ -346,6 +373,35 @@ aggregateResult <- function(opts, verbose = 1,
           value$areas$sumC <- NULL
           value$links$sumC <- NULL
           value$clusters$sumC <- NULL
+          
+          
+          value$areas$var <- NULL
+          value$areas$S <- NULL
+          value$areas$W_sum <- NULL
+          value$areas$w_sum2 <- NULL
+          value$areas$mean_m <- NULL
+          
+          value$links$var <- NULL
+          value$links$S <- NULL
+          value$links$W_sum <- NULL
+          value$links$w_sum2 <- NULL
+          value$links$mean_m <- NULL
+          
+          
+          value$clusters$var <- NULL
+          value$clusters$S <- NULL
+          value$clusters$W_sum <- NULL
+          value$clusters$w_sum2 <- NULL
+          value$clusters$mean_m <- NULL
+          
+          
+          if(!is.null(value$areas) && !is.null(names(value$areas$std))){names(value$areas$std) <- paste0(names(value$areas$std) , "_std")}
+          if(!is.null(value$links) && !is.null(names(value$links$std))){names(value$links$std) <- paste0(names(value$links$std) , "_std")}
+          if(!is.null(value$clusters) && !is.null(names(value$clusters$std))){names(value$clusters$std) <- paste0(names(value$clusters$std) , "_std")}
+          
+          # names(value$links$std) <- paste0(names(value$links$std), "_std")
+          # names(value$clusters$std) <- paste0(names(value$clusters$std) , "_std")
+          
           value$areas$sum <- value$areas$sum / coef_div_mc_pond
           value$links$sum <- value$links$sum / coef_div_mc_pond
           value$clusters$sum <- value$clusters$sum / coef_div_mc_pond
@@ -628,17 +684,35 @@ aggregateResult <- function(opts, verbose = 1,
 #'
 #' @noRd
 #'
-.creatStats <- function(X, pond = 1){
+.creatStats <- function(X, W_sum, w_sum2, mean_m, S, pond = 1){
+  
+  
+  # W_sum = value$W_sum
+  # w_sum2 = value$w_sum2
+  # mean_m = value$mean_m
+  # S = value$S 
+  # pond = mcWeights[i]
   
   # res <- list(sum = X, min = X, max = X,
   #             sumC = data.table::data.table(sapply(X, function(Z) Z*Z)))
+  
+  W_sum = W_sum + pond
+  w_sum2 = w_sum2 + pond * pond
+  mean_m2 = mean_m + (pond / W_sum) * (X - mean_m)
+  S = S + pond * (X - mean_m) * (X - mean_m2)
+  
+  
   XP = X * pond
-  res <- list(sum = XP, min = X, max = X, sumC = XP*XP)
+  res <- list(sum = XP, min = X, max = X, sumC = XP*XP, S = S, W_sum = W_sum, w_sum2 = w_sum2, mean_m = mean_m2)
   
   names(res$sum) <- paste(names(X))
   names(res$min) <- paste0(names(X), "_min")
   names(res$max) <- paste0(names(X), "_max")
   names(res$sumC) <- paste0(names(X), "_std")
+  
+  
+  
+  
   res
 }
 
@@ -658,6 +732,7 @@ aggregateResult <- function(opts, verbose = 1,
   X$min <-  pmin.fast(X$min , Y$min)
   X$max <-  pmax.fast(X$max , Y$max)
   X$sumC <-  X$sumC + Y$sumC
+  X$var <- Y$S
   X
 }
 
