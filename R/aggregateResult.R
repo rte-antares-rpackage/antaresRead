@@ -327,10 +327,30 @@ aggregateResult <- function(opts, verbose = 1,
               
               aTot <- aTot + as.numeric(Sys.time() - a)
               b <- Sys.time()
+              
               valueTP <- .giveValue(dtaTP, SDcolsStartareas, SDcolsStartClust)
               
+              nmKeep <- names(valueTP)
               
-              valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
+              valueTP <- lapply(names(valueTP), function(X){
+                
+                .creatStats(valueTP[[X]], value[[X]]$W_sum, value[[X]]$w_sum2, value[[X]]$mean_m, value[[X]]$S , mcWeights[i])
+               
+                # 
+                #  X = "areas"
+                #  W_sum = value[[X]]$W_sum 
+                #  w_sum2 = value[[X]]$w_sum2
+                #  mean_m = value[[X]]$mean_m 
+                # S =  value[[X]]$S
+                # pond =  mcWeights[i]
+                # X = valueTP[[X]]
+                # 
+                
+              })
+              
+              names(valueTP) <- nmKeep 
+              
+              # valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
               
               value$areas <- .updateStats(value$areas, valueTP$areas)
               value$links <- .updateStats(value$links, valueTP$links)
@@ -699,9 +719,10 @@ aggregateResult <- function(opts, verbose = 1,
   W_sum = W_sum + pond
   w_sum2 = w_sum2 + pond * pond
   mean_m2 = mean_m + (pond / W_sum) * (X - mean_m)
-  S = S + pond * (X - mean_m) * (X - mean_m2)
+
+  S = S + pond * (X - mean_m2) * (X - mean_m)
   
-  
+
   XP = X * pond
   res <- list(sum = XP, min = X, max = X, sumC = XP*XP, S = S, W_sum = W_sum, w_sum2 = w_sum2, mean_m = mean_m2)
   
@@ -733,6 +754,11 @@ aggregateResult <- function(opts, verbose = 1,
   X$max <-  pmax.fast(X$max , Y$max)
   X$sumC <-  X$sumC + Y$sumC
   X$var <- Y$S
+  X$S <- Y$S
+  X$W_sum <- Y$W_sum
+  X$w_sum2 <- Y$w_sum2
+  X$mean_m <- Y$mean_m
+  
   X
 }
 
