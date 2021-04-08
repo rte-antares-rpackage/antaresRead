@@ -311,7 +311,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   if(!is.null(mcWeights)){
     return(aggregateResult(opts = opts,
-                    verbose = FALSE,
+                    verbose = TRUE,
                     filtering = TRUE,
                     selected = list(areas = areas, links = links, clusters = clusters),
                     timestep = timeStep,

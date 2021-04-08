@@ -335,7 +335,7 @@ aggregateResult <- function(opts, verbose = 1,
               valueTP <- lapply(names(valueTP), function(X){
                 
                 .creatStats(valueTP[[X]], value[[X]]$W_sum, value[[X]]$w_sum2, value[[X]]$mean_m, value[[X]]$S , mcWeights[i])
-               
+                
                 # 
                 #  X = "areas"
                 #  W_sum = value[[X]]$W_sum 
@@ -372,7 +372,7 @@ aggregateResult <- function(opts, verbose = 1,
           oldw <- getOption("warn")
           options(warn = -1)
           b <- Sys.time()
-
+          
           coef_div_var = (coef_div_mc_pond )#- coef_div_mc_pond_2 / coef_div_mc_pond
           value$areas$std <- sqrt(value$areas$var / coef_div_var)
           #nan due to round
@@ -644,16 +644,16 @@ aggregateResult <- function(opts, verbose = 1,
       struct[[i]] <- merge(struct[[i]], out[[i]], by = 'TPmerge')
       struct[[i]]$TPmerge <- NULL
       suppressWarnings(
-      struct[[i]][, c("mcYear", "OV. COST_min","CO2 EMIS._min", "ROW BAL._min", "PSP_min","MISC. NDG_min", "LOLP_min", "OV. COST_max", "CO2 EMIS._max",
-                      "ROW BAL._max", "PSP_max", "MISC. NDG_max", "LOLP_max","OV. COST_std", "CO2 EMIS._std", "ROW BAL._std", "PSP_std", "MISC. NDG_std", "LOLP_std",
-                      "LOOP FLOW_min", "FLOW QUAD._min", "CONG. PROB +_min", "CONG. PROB -_min", "LOOP FLOW_max", "FLOW QUAD._max", "CONG. PROB +_max", "CONG. PROB -_max", 
-                      "LOOP FLOW_std", "FLOW QUAD._std", "CONG. PROB +_std", "CONG. PROB -_std" ) := NULL]
+        struct[[i]][, c("mcYear", "OV. COST_min","CO2 EMIS._min", "ROW BAL._min", "PSP_min","MISC. NDG_min", "LOLP_min", "OV. COST_max", "CO2 EMIS._max",
+                        "ROW BAL._max", "PSP_max", "MISC. NDG_max", "LOLP_max","OV. COST_std", "CO2 EMIS._std", "ROW BAL._std", "PSP_std", "MISC. NDG_std", "LOLP_std",
+                        "LOOP FLOW_min", "FLOW QUAD._min", "CONG. PROB +_min", "CONG. PROB -_min", "LOOP FLOW_max", "FLOW QUAD._max", "CONG. PROB +_max", "CONG. PROB -_max", 
+                        "LOOP FLOW_std", "FLOW QUAD._std", "CONG. PROB +_std", "CONG. PROB -_std" ) := NULL]
       )
       if(i == "clusters"){
         
         suppressWarnings(
           
-        struct[[i]][, c( "production_min", "NP Cost_min", "NODU_min", "production_max", "NP Cost_max", "NODU_max", "production_std", "NP Cost_std", "NODU_std") := NULL]
+          struct[[i]][, c( "production_min", "NP Cost_min", "NODU_min", "production_max", "NP Cost_max", "NODU_max", "production_std", "NP Cost_std", "NODU_std") := NULL]
         )
       }
       
@@ -719,10 +719,10 @@ aggregateResult <- function(opts, verbose = 1,
   W_sum = W_sum + pond
   w_sum2 = w_sum2 + pond * pond
   mean_m2 = mean_m + (pond / W_sum) * (X - mean_m)
-
+  
   S = S + pond * (X - mean_m2) * (X - mean_m)
   
-
+  
   XP = X * pond
   res <- list(sum = XP, min = X, max = X, sumC = XP*XP, S = S, W_sum = W_sum, w_sum2 = w_sum2, mean_m = mean_m2)
   
@@ -806,14 +806,15 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   }
   
   if(folderType == "links"){
-    ctryDecomp <- strsplit(as.character(ctry), " - ")%>>%unlist
-    entete <- paste0(ctryDecomp[1], "\t",folderTypesansS,"\t",abrtype,
-                     "\t",timestep,"\n",ctryDecomp[2] ,"\tVARIABLES\tBEGIN\tEND\n\t",
-                     nbvar, "\t",indexMin, "\t",indexMax, "\n\n",
-                     ctryDecomp[1], "\t", timestep, paste0(rep("\t", ncolFix), collapse = ""),
-                     paste0(nomcair, collapse = "\t"),"\n",
-                     paste0(rep("\t", ncolFix+1), collapse = ""),paste0(unit, collapse = "\t"),"\n",
-                     "\t", paste0(nomStruct, collapse = "\t"), "\t", paste0(Stats, collapse = "\t"), "\n")
+    ctryDecomp <- strsplit(as.character(ctry), " - ")
+      ctryDecomp <-  unlist(ctryDecomp)
+      entete <- paste0(ctryDecomp[1], "\t",folderTypesansS,"\t",abrtype,
+                       "\t",timestep,"\n",ctryDecomp[2] ,"\tVARIABLES\tBEGIN\tEND\n\t",
+                       nbvar, "\t",indexMin, "\t",indexMax, "\n\n",
+                       ctryDecomp[1], "\t", timestep, paste0(rep("\t", ncolFix), collapse = ""),
+                       paste0(nomcair, collapse = "\t"),"\n",
+                       paste0(rep("\t", ncolFix+1), collapse = ""),paste0(unit, collapse = "\t"),"\n",
+                       "\t", paste0(nomStruct, collapse = "\t"), "\t", paste0(Stats, collapse = "\t"), "\n")
   }else{
     entete <- paste0(ctry, "\t",folderTypesansS,"\t",abrtype, "\t",timestep,"\n\tVARIABLES\tBEGIN\tEND\n\t",
                      nbvar, "\t",indexMin, "\t",indexMax, "\n\n",

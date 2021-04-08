@@ -29,7 +29,6 @@ Imports:
     stats,
     stringr,
     shiny,
-    pipeR,
     httr,
     jsonlite
 Suggests:
