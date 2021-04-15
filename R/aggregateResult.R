@@ -436,6 +436,8 @@ aggregateResult <- function(opts, verbose = 1,
         allfiles <- c("values")
         
         if(writeOutput == FALSE){
+          .progBar(pb, type, 1, 1, 1, terminate = TRUE)
+          
           return(.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
         }else{
           
@@ -657,7 +659,9 @@ aggregateResult <- function(opts, verbose = 1,
         )
       }
       
-      
+      if(!is.null( struct[[i]]$day)){
+        struct[[i]]$day <- as.numeric(struct[[i]]$day)
+      }
     }
   }
   struct
@@ -893,7 +897,7 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #' @return progress bar update
 #'
 #' @noRd
-.progBar <- function(pb, timeStep, mcALLNum, nbmcallTOT, coef = 1)
+.progBar <- function(pb, timeStep, mcALLNum, nbmcallTOT, coef = 1, terminate = FALSE)
 {
   
   usalTime <- data.frame(period = c("start","annual", "daily", "hourly", "monthly", "weekly"),
@@ -902,7 +906,9 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   dif <- usalTime$value[per] - usalTime$value[per - 1]
   approxEnd <- mcALLNum*coef/nbmcallTOT
   i = (dif * approxEnd + usalTime$value[per - 1]) / usalTime$value[length( usalTime$value)]
-  setTxtProgressBar(pb, i)
+  if(terminate){setTxtProgressBar(pb, 1)}else{ setTxtProgressBar(pb, i)}
+
+ 
   
 }
 
