@@ -4,7 +4,7 @@
 #' @param nbcl \code{numeric} Number of parralel process
 #' @param verbose \code{numeric} see logs (1) or not (0)
 #'
-#' @import data.table parallel pipeR
+#' @import data.table parallel
 #'
 #'
 #' @examples
@@ -87,7 +87,7 @@ parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
 #' @param mcWeights \code{numeric} vector of weigth for mcYears.
 #' @param mcYears  \code{numeric} mcYears to load.
 #'
-#' @import data.table pipeR
+#' @import data.table
 #'
 #' @export
 aggregateResult <- function(opts, verbose = 1,
