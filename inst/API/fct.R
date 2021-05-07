@@ -1,23 +1,4 @@
 
-readjsonAntares <- function(path){
-  X <- read_json(path)
-  
-  recustiveTF <- function(X){
-    if(is.list(X)){
-      lapply(X, recustiveTF)
-    }else{
-      if(!is.null(X)){
-        if (X == "")return(NA)
-        if (X == "true")return(TRUE)
-        if (X == "false")return(FALSE)
-        return(X)
-      }
-      return(X)
-    }
-  }
-  
-  recustiveTF(X)
-}
 
 
 
@@ -86,7 +67,7 @@ readjsonAntares <- function(path){
   simPath <- paths$simPath
   
   # Get basic information about the simulation
-  params <- readjsonAntares(file.path(simPath, "about-the-study", "parameters"))
+  params <- .readjsonAntares(file.path(simPath, "about-the-study", "parameters"))
   
   info <- read_json(file.path(simPath, "about-the-study", "study", "antares"))
   
@@ -218,11 +199,11 @@ readjsonAntares <- function(path){
   
   
   antaresVersion <- info$study$antares$version
-  params <- readjsonAntares(file.path(studyPath, "settings", "generaldata"))
+  params <- .readjsonAntares(file.path(studyPath, "settings", "generaldata"))
   
   # Areas with clusters
   
-  clusterList <- readjsonAntares(file.path(inputPath, "thermal", "clusters", "?depath=4"))
+  clusterList <- .readjsonAntares(file.path(inputPath, "thermal", "clusters", "?depath=4"))
   areaHasClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
     TF <- FALSE
     try({
@@ -274,7 +255,7 @@ setSimulationPathAPI <- function(path, simulation = NULL) {
   host <- strsplit(path, "/studies/")[[1]][1]
   
   res <- .getPathsAPI(path, simulation)
-  res$studyName <- readjsonAntares(file.path(res$studyPath, "study"))$antares$caption
+  res$studyName <- .readjsonAntares(file.path(res$studyPath, "study"))$antares$caption
   
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
@@ -309,7 +290,7 @@ setSimulationPathAPI <- function(path, simulation = NULL) {
 
 # Private function that reads the definition of the districts
 .readDistrictsDefAPI <- function(inputPath, areas) {
-  districts <- readjsonAntares(file.path(inputPath, "areas/sets"))
+  districts <- .readjsonAntares(file.path(inputPath, "areas/sets"))
   if (length(districts) == 0) return(NULL)
   
   res <- ldply(names(districts), function(n) {
@@ -331,7 +312,7 @@ setSimulationPathAPI <- function(path, simulation = NULL) {
 
 # Private function that reads costs of unsuplied and spilled energy
 .readEnergyCostsAPI <- function(inputPath) {
-  costs <- readjsonAntares(file.path(inputPath, "thermal", "areas"))
+  costs <- .readjsonAntares(file.path(inputPath, "thermal", "areas"))
   
   list(unserved  = unlist(costs$unserverdenergycost),
        spilled = unlist(costs$spilledenergycost))

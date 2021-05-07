@@ -5,14 +5,18 @@
 #' @param verbose \code{numeric} see logs (1) or not (0)
 #'
 #' @import data.table parallel
-#'
+#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom stats weighted.mean
+#' @importFrom jsonlite read_json
+#' @importFrom pbapply pblapply pboptions
+#' @importFrom doParallel registerDoParallel
 #'
 #' @examples
 #' \dontrun{
 #'    parAggregateMCall(opts)
 #'
 #' }
-#'
+#' 
 #' @export
 parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
   
@@ -99,6 +103,8 @@ aggregateResult <- function(opts, verbose = 1,
                             mcYears = NULL){
   
   
+  
+  Folder <- Files <- Mode <- Name <- progNam <- `production EXP` <- `NODU EXP`<- `NP Cost EXP` <- NULL
   # opts
   # verbose = 1
   # filtering = FALSE
@@ -436,7 +442,10 @@ aggregateResult <- function(opts, verbose = 1,
         allfiles <- c("values")
         
         if(writeOutput == FALSE){
-          .progBar(pb, type, 1, 1, 1, terminate = TRUE)
+          if(verbose>0)
+          {
+            .progBar(pb, type, 1, 1, 1, terminate = TRUE)
+          }
           
           return(.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
         }else{
@@ -811,14 +820,14 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   
   if(folderType == "links"){
     ctryDecomp <- strsplit(as.character(ctry), " - ")
-      ctryDecomp <-  unlist(ctryDecomp)
-      entete <- paste0(ctryDecomp[1], "\t",folderTypesansS,"\t",abrtype,
-                       "\t",timestep,"\n",ctryDecomp[2] ,"\tVARIABLES\tBEGIN\tEND\n\t",
-                       nbvar, "\t",indexMin, "\t",indexMax, "\n\n",
-                       ctryDecomp[1], "\t", timestep, paste0(rep("\t", ncolFix), collapse = ""),
-                       paste0(nomcair, collapse = "\t"),"\n",
-                       paste0(rep("\t", ncolFix+1), collapse = ""),paste0(unit, collapse = "\t"),"\n",
-                       "\t", paste0(nomStruct, collapse = "\t"), "\t", paste0(Stats, collapse = "\t"), "\n")
+    ctryDecomp <-  unlist(ctryDecomp)
+    entete <- paste0(ctryDecomp[1], "\t",folderTypesansS,"\t",abrtype,
+                     "\t",timestep,"\n",ctryDecomp[2] ,"\tVARIABLES\tBEGIN\tEND\n\t",
+                     nbvar, "\t",indexMin, "\t",indexMax, "\n\n",
+                     ctryDecomp[1], "\t", timestep, paste0(rep("\t", ncolFix), collapse = ""),
+                     paste0(nomcair, collapse = "\t"),"\n",
+                     paste0(rep("\t", ncolFix+1), collapse = ""),paste0(unit, collapse = "\t"),"\n",
+                     "\t", paste0(nomStruct, collapse = "\t"), "\t", paste0(Stats, collapse = "\t"), "\n")
   }else{
     entete <- paste0(ctry, "\t",folderTypesansS,"\t",abrtype, "\t",timestep,"\n\tVARIABLES\tBEGIN\tEND\n\t",
                      nbvar, "\t",indexMin, "\t",indexMax, "\n\n",
@@ -880,7 +889,7 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   infosIni$general$title <- dateTim2
   infosIni$general$timestamp <- round(as.numeric(difftime(dtTim,
                                                           as.POSIXct("1970-01-01 00:00:00"), units = "sec")), 0)
-  writeIni(infosIni, iniPath)
+  .writeIni(infosIni, iniPath)
 }
 
 
@@ -906,9 +915,9 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   dif <- usalTime$value[per] - usalTime$value[per - 1]
   approxEnd <- mcALLNum*coef/nbmcallTOT
   i = (dif * approxEnd + usalTime$value[per - 1]) / usalTime$value[length( usalTime$value)]
-  if(terminate){setTxtProgressBar(pb, 1)}else{ setTxtProgressBar(pb, i)}
-
- 
+  if(terminate&!is.null(pb)){setTxtProgressBar(pb, 1)}else{ setTxtProgressBar(pb, i)}
+  
+  
   
 }
 
@@ -1004,3 +1013,93 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 }
 
 
+
+
+
+
+
+# From antaresFlowbased duplicated necessary
+#' Write ini file from list obtain by antaresRead:::readIniFile and modify by user
+#'
+#' @param listData \code{list}, modified list obtained by antaresRead:::readIniFile.
+#' @param pathIni \code{Character}, Path to ini file.
+#' @param overwrite logical, should file be overwritten if already exist?
+#'
+#' @examples
+#'
+#' \dontrun{
+#' pathIni <- "D:/exemple_test/settings/generaldata.ini"
+#' generalSetting <- antaresRead:::readIniFile(pathIni)
+#' generalSetting$output$synthesis <- FALSE
+#' writeIni(generalSetting, pathIni)
+#' }
+#'
+#'
+.writeIni <- function(listData, pathIni, overwrite = FALSE) {
+  if (file.exists(pathIni)) {
+    if (overwrite) {
+      file.remove(pathIni)
+    } else {
+      stop("files already exist")
+    }
+  }
+  con <- file(pathIni, "wb")
+  on.exit(close(con))
+  invisible(
+    lapply(
+      X = seq_along(listData),
+      FUN = .formatedIniList,
+      dtaToTransform = listData,
+      namesdtaToTransform = names(listData),
+      con = con
+    )
+  )
+}
+
+#' Change R format to ini format
+#' @param val value to format
+#'
+#' @return val formated value
+#'
+#' @noRd
+.formatedIni <- function(val) {
+  if (class(val) %in% c("numeric", "integer")) {
+    format(val, nsmall = 6, scientific = FALSE)
+  } else if (class(val) %in% c("logical")) {
+    if (is.na(val)) {
+      ""
+    } else {
+      tolower(as.character(val))
+    }
+  } else {
+    val
+  }
+}
+
+#' write ini (raw by raw)
+#'
+#' @param dtaToTransform \code{list} data to write
+#' @param namesdtaToTransform \code{character} names of data to write
+#' @param con file connection where data are write
+#'
+#' @noRd
+.formatedIniList <- function(x, dtaToTransform, namesdtaToTransform, con) {
+  if (length(dtaToTransform[[x]]) > 0) {
+    if (!is.null(namesdtaToTransform)) {
+      writeChar( paste0("[", namesdtaToTransform[x], "]\n"), con, eos = NULL)
+    } else {
+      writeChar(paste0("[", x-1, "]\n"), con, eos = NULL)
+    }
+    tmp_data <- dtaToTransform[[x]]
+    # format values
+    values <- lapply(X = tmp_data, FUN = .formatedIni)
+    values <- lapply(X = values, FUN = paste, collapse = ", ")
+    # write
+    writeChar(paste(paste0(names(tmp_data), " = ", values), collapse = "\n"), con, eos = NULL)
+    writeChar("\n\n", con, eos = NULL)
+  } else {
+    if (nzchar(namesdtaToTransform[x]))
+      writeChar( paste0("[", namesdtaToTransform[x], "]\n"), con, eos = NULL)
+    writeChar("\n\n", con, eos = NULL)
+  }
+}

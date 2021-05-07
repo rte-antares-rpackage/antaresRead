@@ -16,9 +16,9 @@
 #' 
 ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
   e <- list(...)
-  if(!is.null(w)){
+  if(!is.null(e$w)){
     
-    if(length(w) != length(unique(x$mcYear))){
+    if(length(e$w) != length(unique(x$mcYear))){
       stop("You must have identical length for wd and mcYear")
     }
   }
@@ -26,7 +26,7 @@ ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
   idVars <- setdiff(.idCols(x), "mcYear")
   x[, mcYear := NULL]
   x <- x[,lapply(.SD,function(X){
-    if(!is.null(w)){
+    if(!is.null(e$w)){
       fun(X, e$w, e)
     }else{
       fun(X, e)

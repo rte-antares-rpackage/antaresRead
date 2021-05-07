@@ -8,7 +8,7 @@ sapply(studyPathS, function(studyPath){
   
   opts <- setSimulationPath(studyPath)
   
-  dt <- readAntares(areas = "all", links = "all")
+  dt <- readAntares(areas = "all", links = "all", showProgress = FALSE)
   
   dt <- setHvdcAreas(dt, as.character(unique(dt$areas$area)[1]))
   

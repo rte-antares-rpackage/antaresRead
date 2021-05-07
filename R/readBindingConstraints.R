@@ -45,7 +45,7 @@ readBindingConstraints <- function(opts=simOptions()) {
   }
   
   if(opts$typeLoad == 'api'){
-    bindingConstraints <- readjsonAntares(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"))
+    bindingConstraints <- .readjsonAntares(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"))
   }else{
     path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
     bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

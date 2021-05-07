@@ -310,9 +310,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   
   if(!is.null(mcWeights)){
-    cat("Aggregate mcYears with mcWeights \n")
+    if(showProgress == TRUE)cat("Aggregate mcYears with mcWeights \n")
     return(aggregateResult(opts = opts,
-                    verbose = TRUE,
+                    verbose = showProgress,
                     filtering = TRUE,
                     selected = list(areas = areas, links = links, clusters = clusters),
                     timestep = timeStep,
