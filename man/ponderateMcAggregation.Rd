@@ -4,14 +4,12 @@
 \alias{ponderateMcAggregation}
 \title{Mcyear aggregation weigthed by wd}
 \usage{
-ponderateMcAggregation(x, fun = weighted.mean, w = NULL, ...)
+ponderateMcAggregation(x, fun = weighted.mean, ...)
 }
 \arguments{
 \item{x}{\code{antaresData} data import with antaresRead}
 
 \item{fun}{\code{function} function to use}
-
-\item{w}{\code{numeric} weigth}
 
 \item{...}{\code{args} others args pass to fun}
 }

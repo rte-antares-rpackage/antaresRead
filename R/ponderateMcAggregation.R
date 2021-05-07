@@ -15,7 +15,7 @@
 #' @export
 #' 
 ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
-  
+  e <- list(...)
   if(!is.null(w)){
     
     if(length(w) != length(unique(x$mcYear))){
@@ -25,7 +25,13 @@ ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
   attrs <- attributes(x)
   idVars <- setdiff(.idCols(x), "mcYear")
   x[, mcYear := NULL]
-  x <- x[,lapply(.SD,fun, ... = ...),by=idVars]
+  x <- x[,lapply(.SD,function(X){
+    if(!is.null(w)){
+      fun(X, e$w, e)
+    }else{
+      fun(X, e)
+    }
+  }),by=idVars]
   #reset attributes
   .addClassAndAttributes(x, TRUE, attrs$timeStep, attrs$opts, type = attrs$type)
 }
