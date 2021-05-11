@@ -11,7 +11,7 @@ opts2 <- setSimulationPath("C:/Users/TitouanRobert/Desktop/antaresStd", 1)
 
 ##PATH api
 path <- "http://localhost:8080/studies/antaresStd/"
-opts <- .setSimulationPathAPI(path, 1)
+opts <- setSimulationPathAPI(path, 1)
 
 
 opts

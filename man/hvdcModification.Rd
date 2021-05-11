@@ -21,6 +21,7 @@ usage for hvdc
 
 data <- readAntares(areas = 'all', links = 'all')
 data <- setHvdcAreas(data, "psp in")
+data <- hvdcModification(data)
 
 }
 

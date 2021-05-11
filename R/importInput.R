@@ -55,7 +55,7 @@
   
 
 
-  if (opts$typeLoad == 'api' || file.exists(path) || !file.size(path) == 0) {
+  if (opts$typeLoad == 'api' || (file.exists(path) && !file.size(path) == 0)) {
     if(is.null(colSelect))
     {
       inputTS <- fread(path, integer64 = "numeric", header = FALSE, showProgress = FALSE)

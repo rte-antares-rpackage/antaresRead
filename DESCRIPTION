@@ -28,7 +28,11 @@ Imports:
     methods,
     stats,
     stringr,
-    shiny
+    shiny,
+    httr,
+    jsonlite,
+    pbapply,
+    doParallel
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,

@@ -14,7 +14,6 @@
 #' @param areas
 #'   character vector containing the name of areas to keep in the
 #'   final object. If \code{NULL}, all areas are kept in the final object.
-#' @inheritParams readAntares
 #'
 #' @return a list of data.tables with one element per area. The list also
 #' contains an element named "areaList" containing the name of areas in the
@@ -23,7 +22,7 @@
 #'
 #' @export
 #'
-extractDataList <- function(x, areas=NULL) {
+extractDataList <- function(x, areas = NULL) {
   # Check arguments
   opts <- simOptions(x)
   

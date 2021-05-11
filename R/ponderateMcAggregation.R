@@ -15,17 +15,23 @@
 #' @export
 #' 
 ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
-  
-  if(!is.null(w)){
+  e <- list(...)
+  if(!is.null(e$w)){
     
-    if(length(w) != length(unique(x$mcYear))){
+    if(length(e$w) != length(unique(x$mcYear))){
       stop("You must have identical length for wd and mcYear")
     }
   }
   attrs <- attributes(x)
   idVars <- setdiff(.idCols(x), "mcYear")
   x[, mcYear := NULL]
-  x <- x[,lapply(.SD,fun, ... = ...),by=idVars]
+  x <- x[,lapply(.SD,function(X){
+    if(!is.null(e$w)){
+      fun(X, e$w, e)
+    }else{
+      fun(X, e)
+    }
+  }),by=idVars]
   #reset attributes
   .addClassAndAttributes(x, TRUE, attrs$timeStep, attrs$opts, type = attrs$type)
 }

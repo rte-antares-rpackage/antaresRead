@@ -20,6 +20,7 @@ readAntares(
   select = NULL,
   mcYears = NULL,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+  mcWeights = NULL,
   opts = simOptions(),
   parallel = FALSE,
   simplify = TRUE,
@@ -94,6 +95,11 @@ simulations.}
 
 \item{timeStep}{Resolution of the data to import: hourly (default), daily,
 weekly, monthly or annual.}
+
+\item{mcWeights}{Vector of weights to apply to the specified mcYears. If not \code{NULL}, the vector must
+be the same length as the vector provided in the \code{mcYear} parameter. The function
+\code{readAntares} will then return the weighted synthetic results for the specified years,
+with the specified weights.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}

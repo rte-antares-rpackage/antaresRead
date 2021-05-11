@@ -22,6 +22,29 @@ if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3)
 }
 .runH5Test <- FALSE #Sys.getenv("RunAllAntaresReadTests") == "yes"
 
+compareValue <- function(A, B, res = NULL){
+  if(class(A)[3] == "list"){
+    res <- c(res, sapply(c("areas", "links", "cluster", "districts"), function(x){
+      if(!is.null(A[[x]]))
+      {
+        compareValue(A[[x]], B[[x]], res = res)}}))
+    
+  }else{
+    res <- c(res,sapply(names(A), function(X){
+      if(identical(A[[X]], B[[X]])){
+        TRUE
+      }else{
+        if(class(A[[X]]) %in% c("integer", "numeric")){
+          identical(as.numeric(A[[X]]), as.numeric(B[[X]]))
+        } else if(class(A[[X]]) %in% c("character", "factor")){
+          identical(as.character(A[[X]]), as.character(B[[X]]))
+        } else {
+          FALSE
+        }
+      }
+    }))
+  }
+}
 
 # Hack: For some unknown reason, this script is executed at some point of
 # the R CMD CHECK before package is correctly installed and tests actually run. 
@@ -75,29 +98,7 @@ if (sourcedir != "") {
     alias <- silentf()$name
     alias <- as.character(alias)
     
-    compareValue <- function(A, B, res = NULL){
-      if(class(A)[3] == "list"){
-        res <- c(res, sapply(c("areas", "links", "cluster", "districts"), function(x){
-          if(!is.null(A[[x]]))
-          {
-            compareValue(A[[x]], B[[x]], res = res)}}))
-        
-      }else{
-        res <- c(res,sapply(names(A), function(X){
-          if(identical(A[[X]], B[[X]])){
-            TRUE
-          }else{
-            if(class(A[[X]]) %in% c("integer", "numeric")){
-              identical(as.numeric(A[[X]]), as.numeric(B[[X]]))
-            } else if(class(A[[X]]) %in% c("character", "factor")){
-              identical(as.character(A[[X]]), as.character(B[[X]]))
-            } else {
-              FALSE
-            }
-          }
-        }))
-      }
-    }
+    
     
     timeStep <-  c("hourly", "daily", "weekly", "monthly", "annual")
     
@@ -123,6 +124,37 @@ if (sourcedir != "") {
   assign("firstDay", 113, envir = globalenv())
   assign("lastDay", 126, envir = globalenv())
 }
+
+
+##Source dir for V8
+
+sourcedir_V8 <- system.file("inst/test_v8", package = "antaresRead")
+if(sourcedir_V8 == ""){ sourcedir_V8 <- system.file("test_v8", package = "antaresRead")}
+
+
+if(sourcedir_V8 != ""){
+  
+  studies <- list.files(
+    path = sourcedir_V8,
+    pattern = "^test_case_study_v8.*\\.tar\\.gz$"
+  )
+  
+  studies_names <- basename(studies)
+  studies_names <- sub("\\.tar\\.gz$", "", studies_names)
+  
+  for (s in seq_along(studies)) {
+    dir.create(file.path(path0, studies_names[s]))
+    untar(file.path(sourcedir_V8, studies[s]), exdir = file.path(path0, studies_names[s]))
+  }
+  assign(
+    x = "studyPathSV8",
+    value = file.path(path0, studies_names, "test_case"),
+    envir = globalenv()
+  )
+}
+
+
+
 
 skip_according_to_options <- function() {
   if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))

@@ -61,7 +61,7 @@ readClusterDesc <- function(opts = simOptions()) {
   path <- file.path(opts$inputPath, "thermal/clusters")
   
   if(opts$typeLoad == 'api'){
-    jsoncld <- readjsonAntares(paste0(path, "?depth=4"))
+    jsoncld <- .readjsonAntares(paste0(path, "?depth=4"))
     res <-  rbindlist(mapply(function(X1, Y1){
       clusters <- rbindlist(
         mapply(function(X, Y){

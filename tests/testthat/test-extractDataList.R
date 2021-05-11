@@ -14,7 +14,7 @@ sapply(studyPathS, function(studyPath){
   })
   
   test_that("extractDataList throws an error if all areas do not exist", {
-    expect_error(suppressWarnings(extractDataList(areas, c("missingArea")), "area"))
+    expect_error(suppressWarnings(extractDataList(areas, c("missingArea"))))
   })
   
   links <- readAntares(links = "all", showProgress=FALSE)

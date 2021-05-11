@@ -114,7 +114,7 @@ rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
 }
 
 .check_rhdf5 <- function(stopP = TRUE){
-  if(requireNamespace("rhdf5")){
+  if(requireNamespace("rhdf5", quietly = TRUE)){
     return(TRUE)
   }else{
     .stop_rhdf5_version(stopP)

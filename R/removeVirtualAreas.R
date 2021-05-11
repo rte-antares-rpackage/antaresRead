@@ -24,7 +24,6 @@
 #'   If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
 #'   BALANCE := BALANCE - "ROW. BAL"
 #'   
-#' @inheritParams readAntares
 #'   
 #' @return 
 #' An \code{antaresDataList} object in which virtual areas have been removed and
