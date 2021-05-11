@@ -1,10 +1,5 @@
 context("mcWeights")
 
-print("heeeeeeeeeeereZZZZZZZZZZZZZZZZZZZZZ")
-print(sourcedir_V8)
-
-setSimulationPath(studyPathSV8, simulation = -1)
-
 setSimulationPath(studyPathSV8)
 
 sapply(c("hourly", "daily", "weekly", "monthly", "annual"), function(tim){
