@@ -3,6 +3,9 @@
 Changes in version 2.2.6
 FEATURES:
 * Fixed bugs in `readInputTS()` for `hydroStorage`
+* New`hvdcModification()` function
+* Add MC Weight functionnality
+* First antares api support
 
 Changes in version 2.2.5
 FEATURES:
