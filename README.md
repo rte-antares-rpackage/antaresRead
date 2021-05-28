@@ -8,7 +8,7 @@
 [![Build Status](https://travis-ci.org/rte-antares-rpackage/antaresRead.svg?branch=master)](https://travis-ci.org/rte-antares-rpackage/antaresRead)
 [![Build status](https://ci.appveyor.com/api/projects/status/010n9as7tokv7f70?svg=true)](https://ci.appveyor.com/project/rte-antares-rpackage/antaresread)
 [![codecov](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master/graph/badge.svg)](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master)
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
 [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
@@ -162,6 +162,6 @@ ANTARES is now an open-source project (since 2018), you can download the sources
 
 Copyright 2015-2016 RTE (France)
 
-* RTE: http://www.rte-france.com
+* RTE: https://www.rte-france.com
 
 This Source Code is subject to the terms of the GNU General Public License, version 2 or any higher version. If a copy of the GPL-v2 was not distributed with this file, You can obtain one at https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html.
