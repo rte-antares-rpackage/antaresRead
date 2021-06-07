@@ -460,21 +460,23 @@ aggregateResult <- function(opts, verbose = 1,
             if(nrow(areas) > 0)
             {
               
-              areas <- areas[, .SD, .SDcols = which(names(areas)%in%namekeepprog)]
+              areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$areas)]
+              areas <- areas[, .SD, .SDcols = match(opts$variables$areas, names(areas))]
               
-              areas <- areas[, .SD, .SDcols = match(namekeepprog, names(areas))]
               nbvar <- ncol(areas)
               areas <- cbind(struct$areas, areas)
               ncolFix <- ncol(struct$areas) - 3
               areas[, c("mcYear", "time") := NULL]
               allAreas <- unique(areas$area)
               
-              for(i in 1:length(namekeepprog))
+              for(i in 1:length(opts$variables$areas))
               {
-                var <- namekeepprog[i]
+                var <- opts$variables$areas[i]
                 dig <- areaSpecialFile[var == paste(Name,progNam )]$digits
-                areas[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+                if(length(dig)>0)areas[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
               }
+              
+              
               if(length(allAreas) > 0)
               {
                 sapply(allAreas,  function(areasel){
@@ -513,19 +515,26 @@ aggregateResult <- function(opts, verbose = 1,
             {
               
               
-              links <- links[, .SD, .SDcols = which(names(links)%in%namekeepprog)]
-              links <- links[, .SD, .SDcols = match(namekeepprog, names(links))]
+              links <- links[, .SD, .SDcols = which(names(links)%in%opts$variables$links)]
+              links <- links[, .SD, .SDcols = match(opts$variables$links, names(links))]
+              
+              # 
+              # areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$links)]
+              # areas <- areas[, .SD, .SDcols = match(opts$variables$areas, names(areas))]
+              # 
+              # 
+              
               nbvar <- ncol(links)
               links <- cbind(struct$links, links)
               ncolFix <- ncol(struct$links)-3
               links[, c("mcYear", "time") := NULL]
               allLink<- unique(links$link)
               
-              for(i in 1:length(namekeepprog))
+              for(i in 1:length(opts$variables$links))
               {
-                var <- namekeepprog[i]
+                var <- opts$variables$links[i]
                 dig <- linkSpecialFile[var == paste(Name,progNam )]$digits
-                links[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+                if(length(dig)>0)links[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
               }
               
               sapply(allLink,  function(linksel){
@@ -568,23 +577,34 @@ aggregateResult <- function(opts, verbose = 1,
                 
                 if(tolower(opts$mode) == "economy")
                 {
-                  nameBy <- c("production EXP", "NP Cost EXP", "NODU EXP")
+                  nameBy <- c("production", "NP Cost", "NODU")
                 }else{
-                  nameBy <- c("production EXP")
+                  nameBy <- c("production")
                 }
+                # if("NP Cost"%in%names(endClustctry)){}
                 nomStruct <- names(endClustctry)[!names(endClustctry)%in%
                                                    c("cluster", nameBy)]
+                
+                
+                
                 tmp_formula <- nomStruct
-                tmp_formula <- as.formula(paste0(paste0(tmp_formula, collapse = "+"), "~cluster"))
+                # tmp_formula <- gsub(" ", "_", tmp_formula)
+                tmp_formula <- paste0("`", tmp_formula, "`")
+                
+                tmp_formula <- as.formula(paste0(paste0(tmp_formula, collapse = " + "), "~cluster"))
                 
                 if(tolower(opts$mode) == "economy")
                 {
-                  endClustctry[, c(nameBy) := list(round(`production EXP`),
-                                                   round(`NP Cost EXP`),
-                                                   round(`NODU EXP`))]
+                  endClustctry[, c(nameBy) := list(round(`production`),
+                                                   round(`NP Cost`),
+                                                   round(`NODU`))]
                 }else{
-                  endClustctry[, c(nameBy) := list(round(`production EXP`))]
+                  endClustctry[, c(nameBy) := list(round(`production`))]
                 }
+                
+                
+                
+                
                 endClustctry <- data.table::dcast(endClustctry, tmp_formula,
                                                   value.var = c(nameBy))
                 
@@ -595,12 +615,12 @@ aggregateResult <- function(opts, verbose = 1,
                 nomcair <- nomcair[!nomcair%in%nomStruct]
                 nbvar <- length(nomcair)
                 unit <- rep("", length(nomcair))
-                unit[grep("production EXP_",nomcair)] <- "MWh"
-                unit[grep("NP Cost EXP_",nomcair)] <- "NP Cost - Euro"
-                unit[grep("NODU EXP_",nomcair)] <- "NODU"
-                nomcair <- gsub("production EXP_","",nomcair)
-                nomcair <- gsub("NP Cost EXP_","",nomcair)
-                nomcair <- gsub("NODU EXP_","",nomcair)
+                unit[grep("production",nomcair)] <- "MWh"
+                unit[grep("NP Cost",nomcair)] <- "NP Cost - Euro"
+                unit[grep("NODU",nomcair)] <- "NODU"
+                nomcair <- gsub("production","",nomcair)
+                nomcair <- gsub("NP Cost","",nomcair)
+                nomcair <- gsub("NODU","",nomcair)
                 Stats <- rep("EXP", length(unit))
                 nameIndex <- ifelse(type == "weekly", "week", "index")
                 nomStruct[which(nomStruct == "timeId")] <- nameIndex

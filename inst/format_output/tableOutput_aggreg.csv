@@ -235,10 +235,10 @@ area;values;adequacy;MAX MRG;MWh;EXP;0
 area;values;adequacy;MAX MRG;MWh;std;0
 area;values;adequacy;MAX MRG;MWh;min;0
 area;values;adequacy;MAX MRG;MWh;max;0
-area;values;economy;NODU; ;EXP;0
-area;values;economy;NODU; ;std;0
-area;values;economy;NODU; ;min;0
-area;values;economy;NODU; ;max;0
+area;values;adequacy;NODU; ;EXP;0
+area;values;adequacy;NODU; ;std;0
+area;values;adequacy;NODU; ;min;0
+area;values;adequacy;NODU; ;max;0
 link;values;economy;FLOW LIN.;MWh;EXP;0
 link;values;economy;FLOW LIN.;MWh;std;0
 link;values;economy;FLOW LIN.;MWh;min;0
