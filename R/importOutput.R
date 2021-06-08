@@ -61,22 +61,22 @@
     args$path <- sapply(args$path, .changeName, opts = opts)
     # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
     # print(outputMissing)
-     outputMissing <- rep(FALSE, nrow(args))
+    outputMissing <- rep(FALSE, nrow(args))
   }else{
-  outputMissing <- !file.exists(args$path)
+    outputMissing <- !file.exists(args$path)
   }
   if (all(outputMissing)) {
     message("No data corresponding to your query.")
     return(NULL)
   } else if (any(outputMissing)) {
     message("Some requested output files are missing.")
-    args <- args[outputMissing, ]
+    args <- args[!outputMissing, ]
   }
   
   # columns to retrieve
   if (sameNames) {
     colNames <- .getOutputHeader(args$path[1], objectName)
-  
+    
     if (is.null(select)) {
       # read all columns except the time variables that will be recreated
       selectCol <- which(!colNames %in% pkgEnv$idVars)
@@ -99,50 +99,50 @@
   {
     n <- nrow(args)
     withProgress(message = 'antaresRead', value = 0, {
-  res <- llply(
-    1:nrow(args), 
-    function(i) {
-      incProgress(1/n, detail = paste0("Importing ", folder, " data"))
-      data <- NULL
-      try({
-      if (!sameNames) {
-        colNames <- .getOutputHeader(args$path[i], objectName)
-        selectCol <- which(!colNames %in% pkgEnv$idVars)
-        colNames <- colNames[selectCol]
-      }
-      
-      if (length(selectCol) == 0) {
-        data <- data.table(timeId = timeIds)
-      } else {
-        data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                      select = selectCol, integer64 = "numeric",
-                      na.strings = "N/A")
-        
-        # fix data.table bug on integer64
-        any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
-        if(length(any_int64) > 0){
-          data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
-        }
-        
-        setnames(data, names(data), colNames)
-        data[, timeId := timeIds]
-      }
-      
-      data[, c(objectName) := args$id[i]]
-      if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
-      
-      if (!is.null(processFun)) data <- processFun(data)
-      
-      data
-      })
-      data
-    }, 
-    .progress = ifelse(showProgress, "text", "none"),
-    .parallel = parallel,
-    .paropts = list(.packages = "antaresRead")
-  )
+      res <- llply(
+        1:nrow(args), 
+        function(i) {
+          incProgress(1/n, detail = paste0("Importing ", folder, " data"))
+          data <- NULL
+          try({
+            if (!sameNames) {
+              colNames <- .getOutputHeader(args$path[i], objectName)
+              selectCol <- which(!colNames %in% pkgEnv$idVars)
+              colNames <- colNames[selectCol]
+            }
+            
+            if (length(selectCol) == 0) {
+              data <- data.table(timeId = timeIds)
+            } else {
+              data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
+                            select = selectCol, integer64 = "numeric",
+                            na.strings = "N/A")
+              
+              # fix data.table bug on integer64
+              any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
+              if(length(any_int64) > 0){
+                data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+              }
+              
+              setnames(data, names(data), colNames)
+              data[, timeId := timeIds]
+            }
+            
+            data[, c(objectName) := args$id[i]]
+            if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+            
+            if (!is.null(processFun)) data <- processFun(data)
+            
+            data
+          })
+          data
+        }, 
+        .progress = ifelse(showProgress, "text", "none"),
+        .parallel = parallel,
+        .paropts = list(.packages = "antaresRead")
+      )
     })
-  
+    
   }else{
     res <- llply(
       1:nrow(args), 
@@ -228,7 +228,7 @@
 #' @noRd
 #'
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                  showProgress, opts, mustRun = FALSE, parallel) {
+                                     showProgress, opts, mustRun = FALSE, parallel) {
   
   # In output files, there is one file per area with the follwing form:
   # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
@@ -388,7 +388,7 @@
 #' @noRd
 #'
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
-                                 showProgress, opts, parallel) {
+                                  showProgress, opts, parallel) {
   suppressWarnings(
     .importOutput("links", "values", "link", links, timeStep, select, 
                   mcYears, showProgress, opts, parallel = parallel)
