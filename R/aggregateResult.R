@@ -1,6 +1,3 @@
-#' Creation of Mc_all (only antares > V6)
-#'
-#' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
 #' @param nbcl \code{numeric} Number of parralel process
 #' @param verbose \code{numeric} see logs (1) or not (0)
 #'
@@ -11,14 +8,18 @@
 #' @importFrom pbapply pblapply pboptions
 #' @importFrom doParallel registerDoParallel
 #'
-#' @examples
-#' \dontrun{
-#'    parAggregateMCall(opts)
-#'
-#' }
 #' 
 #' @export
-parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
+#' 
+#' @rdname aggregatate_mc_all
+#' 
+parAggregateMCall <- function(opts, 
+                              nbcl = 8, 
+                              verbose = 1, 
+                              timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+                              writeOutput = TRUE, # for ADPatch compatibility
+                              mcWeights = NULL,
+                              mcYears = NULL){
   
   
   if(verbose == 1){
@@ -48,8 +49,7 @@ parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
   
   if(parallel){
     cl <- makeCluster(nbcl)
-    clusterEvalQ(cl, library(antaresEditObject))
-    clusterExport(cl, "opts")
+    clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"))
     registerDoParallel(cl)
   }else{
     cl <- NULL
@@ -59,7 +59,8 @@ parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
   pblapply(todo, function(X){
     d <- list(X[[1]][1])
     names(d) <- X[[1]][2]
-    aggregateResult(opts, filtering = TRUE, verbose = 0, selected = d)
+    aggregateResult(opts, filtering = TRUE, verbose = 0, selected = d, 
+                    timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
   }, cl = cl)
   
   if(verbose == 1){
@@ -75,8 +76,10 @@ parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
 
 
 
-#' Creation of Mc_all
+#' Creation of Mc_all (only antares > V6)
 #'
+#' Creation of Mc_all (only antares > V6)
+#' 
 #' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
 #' @param verbose \code{numeric} show log in console. Defaut to 1
 #' \itemize{
@@ -94,17 +97,26 @@ parAggregateMCall <- function(opts, nbcl = 8, verbose = 1){
 #' @import data.table
 #'
 #' @export
+#' 
+#' @rdname aggregatate_mc_all
+#' 
+#' @examples
+#' \dontrun{
+#'    aggregateResult(opts)
+#'
+#' }
+#' 
 aggregateResult <- function(opts, verbose = 1,
                             filtering = FALSE,
                             selected = NULL,
                             timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
-                            writeOutput = TRUE,
+                            writeOutput = FALSE,
                             mcWeights = NULL,
                             mcYears = NULL){
   
   
   
-  Folder <- Files <- Mode <- Name <- progNam <- `production EXP` <- `NODU EXP`<- `NP Cost EXP` <- NULL
+  Folder <- Files <- Mode <- Name <- progNam <- `production EXP` <- `NODU EXP`<- `NP Cost EXP` <- `production` <- `NODU`<- `NP Cost` <- NULL
   # opts
   # verbose = 1
   # filtering = FALSE
