@@ -318,40 +318,4 @@ sapply(studyPathS, function(studyPath){
     expect_false(is.null(mydataCorrected$districts$pumpingCapacity))
     expect_false(is.null(mydataCorrected$districts$storageCapacity))
   })
-  
-  if(requireNamespace("antaresEditObject", quietly = TRUE)){
-    test_that("removeVirtualAreas works on isolated areas", {
-      mydata <- suppressWarnings({readAntares(areas = "all",
-                                              districts = "all",
-                                              links = "all",
-                                              showProgress = FALSE,
-                                              hydroStorageMaxPower = TRUE,
-                                              linkCapacity = TRUE,
-                                              mcYears = 1)})
-      
-      # we isolate 'a' from the other areas:
-      a_links <- getLinks("a", namesOnly = FALSE, withDirection = FALSE)
-      mapply(
-        FUN = antaresEditObject::removeLink,
-        from = a_links$from,
-        to = a_links$to
-      )
-      
-      expect_error(
-        mydataCorrected <- removeVirtualAreas(mydata,
-                                              storageFlexibility = c("a", "b")),
-        NA
-      )
-      
-      # links to 'a' are created again in order to allow next tests (in particular test-setup.R)
-      #   to run correctly.
-      mapply(
-        FUN = antaresEditObject::createLink,
-        from = a_links$from,
-        to = a_links$to
-      )
-      
-    })
-  }
-  
 })
