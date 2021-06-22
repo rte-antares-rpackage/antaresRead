@@ -1,11 +1,7 @@
 # context("testAPI")
 # 
 # describe("testAPI", {
-#   
-#   library(jsonlite)
-#   library(httr)
-#   library(antaresRead)
-#   
+#
 #   # opts <- setSimulationPathAPI(path, "input")
 #   opts <- setSimulationPathAPI(pathAPI, 1)
 #   opts2 <- setSimulationPath("C:/Users/TitouanRobert/Desktop/antaresStd", 1)

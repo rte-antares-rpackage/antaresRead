@@ -59,8 +59,6 @@
   
   if(opts$typeLoad == "api"){
     args$path <- sapply(args$path, .changeName, opts = opts)
-    # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
-    # print(outputMissing)
     outputMissing <- rep(FALSE, nrow(args))
   }else{
     outputMissing <- !file.exists(args$path)

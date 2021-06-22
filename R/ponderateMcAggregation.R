@@ -14,6 +14,8 @@
 #' 
 #' @export
 #' 
+#' @importFrom stats weighted.mean
+#' 
 ponderateMcAggregation <- function(x, fun = weighted.mean, ...) {
   e <- list(...)
   if(!is.null(e$w)){

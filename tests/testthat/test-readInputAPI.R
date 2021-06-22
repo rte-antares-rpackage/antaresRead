@@ -2,9 +2,6 @@
 # 
 # describe("readInputAPI", {
 #   
-#   library(jsonlite)
-#   library(httr)
-#   library(antaresRead)
 #   
 #   # opts <- setSimulationPathAPI(path, "input")
 #   opts <- setSimulationPathAPI(pathAPI, 1)

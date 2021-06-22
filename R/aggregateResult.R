@@ -3,8 +3,6 @@
 #'
 #' @import data.table parallel
 #' @importFrom utils setTxtProgressBar txtProgressBar
-#' @importFrom stats weighted.mean
-#' @importFrom jsonlite read_json
 #' @importFrom pbapply pblapply pboptions
 #' @importFrom doParallel registerDoParallel
 #'

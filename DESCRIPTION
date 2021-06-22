@@ -28,8 +28,6 @@ Imports:
     stats,
     stringr,
     shiny,
-    httr,
-    jsonlite,
     pbapply,
     doParallel
 Suggests:
