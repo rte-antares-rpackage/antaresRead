@@ -7,3 +7,5 @@ inst/testdata/test_case/*
 revdep/checks/
 revdep/data.sqlite
 revdep/library/
+/doc/
+/Meta/

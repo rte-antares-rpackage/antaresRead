@@ -11,3 +11,5 @@ cheat_sheet
 ^pkgdown$
 ^inst/testdata/antares-test-study-v6\.tar\.gz$
 ^revdep$
+^doc$
+^Meta$
