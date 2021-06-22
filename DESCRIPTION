@@ -29,7 +29,8 @@ Imports:
     stringr,
     shiny,
     pbapply,
-    doParallel
+    doParallel,
+    jsonlite
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,

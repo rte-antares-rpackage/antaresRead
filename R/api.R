@@ -1,3 +1,4 @@
+#' @importFrom jsonlite read_json
 .readjsonAntares <- function(path){
   X <- read_json(path)
   
