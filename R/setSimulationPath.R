@@ -322,9 +322,15 @@ setSimulationPath <- function(path, simulation = NULL) {
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
-  # Areas with clusters
+  # Areas with thermal clusters
   areaHasClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
     f <- file.path(inputPath, "thermal/clusters", a, "list.ini")
+    file.exists(f) && file.info(f)$size > 0
+  })
+  
+  # Areas with renewable clusters
+  areaHasResClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    f <- file.path(inputPath, "renewables/clusters", a, "list.ini")
     file.exists(f) && file.info(f)$size > 0
   })
   
@@ -336,6 +342,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linkList = as.character(linksDef$link),
     linksDef = linksDef,
     areasWithClusters = areaList[areaHasClusters],
+    areasWithResClusters = areaList[areaHasResClusters],
     parameters = params
   )
 
@@ -383,13 +390,21 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   linkList <- list.files(file.path(dataPath, "links"))
   
-  # Areas containing clusters
+  # Areas containing thermal clusters
   hasClusters <- laply(file.path(dataPath, "areas", areaList), function(x) {
     f <- list.files(x)
-    any(grepl("details", f))
+    any(grepl("(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)", f))
   })
   
   areasWithClusters <- areaList[hasClusters]
+  
+  # Areas containing renewable clusters
+  hasResClusters <- laply(file.path(dataPath, "areas", areaList), function(x) {
+    f <- list.files(x)
+    any(grepl("details-res-", f))
+  })
+  
+  areasWithResClusters <- areaList[hasResClusters]
   
   # Available variables
   variables <- list()
@@ -429,6 +444,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linkList = linkList,
     linksDef = linksDef,
     areasWithClusters = areasWithClusters,
+    areasWithResClusters = areasWithResClusters,
     variables = variables,
     parameters = params
   )
