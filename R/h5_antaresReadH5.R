@@ -126,8 +126,12 @@
                                areas = areas,
                                links = links,
                                clusters = clusters,
+                               clustersRes = NULL,
                                districts = districts,
                                mcYears = mcYears)
+  
+  reqInfos$clustersRes <- NULL
+  
   select <- reqInfos$select
   if(ctrlselectlist){
     select$clusters <- c(pkgEnvAntareasH5$varClusters, select$areas)
