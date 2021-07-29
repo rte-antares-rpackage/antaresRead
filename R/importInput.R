@@ -49,18 +49,20 @@
                       monthly=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts)))
   
   if(opts$typeLoad == "api"){
-    path <- .changeNameInput(path, opts)
+    # path <- .changeNameInput(path, opts)
   }
   
   
-
-
+  
+  
   if (opts$typeLoad == 'api' || (file.exists(path) && !file.size(path) == 0)) {
     if(is.null(colSelect))
     {
-      inputTS <- fread(path, integer64 = "numeric", header = FALSE, showProgress = FALSE)
-    }else{
-      inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect, showProgress = FALSE)
+      # inputTS <- fread(path, integer64 = "numeric", header = FALSE, showProgress = FALSE)
+      inputTS <- fread_antares(opts = opts, file = path, integer64 = "numeric", header = FALSE, showProgress = FALSE)
+    } else {
+      # inputTS <- fread(path, integer64 = "numeric", header = FALSE, select = colSelect, showProgress = FALSE)
+      inputTS <- fread_antares(opts = opts, file = path, integer64 = "numeric", header = FALSE, select = colSelect, showProgress = FALSE)
     }
     
     if (opts$typeLoad == 'api' || opts$antaresVersion < 650) {
@@ -128,7 +130,7 @@
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
                  inputTimeStep = inputTimeStepV, type = "matrix")
 }
-  
+
 .importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
   
   unselect = unselect$areas
@@ -249,7 +251,7 @@
   clusters <- list.files(path)
   
   beginName <- c("marginalCostModulation", "marketBidModulation", 
-      "capacityModulation", "minGenModulation")
+                 "capacityModulation", "minGenModulation")
   if(!is.null(unselect)){
     colSelect <- which(!beginName%in%unselect)
     names <- beginName[colSelect]
@@ -262,9 +264,11 @@
   res <- ldply(clusters, function(cl) {
     if(is.null(colSelect))
     {
-    modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+      # modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+      modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), colClasses = "numeric")
     }else{
-      modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+      # modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+      modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
     }
     
     setnames(modulation, 
@@ -284,7 +288,7 @@
   })
 }
 
-.changeNameInput <- function(path, opts){
-  out <- sub(pattern = "studies", "file", path)
-  out <- gsub(" ", "%20", out)
-}
+# .changeNameInput <- function(path, opts){
+#   out <- sub(pattern = "studies", "file", path)
+#   out <- gsub(" ", "%20", out)
+# }

@@ -465,7 +465,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     lubridate::year(dateLeapYear) <- year(dateLeapYear) + 1
 
   # If inconsistency, then choose a year that restores consistency
-  if (jan1 != wday(dateJan1) | lubridate::leap_year(dateLeapYear) != p$leapyear) {
+  if (jan1 != lubridate::wday(dateJan1) | lubridate::leap_year(dateLeapYear) != p$leapyear) {
 
     if (p$leapyear & p$`first-month-in-year` == "february") {
       newYear <- switch(jan1, 2045, 2029, 2041, 2025, 2037, 2021, 2033)

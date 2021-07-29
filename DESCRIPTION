@@ -31,7 +31,9 @@ Imports:
     httr,
     jsonlite,
     pbapply,
-    doParallel
+    doParallel,
+    httr,
+    utils
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,
