@@ -23,14 +23,14 @@
     path <- paste0(path, "&formatted=false")
     httpResponse <- GET(utils::URLencode(path), add_headers(Authorization = paste0("Bearer ", token)))
     colname <- tryCatch({fread(content(httpResponse, "parsed"), header = F, skip = 4, nrows = 3, sep = "\t")}, 
-                         error = function(e) NULL)
+                        error = function(e) NULL)
   }
   if(!is.null(colname)){
     colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
     colname[1:2] <- c(objectName, "timeId")
     colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
   }
-
+  
   colname
 }
 
@@ -446,6 +446,7 @@
   if (!area %in% opts$areasWithClusters) return(NULL)
   if (synthesis) mcYears <- opts$mcYears
   
+  # browser()
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
   pathTSNumbers <- file.path(opts$simPath, "ts-numbers/thermal")
@@ -454,25 +455,48 @@
   # not the case, read the series in the input.
   pathInput <- file.path(opts$simPath, "ts-generator/thermal/mc-0")
   
-  if (dir.exists(pathInput)) {
-    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+  if(!"api" %in% opts$typeLoad){
+    if (dir.exists(pathInput)) {
+      filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+    } else {
+      pathInput <- file.path(opts$inputPath, "thermal/series")
+      filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    }
+    
+    # Read the Ids of the time series used in each Monte-Carlo Scenario.
+    cls <- list.files(file.path(pathTSNumbers, area))
+    if (length(cls) == 0) return(NULL)
+    
+    nameCls <- gsub(".txt", "", cls)
+    
+    tsIds <- llply(cls, function(cl) {
+      as.numeric(readLines(file.path(pathTSNumbers, area, cl))[-1])
+    })
+    
+    names(tsIds) <- nameCls
+    
   } else {
-    pathInput <- file.path(opts$inputPath, "thermal/series")
-    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    if (gen_check) {
+      filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+    } else {
+      pathInput <- file.path(opts$inputPath, "thermal/series")
+      filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    }
+    
+    # Read the Ids of the time series used in each Monte-Carlo Scenario.
+    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = token))
+    if (length(cls) == 0) return(NULL)
+    
+    nameCls <- cls
+    
+    tsIds <- llply(cls, function(cl) {
+      as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token), "\n")[[1]][-1])
+    })
+    
+    names(tsIds) <- nameCls
   }
-  
-  # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  cls <- list.files(file.path(pathTSNumbers, area))
-  if (length(cls) == 0) return(NULL)
-  
-  nameCls <- gsub(".txt", "", cls)
-  
-  tsIds <- llply(cls, function(cl) {
-    as.numeric(readLines(file.path(pathTSNumbers, area, cl))[-1])
-  })
-  
-  names(tsIds) <- nameCls
-  
+
   # Two nested loops: clusters, Monte Carlo simulations.
   series <- ldply(nameCls, function(cl) {
     ids <- tsIds[[cl]][mcYears]
@@ -481,6 +505,7 @@
     
     # ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
     ts <- fread_antares(opts = opts, file = sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    
     
     ldply(1:length(ids), function(i) {
       data.frame(
@@ -525,22 +550,34 @@
   
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
-  tsIds <- tsIds[mcYears]
-  
-  # Input time series
-  pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
-  
-  if (dir.exists(pathInput)) {
-    f <- file.path(pathInput, area, "storage.txt")
+  if(!"api" %in% opts$typeLoad){
+    tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
+    tsIds <- tsIds[mcYears]
+    
+    # Input time series
+    pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
+    
+    if (dir.exists(pathInput)) {
+      f <- file.path(pathInput, area, "storage.txt")
+    } else {
+      pathInput <- file.path(opts$inputPath, "hydro/series")
+      f <- file.path(pathInput, area, "mod.txt")
+    }
   } else {
-    pathInput <- file.path(opts$inputPath, "hydro/series")
-    f <- file.path(pathInput, area, "mod.txt")
+    tsIds <- as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area), token = opts$token), "\n")[[1]][-1])
+    tsIds <- tsIds[mcYears]
+    
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    if (gen_check) {
+      f <- file.path(pathInput, area, "storage.txt")
+    } else {
+      pathInput <- file.path(opts$inputPath, "hydro/series")
+      f <- file.path(pathInput, area, "mod.txt")
+    }
   }
-  
   timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
   
-  if (file.size(f) == 0) {
+  if (!"api" %in% opts$typeLoad && file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         area = area, 
@@ -557,16 +594,28 @@
     # ts <- fread(f, integer64 = "numeric", select = colToRead)
     ts <- fread_antares(opts = opts, file = f, integer64 = "numeric", select = colToRead)
     
-    ts <- ts[timeRange[1]:timeRange[2]]
+    if ("api" %in% opts$typeLoad && is.null(ts)) {
+      series <- ldply(1:length(tsIds), function(i) {
+        data.frame(
+          area = area, 
+          mcYear = mcYears[i],
+          timeId = timeRange[1]:timeRange[2],
+          hydroStorage = rep(0L, length(timeRange[1]:timeRange[2]))
+        )
+      })
+    } else {
+      ts <- ts[timeRange[1]:timeRange[2]]
+      
+      series <- ldply(1:length(tsIds), function(i) {
+        data.frame(
+          area = area, 
+          mcYear = mcYears[i],
+          timeId = timeRange[1]:timeRange[2],
+          hydroStorage = ts[[ colIds[i] ]]
+        )
+      })
+    }
     
-    series <- ldply(1:length(tsIds), function(i) {
-      data.frame(
-        area = area, 
-        mcYear = mcYears[i],
-        timeId = timeRange[1]:timeRange[2],
-        hydroStorage = ts[[ colIds[i] ]]
-      )
-    })
   }
   
   series <- data.table(series)

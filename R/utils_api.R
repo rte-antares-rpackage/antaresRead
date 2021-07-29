@@ -120,7 +120,7 @@ read_secure_json <- function(url, token){
     dataPath <- file.path(simDataPath, "mc-ind",sprintf("%05d", mcYears[1]))
   }
   
-  areaList <- tolower(names(read_secure_json(file.path(dataPath, "areas&depth=1"), token)))
+  areaList <- gsub("\r$", "", tolower(strsplit(read_secure_json(file.path(paths$simPath, "about-the-study", "areas"), token), "\n")[[1]]))
   districtList <- grep("^@", areaList, value=TRUE)
   areaList <- areaList[!areaList %in% districtList]
   
@@ -190,7 +190,7 @@ read_secure_json <- function(url, token){
     districtList = gsub("^@ ?", "", districtList),
     linkList = linkList[linkList %in% linksDef$link],
     linksDef = linksDef,
-    areasWithClusters = areasWithClusters,
+    areasWithClusters = intersect(areasWithClusters, areaList),
     variables = variables,
     parameters = params
   )

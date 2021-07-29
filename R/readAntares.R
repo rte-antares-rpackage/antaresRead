@@ -268,23 +268,23 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     
     if(.requireRhdf5_Antares(stopP = FALSE)){
       return(.h5ReadAntares(path = opts$h5path, 
-                                        areas = areas,
-                                        links = links,
-                                        clusters = clusters,
-                                        districts = districts,
-                                        misc = misc,
-                                        thermalAvailabilities = thermalAvailabilities,
-                                        hydroStorage = hydroStorage,
-                                        hydroStorageMaxPower = hydroStorageMaxPower,
-                                        reserve = reserve,
-                                        linkCapacity = linkCapacity,
-                                        mustRun = mustRun,
-                                        thermalModulation = thermalModulation,
-                                        select = select,
-                                        mcYears = mcYears,
-                                        timeStep = timeStep[1],
-                                        showProgress = showProgress,
-                                        simplify = simplify))
+                            areas = areas,
+                            links = links,
+                            clusters = clusters,
+                            districts = districts,
+                            misc = misc,
+                            thermalAvailabilities = thermalAvailabilities,
+                            hydroStorage = hydroStorage,
+                            hydroStorageMaxPower = hydroStorageMaxPower,
+                            reserve = reserve,
+                            linkCapacity = linkCapacity,
+                            mustRun = mustRun,
+                            thermalModulation = thermalModulation,
+                            select = select,
+                            mcYears = mcYears,
+                            timeStep = timeStep[1],
+                            showProgress = showProgress,
+                            simplify = simplify))
     } else {
       stop(rhdf5_message)
     }
@@ -312,12 +312,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if(!is.null(mcWeights)){
     if(showProgress == TRUE)cat("Aggregate mcYears with mcWeights \n")
     return(aggregateResult(opts = opts,
-                    verbose = showProgress,
-                    filtering = TRUE,
-                    selected = list(areas = areas, links = links, clusters = clusters),
-                    timestep = timeStep,
-                    writeOutput = FALSE,
-                    mcWeights = mcWeights, mcYears = mcYears))
+                           verbose = showProgress,
+                           filtering = TRUE,
+                           selected = list(areas = areas, links = links, clusters = clusters),
+                           timestep = timeStep,
+                           writeOutput = FALSE,
+                           mcWeights = mcWeights, mcYears = mcYears))
   }
   
   
@@ -365,8 +365,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (! opts$scenarios) {
       stop("Cannot import thermal availabilities because Monte Carlo scenarii have not been stored in output.")
     }
-    if (!file.exists(file.path(opts$simPath, "ts-generator/thermal/mc-0"))) {
-      warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    if(!"api" %in% opts$typeLoad){
+      if (!file.exists(file.path(opts$simPath, "ts-generator/thermal/mc-0"))) {
+        warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
+    } else {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/thermal/mc-0"), opts$token)) {
+        warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
     }
   }
   
@@ -374,8 +380,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (! opts$scenarios) {
       stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
     }
-    if (!file.exists(file.path(opts$simPath, "ts-generator/hydro/mc-0"))) {
-      warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    if(!"api" %in% opts$typeLoad){
+      if (!file.exists(file.path(opts$simPath, "ts-generator/hydro/mc-0"))) {
+        warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
+    } else {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)) {
+        warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
     }
   }
   
@@ -448,47 +460,47 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       }
     }
     else{
-    res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = TRUE, parallel = parallel)
-    
-    if (!is.null(res$areas)) {
-      tmp <- copy(res$clusters)
-      tmp[, cluster := NULL]
-      tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
-                    mustRun = sum(mustRun),
-                    mustRunPartial = sum(mustRunPartial),
-                    mustRunTotal = sum(mustRunTotal)),
-                 keyby = c(.idCols(tmp))]
-      res$areas <- .mergeByRef(res$areas, tmp)
+      res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
+                                               showProgress, opts, mustRun = TRUE, parallel = parallel)
       
-      res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
-    }
-    
-    if (!is.null(districts)) {
-      if(nrow(districts ) > 0)
-      {
+      if (!is.null(res$areas)) {
         tmp <- copy(res$clusters)
-        tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
-        tmp[, area := NULL]
         tmp[, cluster := NULL]
         tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
                       mustRun = sum(mustRun),
                       mustRunPartial = sum(mustRunPartial),
                       mustRunTotal = sum(mustRunTotal)),
                    keyby = c(.idCols(tmp))]
-        res$districts <- .mergeByRef(res$districts, tmp)
-        res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
+        res$areas <- .mergeByRef(res$areas, tmp)
+        
+        res$areas[is.na(mustRunTotal), c("thermalPmin","mustRun", "mustRunPartial", "mustRunTotal") := 0]
       }
+      
+      if (!is.null(districts)) {
+        if(nrow(districts ) > 0)
+        {
+          tmp <- copy(res$clusters)
+          tmp <- merge(tmp, districts, by = "area", allow.cartesian = TRUE)
+          tmp[, area := NULL]
+          tmp[, cluster := NULL]
+          tmp <- tmp[,.(thermalPmin = sum(thermalPmin),
+                        mustRun = sum(mustRun),
+                        mustRunPartial = sum(mustRunPartial),
+                        mustRunTotal = sum(mustRunTotal)),
+                     keyby = c(.idCols(tmp))]
+          res$districts <- .mergeByRef(res$districts, tmp)
+          res$districts[is.na(mustRunTotal), c("thermalPmin", "mustRun", "mustRunPartial", "mustRunTotal") := 0]
+        }
+      }
+      
+      # Suppress that has not been asked
+      if (is.null(clusters)) {
+        res$clusters <- NULL
+      } else if (length(clustersAugmented) > length(clusters)) {
+        res$clusters <- res$clusters[area %in% clusters]
+      }
+      
     }
-    
-    # Suppress that has not been asked
-    if (is.null(clusters)) {
-      res$clusters <- NULL
-    } else if (length(clustersAugmented) > length(clusters)) {
-      res$clusters <- res$clusters[area %in% clusters]
-    }
-    
-  }
   }
   
   # Add input time series
