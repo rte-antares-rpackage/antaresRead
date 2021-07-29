@@ -2,13 +2,7 @@ library(antaresRead)
 
 # ./server -c config.yaml --auto-upgrade-db
 
-
-opts_api <- setSimulationPathAPI(path, token = token, simulation = "input")
-
-opts_local <- setSimulationPath(path = "C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", "input")
-
-
-#PATH api
+# PATH api
 path <- "http://pyre.datastorm.fr:8080/studies/05696f33-cef4-4969-aab2-357175a30b01"
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOiAyLCBcImltcGVyc29uYXRvclwiOiAxLCBcInR5cGVcIjogXCJib3RzXCIsIFwiZ3JvdXBzXCI6IFtdfSIsImlhdCI6MTYyNzQ4MTI4MywibmJmIjoxNjI3NDgxMjgzLCJqdGkiOiI4YzRhMDIzZC05NTFiLTRiZTYtYmMyNS0xNWNmNGZhZDg3ZTMiLCJleHAiOjc5ODY1MjEyODMsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.H3rFD5sUCS1Iic02Uehc-Fhr32K1oNJNeZakvY_sX3w"
 simulation = 2
