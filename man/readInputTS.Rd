@@ -44,7 +44,7 @@ readInputTS(
 
 \item{linkCapacity}{vector of links names for which links characteristics time series must be read}
 
-\item{resProduction}{vector of areas names for which renewables clusters must be read.}
+\item{resProduction}{vector of areas names for which renewables clusters production time series must be read.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}

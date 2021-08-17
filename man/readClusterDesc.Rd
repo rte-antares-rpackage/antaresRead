@@ -33,7 +33,7 @@ study. You can use the argument \code{opts} to specify another study.
 
 \code{readClusterDesc} : read thermal clusters
 
-\code{readClusterResDesc} : read renewable clusters (Antares >= V8)
+\code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 }
 \description{
 This function reads in the input files of an antares study the

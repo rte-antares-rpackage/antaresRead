@@ -28,7 +28,7 @@
 #' @param linkCapacity
 #'   vector of links names for which links characteristics time series must be read
 #' @param resProduction
-#'   vector of areas names for which renewables clusters must be read.
+#'   vector of areas names for which renewables clusters production time series must be read.
 #' @inheritParams readAntares
 #' 
 #' @return 
@@ -102,10 +102,15 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if(identical(linkCapacity, "all")) linkCapacity <- opts$linkList
   if(identical(resProduction, "all")) resProduction <- opts$areasWithResClusters
   
-  if(!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
-     !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters"){
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    if(!is.null(resProduction)){
+      warning("Renewables clusters production time series (resProduction) can only be imported on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+    }
     resProduction <- NULL
   }
+  
   res <- list() # Object the function will return
   
   # local function that add a type of output to the object "res"

@@ -31,7 +31,7 @@
 #' 
 #' \code{readClusterDesc} : read thermal clusters
 #' 
-#' \code{readClusterResDesc} : read renewable clusters (Antares >= V8)
+#' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 #'
 #' @examples
 #' 
@@ -64,6 +64,11 @@ readClusterDesc <- function(opts = simOptions()) {
 #'
 #' @rdname readClusterDesc
 readClusterResDesc <- function(opts = simOptions()) {
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    stop("readClusterDesc is available only on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+  }
   .readClusterDesc(opts = simOptions(), dir = "renewables/clusters")
 }
 

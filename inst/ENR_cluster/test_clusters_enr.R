@@ -4,13 +4,13 @@ require(antaresRead)
 
 opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", "input")
   
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-1", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-2", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-3", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-1", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-3", "input")
 
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-ts-prod-factor-cluster-disabled", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-2-clusters-ts-prod-factor", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-1-cluster-ts-prod-factor", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-ts-prod-factor-cluster-disabled", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-2-clusters-ts-prod-factor", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-1-cluster-ts-prod-factor", "input")
 
 # 2.1.1 : 2.1.1	Lecture du paramètre « Renewable generation modelling »
 # déjà ok en mode input & output
@@ -28,7 +28,7 @@ opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_pa
 readAntares(areas  = "all", clusters = "all", clustersRes = "all", mcYears = 1)
 
 # RQ : il faut faire tourner une étude, ici renewables-2 pour avoir des résultats !
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-2", 1)
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", 1)
 readAntares(areas  = "all", cluster = "all", clustersRes = "all", mcYears = 1)
 readAntares(areas  = "all", mcYears = 1, select = c("RENW. 4", "H. STOR"))
 
@@ -40,7 +40,7 @@ readAntares(areas  = "all", mcYears = 1, select = c("RENW. 4", "H. STOR"))
 opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", 1)
 readAntares(areas  = "all", clusters = "all", clustersRes = "all", mcYears = 1:2, mcWeights = c(0.5, 0.5))
 
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-2", 1)
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", 1)
 readAntares(areas  = "all", clustersRes = "all", mcYears = 1, mcWeights = 0.5)
 
 # Q : ADQPatch ? Actuellement pas gérer quand on écrit les fichiers
@@ -56,7 +56,14 @@ opts$areasWithResClusters
 readClusterDesc(opts)
 readClusterResDesc(opts)
 
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-1", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", 1)
+opts$areasWithClusters
+opts$areasWithResClusters
+
+readClusterDesc(opts)
+readClusterResDesc(opts)
+
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-1", "input")
 opts$areasWithClusters
 opts$areasWithResClusters
 
@@ -72,9 +79,12 @@ opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_pa
 d <- readInputTS(thermalAvailabilities = "all", resProduction = "all", load = "all")
 d
 
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-ts-prod-factor-cluster-disabled", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-2-clusters-ts-prod-factor", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewable-1-cluster-ts-prod-factor", "input")
-opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\renewables-1", "input")
+d <- readInputTS(thermalAvailabilities = "all", load = "all")
+d
+
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-ts-prod-factor-cluster-disabled", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-2-clusters-ts-prod-factor", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-1-cluster-ts-prod-factor", "input")
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-1", "input")
 d <- readInputTS(thermalAvailabilities = "all", resProduction = "all", load = "all")
 d

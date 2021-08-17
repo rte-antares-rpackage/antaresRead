@@ -221,8 +221,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
   
   
-  if(!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
-     !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters"){
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    if(!is.null(clustersRes)){
+      warning("Results at renewable cluster level (clustersRes) can only be imported on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+    }
     clustersRes <- NULL
   }
   
