@@ -781,10 +781,10 @@ aggregateResult <- function(opts, verbose = 1,
     value$links <- dta$links[,lapply(.SD, as.numeric), .SDcols = (SDcolsStartareas+1):ncol(dta$links)]
   }
   if(!is.null(dta[["clusters"]])){
-    value$clusters <- dta[["clusters"]][,lapply(.SD, as.numeric), .SDcols = (SDcolsStartClust+1):ncol(dta$clusters)]
+    value$clusters <- dta[["clusters"]][,lapply(.SD, as.numeric), .SDcols = (SDcolsStartClust+1):ncol(dta[["clusters"]])]
   }
   if(!is.null(dta[["clustersRes"]])){
-    value$clustersRes <- dta[["clustersRes"]][,lapply(.SD, as.numeric), .SDcols = (SDcolsStartClust+1):ncol(dta$clusters)]
+    value$clustersRes <- dta[["clustersRes"]][,lapply(.SD, as.numeric), .SDcols = (SDcolsStartClust+1):ncol(dta[["clustersRes"]])]
   }
   value
 }
