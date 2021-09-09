@@ -3,6 +3,8 @@
 Changes in version 2.2.9
 FEATURES:
 * Add ENR Cluster support (V8.1)
+BUGFIXES:
+* aggregateResult parallel export (#161)
 
 Changes in version 2.2.8
 FEATURES:
