@@ -493,7 +493,7 @@ removeVirtualAreas <- function(x,
     `ROW BAL.` <- NULL
     if (!is.null(x$areas$`ROW BAL.`)){
       # edit BALANCE if ROW BAL is not always null
-      if(min(unique(x$area$`ROW BAL.`)) > 1){
+      if(min(unique(x$areas$`ROW BAL.`)) > 1){
         x$areas[, BALANCE := BALANCE - `ROW BAL.`, by = byarea]
         x$areas[, `ROW BAL.` := 0]
         x <- .merge_Col_Area_D(x, 
