@@ -47,7 +47,7 @@ parAggregateMCall <- function(opts,
   
   if(parallel){
     cl <- makeCluster(nbcl)
-    clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"))
+    clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"), envir = environment())
     registerDoParallel(cl)
   }else{
     cl <- NULL
