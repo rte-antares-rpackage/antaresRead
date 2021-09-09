@@ -492,7 +492,11 @@
     f <- file.path(pathInput, area, "mod.txt")
   }
   
-  timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
+  if(opts$antaresVersion >= 700){
+    timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts))
+  }else {
+    timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
+  }
   
   if (file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
@@ -524,7 +528,11 @@
   series <- data.table(series)
   
   
-  res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
+  if(opts$antaresVersion >= 700){
+    res <- changeTimeStep(series, timeStep, "daily", opts=opts)
+  }else {
+    res <- changeTimeStep(series, timeStep, "monthly", opts=opts)
+  }
   
   if (synthesis) {
     res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(area, timeId)]
