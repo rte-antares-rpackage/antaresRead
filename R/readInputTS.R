@@ -27,6 +27,8 @@
 #'   vector of areas names for which reserve time series must be read
 #' @param linkCapacity
 #'   vector of links names for which links characteristics time series must be read
+#' @param resProduction
+#'   vector of areas names for which renewables clusters production time series must be read.
 #' @inheritParams readAntares
 #' 
 #' @return 
@@ -72,7 +74,9 @@
 readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL, 
                         hydroStorage = NULL, hydroStorageMaxPower = NULL, 
                         wind = NULL, solar = NULL, misc = NULL,
-                        reserve = NULL, linkCapacity = NULL, opts = simOptions(),
+                        reserve = NULL, linkCapacity = NULL, 
+                        resProduction = NULL,
+                        opts = simOptions(),
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         simplify = TRUE, parallel = FALSE,
                         showProgress = TRUE) {
@@ -96,6 +100,16 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if(identical(misc, "all")) misc <- opts$areaList
   if(identical(reserve, "all")) reserve <- opts$areaList
   if(identical(linkCapacity, "all")) linkCapacity <- opts$linkList
+  if(identical(resProduction, "all")) resProduction <- opts$areasWithResClusters
+  
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    if(!is.null(resProduction)){
+      warning("Renewables clusters production time series (resProduction) can only be imported on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+    }
+    resProduction <- NULL
+  }
   
   res <- list() # Object the function will return
   
@@ -130,6 +144,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("misc", misc, .importMisc)
   .addOutputToRes("reserve", reserve, .importReserves)
   .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity)
+  .addOutputToRes("resProduction", resProduction, .importResProduction)
   
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   

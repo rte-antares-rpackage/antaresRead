@@ -27,12 +27,21 @@
 #' appear in the table.
 #' 
 #' By default, the function reads the cluster description of the default antares
-#' study. You can use the argument \code{opts} to specify another study
+#' study. You can use the argument \code{opts} to specify another study.
+#' 
+#' \code{readClusterDesc} : read thermal clusters
+#' 
+#' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 #'
 #' @examples
 #' 
 #' \dontrun{
+#' 
+#' # thermal
 #' readClusterDesc()
+#' 
+#' # renewable
+#' readClusterResDesc()
 #' 
 #' # By default, the function reads cluster descriptions for the default study,
 #' # but it is possible to specify another study with parameter "opts"
@@ -45,20 +54,41 @@
 #' }
 #' 
 #' @export
-#'
+#' 
+#' @rdname readClusterDesc
 readClusterDesc <- function(opts = simOptions()) {
+  .readClusterDesc(opts = simOptions(), dir = "thermal/clusters")
+}
+
+#' @export
+#'
+#' @rdname readClusterDesc
+readClusterResDesc <- function(opts = simOptions()) {
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    stop("readClusterDesc is available only on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+  }
+  .readClusterDesc(opts = simOptions(), dir = "renewables/clusters")
+}
+
+
+.readClusterDesc <- function(opts = simOptions(), 
+                             dir = "thermal/clusters") {
   
   if(isH5Opts(opts)){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(h5ReadClusterDesc(opts))
+    if(dir %in% "thermal/clusters"){
+      if(.requireRhdf5_Antares(stopP = FALSE)){
+        return(h5ReadClusterDesc(opts))
+      } else {
+        stop(rhdf5_message, call. = FALSE)
+      }
     } else {
-      stop(rhdf5_message)
+      stop("Read cluster Description from '", dir, "' not available using .h5", call. = FALSE)
     }
   }
   
-  
-  
-  path <- file.path(opts$inputPath, "thermal/clusters")
+  path <- file.path(opts$inputPath, dir)
   
   if(opts$typeLoad == 'api'){
     jsoncld <- .readjsonAntares(paste0(path, "?depth=4"))
@@ -79,24 +109,24 @@ readClusterDesc <- function(opts = simOptions()) {
     res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     
   }else{
-  
-  areas <- list.files(path)
-  
-  res <- ldply(areas, function(x) {
-    clusters <- readIniFile(file.path(path, x, "list.ini"))
     
-    if (length(clusters) == 0) return(NULL)
+    areas <- list.files(path)
     
-    clusters <- ldply(clusters, as.data.frame)
-    clusters$.id <- NULL
-    clusters$area <- x
+    res <- ldply(areas, function(x) {
+      clusters <- readIniFile(file.path(path, x, "list.ini"))
+      
+      if (length(clusters) == 0) return(NULL)
+      
+      clusters <- ldply(clusters, as.data.frame)
+      clusters$.id <- NULL
+      clusters$area <- x
+      
+      clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
+    })
     
-    clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-  })
-  
   }
   
-  if(length(res) == 0) stop("Cannot find cluster description.")
+  if(length(res) == 0) stop("Cannot find cluster description.", call. = FALSE)
   
   res <- as.data.table(res)
   setnames(res, "name", "cluster")

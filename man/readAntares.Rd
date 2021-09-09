@@ -9,6 +9,7 @@ readAntares(
   links = NULL,
   clusters = NULL,
   districts = NULL,
+  clustersRes = NULL,
   misc = FALSE,
   thermalAvailabilities = FALSE,
   hydroStorage = FALSE,
@@ -38,13 +39,18 @@ import all areas. Use function \code{\link{getLinks}} to import all links
 connected to some areas.}
 
 \item{clusters}{Vector containing the name of the areas for which you want to
-import results at cluster level. If \code{NULL} no cluster is imported. The
-special value \code{"all"} tells the function to import clusters from all
+import results at thermal cluster level. If \code{NULL} no cluster is imported. The
+special value \code{"all"} tells the function to import thermal clusters from all
 areas.}
 
 \item{districts}{Vector containing the names of the districts to import. If \code{NULL},
 no district is imported. The special value \code{"all"} tells the function to import all
 districts.}
+
+\item{clustersRes}{Vector containing the name of the areas for which you want to
+import results at renewable cluster level. If \code{NULL} no cluster is imported. The
+special value \code{"all"} tells the function to import renewable clusters from all
+areas.}
 
 \item{misc}{Vector containing the name of the areas for which you want to
 import misc.}

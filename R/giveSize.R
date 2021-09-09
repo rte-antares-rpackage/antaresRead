@@ -152,9 +152,7 @@ setRam <- function(x){
   
   nbRowLinks <- nbTid * nbMc * nbLinks * nbVarsLinks
   linksSize <- sizeObject * nbRowLinks / 1024 ^2
-  
-  
-  
+
   ##Districts size
   if(!is.null(districts))
   {
@@ -173,7 +171,7 @@ setRam <- function(x){
   clusWithData <- data.table()
   if(!is.null(clusters))
   {
-    clusWithData  <- readClusterDesc()
+    clusWithData  <- tryCatch(readClusterDesc(), error = function(e) data.table())
     if("all" %in% clusters){
       enabled <- TRUE
       if("enabled" %in% names(clusWithData))

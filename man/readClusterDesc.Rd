@@ -2,9 +2,12 @@
 % Please edit documentation in R/readClusterDesc.R
 \name{readClusterDesc}
 \alias{readClusterDesc}
+\alias{readClusterResDesc}
 \title{Import clusters description}
 \usage{
 readClusterDesc(opts = simOptions())
+
+readClusterResDesc(opts = simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
@@ -26,7 +29,11 @@ that have been set: if an option is unset for all clusters, it will not
 appear in the table.
 
 By default, the function reads the cluster description of the default antares
-study. You can use the argument \code{opts} to specify another study
+study. You can use the argument \code{opts} to specify another study.
+
+\code{readClusterDesc} : read thermal clusters
+
+\code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 }
 \description{
 This function reads in the input files of an antares study the
@@ -38,7 +45,12 @@ in the input files so they may have changed since a simulation has been run.
 \examples{
 
 \dontrun{
+
+# thermal
 readClusterDesc()
+
+# renewable
+readClusterResDesc()
 
 # By default, the function reads cluster descriptions for the default study,
 # but it is possible to specify another study with parameter "opts"

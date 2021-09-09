@@ -118,6 +118,25 @@
   
 }
 
+.importResProduction <- function(area, timeStep, opts, ...) {
+  if (!area %in% opts$areasWithResClusters) return(NULL)
+  
+  clusters <- list.files(file.path(opts$inputPath, "renewables/series", area))
+  
+  ldply(clusters, function(cl) {
+    filePattern <- sprintf("%s/%s/%%s/series.txt", "renewables/series", area)
+    res <- .importInputTS(cl, timeStep, opts, filePattern, "resProduction",
+                          inputTimeStep = "hourly", type = "matrix")
+    
+    if (is.null(res)) return(NULL)
+    
+    res$area <- area
+    res$cluster <- cl
+    
+    setcolorder(res, c("area", "cluster", "timeId", setdiff(names(res), c("area", "cluster", "timeId"))))
+  })
+}
+
 .importROR <- function(area, timeStep, opts, ...) {
   .importInputTS(area, timeStep, opts, "hydro/series/%s/ror.txt", "ror", 
                  inputTimeStep = "hourly", type = "matrix")
