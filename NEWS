@@ -1,5 +1,9 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
+Changes in version 2.2.9
+FEATURES:
+* Add ENR Cluster support (V8.1)
+
 Changes in version 2.2.8
 FEATURES:
 * Fixed bugs in `readAntares` when file is missing
