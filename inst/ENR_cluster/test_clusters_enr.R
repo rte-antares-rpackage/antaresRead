@@ -12,6 +12,8 @@ opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Clu
 opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-2-clusters-ts-prod-factor", "input")
 opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewable-1-cluster-ts-prod-factor", "input")
 
+opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\test_study_bug_aggregate")
+
 # 2.1.1 : 2.1.1	Lecture du paramètre « Renewable generation modelling »
 # déjà ok en mode input & output
 opts$parameters$`other preferences`$`renewable-generation-modelling`
@@ -41,7 +43,7 @@ opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_pa
 readAntares(areas  = "all", clusters = "all", clustersRes = "all", mcYears = 1:2, mcWeights = c(0.5, 0.5))
 
 opts <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", 1)
-readAntares(areas  = "all", clustersRes = "all", mcYears = 1, mcWeights = 0.5)
+readAntares(areas  = "all", clustersRes = "all", clusters = "all", mcYears = 1, mcWeights = 0.5)
 
 # Q : ADQPatch ? Actuellement pas gérer quand on écrit les fichiers
 
