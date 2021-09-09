@@ -35,10 +35,10 @@ read_secure_json <- function(url, token){
   
 }
 
-.getPathsAPI <- function(path, simulation, token){
+.getPathsAPI <- function(host, study_id, simulation, token){
   simNames <- NULL
+  path <- paste0(host, "/v1/studies/", study_id)
   path <- gsub("[/\\]$", "", path)
-  path <- gsub("/studies/", "/v1/studies/", path, fixed = T)
   path <- paste0(path, "/raw?path=")
   inputPath <- file.path(path,  "input")
   outputPath <- file.path(path,  "output")
@@ -178,22 +178,22 @@ read_secure_json <- function(url, token){
   
   return(
     list(
-    simDataPath = simDataPath,
-    name = as.character(info$name),
-    mode = as.character(info$mode),
-    synthesis = synthesis,
-    yearByYear = yearByYear,
-    scenarios = scenarios,
-    mcYears = mcYears,
-    antaresVersion = info$version,
-    areaList = areaList,
-    districtList = gsub("^@ ?", "", districtList),
-    linkList = linkList[linkList %in% linksDef$link],
-    linksDef = linksDef,
-    areasWithClusters = intersect(areasWithClusters, areaList),
-    variables = variables,
-    parameters = params
-  )
+      simDataPath = simDataPath,
+      name = as.character(info$name),
+      mode = as.character(info$mode),
+      synthesis = synthesis,
+      yearByYear = yearByYear,
+      scenarios = scenarios,
+      mcYears = mcYears,
+      antaresVersion = info$version,
+      areaList = areaList,
+      districtList = gsub("^@ ?", "", districtList),
+      linkList = linkList[linkList %in% linksDef$link],
+      linksDef = linksDef,
+      areasWithClusters = intersect(areasWithClusters, areaList),
+      variables = variables,
+      parameters = params
+    )
   )
   
   
@@ -263,27 +263,52 @@ read_secure_json <- function(url, token){
   )
 }
 
+valid_url <- function(url_in, t = 2){
+  con <- url(url_in)
+  check <- suppressWarnings(try(open.connection(con, open = "rt",timeout = t), silent = T)[1])
+  suppressWarnings(try(close.connection(con), silent = T))
+  ifelse(is.null(check),TRUE ,FALSE )
+}
 
-#' Set simualtion path for API
-#'
-#' @description
-#' \code{setSimulationPathAPI} see setSimulationPath function 
-#'
-#'
-#' @param path \code{character} see setSimulationPath help
-#' @param simulation \code{character, numeric} see setSimulationPath help
-#' 
 #' @import httr jsonlite
 #' @export
-setSimulationPathAPI <- function(path, token, simulation = NULL) {
+#' @rdname setSimulationPath
+setSimulationPathAPI <- function(host, study_id, token, simulation = NULL) {
   
-  if (missing(path)) {
-    stop("Please specify an url to antares API")
+  if (missing(host)) {
+    stop("Please specify an url to antares API host")
+  }
+
+  if (missing(study_id)) {
+    stop("Please specify the study_id")
   }
   
-  host <- strsplit(path, "/studies/")[[1]][1]
+  if (missing(token)) {
+    stop("Please specify your access token")
+  }
   
-  res <- .getPathsAPI(path, simulation, token)
+  if(!valid_url(host)){
+    stop("setSimulationPathAPI : invalid host '", host, "'")
+  }
+  
+  av_studies <- tryCatch({
+    read_secure_json(file.path(host, "v1/studies/"), token = token)
+  }, error = function(e){
+    stop("Can't connect to API. Please verify host & token")
+  })
+  
+  av_studies <- names(av_studies)
+  
+  if(isTRUE(all.equal(av_studies, "detail"))){
+    stop("Can't connect to API. Please verify token")
+  }
+  
+  if(!study_id %in% av_studies){
+    stop("Can't find your 'study_id' on the API")
+  }
+  
+  res <- .getPathsAPI(host, study_id, simulation, token)
+  
   res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token)$antares$caption
   
   # If "input mode", read options from the input folder, else read them from

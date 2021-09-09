@@ -32,7 +32,6 @@ Imports:
     jsonlite,
     pbapply,
     doParallel,
-    httr,
     utils
 Suggests:
     rhdf5 (>= 2.24.0),

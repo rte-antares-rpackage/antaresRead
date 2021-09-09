@@ -485,7 +485,7 @@
     }
     
     # Read the Ids of the time series used in each Monte-Carlo Scenario.
-    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = token))
+    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = opts$token))
     if (length(cls) == 0) return(NULL)
     
     nameCls <- cls
@@ -569,7 +569,7 @@
     
     gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
     if (gen_check) {
-      f <- file.path(pathInput, area, "storage.txt")
+      f <- file.path(opts$simPath, "ts-generator/hydro/mc-0", area, "storage.txt")
     } else {
       pathInput <- file.path(opts$inputPath, "hydro/series")
       f <- file.path(pathInput, area, "mod.txt")

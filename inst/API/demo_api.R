@@ -3,11 +3,13 @@ library(antaresRead)
 # ./server -c config.yaml --auto-upgrade-db
 
 # PATH api
-path <- "http://pyre.datastorm.fr:8080/studies/3decaa72-9b75-494c-b7a9-e90644e26015"
+host <- "http://pyre.datastorm.fr:8080"
+study_id <- "3decaa72-9b75-494c-b7a9-e90644e26015"
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOiAzLCBcImltcGVyc29uYXRvclwiOiAxLCBcInR5cGVcIjogXCJib3RzXCIsIFwiZ3JvdXBzXCI6IFtdfSIsImlhdCI6MTYzMTE4Mzg3MywibmJmIjoxNjMxMTgzODczLCJqdGkiOiIwZDQwOGE2My1mMWQ1LTRjN2QtOTYwMC1jZmNiOWIzZjFhODMiLCJleHAiOjc5OTAyMjM4NzMsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.0NqQBmjFEpNAcZAeqV9PXzJipMR15pcsefyAARstwFM"
 simulation = 2
 
-opts_api <- setSimulationPathAPI(path, token = token, simulation = 2)
+opts_api <- setSimulationPathAPI(host = host, study_id = study_id, token = token, simulation = simulation)
+
 opts_local <- setSimulationPath(path = "C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", 2)
 
 # layout
@@ -18,7 +20,7 @@ all.equal(ly_api, ly_local)
 # clusterDesc
 cd_local <- antaresRead::readClusterDesc(opts = opts_local)
 cd_api <- antaresRead::readClusterDesc(opts = opts_api)
-all.equal(cd_api, cd_local)
+all.equal(cd_api, cd_local[, colnames(cd_api), with = FALSE])
 
 # bindingConstratins
 bc_local <- antaresRead::readBindingConstraints(opts = opts_local)
@@ -27,7 +29,7 @@ all.equal(bc_api, bc_local)
 
 antaresRead::readBindingConstraints()
 
-# antaresRead::readOptimCriteria()
+# antaresRead::readOptimCriteria(opts = opts_local)
 # TO DO ?
 
 
