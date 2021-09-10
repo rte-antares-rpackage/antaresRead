@@ -15,11 +15,22 @@
 #'
 #' @noRd
 #'
-.getOutputHeader <- function(path, objectName) {
-  colname <- read.table(path, header=F, skip = 4, nrows = 3, sep = "\t")
-  colname <- apply(colname[c(1,3),], 2, paste, collapse = "_")
-  colname[1:2] <- c(objectName, "timeId")
-  colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+.getOutputHeader <- function(path, objectName, api = FALSE, token = NULL) {
+  if(!api){
+    colname <- read.table(path, header = F, skip = 4, nrows = 3, sep = "\t")
+  } else {
+    path <- gsub(".txt$", "", path)
+    path <- paste0(path, "&formatted=false")
+    httpResponse <- GET(utils::URLencode(path), add_headers(Authorization = paste0("Bearer ", token)))
+    colname <- tryCatch({fread(content(httpResponse, "parsed"), header = F, skip = 4, nrows = 3, sep = "\t")}, 
+                        error = function(e) NULL)
+  }
+  if(!is.null(colname)){
+    colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
+    colname[1:2] <- c(objectName, "timeId")
+    colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+  }
+  
   colname
 }
 
@@ -44,21 +55,39 @@
   
   if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
   
+  
   if (is.null(mcYears)) {
-    args <- expand.grid(id = ids)
+    if(folder %in% "links" && opts$typeLoad %in% "api"){
+      args <- merge(expand.grid(link = ids), opts$linksDef)
+      args$id <- paste0(args$from, "/", args$to)
+    } else {
+      args <- expand.grid(id = ids)
+    }
+  } else {
+    if(folder %in% "links" && opts$typeLoad %in% "api"){
+      args <- merge(expand.grid(link = ids, mcYear = mcYears), opts$linksDef)
+      args$id <- paste0(args$from, "/", args$to)
+    } else {
+      args <- expand.grid(id = ids, mcYear = mcYears)
+    }
+  }
+  
+  if (is.null(mcYears)) {
     args$path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt", 
                          opts$simDataPath, folder, args$id, fileName, timeStep)
   } else {
-    args <- expand.grid(id = ids, mcYear = mcYears)
     args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s/%s-%s.txt",
                          opts$simDataPath, args$mcYear, folder, args$id, fileName, timeStep)
   }
   
-  
-  
+  if(folder %in% "links" && opts$typeLoad %in% "api"){
+    args$id <- args$link
+  }
   
   if(opts$typeLoad == "api"){
-    args$path <- sapply(args$path, .changeName, opts = opts)
+    # args$path <- sapply(args$path, .changeName, opts = opts)
+    # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
+    # print(outputMissing)
     outputMissing <- rep(FALSE, nrow(args))
   }else{
     outputMissing <- !file.exists(args$path)
@@ -73,7 +102,7 @@
   
   # columns to retrieve
   if (sameNames) {
-    colNames <- .getOutputHeader(args$path[1], objectName)
+    colNames <- .getOutputHeader(args$path[1], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
     
     if (is.null(select)) {
       # read all columns except the time variables that will be recreated
@@ -104,33 +133,41 @@
           data <- NULL
           try({
             if (!sameNames) {
-              colNames <- .getOutputHeader(args$path[i], objectName)
+              colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
               selectCol <- which(!colNames %in% pkgEnv$idVars)
               colNames <- colNames[selectCol]
             }
             
             if (length(selectCol) == 0) {
-              data <- data.table(timeId = timeIds)
-            } else {
-              data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                            select = selectCol, integer64 = "numeric",
-                            na.strings = "N/A")
-              
-              # fix data.table bug on integer64
-              any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
-              if(length(any_int64) > 0){
-                data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+              if(opts$typeLoad != "api"){
+                data <- data.table(timeId = timeIds)
+              } else {
+                data <- NULL
               }
+            } else {
+              data <- fread_antares(opts = opts, file = args$path[i], 
+                                    sep = "\t", header = F, skip = 7,
+                                    select = selectCol, integer64 = "numeric",
+                                    na.strings = "N/A")
               
-              setnames(data, names(data), colNames)
-              data[, timeId := timeIds]
+              if(!is.null(data)){
+                # fix data.table bug on integer64
+                any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
+                if(length(any_int64) > 0){
+                  data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+                }
+                
+                setnames(data, names(data), colNames)
+                data[, timeId := timeIds]
+              }
             }
             
-            data[, c(objectName) := args$id[i]]
-            if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
-            
-            if (!is.null(processFun)) data <- processFun(data)
-            
+            if(!is.null(data)){
+              data[, c(objectName) := args$id[i]]
+              if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+              
+              if (!is.null(processFun)) data <- processFun(data)
+            }
             data
           })
           data
@@ -145,35 +182,43 @@
     res <- llply(
       1:nrow(args), 
       function(i) {
-        
         if (!sameNames) {
-          colNames <- .getOutputHeader(args$path[i], objectName)
+          colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
           selectCol <- which(!colNames %in% pkgEnv$idVars)
           colNames <- colNames[selectCol]
         }
         
         if (length(selectCol) == 0) {
-          data <- data.table(timeId = timeIds)
+          if(opts$typeLoad != "api"){
+            data <- data.table(timeId = timeIds)
+          } else {
+            data <- NULL
+          }
         } else {
-          data <- fread(args$path[i], sep = "\t", header = F, skip = 7,
-                        select = selectCol, integer64 = "numeric",
-                        na.strings = "N/A", showProgress = FALSE)
+          data <- fread_antares(opts = opts, file = args$path[i], 
+                                sep = "\t", header = F, skip = 7,
+                                select = selectCol, integer64 = "numeric",
+                                na.strings = "N/A", showProgress = FALSE)
           
-          # fix data.table bug on integer64
-          any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
-          if(length(any_int64) > 0){
-            data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+          if(!is.null(data)){
+            # fix data.table bug on integer64
+            any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
+            if(length(any_int64) > 0){
+              data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+            }
+            
+            setnames(data, names(data), colNames)
+            data[, timeId := timeIds]
           }
           
-          setnames(data, names(data), colNames)
-          data[, timeId := timeIds]
         }
         
-        data[, c(objectName) := args$id[i]]
-        if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
-        
-        if (!is.null(processFun)) data <- processFun(data)
-        
+        if(!is.null(data)){
+          data[, c(objectName) := args$id[i]]
+          if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+          
+          if (!is.null(processFun)) data <- processFun(data)
+        }
         data
       }, 
       .progress = ifelse(showProgress, "text", "none"),
@@ -454,6 +499,7 @@
   if (!area %in% opts$areasWithClusters) return(NULL)
   if (synthesis) mcYears <- opts$mcYears
   
+  # browser()
   # Path to the files containing the IDs of the time series used for each
   # Monte-Carlo years.
   pathTSNumbers <- file.path(opts$simPath, "ts-numbers/thermal")
@@ -462,32 +508,57 @@
   # not the case, read the series in the input.
   pathInput <- file.path(opts$simPath, "ts-generator/thermal/mc-0")
   
-  if (dir.exists(pathInput)) {
-    filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+  if(!"api" %in% opts$typeLoad){
+    if (dir.exists(pathInput)) {
+      filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+    } else {
+      pathInput <- file.path(opts$inputPath, "thermal/series")
+      filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    }
+    
+    # Read the Ids of the time series used in each Monte-Carlo Scenario.
+    cls <- list.files(file.path(pathTSNumbers, area))
+    if (length(cls) == 0) return(NULL)
+    
+    nameCls <- gsub(".txt", "", cls)
+    
+    tsIds <- llply(cls, function(cl) {
+      as.numeric(readLines(file.path(pathTSNumbers, area, cl))[-1])
+    })
+    
+    names(tsIds) <- nameCls
+    
   } else {
-    pathInput <- file.path(opts$inputPath, "thermal/series")
-    filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    if (gen_check) {
+      filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
+    } else {
+      pathInput <- file.path(opts$inputPath, "thermal/series")
+      filePattern <- sprintf("%s/%s/%%s/series.txt", pathInput, area)
+    }
+    
+    # Read the Ids of the time series used in each Monte-Carlo Scenario.
+    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = opts$token))
+    if (length(cls) == 0) return(NULL)
+    
+    nameCls <- cls
+    
+    tsIds <- llply(cls, function(cl) {
+      as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token), "\n")[[1]][-1])
+    })
+    
+    names(tsIds) <- nameCls
   }
-  
-  # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  cls <- list.files(file.path(pathTSNumbers, area))
-  if (length(cls) == 0) return(NULL)
-  
-  nameCls <- gsub(".txt", "", cls)
-  
-  tsIds <- llply(cls, function(cl) {
-    as.numeric(readLines(file.path(pathTSNumbers, area, cl))[-1])
-  })
-  
-  names(tsIds) <- nameCls
-  
+
   # Two nested loops: clusters, Monte Carlo simulations.
   series <- ldply(nameCls, function(cl) {
     ids <- tsIds[[cl]][mcYears]
     colToRead <- sort(unique(ids)) # Columns to read in the ts file
     colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
     
-    ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    # ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    ts <- fread_antares(opts = opts, file = sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    
     
     ldply(1:length(ids), function(i) {
       data.frame(
@@ -532,26 +603,40 @@
   
   
   # Read the Ids of the time series used in each Monte-Carlo Scenario.
-  tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
-  tsIds <- tsIds[mcYears]
-  
-  # Input time series
-  pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
-  
-  if (dir.exists(pathInput)) {
-    f <- file.path(pathInput, area, "storage.txt")
+  if(!"api" %in% opts$typeLoad){
+    tsIds <- as.numeric(readLines(file.path(pathTSNumbers, paste0(area, ".txt")))[-1])
+    tsIds <- tsIds[mcYears]
+    
+    # Input time series
+    pathInput <- file.path(opts$simPath, "ts-generator/hydro/mc-0")
+    
+    if (dir.exists(pathInput)) {
+      f <- file.path(pathInput, area, "storage.txt")
+    } else {
+      pathInput <- file.path(opts$inputPath, "hydro/series")
+      f <- file.path(pathInput, area, "mod.txt")
+    }
   } else {
-    pathInput <- file.path(opts$inputPath, "hydro/series")
-    f <- file.path(pathInput, area, "mod.txt")
+    tsIds <- as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area), token = opts$token), "\n")[[1]][-1])
+    tsIds <- tsIds[mcYears]
+    
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    if (gen_check) {
+      f <- file.path(opts$simPath, "ts-generator/hydro/mc-0", area, "storage.txt")
+    } else {
+      pathInput <- file.path(opts$inputPath, "hydro/series")
+      f <- file.path(pathInput, area, "mod.txt")
+    }
   }
+
   
   if(opts$antaresVersion >= 700){
     timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts))
   }else {
     timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
   }
-  
-  if (file.size(f) == 0) {
+
+  if (!"api" %in% opts$typeLoad && file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(
         area = area, 
@@ -565,17 +650,31 @@
     colIds <- sapply(tsIds, function(i) which(colToRead == i)) # link between the initial ids and the columns in the generated table
     
     
-    ts <- fread(f, integer64 = "numeric", select = colToRead)
-    ts <- ts[timeRange[1]:timeRange[2]]
+    # ts <- fread(f, integer64 = "numeric", select = colToRead)
+    ts <- fread_antares(opts = opts, file = f, integer64 = "numeric", select = colToRead)
     
-    series <- ldply(1:length(tsIds), function(i) {
-      data.frame(
-        area = area, 
-        mcYear = mcYears[i],
-        timeId = timeRange[1]:timeRange[2],
-        hydroStorage = ts[[ colIds[i] ]]
-      )
-    })
+    if ("api" %in% opts$typeLoad && is.null(ts)) {
+      series <- ldply(1:length(tsIds), function(i) {
+        data.frame(
+          area = area, 
+          mcYear = mcYears[i],
+          timeId = timeRange[1]:timeRange[2],
+          hydroStorage = rep(0L, length(timeRange[1]:timeRange[2]))
+        )
+      })
+    } else {
+      ts <- ts[timeRange[1]:timeRange[2]]
+      
+      series <- ldply(1:length(tsIds), function(i) {
+        data.frame(
+          area = area, 
+          mcYear = mcYears[i],
+          timeId = timeRange[1]:timeRange[2],
+          hydroStorage = ts[[ colIds[i] ]]
+        )
+      })
+    }
+    
   }
   
   series <- data.table(series)
@@ -595,11 +694,11 @@
   
 }
 
-.changeName <- function(path, opts){
-  path_rev <- strsplit(strsplit(path, "output/")[[1]][2], "/")[[1]]
-  path_rev <- paste0(path_rev[2:length(path_rev)], collapse = "/")
-  out <- sub(pattern = "studies", "file", paste0(opts$studyPath , "/output/", opts$simOutputName,"/", path_rev))
-  out <- gsub(" ", "%20", out)
-}
+# .changeName <- function(path, opts){
+#   path_rev <- strsplit(strsplit(path, "output/")[[1]][2], "/")[[1]]
+#   path_rev <- paste0(path_rev[2:length(path_rev)], collapse = "/")
+#   out <- sub(pattern = "studies", "file", paste0(opts$studyPath , "/output/", opts$simOutputName,"/", path_rev))
+#   out <- gsub(" ", "%20", out)
+# }
 
 
