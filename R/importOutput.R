@@ -15,13 +15,18 @@
 #'
 #' @noRd
 #'
-.getOutputHeader <- function(path, objectName, api = FALSE, token = NULL) {
+.getOutputHeader <- function(path, objectName, api = FALSE, token = NULL, timeout = 60) {
   if(!api){
     colname <- read.table(path, header = F, skip = 4, nrows = 3, sep = "\t")
   } else {
     path <- gsub(".txt$", "", path)
     path <- paste0(path, "&formatted=false")
-    httpResponse <- GET(utils::URLencode(path), add_headers(Authorization = paste0("Bearer ", token)))
+    if(!is.null(token) && token != ""){
+      httpResponse <- GET(utils::URLencode(path), timeout(timeout), add_headers(Authorization = paste0("Bearer ", token)))
+    } else {
+      httpResponse <- GET(utils::URLencode(path), timeout(timeout))
+    }
+    
     colname <- tryCatch({fread(content(httpResponse, "parsed"), header = F, skip = 4, nrows = 3, sep = "\t")}, 
                         error = function(e) NULL)
   }
@@ -102,7 +107,7 @@
   
   # columns to retrieve
   if (sameNames) {
-    colNames <- .getOutputHeader(args$path[1], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
+    colNames <- .getOutputHeader(args$path[1], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
     
     if (is.null(select)) {
       # read all columns except the time variables that will be recreated
@@ -133,7 +138,7 @@
           data <- NULL
           try({
             if (!sameNames) {
-              colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
+              colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
               selectCol <- which(!colNames %in% pkgEnv$idVars)
               colNames <- colNames[selectCol]
             }
@@ -183,7 +188,7 @@
       1:nrow(args), 
       function(i) {
         if (!sameNames) {
-          colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token)
+          colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
           selectCol <- which(!colNames %in% pkgEnv$idVars)
           colNames <- colNames[selectCol]
         }
@@ -529,7 +534,7 @@
     names(tsIds) <- nameCls
     
   } else {
-    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)
     if (gen_check) {
       filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
     } else {
@@ -538,13 +543,13 @@
     }
     
     # Read the Ids of the time series used in each Monte-Carlo Scenario.
-    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = opts$token))
+    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = opts$token, timeout = opts$timeout))
     if (length(cls) == 0) return(NULL)
     
     nameCls <- cls
     
     tsIds <- llply(cls, function(cl) {
-      as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token), "\n")[[1]][-1])
+      as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, timeout = opts$timeout), "\n")[[1]][-1])
     })
     
     names(tsIds) <- nameCls
@@ -617,10 +622,10 @@
       f <- file.path(pathInput, area, "mod.txt")
     }
   } else {
-    tsIds <- as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area), token = opts$token), "\n")[[1]][-1])
+    tsIds <- as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area), token = opts$token, timeout = opts$timeout), "\n")[[1]][-1])
     tsIds <- tsIds[mcYears]
     
-    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)
     if (gen_check) {
       f <- file.path(opts$simPath, "ts-generator/hydro/mc-0", area, "storage.txt")
     } else {

@@ -91,7 +91,7 @@ readClusterResDesc <- function(opts = simOptions()) {
   path <- file.path(opts$inputPath, dir)
   
   if(opts$typeLoad == 'api'){
-    jsoncld <- read_secure_json(paste0(path, "&depth=4"), opts$token)
+    jsoncld <- read_secure_json(paste0(path, "&depth=4"), opts$token, timeout = opts$timeout)
     res <-  rbindlist(mapply(function(X1, Y1){
       clusters <- rbindlist(
         mapply(function(X, Y){

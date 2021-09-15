@@ -33,8 +33,8 @@
 #'
 #' @param host \code{character} host of AntaREST server API
 #' @param study_id \code{character} id of the target study on the API
-#' @param token \code{character} personnal access token
-#' 
+#' @param token \code{character} API personnal access token
+#' @param timeout \code{numeric} API timeout (seconds). Default to 60. See also \code{\link{setTimeoutAPI}}
 #' @return A list containing various information about the simulation, in particular:
 #'   \item{studyPath}{path of the Antares study}
 #'   \item{simPath}{path of the simulation}
@@ -145,7 +145,7 @@
 #' @export
 #'
 #' @rdname setSimulationPath
-setSimulationPath <- function(path, simulation = NULL, token = NULL) {
+setSimulationPath <- function(path, simulation = NULL) {
   
   if (missing(path)) {
     if (exists("choose.dir", getNamespace("utils"))) {

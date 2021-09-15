@@ -13,7 +13,17 @@ opts_api <- setSimulationPathAPI(host = host,
                                  token = token, 
                                  simulation = simulation)
 
-opts_local <- setSimulationPath(path = "C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", 2)
+opts_local <- setSimulationPath(path = "C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\Test_packages_R", simulation = 2)
+
+all.equal(opts_api$parameters$general, opts_local$parameters$general)
+
+getAreas(opts = opts_local)
+getDistricts(opts = opts_local)
+getLinks(opts = opts_local)
+
+getAreas(opts = opts_api)
+getDistricts(opts = opts_api)
+getLinks(opts = opts_api)
 
 # layout
 ly_local <- antaresRead::readLayout(opts = opts_local)
@@ -34,7 +44,6 @@ antaresRead::readBindingConstraints()
 
 # antaresRead::readOptimCriteria(opts = opts_local)
 # TO DO ?
-
 
 # readAntares
 dt_local <-  readAntares(opts = opts_local, areas = "all")
@@ -81,6 +90,7 @@ dt_local <-  readAntares(opts = opts_local, links = opts_local$linkList[1:2],
 dt_api <-  readAntares(opts = opts_api, links = opts_local$linkList[1:2], 
                        areas = opts_local$areaList[1:2], clusters = NULL, 
                        districts = "all", mcYears = 1:2)
+
 sapply(1:length(dt_local), function(x){
   data.table::fsetequal(dt_local[[x]], dt_api[[x]]) 
 })

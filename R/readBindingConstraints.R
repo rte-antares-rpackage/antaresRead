@@ -45,7 +45,8 @@ readBindingConstraints <- function(opts=simOptions()) {
   }
   
   if(opts$typeLoad == 'api'){
-    bindingConstraints <- read_secure_json(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"), opts$token)
+    bindingConstraints <- read_secure_json(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"), 
+                                           opts$token, timeout = opts$timeout)
   }else{
     path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
     bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

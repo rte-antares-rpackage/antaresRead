@@ -379,7 +379,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
         warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
       }
     } else {
-      if (!.getSuccess(file.path(opts$simPath, "ts-generator/thermal/mc-0"), opts$token)) {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/thermal/mc-0"), opts$token, opts$timeout)) {
         warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
       }
     }
@@ -394,7 +394,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
         warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
       }
     } else {
-      if (!.getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token)) {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)) {
         warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
       }
     }

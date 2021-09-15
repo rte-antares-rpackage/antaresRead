@@ -5,9 +5,9 @@
 \alias{setSimulationPathAPI}
 \title{Set Path to an Antares simulation}
 \usage{
-setSimulationPath(path, simulation = NULL, token = NULL)
+setSimulationPath(path, simulation = NULL)
 
-setSimulationPathAPI(host, study_id, token, simulation = NULL)
+setSimulationPathAPI(host, study_id, token, simulation = NULL, timeout = 60)
 }
 \arguments{
 \item{path}{(optional) 
@@ -25,11 +25,13 @@ are two special values 0 and "input" that tells the function that the user
 is not interested by the results of any simulation, but only by the inputs.
 In such a case, the function \code{\link{readAntares}} is unavailable.}
 
-\item{token}{\code{character} personnal access token}
-
 \item{host}{\code{character} host of AntaREST server API}
 
 \item{study_id}{\code{character} id of the target study on the API}
+
+\item{token}{\code{character} API personnal access token}
+
+\item{timeout}{\code{numeric} API timeout (seconds). Default to 60. See also \code{\link{setTimeoutAPI}}}
 }
 \value{
 A list containing various information about the simulation, in particular:
