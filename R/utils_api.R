@@ -369,7 +369,8 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, timeo
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPathAPI}}
-#'   
+#' @param timeout \code{numeric} API timeout (seconds). Default to 60.
+#' 
 #' @export
 #' 
 #' @examples 

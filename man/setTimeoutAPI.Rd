@@ -9,6 +9,8 @@ setTimeoutAPI(opts, timeout)
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPathAPI}}}
+
+\item{timeout}{\code{numeric} API timeout (seconds). Default to 60.}
 }
 \description{
 Change API Timeout
