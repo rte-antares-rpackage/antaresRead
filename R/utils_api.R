@@ -149,12 +149,21 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   hasClusters <- unlist(
     lapply(
       read_secure_json(file.path(dataPath, "areas&depth=2"), token = token, timeout = timeout),
-      function(x) any(grepl("details", names(x)))
+      function(x) any(grepl("(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)", names(x)))
     )
   )
   
   areasWithClusters <- names(hasClusters)[hasClusters]
   
+  # Areas containing clusters
+  hasResClusters <- unlist(
+    lapply(
+      read_secure_json(file.path(dataPath, "areas&depth=2"), token = token, timeout = timeout),
+      function(x) any(grepl("details-res-", names(x)))
+    )
+  )
+  
+  areasWithResClusters <- names(hasResClusters)[hasResClusters]
   # Available variables
   variables <- list()
   
@@ -203,6 +212,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
       linkList = linkList[linkList %in% linksDef$link],
       linksDef = linksDef,
       areasWithClusters = intersect(areasWithClusters, areaList),
+      areasWithResClusters = intersect(areasWithResClusters, areaList),
       variables = variables,
       parameters = params
     )
@@ -266,6 +276,16 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
     return(TF)
   })
   
+  # Areas with renewable clusters
+  clusterResList <- read_secure_json(file.path(inputPath, "renewables", "clusters", "&depth=4"), token = token, timeout = timeout)
+  areaHasResClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    TF <- FALSE
+    try({
+      f <- clusterResList[[a]]$list
+      if(!is.null(f))return(TRUE)
+    })
+    return(TF)
+  })
   
   list(
     mode = "Input",
@@ -275,6 +295,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
     linkList = as.character(linksDef$link),
     linksDef = linksDef,
     areasWithClusters = areaList[areaHasClusters],
+    areasWithResClusters = areaList[areaHasResClusters],
     parameters = params
   )
 }

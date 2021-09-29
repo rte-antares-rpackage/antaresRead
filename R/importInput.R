@@ -128,10 +128,16 @@
 }
 
 .importResProduction <- function(area, timeStep, opts, ...) {
+
   if (!area %in% opts$areasWithResClusters) return(NULL)
   
-  clusters <- list.files(file.path(opts$inputPath, "renewables/series", area))
-  
+  if(!"api" %in% opts$typeLoad){
+    clusters <- list.files(file.path(opts$inputPath, "renewables/series", area))
+  } else {
+    clusters <- names(read_secure_json(file.path(opts$inputPath, "renewables/series", area), 
+                                       token = opts$token, timeout = opts$timeout))
+  }
+
   ldply(clusters, function(cl) {
     filePattern <- sprintf("%s/%s/%%s/series.txt", "renewables/series", area)
     res <- .importInputTS(cl, timeStep, opts, filePattern, "resProduction",

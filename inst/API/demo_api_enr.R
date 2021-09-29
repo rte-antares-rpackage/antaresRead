@@ -13,12 +13,11 @@ opts_api <- setSimulationPathAPI(host = host,
                                  token = token, 
                                  simulation = 1)
 
+opts_api$parameters$`other preferences`$`renewable-generation-modelling`
+
 opts_local <- setSimulationPath("C:\\Users\\BenoitThieurmel\\Desktop\\Antares\\ENR_Cluster\\renewables-2", 1)
 
 all.equal(opts_api$parameters, opts_local$parameters)
-opts_api$parameters$`other preferences`$`renewable-generation-modelling`
-opts_api$parameters$general$`inter-modal`
-opts_api$parameters$general$`intra-modal`
 
 # layout
 ly_local <- antaresRead::readLayout(opts = opts_local)
@@ -26,9 +25,9 @@ ly_api <- antaresRead::readLayout(opts = opts_api)
 all.equal(ly_api, ly_local)
 
 # clusterDesc
-cd_local <- antaresRead::readClusterDesc(opts = opts_local)
-cd_api <- antaresRead::readClusterDesc(opts = opts_api)
-all.equal(cd_api, cd_local[, colnames(cd_api), with = FALSE])
+# cd_local <- antaresRead::readClusterDesc(opts = opts_local)
+# cd_api <- antaresRead::readClusterDesc(opts = opts_api)
+# all.equal(cd_api, cd_local[, colnames(cd_api), with = FALSE])
 
 cd_local <- antaresRead::readClusterResDesc(opts = opts_local)
 cd_api <- antaresRead::readClusterResDesc(opts = opts_api)
@@ -51,8 +50,8 @@ dt_api <-  readAntares(opts = opts_api, areas = "all", mcYears = 1)
 
 data.table::fsetequal(dt_local, dt_api) 
 
-dt_local <-  readAntares(opts = opts_local, areas = c('a', 'b'), mcYears = 1)
-dt_api <-  readAntares(opts = opts_api, areas = c('a', 'b'), mcYears = 1)
+dt_local <-  readAntares(opts = opts_local, areas = c('area'), mcYears = 1)
+dt_api <-  readAntares(opts = opts_api, areas = c('area'), mcYears = 1)
 
 data.table::fsetequal(dt_local, dt_api) 
 
@@ -64,39 +63,21 @@ sapply(1:length(dt_local), function(x){
   data.table::fsetequal(dt_local[[x]], dt_api[[x]]) 
 })
 
-dt_local <-  readAntares(opts = opts_local, links = "all", areas = "all", 
-                         clusters = "all", districts = "all")
-dt_api <-  readAntares(opts = opts_api, links = "all", areas = "all", 
-                       clusters = "all", districts = "all")
-sapply(1:length(dt_local), function(x){
-  data.table::fsetequal(dt_local[[x]], dt_api[[x]]) 
-})
 
 for(ts in c("hourly", "daily", "weekly", "monthly", "annual")){
   print(ts)
   dt_local <-  readAntares(opts = opts_local, links = "all", areas = "all", clusters = "all", 
-                           districts = "all", mcYears = 1:2, timeStep = ts, showProgress = F)
+                           clustersRes = "all", districts = "all", mcYears = 1:2, timeStep = ts, showProgress = F)
   dt_api <-  readAntares(opts = opts_api, links = "all", areas = "all", clusters = "all", 
-                         districts = "all", mcYears = 1:2, timeStep = ts, showProgress = F)
+                         clustersRes = "all", districts = "all", mcYears = 1:2, timeStep = ts, showProgress = F)
   print(sapply(1:length(dt_local), function(x){
     data.table::fsetequal(dt_local[[x]], dt_api[[x]]) 
   }))
 }
 
 
-dt_local <-  readAntares(opts = opts_local, links = opts_local$linkList[1:2], 
-                         areas = opts_local$areaList[1:2], clusters = NULL, 
-                         districts = "all", mcYears = 1:2)
-dt_api <-  readAntares(opts = opts_api, links = opts_local$linkList[1:2], 
-                       areas = opts_local$areaList[1:2], clusters = NULL, 
-                       districts = "all", mcYears = 1:2)
-sapply(1:length(dt_local), function(x){
-  data.table::fsetequal(dt_local[[x]], dt_api[[x]]) 
-})
-
-
 dt_local <-  readAntares(opts = opts_local, links = "all", areas = "all", 
-                       clusters = "all", districts = "all",
+                         clustersRes = "all", districts = "all",
                        misc = TRUE, linkCapacity = TRUE, 
                        hydroStorageMaxPower = TRUE,
                        hydroStorage = TRUE,
@@ -105,7 +86,7 @@ dt_local <-  readAntares(opts = opts_local, links = "all", areas = "all",
                        reserve = TRUE, mustRun = TRUE)
 
 dt_api <-  readAntares(opts = opts_api, links = "all", areas = "all", 
-                       clusters = "all", districts = "all",
+                       clustersRes = "all", districts = "all",
                        misc = TRUE, linkCapacity = TRUE, 
                        hydroStorageMaxPower = TRUE,
                        hydroStorage = TRUE,
@@ -126,29 +107,11 @@ data.table::fsetequal(load_local, load_api)
 
 for(ts in c("hourly", "daily", "weekly", "monthly", "annual")){
   print(ts)
-  fullinput_local <- readInputTS(load = 'all',
-                                 ror = "all", 
-                                 thermalAvailabilities = "all",
-                                 hydroStorage = "all",
-                                 hydroStorageMaxPower = "all",
-                                 wind = "all",
-                                 solar = "all",
-                                 misc = "all",
-                                 reserve = "all",
-                                 linkCapacity = "all",
+  fullinput_local <- readInputTS(resProduction = "all",
                                  opts = opts_local, 
                                  timeStep = ts, showProgress = FALSE)
   
-  fullinput_api <- readInputTS(load = 'all',  
-                               ror = "all", 
-                               thermalAvailabilities = "all",
-                               hydroStorage = "all",
-                               hydroStorageMaxPower = "all",
-                               wind = "all",
-                               solar = "all",
-                               misc = "all",
-                               reserve = "all",
-                               linkCapacity = "all",
+  fullinput_api <- readInputTS(resProduction = "all",
                                opts = opts_api, 
                                timeStep = ts, showProgress = FALSE)
   

@@ -56,6 +56,7 @@
                           mcYears = NULL, 
                           showProgress, opts, processFun = NULL, sameNames = TRUE,
                           objectDisplayName = objectName, parallel) {
+  
   if (is.null(ids)) return(NULL)
   
   if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
