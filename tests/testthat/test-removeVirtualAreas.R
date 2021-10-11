@@ -318,4 +318,74 @@ sapply(studyPathS, function(studyPath){
     expect_false(is.null(mydataCorrected$districts$pumpingCapacity))
     expect_false(is.null(mydataCorrected$districts$storageCapacity))
   })
+  
+  
+  
+  test_that("List for storageFlexibility", {
+    
+    mydata <- suppressWarnings({readAntares(areas = "all",
+                                            districts ="all",
+                                            links = "all",
+                                            showProgress = FALSE,
+                                            hydroStorageMaxPower = TRUE,
+                                            linkCapacity = TRUE,
+                                            mcYears = 1)})
+    
+    
+    
+    data_rm_storage <- removeVirtualAreas(mydata,
+                                          storageFlexibility = c(getAreas("psp"),
+                                                                 getAreas("hub")), newCols = TRUE)
+    
+    data_rm_storage_column <- removeVirtualAreas(mydata,
+                                                 storageFlexibility = list(psp = getAreas("psp"), hub = getAreas("hub")))
+    
+    
+    psp <- getAreas("psp")[getAreas("psp") %in% names(data_rm_storage$areas)]
+    
+    ###Test identical for sum
+    expect_true(identical(rowSums(data_rm_storage$areas[, .SD, .SDcols = psp]),
+                          data_rm_storage_column$areas$psp))
+    
+    ##Test for hub
+    expect_true(identical(data_rm_storage$areas$hub, data_rm_storage_column$areas$hub))
+    
+    
+    
+    ##Test for hub
+    expect_true(identical(data_rm_storage$areas$hub, data_rm_storage_column$areas$hub))
+    
+    
+    
+    mydata_loop <- mydata
+    
+    data_rm_storage2 <- removeVirtualAreas(mydata_loop,
+                                           storageFlexibility = list(psp = psp))
+    
+    #Test walk exect
+    for(i in psp){
+      mydata_loop <- removeVirtualAreas(mydata_loop,
+                                        storageFlexibility = list(psp = i))
+    }
+    
+    expect_true(identical(mydata_loop$areas$psp, data_rm_storage2$areas$psp))
+    
+    
+    
+    
+    ##Test On psps directly
+    data_rm_storage <- removeVirtualAreas(mydata,
+                                          storageFlexibility = c(getAreas("psp"),
+                                                                 getAreas("hub")), newCols = FALSE)
+    
+    data_rm_storage_all <- removeVirtualAreas(mydata,
+                                              storageFlexibility = list(PSP = c(getAreas("psp"),
+                                                                                getAreas("hub"))))
+    
+    expect_true(identical(data_rm_storage$areas$PSP,data_rm_storage_all$areas$PSP))
+    expect_true(identical(data_rm_storage$links$`FLOW LIN.`,data_rm_storage_all$links$`FLOW LIN.`))
+    expect_true(identical(data_rm_storage$districts$PSP, data_rm_storage_all$districts$PSP))
+    
+  })
+  
 })
