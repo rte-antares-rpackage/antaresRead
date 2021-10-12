@@ -323,13 +323,15 @@ sapply(studyPathS, function(studyPath){
   
   test_that("List for storageFlexibility", {
     
-    mydata <- suppressWarnings({readAntares(areas = "all",
-                                            districts ="all",
-                                            links = "all",
-                                            showProgress = FALSE,
-                                            hydroStorageMaxPower = TRUE,
-                                            linkCapacity = TRUE,
-                                            mcYears = 1)})
+    mydata <- suppressWarnings({
+      readAntares(areas = "all",
+                  districts ="all",
+                  links = "all",
+                  showProgress = FALSE,
+                  hydroStorageMaxPower = TRUE,
+                  linkCapacity = TRUE,
+                  mcYears = 1)
+    })
     
     
     grid_test <- expand.grid(reassignCosts = c(TRUE, FALSE), rowBal = c(TRUE, FALSE))
@@ -410,6 +412,7 @@ sapply(studyPathS, function(studyPath){
       expect_equal(
         data_rm_storage_no_loop$areas, data_rm_storage_loop$areas[, colnames(data_rm_storage_no_loop$areas), with = FALSE]
       )
+      
       expect_equal(
         data_rm_storage_no_loop$links, data_rm_storage_loop$links[, colnames(data_rm_storage_no_loop$links), with = FALSE]
       )
@@ -417,7 +420,6 @@ sapply(studyPathS, function(studyPath){
       expect_equal(
         data_rm_storage_no_loop$districts, data_rm_storage_loop$districts[, colnames(data_rm_storage_no_loop$districts), with = FALSE]
       )
-      
       
       ## Test On psps directly
       data_rm_storage <- removeVirtualAreas(
@@ -441,9 +443,11 @@ sapply(studyPathS, function(studyPath){
       expect_equal(
         data_rm_storage$areas, data_rm_storage_all$areas[, colnames(data_rm_storage$areas), with = FALSE]
       )
+      
       expect_equal(
         data_rm_storage$links, data_rm_storage_all$links[, colnames(data_rm_storage$links), with = FALSE]
       )
+      
       expect_equal(
         data_rm_storage$districts, data_rm_storage_all$districts[, colnames(data_rm_storage$districts), with = FALSE]
       )

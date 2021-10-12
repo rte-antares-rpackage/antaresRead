@@ -353,37 +353,27 @@ removeVirtualAreas <- function(x,
           
           psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
           
-          
           .mergeByRef(x$areas, psp, on = byarea)
-          
           
           x$areas[, `:=`(n_name = eval(parse(text = new_name)) + ifelse(is.na(corrPSP), 0, corrPSP), 
                          corrPSP = NULL
           )]
           
-          
-          
           x$areas[,  c(new_name) := NULL]
           
           setnames(x$areas, "n_name", new_name)
           
-          
-          
           # correct values for district
-          
           x <- .merge_Col_Area_D(x, 
                                  colMerge = new_name, 
                                  allX = FALSE,
                                  opts = opts)
         }
         
-      }else{
+      } else {
         
         if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
-        
-        
-        
-        
+    
         psp <- copy(flows[varea %in% storageFlexibility, 
                           corrPSP := sum(flow), 
                           by = c(byarea)])
@@ -400,7 +390,6 @@ removeVirtualAreas <- function(x,
         )]
         
         # correct values for district
-        
         x <- .merge_Col_Area_D(x, 
                                colMerge = "PSP", 
                                allX = FALSE,
