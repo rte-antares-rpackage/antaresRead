@@ -10,7 +10,7 @@
 #'   \code{areas} and \code{links}.
 #' @param storageFlexibility A vector containing the names of the virtual 
 #'   storage/flexibility areas. Can also be a named list. Names are columns 
-#'   to add and elements of list are columns to group.
+#'   to add and elements the virtual areas to group.
 #' @param production A vector containing the names of the virtual production 
 #'   areas.
 #' @param reassignCosts If TRUE, the production costs of the virtual areas are 
@@ -133,6 +133,7 @@ removeVirtualAreas <- function(x,
                                newCols = TRUE,
                                rowBal = TRUE) {
   
+  
   # check x is an antaresData object with elements areas and links
   if (!is(x, "antaresDataList") || is.null(x$areas) || is.null(x$links))
     stop("x has to be an 'antaresDataList' object with elements 'areas' and 'links'")
@@ -145,8 +146,10 @@ removeVirtualAreas <- function(x,
     if (!any(unlist(storageFlexibility) %in% unique(x$areas$area))){
       warning("no one of you storageFlexibility areas are load in data")
     }
+    if (is.list(storageFlexibility) && newCols){
+      warning("`newCols` will be ignore for storageFlexibility. Use names list instead.")
+    }
   }
-  
   
   if (!is.null(production))
   {
@@ -165,12 +168,12 @@ removeVirtualAreas <- function(x,
   production <- intersect(production, areaList)
   if (reassignCosts) {
     if(is.list(storageFlexibility)){
-      storageFlexibility <- lapply(storageFlexibility, function(X)intersect(storageFlexibility, areaList))}else{
-        storageFlexibility <- intersect(storageFlexibility, areaList)
-      }
-    
-    
+      storageFlexibility <- lapply(storageFlexibility, function(X) intersect(X, areaList))
+    } else {
+      storageFlexibility <- intersect(storageFlexibility, areaList)
+    }
   }
+  
   vareas <- c(unlist(storageFlexibility), production) # list of virtual areas that need to be removed at the end
   
   prodAreas <- x$areas[area %in% production]
@@ -209,13 +212,11 @@ removeVirtualAreas <- function(x,
     # Update parameters
     
     if(is.list(storageFlexibility)){
-      lapply(storageFlexibility, function(X){
+      storageFlexibility <- lapply(storageFlexibility, function(X){
         intersect(X, connectedToHub[connectedToHub == FALSE]$area)
       })
-    }else{
-      
+    } else {
       storageFlexibility <- intersect(storageFlexibility, connectedToHub[connectedToHub == FALSE]$area)
-      
     }
     
     vareas <- c(unlist(storageFlexibility), production) 
@@ -487,10 +488,11 @@ removeVirtualAreas <- function(x,
   # to storage flexibility areas. These capacities are needed to compute 
   # upward and downward margins.
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
+    
     idColsLinks <- .idCols(x$links)
     
     pspCapacity <- merge(
-      linkList[area %in% storageFlexibility, .(link, area = to, direction)],
+      linkList[area %in% unlist(storageFlexibility), .(link, area = to, direction)],
       x$links[, c(idColsLinks, "transCapacityDirect", 
                   "transCapacityIndirect"), with = FALSE],
       by = "link"
@@ -543,7 +545,7 @@ removeVirtualAreas <- function(x,
                            opts = opts)
   }
   
-  #correct balance district but only at the end, 
+  # correct balance district but only at the end, 
   # with the final x (after removing veryVirtualAreas) so we must keep all.y
   if (!is.null(x$areas$BALANCE)){
     x <- .merge_Col_Area_D(x, 

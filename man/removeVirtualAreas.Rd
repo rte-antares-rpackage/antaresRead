@@ -19,7 +19,7 @@ removeVirtualAreas(
 
 \item{storageFlexibility}{A vector containing the names of the virtual 
 storage/flexibility areas. Can also be a named list. Names are columns 
-to add and elements of list are columns to group.}
+to add and elements the virtual areas to group.}
 
 \item{production}{A vector containing the names of the virtual production 
 areas.}
