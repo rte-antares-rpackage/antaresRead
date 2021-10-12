@@ -365,9 +365,11 @@ removeVirtualAreas <- function(x,
           
           x$areas[,  c(new_name) := NULL]
           
-          
-          
           setnames(x$areas, "n_name", new_name)
+          
+          
+          
+          # correct values for district
           
           x <- .merge_Col_Area_D(x, 
                                  colMerge = new_name, 
@@ -396,6 +398,9 @@ removeVirtualAreas <- function(x,
           PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
           corrPSP = NULL
         )]
+        
+        # correct values for district
+        
         x <- .merge_Col_Area_D(x, 
                                colMerge = "PSP", 
                                allX = FALSE,
@@ -540,9 +545,12 @@ removeVirtualAreas <- function(x,
   
   #correct district data 
   if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
+
+    
+    
     x <- .merge_Col_Area_D(x, 
                            colMerge = c("pumpingCapacity", "storageCapacity"),
-                           opts = opts)
+                           opts = opts, allX = FALSE)
   }
   
   # correct balance district but only at the end, 

@@ -414,10 +414,9 @@ sapply(studyPathS, function(studyPath){
         data_rm_storage_no_loop$links, data_rm_storage_loop$links[, colnames(data_rm_storage_no_loop$links), with = FALSE]
       )
       
-      # : pb sur les dsitricts en loop
-      # expect_equal(
-      #   data_rm_storage_no_loop$districts, data_rm_storage_loop$districts[, colnames(data_rm_storage_no_loop$districts), with = FALSE]
-      # )
+      expect_equal(
+        data_rm_storage_no_loop$districts, data_rm_storage_loop$districts[, colnames(data_rm_storage_no_loop$districts), with = FALSE]
+      )
       
       
       ## Test On psps directly
