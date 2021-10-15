@@ -134,9 +134,16 @@ data <- readAntares(areas="all", links="all")
 correctedData <- removeVirtualAreas(data, 
                                     storageFlexibility = c("psp in", "psp out"),
                                     production = "offshore")
-correctedData <- removeVirtualAreas(data, 
-                                    storageFlexibility = list(psp = c("psp in", "psp out")),
+                                    
+correctedData_list <- removeVirtualAreas(data, 
+                                    storageFlexibility = list(PSP = c("psp in", "psp out")),
                                     production = "offshore")
+ 
+                                   
+correctedData_details <- removeVirtualAreas(data, 
+                                    storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
+                                    production = "offshore")
+                                    
 }
 
 }

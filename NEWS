@@ -3,6 +3,7 @@
 Changes in version 2.2.9
 FEATURES:
 * Add ENR Cluster support (V8.1)
+* Can pass storageFlexibility named list in removeVirtualAreas
 BUGFIXES:
 * aggregateResult parallel export (#161)
 

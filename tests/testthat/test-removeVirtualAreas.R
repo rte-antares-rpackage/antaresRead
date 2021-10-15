@@ -6,8 +6,8 @@ sapply(studyPathS, function(studyPath){
   
   opts <- setSimulationPath(studyPath)
   
-  data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , showProgress = FALSE,
-                                       linkCapacity = TRUE, select = "nostat"))
+  data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , 
+                                       showProgress = FALSE, linkCapacity = TRUE, select = "nostat"))
   
   vareas <- c("psp in-2", "psp out-2")
   
@@ -333,6 +333,16 @@ sapply(studyPathS, function(studyPath){
                   mcYears = 1)
     })
     
+    # must be a named list
+    expect_error({
+      removeVirtualAreas(
+        mydata,
+        storageFlexibility = list(getAreas("psp"), getAreas("hub")), 
+        newCols = FALSE,
+        reassignCosts = FALSE, 
+        rowBal = FALSE
+      )
+    })
     
     grid_test <- expand.grid(reassignCosts = c(TRUE, FALSE), rowBal = c(TRUE, FALSE))
     
@@ -394,6 +404,22 @@ sapply(studyPathS, function(studyPath){
         reassignCosts = grid_test$reassignCosts[j], 
         rowBal = grid_test$rowBal[j]
       )
+      
+      ## list non unique names
+      ll <- lapply(psp_area, function(x) x)
+      names(ll) <- rep("psp", length(ll))
+      
+      data_rm_storage_list_names <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = ll, 
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      expect_true(identical(data_rm_storage_list_names$areas, data_rm_storage_no_loop$areas))
+      expect_true(identical(data_rm_storage_list_names$districts , data_rm_storage_no_loop$districts))
+      expect_true(identical(data_rm_storage_list_names$links , data_rm_storage_no_loop$links))
       
       ## Test walk exect
       data_rm_storage_loop <- mydata

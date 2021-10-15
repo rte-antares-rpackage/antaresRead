@@ -119,9 +119,16 @@
 #' correctedData <- removeVirtualAreas(data, 
 #'                                     storageFlexibility = c("psp in", "psp out"),
 #'                                     production = "offshore")
-#' correctedData <- removeVirtualAreas(data, 
-#'                                     storageFlexibility = list(psp = c("psp in", "psp out")),
+#'                                     
+#' correctedData_list <- removeVirtualAreas(data, 
+#'                                     storageFlexibility = list(PSP = c("psp in", "psp out")),
 #'                                     production = "offshore")
+#'  
+#'                                    
+#' correctedData_details <- removeVirtualAreas(data, 
+#'                                     storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
+#'                                     production = "offshore")
+#'                                     
 #' }
 #' 
 #' @export
@@ -143,11 +150,16 @@ removeVirtualAreas <- function(x,
   
   if (!is.null(storageFlexibility))
   {
+    if(is.list(storageFlexibility)){
+      if(is.null(names(storageFlexibility))){
+        stop("If using list for storageFlexibility, you have to use named list.")
+      }
+    }
     if (!any(unlist(storageFlexibility) %in% unique(x$areas$area))){
       warning("no one of you storageFlexibility areas are load in data")
     }
     if (is.list(storageFlexibility) && newCols){
-      warning("`newCols` will be ignore for storageFlexibility. Use names list instead.")
+      warning("`newCols` will be ignore for storageFlexibility. Use named list instead.")
     }
   }
   
