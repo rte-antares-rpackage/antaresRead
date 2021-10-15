@@ -404,7 +404,15 @@
     idVarsNames <- n[idVarsId]
     
     # Get final value columns
-    colNames <- c("resProduction")
+    # Get final value columns
+    # colNames <- c("resProduction")
+    if (sum(idx) / length(clusterNames) == 3) {
+      colNames <- c("production", "NP Cost", "NODU")
+    } else if (sum(idx) / length(clusterNames) == 2) {
+      colNames <- c("production", "NP Cost")
+    } else {
+      colNames <- c("production")
+    }
     
     # Loop over clusters
     nclusters <- length(clusterNames)

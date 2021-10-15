@@ -745,7 +745,7 @@ aggregateResult <- function(opts, verbose = 1,
       
       if(i == "clustersRes"){
         suppressWarnings(
-          struct[[i]][, c( "resProduction_min", "resProduction_max", "resProduction_std") := NULL]
+          struct[[i]][, c( "production_min", "production_max", "production_std") := NULL]
         )
       }
       

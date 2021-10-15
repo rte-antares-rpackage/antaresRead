@@ -125,7 +125,7 @@
   
   ldply(clusters, function(cl) {
     filePattern <- sprintf("%s/%s/%%s/series.txt", "renewables/series", area)
-    res <- .importInputTS(cl, timeStep, opts, filePattern, "resProduction",
+    res <- .importInputTS(cl, timeStep, opts, filePattern, "production",
                           inputTimeStep = "hourly", type = "matrix")
     
     if (is.null(res)) return(NULL)
