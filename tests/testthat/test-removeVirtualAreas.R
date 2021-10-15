@@ -6,8 +6,8 @@ sapply(studyPathS, function(studyPath){
   
   opts <- setSimulationPath(studyPath)
   
-  data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , showProgress = FALSE,
-                                       linkCapacity = TRUE, select = "nostat"))
+  data <- suppressWarnings(readAntares(areas = "all", links = "all", districts = "all" , 
+                                       showProgress = FALSE, linkCapacity = TRUE, select = "nostat"))
   
   vareas <- c("psp in-2", "psp out-2")
   
@@ -318,4 +318,167 @@ sapply(studyPathS, function(studyPath){
     expect_false(is.null(mydataCorrected$districts$pumpingCapacity))
     expect_false(is.null(mydataCorrected$districts$storageCapacity))
   })
+  
+  
+  
+  test_that("List for storageFlexibility", {
+    
+    mydata <- suppressWarnings({
+      readAntares(areas = "all",
+                  districts ="all",
+                  links = "all",
+                  showProgress = FALSE,
+                  hydroStorageMaxPower = TRUE,
+                  linkCapacity = TRUE,
+                  mcYears = 1)
+    })
+    
+    # must be a named list
+    expect_error({
+      removeVirtualAreas(
+        mydata,
+        storageFlexibility = list(getAreas("psp"), getAreas("hub")), 
+        newCols = FALSE,
+        reassignCosts = FALSE, 
+        rowBal = FALSE
+      )
+    })
+    
+    grid_test <- expand.grid(reassignCosts = c(TRUE, FALSE), rowBal = c(TRUE, FALSE))
+    
+    for(j in 1:nrow(grid_test)){
+      
+      data_rm_storage <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = c(getAreas("psp"),
+                               getAreas("hub")), 
+        newCols = TRUE, 
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      data_rm_storage_column <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = list(psp = getAreas("psp"), hub = getAreas("hub")), 
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      psp_area <- getAreas("psp")[getAreas("psp") %in% names(data_rm_storage$areas)]
+      
+      ## Test identical for sum
+      expect_true(identical(rowSums(data_rm_storage$areas[, .SD, .SDcols = psp_area]),
+                            data_rm_storage_column$areas$psp))
+      
+      psp_districts <- getAreas("psp")[getAreas("psp") %in% names(data_rm_storage$districts)]
+      expect_true(identical(rowSums(data_rm_storage$districts[, .SD, .SDcols = psp_districts]),
+                            data_rm_storage_column$districts$psp))
+      
+      ## Test for hub
+      expect_true(identical(data_rm_storage$areas$hub, data_rm_storage_column$areas$hub))
+      
+      ## Other columns
+      common_columns_area <- intersect(colnames(data_rm_storage$areas), colnames(data_rm_storage_column$areas)) 
+      expect_equal(
+        data_rm_storage$areas[, common_columns_area, with = FALSE], 
+        data_rm_storage_column$areas[, common_columns_area, with = FALSE]
+      )
+      
+      common_columns_district <- intersect(colnames(data_rm_storage$districts), colnames(data_rm_storage_column$districts)) 
+      expect_equal(
+        data_rm_storage$districts[, common_columns_district, with = FALSE], 
+        data_rm_storage_column$districts[, common_columns_district, with = FALSE]
+      )
+      
+      expect_equal(
+        data_rm_storage$links, 
+        data_rm_storage_column$links
+      )
+      
+      ## loop
+      data_rm_storage_no_loop <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = list(psp = psp_area), 
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      ## list non unique names
+      ll <- lapply(psp_area, function(x) x)
+      names(ll) <- rep("psp", length(ll))
+      
+      data_rm_storage_list_names <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = ll, 
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      expect_true(identical(data_rm_storage_list_names$areas, data_rm_storage_no_loop$areas))
+      expect_true(identical(data_rm_storage_list_names$districts , data_rm_storage_no_loop$districts))
+      expect_true(identical(data_rm_storage_list_names$links , data_rm_storage_no_loop$links))
+      
+      ## Test walk exect
+      data_rm_storage_loop <- mydata
+      for(i in psp_area){
+        data_rm_storage_loop <- removeVirtualAreas(
+          data_rm_storage_loop,
+          storageFlexibility = list(psp = i),
+          newCols = FALSE,
+          reassignCosts = grid_test$reassignCosts[j], 
+          rowBal = grid_test$rowBal[j]
+        )
+      }
+      
+      expect_true(identical(data_rm_storage_loop$areas$psp, data_rm_storage_no_loop$areas$psp))
+      
+      expect_equal(
+        data_rm_storage_no_loop$areas, data_rm_storage_loop$areas[, colnames(data_rm_storage_no_loop$areas), with = FALSE]
+      )
+      
+      expect_equal(
+        data_rm_storage_no_loop$links, data_rm_storage_loop$links[, colnames(data_rm_storage_no_loop$links), with = FALSE]
+      )
+      
+      expect_equal(
+        data_rm_storage_no_loop$districts, data_rm_storage_loop$districts[, colnames(data_rm_storage_no_loop$districts), with = FALSE]
+      )
+      
+      ## Test On psps directly
+      data_rm_storage <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = c(getAreas("psp"),
+                               getAreas("hub")), 
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      data_rm_storage_all <- removeVirtualAreas(
+        mydata,
+        storageFlexibility = list(PSP = c(getAreas("psp"),
+                                          getAreas("hub"))),
+        newCols = FALSE,
+        reassignCosts = grid_test$reassignCosts[j], 
+        rowBal = grid_test$rowBal[j]
+      )
+      
+      expect_equal(
+        data_rm_storage$areas, data_rm_storage_all$areas[, colnames(data_rm_storage$areas), with = FALSE]
+      )
+      
+      expect_equal(
+        data_rm_storage$links, data_rm_storage_all$links[, colnames(data_rm_storage$links), with = FALSE]
+      )
+      
+      expect_equal(
+        data_rm_storage$districts, data_rm_storage_all$districts[, colnames(data_rm_storage$districts), with = FALSE]
+      )
+      
+    }
+  })
+  
 })

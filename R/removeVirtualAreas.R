@@ -9,7 +9,8 @@
 #' @param x An object of class \code{antaresDataList} with at least components 
 #'   \code{areas} and \code{links}.
 #' @param storageFlexibility A vector containing the names of the virtual 
-#'   storage/flexibility areas.
+#'   storage/flexibility areas. Can also be a named list. Names are columns 
+#'   to add and elements the virtual areas to group.
 #' @param production A vector containing the names of the virtual production 
 #'   areas.
 #' @param reassignCosts If TRUE, the production costs of the virtual areas are 
@@ -118,6 +119,16 @@
 #' correctedData <- removeVirtualAreas(data, 
 #'                                     storageFlexibility = c("psp in", "psp out"),
 #'                                     production = "offshore")
+#'                                     
+#' correctedData_list <- removeVirtualAreas(data, 
+#'                                     storageFlexibility = list(PSP = c("psp in", "psp out")),
+#'                                     production = "offshore")
+#'  
+#'                                    
+#' correctedData_details <- removeVirtualAreas(data, 
+#'                                     storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
+#'                                     production = "offshore")
+#'                                     
 #' }
 #' 
 #' @export
@@ -129,6 +140,7 @@ removeVirtualAreas <- function(x,
                                newCols = TRUE,
                                rowBal = TRUE) {
   
+  
   # check x is an antaresData object with elements areas and links
   if (!is(x, "antaresDataList") || is.null(x$areas) || is.null(x$links))
     stop("x has to be an 'antaresDataList' object with elements 'areas' and 'links'")
@@ -137,12 +149,19 @@ removeVirtualAreas <- function(x,
     stop("At least one argument of 'storageFlexibility' and 'production' needs to be specified")
   
   if (!is.null(storageFlexibility))
-    {
-      if (!any(storageFlexibility %in% unique(x$areas$area))){
-        warning("no one of you storageFlexibility areas are load in data")
+  {
+    if(is.list(storageFlexibility)){
+      if(is.null(names(storageFlexibility))){
+        stop("If using list for storageFlexibility, you have to use named list.")
       }
+    }
+    if (!any(unlist(storageFlexibility) %in% unique(x$areas$area))){
+      warning("no one of you storageFlexibility areas are load in data")
+    }
+    if (is.list(storageFlexibility) && newCols){
+      warning("`newCols` will be ignore for storageFlexibility. Use named list instead.")
+    }
   }
-  
   
   if (!is.null(production))
   {
@@ -160,12 +179,17 @@ removeVirtualAreas <- function(x,
   areaList <- as.character(unique(x$areas$area))
   production <- intersect(production, areaList)
   if (reassignCosts) {
-    storageFlexibility <- intersect(storageFlexibility, areaList)
+    if(is.list(storageFlexibility)){
+      storageFlexibility <- lapply(storageFlexibility, function(X) intersect(X, areaList))
+    } else {
+      storageFlexibility <- intersect(storageFlexibility, areaList)
+    }
   }
-  vareas <- c(storageFlexibility, production) # list of virtual areas that need to be removed at the end
+  
+  vareas <- c(unlist(storageFlexibility), production) # list of virtual areas that need to be removed at the end
   
   prodAreas <- x$areas[area %in% production]
-  storageAreas <- x$areas[area %in% storageFlexibility]
+  storageAreas <- x$areas[area %in% unlist(storageFlexibility)]
   
   by <- .get_by(x)
   byarea <- .get_by_area(x)
@@ -184,7 +208,7 @@ removeVirtualAreas <- function(x,
   # virtual areas are agregated in the hubs.
   # Finally we run treat the hubs as normal virtual areas and continue the
   # execution of the function.
-  linkList$connectedToVirtualArea <- linkList$to %in% storageFlexibility
+  linkList$connectedToVirtualArea <- linkList$to %in% unlist(storageFlexibility)
   
   connectedToHub <- linkList[, .(connectedToHub = all(connectedToVirtualArea)), 
                              by = area]
@@ -198,8 +222,16 @@ removeVirtualAreas <- function(x,
     x <- removeVirtualAreas(x, storageFlexibility = veryVirtualAreas)
     
     # Update parameters
-    storageFlexibility <- intersect(storageFlexibility, connectedToHub[connectedToHub == FALSE]$area)
-    vareas <- c(storageFlexibility, production) 
+    
+    if(is.list(storageFlexibility)){
+      storageFlexibility <- lapply(storageFlexibility, function(X){
+        intersect(X, connectedToHub[connectedToHub == FALSE]$area)
+      })
+    } else {
+      storageFlexibility <- intersect(storageFlexibility, connectedToHub[connectedToHub == FALSE]$area)
+    }
+    
+    vareas <- c(unlist(storageFlexibility), production) 
     linkList <- linkList[area %in% vareas]
     
     # Remove columns added for very virtual areas
@@ -270,7 +302,7 @@ removeVirtualAreas <- function(x,
     setkeyv(x$areas, byarea)
     x$areas[costs, 
             c(varCost) := as.data.table(mget(varCost)) + 
-                            as.data.table(mget(paste0("i.", varCost)))]
+              as.data.table(mget(paste0("i.", varCost)))]
     x <- .merge_Col_Area_D(x, 
                            colMerge = colCostToCorrect,
                            opts = opts)
@@ -280,13 +312,17 @@ removeVirtualAreas <- function(x,
   if (length(storageFlexibility) > 0) {
     flows[, area := rarea]
     
-    if (newCols) {
+    if (newCols & !is.list(storageFlexibility)) {
+      
+      
       # Create a new column for each virtual area
       formula <- sprintf("%s ~ varea", paste(byarea, collapse = " + "))
       
       tmp <- dcast(flows[varea %in% storageFlexibility, mget(c("varea", byarea, "flow"))], 
                    as.formula(formula), value.var = "flow")
-    
+      
+      
+      
       x$areas <- .mergeByRef(x$areas, tmp, on = byarea)
       
       # Replace NA values by zeros
@@ -303,24 +339,74 @@ removeVirtualAreas <- function(x,
     } else {
       # Add the virtual flows to column PSP. If column PSP does not exist, it is
       # created.
-      if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
       
-      psp <- copy(flows[varea %in% storageFlexibility, 
-                   corrPSP := sum(flow), 
-                   by = c(byarea)])
+      # ####TEST CODE
+      # #OLD
+      # storageFlexibility = 'x_open_turb'
+      # #NEW
+      # storageFlexibility = list("mynowProd" = "x_open_turb")
+      # 
       
-      psp <- psp[varea %in% storageFlexibility]
-      
-      psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
-      .mergeByRef(x$areas, psp, on = byarea)
-      x$areas[, `:=`(
-        PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
-        corrPSP = NULL
-      )]
-      x <- .merge_Col_Area_D(x, 
-                             colMerge = "PSP", 
-                             allX = FALSE,
-                             opts = opts)
+      if(is.list(storageFlexibility)){
+        
+        for(i in 1:length(storageFlexibility)){
+          new_name <- names(storageFlexibility)[[i]]
+          new_storageFlexibility = storageFlexibility[[i]]
+          if (is.null(x$areas[[new_name]])) {
+            x$areas[, new_name := 0]
+            setnames(x$areas, "new_name", new_name)
+          }
+          
+          psp <- copy(flows[varea %in% new_storageFlexibility, 
+                            corrPSP := sum(flow), 
+                            by = c(byarea)])
+          
+          psp <- psp[varea %in% new_storageFlexibility]
+          
+          psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
+          
+          .mergeByRef(x$areas, psp, on = byarea)
+          
+          x$areas[, `:=`(n_name = eval(parse(text = new_name)) + ifelse(is.na(corrPSP), 0, corrPSP), 
+                         corrPSP = NULL
+          )]
+          
+          x$areas[,  c(new_name) := NULL]
+          
+          setnames(x$areas, "n_name", new_name)
+          
+          # correct values for district
+          x <- .merge_Col_Area_D(x, 
+                                 colMerge = new_name, 
+                                 allX = FALSE,
+                                 opts = opts)
+        }
+        
+      } else {
+        
+        if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
+    
+        psp <- copy(flows[varea %in% storageFlexibility, 
+                          corrPSP := sum(flow), 
+                          by = c(byarea)])
+        
+        psp <- psp[varea %in% storageFlexibility]
+        
+        psp[, setdiff(names(psp), c(byarea, "corrPSP")) := NULL]
+        
+        
+        .mergeByRef(x$areas, psp, on = byarea)
+        x$areas[, `:=`(
+          PSP = PSP + ifelse(is.na(corrPSP), 0, corrPSP), 
+          corrPSP = NULL
+        )]
+        
+        # correct values for district
+        x <- .merge_Col_Area_D(x, 
+                               colMerge = "PSP", 
+                               allX = FALSE,
+                               opts = opts)
+      }
     }
   }
   
@@ -408,10 +494,11 @@ removeVirtualAreas <- function(x,
   # to storage flexibility areas. These capacities are needed to compute 
   # upward and downward margins.
   if (length(storageFlexibility) > 0 && !is.null(x$links$transCapacityDirect)) {
+    
     idColsLinks <- .idCols(x$links)
     
     pspCapacity <- merge(
-      linkList[area %in% storageFlexibility, .(link, area = to, direction)],
+      linkList[area %in% unlist(storageFlexibility), .(link, area = to, direction)],
       x$links[, c(idColsLinks, "transCapacityDirect", 
                   "transCapacityIndirect"), with = FALSE],
       by = "link"
@@ -428,9 +515,9 @@ removeVirtualAreas <- function(x,
     pspCapacity[transCapacityIndirect == 1, transCapacityIndirect := 0]
     
     pspCapacity <- pspCapacity[, 
-      .(transCapacityDirect = sum(transCapacityDirect),
-        transCapacityIndirect = sum(transCapacityIndirect)),
-      by = c(.idCols(x$areas))
+                               .(transCapacityDirect = sum(transCapacityDirect),
+                                 transCapacityIndirect = sum(transCapacityIndirect)),
+                               by = c(.idCols(x$areas))
     ]
     
     if (is.null(x$areas$storageCapacity)) {
@@ -459,12 +546,15 @@ removeVirtualAreas <- function(x,
   
   #correct district data 
   if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
+
+    
+    
     x <- .merge_Col_Area_D(x, 
                            colMerge = c("pumpingCapacity", "storageCapacity"),
-                           opts = opts)
+                           opts = opts, allX = FALSE)
   }
   
-  #correct balance district but only at the end, 
+  # correct balance district but only at the end, 
   # with the final x (after removing veryVirtualAreas) so we must keep all.y
   if (!is.null(x$areas$BALANCE)){
     x <- .merge_Col_Area_D(x, 

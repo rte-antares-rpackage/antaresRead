@@ -701,6 +701,8 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
   
   if (missing(areas)) stop("The function 'readAntaresAreas' expects a vector of area names as argument. You can use 'getAreas' to build such a vector.")
   
+  if(opts$antaresVersion < 810) clustersRes <- FALSE
+  
   links <- if (links) getLinks(areas, internalOnly=internalOnly, opts = opts) else NULL
   clusters <- if(clusters) areas else NULL
   clustersRes <- if(clustersRes) areas else NULL

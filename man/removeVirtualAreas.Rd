@@ -18,7 +18,8 @@ removeVirtualAreas(
 \code{areas} and \code{links}.}
 
 \item{storageFlexibility}{A vector containing the names of the virtual 
-storage/flexibility areas.}
+storage/flexibility areas. Can also be a named list. Names are columns 
+to add and elements the virtual areas to group.}
 
 \item{production}{A vector containing the names of the virtual production 
 areas.}
@@ -133,6 +134,16 @@ data <- readAntares(areas="all", links="all")
 correctedData <- removeVirtualAreas(data, 
                                     storageFlexibility = c("psp in", "psp out"),
                                     production = "offshore")
+                                    
+correctedData_list <- removeVirtualAreas(data, 
+                                    storageFlexibility = list(PSP = c("psp in", "psp out")),
+                                    production = "offshore")
+ 
+                                   
+correctedData_details <- removeVirtualAreas(data, 
+                                    storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
+                                    production = "offshore")
+                                    
 }
 
 }
