@@ -513,7 +513,7 @@ aggregateResult <- function(opts, verbose = 1,
           return(.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
         } else {
           
-          if(!is.null(value$clustersRes) && nrow(value$clustersRes) > 0){
+          if(!is.null(value$clustersRes) && is.data.frame(value$clustersRes) && nrow(value$clustersRes) > 0){
             warning("Writing clusterRes file is not at moment available")
           }
           
