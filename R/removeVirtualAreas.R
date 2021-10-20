@@ -385,7 +385,7 @@ removeVirtualAreas <- function(x,
       } else {
         
         if (is.null(x$areas$PSP)) x$areas[, PSP := 0]
-    
+        
         psp <- copy(flows[varea %in% storageFlexibility, 
                           corrPSP := sum(flow), 
                           by = c(byarea)])
@@ -546,7 +546,7 @@ removeVirtualAreas <- function(x,
   
   #correct district data 
   if (!is.null(x$districts) && length(storageFlexibility) > 0 && !is.null(x$areas$pumpingCapacity)){
-
+    
     
     
     x <- .merge_Col_Area_D(x, 
@@ -564,8 +564,18 @@ removeVirtualAreas <- function(x,
   }
   
   # Store in attributes the name of the virtuals nodes
-  attr(x, "virtualNodes") <- list(storageFlexibility = storageFlexibility,
-                                  production = production)
+  if(is.list(storageFlexibility)){
+    attr(x, "virtualNodes") <- list(
+      storageFlexibility = setdiff(unique(c(attr(x, "virtualNodes")$storageFlexibility, names(storageFlexibility), unlist(storageFlexibility))), "PSP"),
+      production = unique(c(attr(x, "virtualNodes")$production, production))
+    )
+  } else {
+    attr(x, "virtualNodes") <- list(
+      storageFlexibility = unique(c(attr(x, "virtualNodes")$storageFlexibility, storageFlexibility)),
+      production = unique(c(attr(x, "virtualNodes")$production, production))
+    )
+  }
+  
   
   if (attr(x, "synthesis")){
     colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")

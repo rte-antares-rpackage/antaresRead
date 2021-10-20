@@ -323,6 +323,8 @@ sapply(studyPathS, function(studyPath){
   
   test_that("List for storageFlexibility", {
     
+    # opts <- setSimulationPath(studyPathS[1])
+    
     mydata <- suppressWarnings({
       readAntares(areas = "all",
                   districts ="all",
@@ -417,10 +419,8 @@ sapply(studyPathS, function(studyPath){
         rowBal = grid_test$rowBal[j]
       )
       
-      expect_true(identical(data_rm_storage_list_names$areas, data_rm_storage_no_loop$areas))
-      expect_true(identical(data_rm_storage_list_names$districts , data_rm_storage_no_loop$districts))
-      expect_true(identical(data_rm_storage_list_names$links , data_rm_storage_no_loop$links))
-      
+      expect_true(identical(data_rm_storage_list_names, data_rm_storage_no_loop))
+
       ## Test walk exect
       data_rm_storage_loop <- mydata
       for(i in psp_area){
@@ -432,6 +432,8 @@ sapply(studyPathS, function(studyPath){
           rowBal = grid_test$rowBal[j]
         )
       }
+      
+      expect_equal(attr(data_rm_storage_loop, "virtualNodes"), attr(data_rm_storage_no_loop, "virtualNodes"))
       
       expect_true(identical(data_rm_storage_loop$areas$psp, data_rm_storage_no_loop$areas$psp))
       
@@ -465,6 +467,8 @@ sapply(studyPathS, function(studyPath){
         reassignCosts = grid_test$reassignCosts[j], 
         rowBal = grid_test$rowBal[j]
       )
+      
+      expect_equal(attr(data_rm_storage, "virtualNodes"), attr(data_rm_storage_all, "virtualNodes"))
       
       expect_equal(
         data_rm_storage$areas, data_rm_storage_all$areas[, colnames(data_rm_storage$areas), with = FALSE]
