@@ -143,7 +143,7 @@
 }
 
 .importHydroStorageInput <- function(area, timeStep, opts, ...) {
-  inputTimeStepV <- ifelse(.getInputOptions(opts)$antaresVersion >= 650, yes = "daily", no = "monthly")
+  inputTimeStepV <- ifelse(opts$antaresVersion >= 650, yes = "daily", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
                  inputTimeStep = inputTimeStepV, type = "matrix")
 }
@@ -151,7 +151,7 @@
 .importHydroStorageMaxPower <- function(area, timeStep, opts, unselect = NULL, ...) {
   
   unselect = unselect$areas
-  if (.getInputOptions(opts)$antaresVersion >= 650) {
+  if (opts$antaresVersion >= 650) {
     beginName <- c("generatingMaxPower", "generatingMaxEnergy", 
                    "pumpingMaxPower", "pumpingMaxEnergy")
   } else {
@@ -222,20 +222,22 @@
 }
 
 .importLinkCapacity <- function(link, timeStep, opts, unselect = NULL, ...) {
-  
+
   areas <- strsplit(link, " - ")[[1]]
   
   unselect <- unselect$links
   
   #TODO DEL after some antaresVersion, by example, del this check after Antares
   #version 8 and check in readAntares the version
-  if (.getInputOptions(opts)$antaresVersion >= 650) {
+  if (opts$antaresVersion >= 650) {
     beginName <- c("transCapacityDirect", "transCapacityIndirect",
                    "hurdlesCostDirect", "hurdlesCostIndirect",
-                   "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")    
+                   "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
+    fun = c("sum", "sum", "mean", "mean", "mean", "mean", "mean", "mean")
   } else {
     beginName <- c("transCapacityDirect", "transCapacityIndirect",
                    "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+    fun = c("sum", "sum", "mean", "mean", "mean")
   }
   
   if(!is.null(unselect)){
@@ -251,7 +253,7 @@
                         sprintf("%s/%%s.txt", file.path("links", areas[1])), 
                         colnames=names,
                         inputTimeStep = "hourly", 
-                        fun = c("sum", "sum", "mean", "mean", "mean"), colSelect = colSelect)
+                        fun = fun, colSelect = colSelect)
   
   res$area <- NULL
   res$link <- link
