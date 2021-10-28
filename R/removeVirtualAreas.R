@@ -480,6 +480,12 @@ removeVirtualAreas <- function(x,
                           by = byarea, all.x = TRUE)
       x$clusters[!is.na(rarea), area := rarea]
       x$clusters[, rarea := NULL]
+      idColsclusters <- .idCols(x$clusters)
+      if(nrow(x$cluster[, c(idColsclusters), with = FALSE]) != nrow(unique(x$cluster[, c(idColsclusters), with = FALSE]))){
+        var_names <- setdiff(colnames(x$clusters), idColsclusters)
+        x$clusters <- x$cluster[, lapply(.SD, function(x) sum(x, na.rm = T)),
+                                by = idColsclusters, .SDcols = var_names]
+      }
     }
   } 
   
