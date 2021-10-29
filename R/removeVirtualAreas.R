@@ -24,8 +24,18 @@
 #' @param rowBal
 #'   If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
 #'   BALANCE := BALANCE - "ROW. BAL"
-#'   
-#'   
+#' @param prodVars
+#'   Virtual productions columns to add to real area. 
+#'   Default to \code{getAlias("rmVA_production")}
+#' @param costsVars
+#'   If parameter \code{reassignCosts} is TRUE, affected columns.
+#'   Default to \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.} and \code{NP COST}
+#' @param costsOn
+#'   If parameter \code{reassignCosts} is TRUE, then the costs of the 
+#'  virtual areas are reassigned to the real areas they are connected to.
+#'  You can choose to reassigned production & storageFlexibility virtuals areas
+#'  ("both", default), or only "production" or "storageFlexibility" virtuals areas
+#'  
 #' @return 
 #' An \code{antaresDataList} object in which virtual areas have been removed and
 #' data of the real has been corrected. See details for an explanation of the
@@ -53,7 +63,7 @@
 #'   
 #'   \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
 #'     virtual areas are reassigned to the real areas they are connected to. The
-#'     affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
+#'     default affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
 #'     and \code{NP COST}. If a virtual area is connected to a single real area,
 #'     all its costs are attributed to the real area. If it is connected to
 #'     several real areas, then costs at a given time step are divided between
@@ -138,7 +148,10 @@ removeVirtualAreas <- function(x,
                                production = NULL, 
                                reassignCosts = FALSE, 
                                newCols = TRUE,
-                               rowBal = TRUE) {
+                               rowBal = TRUE, 
+                               prodVars = getAlias("rmVA_production"), 
+                               costsVars = c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"), 
+                               costsOn = c("both", "storageFlexibility", "production")) {
   
   
   # check x is an antaresData object with elements areas and links
@@ -170,6 +183,7 @@ removeVirtualAreas <- function(x,
     }
   }
   
+  costsOn <- match.arg(costsOn)
   
   opts <- simOptions(x)
   
@@ -277,10 +291,17 @@ removeVirtualAreas <- function(x,
   
   # Correct costs and CO2
   if (reassignCosts) {
-    colCostToCorrect <-  c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST")
+    colCostToCorrect <-  costsVars
     varCost <- intersect(names(x$areas), colCostToCorrect)
     
-    costs <- rbind(prodAreas, storageAreas)
+    if(costsOn == "both"){
+      costs <- rbind(prodAreas, storageAreas)
+    } else if(costsOn == "storageFlexibility"){
+      costs <- storageAreas
+    } else if(costsOn == "production"){
+      costs <- prodAreas
+    }
+
     costs <- costs[area %in% vareas, c(byarea, varCost), with = FALSE]
     
     # Add column "flow" to 'costs'
@@ -416,10 +437,8 @@ removeVirtualAreas <- function(x,
     linkListProd <- flows[varea %in% production]
     
     # Add virtual productions columns to x$areas
-    prodVars <- intersect(names(x$areas), c(pkgEnv$varAliases$generation$select, 
-                                            pkgEnv$varAliases$netLoad$select, 
-                                            "SPIL. ENRG"))
-    prodVars <- prodVars[prodVars != "LOAD"]
+    prodVars <- intersect(names(x$areas), prodVars)
+    
     vars <- c(byarea, prodVars)
     
     virtualProd <- prodAreas[, vars, with = FALSE]
@@ -430,46 +449,48 @@ removeVirtualAreas <- function(x,
     }
     prodVars <- prodVars[prodVars %in% names(virtualProd)]
     
-    # Rename columns by appending "_virtual" to their names
-    setnames(virtualProd, prodVars, paste0(prodVars, "_virtual"))
-    
-    # Merging with original data
-    # /!\ Undesired results if multiple real areas connected to the same
-    # virtual area.
-    setnames(virtualProd, "area", "varea")
-    linkListProd$area <- linkListProd$rarea
-    virtualProd <- merge(virtualProd, 
-                         linkListProd[, c("varea", byarea), with = FALSE], 
-                         by = c("varea", by))
-    virtualProd$varea <- NULL
-    virtualProd <- virtualProd[, lapply(.SD, sum), by = byarea]
-    
-    .mergeByRef(x$areas, virtualProd, on = byarea)
-    
-    # Replace NA values by zeros
-    v <- paste0(prodVars, "_virtual")
-    x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
-    
-    # Prod are integers
-    x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
-    
-    if (!newCols) {
-      for (i in prodVars){
-        x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
+    if(length(prodVars) > 0){
+      # Rename columns by appending "_virtual" to their names
+      setnames(virtualProd, prodVars, paste0(prodVars, "_virtual"))
+      
+      # Merging with original data
+      # /!\ Undesired results if multiple real areas connected to the same
+      # virtual area.
+      setnames(virtualProd, "area", "varea")
+      linkListProd$area <- linkListProd$rarea
+      virtualProd <- merge(virtualProd, 
+                           linkListProd[, c("varea", byarea), with = FALSE], 
+                           by = c("varea", by))
+      virtualProd$varea <- NULL
+      virtualProd <- virtualProd[, lapply(.SD, sum), by = byarea]
+      
+      .mergeByRef(x$areas, virtualProd, on = byarea)
+      
+      # Replace NA values by zeros
+      v <- paste0(prodVars, "_virtual")
+      x$areas[, c(v) := lapply(mget(v), function(x) ifelse(is.na(x), 0, x))]
+      
+      # Prod are integers
+      x$areas[, c(v) := lapply(.SD, as.integer), .SDcols = c(v)]
+      
+      if (!newCols) {
+        for (i in prodVars){
+          x$areas[, c(i) := mapply(sum, get(i), get(paste0(i, "_virtual")))]
+        }
+        x <- .merge_Col_Area_D(x, 
+                               colMerge = prodVars,
+                               opts = opts)
+        x$areas[, c(v) := NULL]
+      }else{
+        x <- .merge_Col_Area_D(x, 
+                               colMerge = v,
+                               opts = opts)
       }
-      x <- .merge_Col_Area_D(x, 
-                             colMerge = prodVars,
-                             opts = opts)
-      x$areas[, c(v) := NULL]
-    }else{
-      x <- .merge_Col_Area_D(x, 
-                             colMerge = v,
-                             opts = opts)
     }
   }
   
   # Put clusters of the virtual areas in the corresponding real areas
-  #TODO we must rename production virtual areas to productionVirual 
+  # TODO we must rename production virtual areas to productionVirual 
   # cluster has a "production" column 
   productionVirual <- production
   if (!is.null(x$clusters)){

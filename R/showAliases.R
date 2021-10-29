@@ -41,6 +41,8 @@ showAliases <- function(names = NULL) {
 #' \code{setAlias} can be used to create a new alias. It can be especially
 #' useful for package developers to help their users select the data required
 #' by their packages.
+#'
+#' \code{getAlias} return character vector containing columns and/or types of data
 #' 
 #' \code{showAliases} lists available aliases
 #' 
@@ -63,6 +65,8 @@ showAliases <- function(names = NULL) {
 #' # Display the full description of an alias
 #' showAliases("renewable")
 #' 
+#' getAlias("renewable")
+#' 
 #' \dontrun{
 #' # Create a new alias that imports flows
 #' setAlias("test", "short description", c("links", "FLOW LIN.")) 
@@ -77,4 +81,18 @@ setAlias <- function(name, desc, select) {
   pkgEnv$varAliases[[name]] <- list(desc = desc, select = select)
   
   invisible(TRUE)
+}
+
+#' @export
+#' @rdname setAlias
+getAlias <- function(name) {
+  if (!exists("varAliases", envir = pkgEnv)) {
+    stop("No aliases defined")
+  }
+  
+  if(!name %in% names(pkgEnv$varAliases)){
+    warning("Cannot find '", name, "' alias")
+    return(NULL)
+  }
+  pkgEnv$varAliases[[name]]$select
 }

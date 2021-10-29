@@ -10,7 +10,10 @@ removeVirtualAreas(
   production = NULL,
   reassignCosts = FALSE,
   newCols = TRUE,
-  rowBal = TRUE
+  rowBal = TRUE,
+  prodVars = getAlias("rmVA_production"),
+  costsVars = c("OV. COST", "OP. COST", "CO2 EMIS.", "NP COST"),
+  costsOn = c("both", "storageFlexibility", "production")
 )
 }
 \arguments{
@@ -35,6 +38,17 @@ the real areas they are connected to.}
 
 \item{rowBal}{If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
 BALANCE := BALANCE - "ROW. BAL"}
+
+\item{prodVars}{Virtual productions columns to add to real area. 
+Default to \code{getAlias("rmVA_production")}}
+
+\item{costsVars}{If parameter \code{reassignCosts} is TRUE, affected columns.
+Default to \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.} and \code{NP COST}}
+
+\item{costsOn}{If parameter \code{reassignCosts} is TRUE, then the costs of the 
+virtual areas are reassigned to the real areas they are connected to.
+You can choose to reassigned production & storageFlexibility virtuals areas
+("both", default), or only "production" or "storageFlexibility" virtuals areas}
 }
 \value{
 An \code{antaresDataList} object in which virtual areas have been removed and
@@ -68,7 +82,7 @@ of modeling in Antares and different types of post-treatment to do:
   
   \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
     virtual areas are reassigned to the real areas they are connected to. The
-    affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
+    default affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
     and \code{NP COST}. If a virtual area is connected to a single real area,
     all its costs are attributed to the real area. If it is connected to
     several real areas, then costs at a given time step are divided between

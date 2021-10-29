@@ -3,11 +3,14 @@
 \name{showAliases}
 \alias{showAliases}
 \alias{setAlias}
+\alias{getAlias}
 \title{show aliases for variables}
 \usage{
 showAliases(names = NULL)
 
 setAlias(name, desc, select)
+
+getAlias(name)
 }
 \arguments{
 \item{names}{optional vector of alias names. If provided, the full list of 
@@ -35,6 +38,8 @@ type of data to import.
 useful for package developers to help their users select the data required
 by their packages.
 
+\code{getAlias} return character vector containing columns and/or types of data
+
 \code{showAliases} lists available aliases
 }
 \examples{
@@ -44,6 +49,8 @@ showAliases()
 
 # Display the full description of an alias
 showAliases("renewable")
+
+getAlias("renewable")
 
 \dontrun{
 # Create a new alias that imports flows
