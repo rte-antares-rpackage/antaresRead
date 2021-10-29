@@ -233,7 +233,7 @@
     beginName <- c("transCapacityDirect", "transCapacityIndirect",
                    "hurdlesCostDirect", "hurdlesCostIndirect",
                    "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
-    fun = c("sum", "sum", "mean", "mean", "mean", "mean", "mean", "mean")
+    fun = c("sum", "sum", "mean", "mean", "mean", "sum", "sum", "sum")
   } else {
     beginName <- c("transCapacityDirect", "transCapacityIndirect",
                    "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
