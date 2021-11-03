@@ -57,7 +57,7 @@
 #' 
 #' @rdname readClusterDesc
 readClusterDesc <- function(opts = simOptions()) {
-  .readClusterDesc(opts = simOptions(), dir = "thermal/clusters")
+  .readClusterDesc(opts = opts, dir = "thermal/clusters")
 }
 
 #' @export
