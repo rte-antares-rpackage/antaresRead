@@ -66,16 +66,16 @@ if (sourcedir != "") {
   
   if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
     
-    path_v6 <- file.path(path0, "v6")
+    path_v6 <- file.path(path0, "antares-test-study-v6")
     opts <- setSimulationPath(file.path(path_v6, "/test_case"))
     suppressMessages({
       suppressWarnings({
         
         #On cran we have only 2 threads so nbCore <- 1  
         if(.runH5Test){
-          nbCoresTestHelper<-4
+          nbCoresTestHelper <- 4
         }else{
-          nbCoresTestHelper<-1
+          nbCoresTestHelper <- 1
         }
         writeAntaresH5(path = path_v6, 
                        misc = TRUE, thermalAvailabilities = TRUE,

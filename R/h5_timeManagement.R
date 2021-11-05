@@ -128,6 +128,6 @@ writeTime <- function(data, path, group){
   .requireRhdf5_Antares()
   time <- getTime(data, group)
   group <- paste0(group, "/time")
-  rhdf5::h5write.default(time, path, group)
+  rhdf5::h5write(time, path, group)
   rhdf5::h5closeAll()
 }

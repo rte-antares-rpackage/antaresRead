@@ -116,13 +116,12 @@ rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
          biocLite('rhdf5')"
 
 # !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
-.requireRhdf5_Antares<-function(stopP = TRUE){
+.requireRhdf5_Antares <- function(stopP = TRUE){
   if(.check_rhdf5(stopP = stopP)){
     if(.check_rhdf5_version(stopP = stopP)){
       return(TRUE)
     }
   }
-  
   return(FALSE)
 }
 
@@ -156,8 +155,9 @@ pkgEnvAntareasH5 <- new.env()
 
 pkgEnvAntareasH5$varAreas <- c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE",
                                "ROW BAL.", "PSP", "MISC. NDG",  "LOAD", "H. ROR", "WIND", "SOLAR",
-                               "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", "H. STOR",
-                               "UNSP. ENRG", "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG", "DTG MRG", "MAX MRG", "NP COST", "NODU")
+                               "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", 
+                               "H. STOR", "UNSP. ENRG", "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG", 
+                               "DTG MRG", "MAX MRG", "NP COST", "NODU")
 
 pkgEnvAntareasH5$varAreas <- as.vector(sapply(pkgEnvAntareasH5$varAreas, function(X){paste0(X, c("", "_min", "_max", "_std"))}))
 

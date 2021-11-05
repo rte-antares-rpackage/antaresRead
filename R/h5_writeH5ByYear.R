@@ -418,7 +418,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
         
         attrib <- attributes(res)
         s <- serialize(attrib, NULL, ascii = TRUE)
-        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/attrib"))
+        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/attrib"))
         
         # .writeAttributes(res = res, path = path, timeStep = timeStep)
         
@@ -432,7 +432,7 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
           layout <- suppressWarnings(suppressMessages(readLayout()))
         }
         s <- serialize(layout, NULL, ascii = TRUE)
-        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
+        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/layout"))
         
         if(messageS){
           cldesc <- readClusterDesc()
@@ -440,14 +440,14 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
           cldesc <- suppressWarnings(suppressMessages(readClusterDesc()))
         }
         s <- serialize(cldesc, NULL, ascii = TRUE)
-        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
+        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/cldesc"))
         if(messageS){
           bc <- readBindingConstraints()
         }else{
           bc <- suppressWarnings(suppressMessages(readBindingConstraints()))
         }
         s <- serialize(bc, NULL, ascii = TRUE)
-        rhdf5::h5write.default(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
+        rhdf5::h5write(rawToChar(s), path, paste0(timeStep, "/inputs/buildingcte"))
         
       }
       

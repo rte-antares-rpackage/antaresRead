@@ -124,7 +124,7 @@ writeDataType <- function(data,
                                                   dimData[4]))
     fid <- rhdf5::H5Fopen(path)
     # dimStructure$reCalcVar <- rep("NoVariable", 100)
-    rhdf5::h5writeDataset.list(dimStructure, fid, structData, level = compress)
+    rhdf5::h5writeDataset(dimStructure, fid, structData, level = compress)
     rhdf5::H5Fclose(fid)
     structNew <- paste0(structData, "/reCalcVar")
     rhdf5::h5createDataset(path, structNew, storage.mode = "character", level = compress , dims = 300,
@@ -151,7 +151,7 @@ writeDataType <- function(data,
 
   #Write data
   fid <- rhdf5::H5Fopen(path)
-  rhdf5::h5writeDataset.array(obj = arrayDatatowrite, fid, groupData, index = index)
+  rhdf5::h5writeDataset(obj = arrayDatatowrite, fid, groupData, index = index)
   rhdf5::H5Fclose(fid)
   NULL
 }
