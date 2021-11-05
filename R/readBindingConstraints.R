@@ -45,7 +45,8 @@ readBindingConstraints <- function(opts=simOptions()) {
   }
   
   if(opts$typeLoad == 'api'){
-    bindingConstraints <- .readjsonAntares(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"))
+    bindingConstraints <- read_secure_json(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"), 
+                                           opts$token, timeout = opts$timeout)
   }else{
     path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
     bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
@@ -57,20 +58,24 @@ readBindingConstraints <- function(opts=simOptions()) {
   }
   
   for (i in 1:length(bindingConstraints)) {
-    path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt",
-                                         bindingConstraints[[i]]$id))
+    path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
     
-    if (file.size(path) == 0) {
-      nrows <- switch(bindingConstraints[[i]]$type,
-                      hourly = 24*7*52,
-                      daily = 7 * 52,
-                      weekly = 52,
-                      monthly = 12,
-                      annual = 1)
-      
+    nrows <- switch(bindingConstraints[[i]]$type,
+                    hourly = 24*7*52,
+                    daily = 7 * 52,
+                    weekly = 52,
+                    monthly = 12,
+                    annual = 1)
+    
+    if (opts$typeLoad != "api" && file.size(path) == 0) {
       bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
     } else {
-      bindingConstraints[[i]]$values <- fread(path)
+      # bindingConstraints[[i]]$values <- fread(path)
+      tmp_values <- fread_antares(opts = opts, file = path)
+      if(is.null(tmp_values)){
+        tmp_values <- as.data.table(matrix(0L, nrow = nrows, 3))
+      }
+      bindingConstraints[[i]]$values <- tmp_values
     }
     
     setnames(bindingConstraints[[i]]$values, 

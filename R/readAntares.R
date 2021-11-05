@@ -220,7 +220,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
   
-  
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
@@ -374,8 +373,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (! opts$scenarios) {
       stop("Cannot import thermal availabilities because Monte Carlo scenarii have not been stored in output.")
     }
-    if (!file.exists(file.path(opts$simPath, "ts-generator/thermal/mc-0"))) {
-      warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    if(!"api" %in% opts$typeLoad){
+      if (!file.exists(file.path(opts$simPath, "ts-generator/thermal/mc-0"))) {
+        warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
+    } else {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/thermal/mc-0"), opts$token, opts$timeout)) {
+        warning("Time series of thermal availability have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
     }
   }
   
@@ -383,8 +388,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     if (! opts$scenarios) {
       stop("Cannot import hydro storage because Monte Carlo scenarii have not been stored in output.")
     }
-    if (!file.exists(file.path(opts$simPath, "ts-generator/hydro/mc-0"))) {
-      warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+    if(!"api" %in% opts$typeLoad){
+      if (!file.exists(file.path(opts$simPath, "ts-generator/hydro/mc-0"))) {
+        warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
+    } else {
+      if (!.getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)) {
+        warning("Time series of hydro storage have not been stored in output. Time series stored in input will be used, but the result may be wrong if they have changed since the simulation has been run.")
+      }
     }
   }
   
@@ -430,15 +441,18 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, 
                                      mcYears, showProgress, opts,
                                      parallel = parallel)
+  if(!is.null(res$areas) && nrow(res$areas) == 0) res$areas <- NULL
   
   res$links <- .importOutputForLinks(links, timeStep, select$links, 
                                      mcYears, showProgress, opts,
                                      parallel = parallel)
+  if(!is.null(res$links) && nrow(res$links) == 0) res$links <- NULL
   
   res$districts <- .importOutputForDistricts(districts, timeStep, 
                                              select$areas, mcYears,
                                              showProgress, opts, 
                                              parallel = parallel)
+  if(!is.null(res$districts) && nrow(res$districts) == 0) res$districts <- NULL
   
   # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
@@ -450,12 +464,15 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res$clustersRes <- .importOutputForResClusters(clustersRes, timeStep, NULL, 
                                                  mcYears, showProgress, 
                                                  opts, parallel = parallel)
+  if(!is.null(res$clustersRes) && nrow(res$clustersRes) == 0) res$clustersRes <- NULL
   
   # Import thermal clusters and eventually must run
   if (!mustRun) {
     res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
                                              showProgress, opts, mustRun = FALSE, 
                                              parallel = parallel)
+    if(!is.null(res$clusters) && nrow(res$clusters) == 0) res$clusters <- NULL
+    
   } else {
     clustersAugmented <- intersect(opts$areasWithClusters, union(areas, clusters))
     if(length(clustersAugmented) == 0)

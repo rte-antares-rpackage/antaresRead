@@ -30,7 +30,9 @@ Imports:
     shiny,
     pbapply,
     doParallel,
-    jsonlite
+    jsonlite,
+    httr,
+    utils
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,

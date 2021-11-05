@@ -108,8 +108,10 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   
   
   if(opts$typeLoad == 'api'){
-    areas <- read_json(paste0(path, "?depth=4"))
-    areas <- areas[names(areas) %in% opts$areaList]
+    # browser()
+    areas <- read_secure_json(paste0(path, "&depth=4"), opts$token, timeout = opts$timeout)
+    # areas <- areas[names(areas) %in% opts$areaList]
+    areas <- areas[!names(areas) %in% c("list", "sets")]
     areas <- rbindlist(mapply(function(X, Y){
       res <- data.table(area = Y)
       res$area <- Y
