@@ -126,18 +126,24 @@
 #' 
 #' # Remove pump storage virtual areas
 #' 
-#' correctedData <- removeVirtualAreas(data, 
-#'                                     storageFlexibility = c("psp in", "psp out"),
-#'                                     production = "offshore")
+#' correctedData <- removeVirtualAreas(
+#'     x = data, 
+#'     storageFlexibility = c("psp in", "psp out"),
+#'     production = "offshore"
+#' )
 #'                                     
-#' correctedData_list <- removeVirtualAreas(data, 
-#'                                     storageFlexibility = list(PSP = c("psp in", "psp out")),
-#'                                     production = "offshore")
+#' correctedData_list <- removeVirtualAreas(
+#'     x = data, 
+#'     storageFlexibility = list(PSP = c("psp in", "psp out")),
+#'     production = "offshore"
+#' )
 #'  
 #'                                    
-#' correctedData_details <- removeVirtualAreas(data, 
-#'                                     storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
-#'                                     production = "offshore")
+#' correctedData_details <- removeVirtualAreas(
+#'     x = data, 
+#'     storageFlexibility = list(PSP_IN = "psp in", PSP_OUT =  "psp out"),
+#'     production = "offshore"
+#' )
 #'                                     
 #' }
 #' 
