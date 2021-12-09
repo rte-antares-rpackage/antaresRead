@@ -374,7 +374,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, timeo
   
   res$energyCosts <- .readEnergyCostsAPI(res$inputPath, token, timeout)
   
-  res$typeLoad <- 'api'
+  res$typeLoad <- "api"
+  res$host <- host
+  res$study_id <- study_id
   res$token <- token
   res$timeout <- timeout
   
