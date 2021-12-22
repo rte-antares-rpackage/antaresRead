@@ -13,3 +13,5 @@ cheat_sheet
 ^revdep$
 ^doc$
 ^Meta$
+^\.github$
+^codecov\.yml$
