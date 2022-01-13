@@ -3,6 +3,7 @@
 Changes in version 2.2.91
 BUGFIXES:
 * removeVirtualAreas : setting custom prodVars same as new storageVars
+* API : fix study checking + httr options
 
 Changes in version 2.2.9
 FEATURES:

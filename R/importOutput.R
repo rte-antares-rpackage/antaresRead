@@ -15,16 +15,17 @@
 #'
 #' @noRd
 #'
-.getOutputHeader <- function(path, objectName, api = FALSE, token = NULL, timeout = 60) {
+.getOutputHeader <- function(path, objectName, api = FALSE, token = NULL, timeout = 60, config = list()) {
   if(!api){
     colname <- read.table(path, header = F, skip = 4, nrows = 3, sep = "\t")
   } else {
     path <- gsub(".txt$", "", path)
     path <- paste0(path, "&formatted=false")
     if(!is.null(token) && token != ""){
-      httpResponse <- GET(utils::URLencode(path), timeout(timeout), add_headers(Authorization = paste0("Bearer ", token)))
+      httpResponse <- GET(utils::URLencode(path), timeout(timeout), 
+                          add_headers(Authorization = paste0("Bearer ", token)), config = config)
     } else {
-      httpResponse <- GET(utils::URLencode(path), timeout(timeout))
+      httpResponse <- GET(utils::URLencode(path), timeout(timeout), config = config)
     }
     
     colname <- tryCatch({fread(content(httpResponse, "parsed"), header = F, skip = 4, nrows = 3, sep = "\t")}, 
@@ -108,7 +109,10 @@
   
   # columns to retrieve
   if (sameNames) {
-    colNames <- .getOutputHeader(args$path[1], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
+    colNames <- .getOutputHeader(
+      args$path[1], objectName, api = "api" %in% opts$typeLoad, 
+      token = opts$token, timeout = opts$timeout, config = opts$httr_config
+    )
     
     if (is.null(select)) {
       # read all columns except the time variables that will be recreated
@@ -139,7 +143,10 @@
           data <- NULL
           try({
             if (!sameNames) {
-              colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
+              colNames <- .getOutputHeader(
+                args$path[i], objectName, api = "api" %in% opts$typeLoad, 
+                token = opts$token, timeout = opts$timeout, config = opts$httr_config
+              )
               selectCol <- which(!colNames %in% pkgEnv$idVars)
               colNames <- colNames[selectCol]
             }
@@ -189,7 +196,10 @@
       1:nrow(args), 
       function(i) {
         if (!sameNames) {
-          colNames <- .getOutputHeader(args$path[i], objectName, api = "api" %in% opts$typeLoad, token = opts$token, timeout = opts$timeout)
+          colNames <- .getOutputHeader(
+            args$path[i], objectName, api = "api" %in% opts$typeLoad, 
+            token = opts$token, timeout = opts$timeout, config = opts$httr_config
+          )
           selectCol <- which(!colNames %in% pkgEnv$idVars)
           colNames <- colNames[selectCol]
         }
@@ -543,7 +553,11 @@
     names(tsIds) <- nameCls
     
   } else {
-    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)
+    gen_check <- .getSuccess(
+      file.path(opts$simPath, "ts-generator/hydro/mc-0"), 
+      token = opts$token, timeout = opts$timeout, config = opts$httr_config
+    )
+    
     if (gen_check) {
       filePattern <- sprintf("%s/%s/%%s.txt", pathInput, area)
     } else {
@@ -552,18 +566,25 @@
     }
     
     # Read the Ids of the time series used in each Monte-Carlo Scenario.
-    cls <- names(read_secure_json(file.path(pathTSNumbers, area), token = opts$token, timeout = opts$timeout))
+    cls <- names(
+      read_secure_json(file.path(pathTSNumbers, area), token = opts$token, 
+                       timeout = opts$timeout, config = opts$httr_config)
+    )
     if (length(cls) == 0) return(NULL)
     
     nameCls <- cls
     
     tsIds <- llply(cls, function(cl) {
-      as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, timeout = opts$timeout), "\n")[[1]][-1])
+      as.numeric(strsplit(
+        read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, 
+                         timeout = opts$timeout, config = opts$httr_config),
+        "\n")[[1]][-1]
+      )
     })
     
     names(tsIds) <- nameCls
   }
-
+  
   # Two nested loops: clusters, Monte Carlo simulations.
   series <- ldply(nameCls, function(cl) {
     ids <- tsIds[[cl]][mcYears]
@@ -631,10 +652,16 @@
       f <- file.path(pathInput, area, "mod.txt")
     }
   } else {
-    tsIds <- as.numeric(strsplit(read_secure_json(file.path(pathTSNumbers, area), token = opts$token, timeout = opts$timeout), "\n")[[1]][-1])
+    tsIds <- as.numeric(strsplit(
+      read_secure_json(file.path(pathTSNumbers, area), token = opts$token, 
+                       timeout = opts$timeout, config = opts$httr_config),
+      "\n")[[1]][-1]
+    )
     tsIds <- tsIds[mcYears]
     
-    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), opts$token, opts$timeout)
+    gen_check <- .getSuccess(file.path(opts$simPath, "ts-generator/hydro/mc-0"), 
+                             token = opts$token, timeout = opts$timeout, config = opts$httr_config
+    )
     if (gen_check) {
       f <- file.path(opts$simPath, "ts-generator/hydro/mc-0", area, "storage.txt")
     } else {
@@ -642,14 +669,14 @@
       f <- file.path(pathInput, area, "mod.txt")
     }
   }
-
+  
   
   if(opts$antaresVersion >= 700){
     timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts))
   }else {
     timeRange <- range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts))
   }
-
+  
   if (!"api" %in% opts$typeLoad && file.size(f) == 0) {
     series <- ldply(1:length(tsIds), function(i) {
       data.frame(

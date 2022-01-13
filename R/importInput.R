@@ -109,7 +109,7 @@
     clusters <- list.files(file.path(opts$inputPath, "thermal/series", area))
   } else {
     clusters <- names(read_secure_json(file.path(opts$inputPath, "thermal/series", area), 
-                                 token = opts$token, timeout = opts$timeout))
+                                 token = opts$token, timeout = opts$timeout, config = opts$httr_config))
   }
 
   ldply(clusters, function(cl) {
@@ -135,7 +135,7 @@
     clusters <- list.files(file.path(opts$inputPath, "renewables/series", area))
   } else {
     clusters <- names(read_secure_json(file.path(opts$inputPath, "renewables/series", area), 
-                                       token = opts$token, timeout = opts$timeout))
+                                       token = opts$token, timeout = opts$timeout, config = opts$httr_config))
   }
 
   ldply(clusters, function(cl) {
@@ -285,7 +285,7 @@
   if(!"api" %in% opts$typeLoad){
     clusters <- list.files(path)
   } else {
-    clusters <- names(read_secure_json(path, token = opts$token, timeout = opts$timeout))
+    clusters <- names(read_secure_json(path, token = opts$token, timeout = opts$timeout, config = opts$httr_config))
   }
   
   beginName <- c("marginalCostModulation", "marketBidModulation", 

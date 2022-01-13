@@ -34,7 +34,7 @@
 #' }
 #' 
 #' @export
-readBindingConstraints <- function(opts=simOptions()) {
+readBindingConstraints <- function(opts = simOptions()) {
   
   if(isH5Opts(opts)){
     if(.requireRhdf5_Antares(stopP = FALSE)){
@@ -46,7 +46,7 @@ readBindingConstraints <- function(opts=simOptions()) {
   
   if(opts$typeLoad == 'api'){
     bindingConstraints <- read_secure_json(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"), 
-                                           opts$token, timeout = opts$timeout)
+                                           opts$token, timeout = opts$timeout, config = opts$httr_config)
   }else{
     path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
     bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)

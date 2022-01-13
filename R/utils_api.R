@@ -5,9 +5,10 @@ fread_antares <- function(opts, file, ...){
     file <- gsub(".txt$", "", file)
     file <- paste0(file, "&formatted=false")
     if(!is.null(opts$token) && opts$token != ""){
-      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout), add_headers(Authorization = paste0("Bearer ", opts$token)))
+      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout), 
+                          add_headers(Authorization = paste0("Bearer ", opts$token)), config = opts$httr_config)
     } else {
-      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout))
+      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout), config = opts$httr_config)
     }
     
     tryCatch({fread(content(httpResponse, "parsed"), ...)}, error = function(e) NULL)
@@ -18,12 +19,13 @@ fread_antares <- function(opts, file, ...){
 
 #' @importFrom utils URLencode
 #' @import httr
-read_secure_json <- function(url, token = NULL, timeout = 60){
+read_secure_json <- function(url, token = NULL, timeout = 60, config = list()){
   
   if(!is.null(token) && token != ""){
-    httpResponse <- GET(utils::URLencode(url), timeout(timeout), add_headers(Authorization = paste0("Bearer ", token)))
+    httpResponse <- GET(utils::URLencode(url), timeout(timeout), 
+                        add_headers(Authorization = paste0("Bearer ", token)), config = config)
   } else {
-    httpResponse <- GET(utils::URLencode(url), timeout(timeout))
+    httpResponse <- GET(utils::URLencode(url), timeout(timeout), config = config)
   }
   
   x <- jsonlite::fromJSON(content(httpResponse, type = "text", encoding = "UTF-8"), simplifyVector = FALSE)
@@ -46,7 +48,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   
 }
 
-.getPathsAPI <- function(host, study_id, simulation, token = NULL, timeout = 60){
+.getPathsAPI <- function(host, study_id, simulation, ...){
   simNames <- NULL
   path <- paste0(host, "/v1/studies/", study_id)
   path <- gsub("[/\\]$", "", path)
@@ -54,7 +56,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   inputPath <- file.path(path,  "input")
   outputPath <- file.path(path,  "output")
   if(is.null(simulation) | (!is.null(simulation) && !simulation %in% c(0, "input"))){
-    outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), token = token, timeout = timeout))
+    outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), ...))
     simNames <- setdiff(basename(outputContent), "maps")
   }
   if (length(simNames) == 0) {
@@ -99,28 +101,28 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
 }
 
 
-.getSimOptionsAPI <- function(paths, host, token = NULL, timeout = 60){
+.getSimOptionsAPI <- function(paths, host, ...){
   
   ## Read info from json
   simPath <- paths$simPath
   
   # Get basic information about the simulation
-  params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), token = token, timeout = timeout)
+  params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
   
-  info <- read_secure_json(file.path(simPath, "info", "general"), token = token, timeout = timeout)
+  info <- read_secure_json(file.path(simPath, "info", "general"), ...)
   
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
   
-  synthesis <- .getSuccess(file.path(simDataPath, "mc-all&depth=1"), token = token, timeout = timeout)
-  yearByYear <-  .getSuccess(file.path(simDataPath, "mc-ind&depth=1"), token = token, timeout = timeout)
-  scenarios <- .getSuccess(file.path(simPath, "ts-numbers&depth=1"), token = token, timeout = timeout)
+  synthesis <- .getSuccess(file.path(simDataPath, "mc-all&depth=1"), ...)
+  yearByYear <-  .getSuccess(file.path(simDataPath, "mc-ind&depth=1"), ...)
+  scenarios <- .getSuccess(file.path(simPath, "ts-numbers&depth=1"), ...)
   
   
   if(yearByYear) {
-    year_no_filter <- names(read_secure_json(file.path(simDataPath, "mc-ind&depth=1"), token = token, timeout = timeout))
+    year_no_filter <- names(read_secure_json(file.path(simDataPath, "mc-ind&depth=1"), ...))
     mcYears <- as.numeric(year_no_filter[grep("^\\d{5}$", year_no_filter)])
-  }else mcYears <- numeric()
+  } else mcYears <- numeric()
   
   if (!synthesis & !yearByYear) stop("No results/data found in API", call. = FALSE)
   
@@ -131,11 +133,13 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
     dataPath <- file.path(simDataPath, "mc-ind",sprintf("%05d", mcYears[1]))
   }
   
-  areaList <- gsub("\r$", "", tolower(strsplit(read_secure_json(file.path(paths$simPath, "about-the-study", "areas"), token = token, timeout = timeout), "\n")[[1]]))
+  areaList <- gsub("\r$", "", tolower(strsplit(
+    read_secure_json(file.path(paths$simPath, "about-the-study", "areas"), ...), "\n")[[1]]
+  ))
   districtList <- grep("^@", areaList, value=TRUE)
   areaList <- areaList[!areaList %in% districtList]
   
-  linkList <- read_secure_json(file.path(dataPath, "links&depth=2"), token = token, timeout = timeout)
+  linkList <- read_secure_json(file.path(dataPath, "links&depth=2"), ...)
   linkList <- unlist(mapply(function(X, Y){
     if(length(Y) >= 1){
       paste(X, names(Y), sep = " - ")
@@ -148,7 +152,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   # Areas containing clusters
   hasClusters <- unlist(
     lapply(
-      read_secure_json(file.path(dataPath, "areas&depth=2"), token = token, timeout = timeout),
+      read_secure_json(file.path(dataPath, "areas&depth=2"), ...),
       function(x) any(grepl("(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)", names(x)))
     )
   )
@@ -158,7 +162,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   # Areas containing clusters
   hasResClusters <- unlist(
     lapply(
-      read_secure_json(file.path(dataPath, "areas&depth=2"), token = token, timeout = timeout),
+      read_secure_json(file.path(dataPath, "areas&depth=2"), ...),
       function(x) any(grepl("details-res-", names(x)))
     )
   )
@@ -169,10 +173,10 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   
   # Available variables for areas
   d <- file.path(dataPath, "areas", areaList[1])
-  f <- names(read_secure_json(paste0(d, "&depth=1"), token = token, timeout = timeout))
+  f <- names(read_secure_json(paste0(d, "&depth=1"), ...))
   f <- f[grep("values", f)]
   if (length(f) > 0) {
-    v <- .getOutputHeader(file.path(d, f[1]), "area", api = TRUE, token = token, timeout = timeout)
+    v <- .getOutputHeader(file.path(d, f[1]), "area", api = TRUE, ...)
     if(exists("pkgEnv")){
       variables$areas <- setdiff(v, pkgEnv$idVars)
     } else {
@@ -183,10 +187,10 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   # Available variables for links
   if(length(linkList) > 0){
     d <- file.path(dataPath, "links", gsub(" - ", "/",linkList[1]))
-    f <- names(read_secure_json(paste0(d, "&depth=1"), token))
+    f <- names(read_secure_json(paste0(d, "&depth=1"), ...))
     f <- f[grep("values", f)]
     if (length(f) > 0) {
-      v <- .getOutputHeader(file.path(d, f[1]), "link", api = TRUE, token = token, timeout = timeout)
+      v <- .getOutputHeader(file.path(d, f[1]), "link", api = TRUE, ...)
       if(exists("pkgEnv")){
         variables$links <- setdiff(v, pkgEnv$idVars)
       } else {
@@ -195,7 +199,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
     }
   }
   
-  linksDef <- .readLinksDef(strsplit(read_secure_json(file.path(paths$simPath, "about-the-study", "links"), token), "\n")[[1]])
+  linksDef <- .readLinksDef(strsplit(read_secure_json(file.path(paths$simPath, "about-the-study", "links"), ...), "\n")[[1]])
   
   return(
     list(
@@ -217,21 +221,23 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
       parameters = params
     )
   )
-  
-  
 }
 
 
-.getSuccess <- function(path, token, timeout = 60){
+.getSuccess <- function(path, token, timeout = 60, config = list()){
   if(!is.null(token) && token != ""){
-    http_status(GET(path, timeout(timeout), add_headers(Authorization = paste0("Bearer ", token))))$category == "Success"
+    http_status(
+      GET(
+        path, timeout(timeout), 
+        add_headers(Authorization = paste0("Bearer ", token)), config = config)
+    )$category == "Success"
   } else {
-    http_status(GET(path, timeout(timeout)))$category == "Success"
+    http_status(GET(path, timeout(timeout), config = config))$category == "Success"
   }
 }
 
 
-.getInputOptionsAPI <- function(paths, token = NULL, timeout = 60) {
+.getInputOptionsAPI <- function(paths, ...) {
   
   studyPath <- paths$studyPath
   inputPath <- paths$inputPath
@@ -239,17 +245,17 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   
   # Lists of areas, links and districts existing in the study
   areaList <- unique(
-    tolower(unlist(read_secure_json(file.path(inputPath, "areas", "list"), token = token, timeout = timeout)))
+    tolower(unlist(read_secure_json(file.path(inputPath, "areas", "list"), ...)))
   )
   
   districtList <- unique(
-    tolower(names(read_secure_json(file.path(inputPath, "areas", "sets"), token = token, timeout = timeout)))
+    tolower(names(read_secure_json(file.path(inputPath, "areas", "sets"), ...)))
   )
   
-  areasWithLinks <-   unique(names(read_secure_json(file.path(inputPath, "links&depth=1"), token = token, timeout = timeout)))
+  areasWithLinks <-   unique(names(read_secure_json(file.path(inputPath, "links&depth=1"), ...)))
   areasWithLinks <- intersect(areasWithLinks, areaList)
   
-  allLinks <- read_secure_json(file.path(inputPath, "links&depth=3"), token = token, timeout = timeout)
+  allLinks <- read_secure_json(file.path(inputPath, "links&depth=3"), ...)
   linksDef <- data.table::rbindlist(mapply(function(X, Y){
     to = names(X$properties)
     if (length(to) == 0) return(NULL)
@@ -259,14 +265,14 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   }, allLinks, names(allLinks)))
   
   
-  info <- read_secure_json(studyPath, token = token, timeout = timeout)
+  info <- read_secure_json(studyPath, ...)
   
   antaresVersion <- info$study$antares$version
-  params <- read_secure_json(file.path(studyPath, "settings", "generaldata"), token = token, timeout = timeout)
+  params <- read_secure_json(file.path(studyPath, "settings", "generaldata"), ...)
   
   # Areas with clusters
   
-  clusterList <- read_secure_json(file.path(inputPath, "thermal", "clusters", "&depth=4"), token = token, timeout = timeout)
+  clusterList <- read_secure_json(file.path(inputPath, "thermal", "clusters", "&depth=4"), ...)
   areaHasClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
     TF <- FALSE
     try({
@@ -277,7 +283,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60){
   })
   
   # Areas with renewable clusters
-  clusterResList <- read_secure_json(file.path(inputPath, "renewables", "clusters", "&depth=4"), token = token, timeout = timeout)
+  clusterResList <- read_secure_json(file.path(inputPath, "renewables", "clusters", "&depth=4"), ...)
   areaHasResClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
     TF <- FALSE
     try({
@@ -310,12 +316,13 @@ valid_url <- function(url_in, t = 2){
 #' @import httr jsonlite
 #' @export
 #' @rdname setSimulationPath
-setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, timeout = 60) {
+setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, 
+                                 timeout = 60, httr_config = list()) {
   
   if (missing(host)) {
     stop("Please specify an url to antares API host")
   }
-
+  
   if (missing(study_id)) {
     stop("Please specify the study_id")
   }
@@ -330,32 +337,32 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, timeo
   
   stopifnot(timeout > 0)
   
-  av_studies <- tryCatch({
-    read_secure_json(file.path(host, "v1/studies/"), token = token, timeout = timeout)
+  check_study <- tryCatch({
+    read_secure_json(file.path(host, "v1/studies", study_id), token = token, 
+                     timeout = timeout, config = httr_config
+    )
   }, error = function(e){
     stop("Can't connect to API. Please verify host & token")
   })
   
-  av_studies <- names(av_studies)
-  
-  if(isTRUE(all.equal(av_studies, "detail"))){
+  if(isTRUE(all.equal(names(check_study), "detail"))){
     stop("Can't connect to API. Please verify token")
   }
   
-  if(!study_id %in% av_studies){
+  if(!study_id %in% check_study$id){
     stop("Can't find your 'study_id' on the API")
   }
   
-  res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout)
+  res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout, config = httr_config)
   
-  res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token, timeout = timeout)$antares$caption
+  res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token, timeout = timeout, config = httr_config)$antares$caption
   
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
   if (is.null(res$simPath)) {
-    res <- append(res, .getInputOptionsAPI(res, token, timeout))
+    res <- append(res, .getInputOptionsAPI(res, token = token, timeout = timeout, config = httr_config))
   } else {
-    res <- append(res, .getSimOptionsAPI(res, host, token, timeout))
+    res <- append(res, .getSimOptionsAPI(res, host, token = token, timeout = timeout, config = httr_config))
   }
   
   # dates, TimeId min and max
@@ -377,6 +384,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL, timeo
   res$typeLoad <- 'api'
   res$token <- token
   res$timeout <- timeout
+  res$httr_config <- httr_config
   
   class(res) <- c("simOptions")
   

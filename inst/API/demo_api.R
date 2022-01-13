@@ -4,10 +4,13 @@ library(antaresRead)
 
 # PATH api
 host <- "http://pyre.datastorm.fr:8080"
-study_id <- "3decaa72-9b75-494c-b7a9-e90644e26015"
+study_id <- "79541dba-5d22-4288-be82-83d8ce9038b0"
 token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ7XCJpZFwiOiAzLCBcImltcGVyc29uYXRvclwiOiAxLCBcInR5cGVcIjogXCJib3RzXCIsIFwiZ3JvdXBzXCI6IFtdfSIsImlhdCI6MTYzMTE4Mzg3MywibmJmIjoxNjMxMTgzODczLCJqdGkiOiIwZDQwOGE2My1mMWQ1LTRjN2QtOTYwMC1jZmNiOWIzZjFhODMiLCJleHAiOjc5OTAyMjM4NzMsInR5cGUiOiJhY2Nlc3MiLCJmcmVzaCI6ZmFsc2V9.0NqQBmjFEpNAcZAeqV9PXzJipMR15pcsefyAARstwFM"
 simulation = 2
 
+# require(httr)
+# set_config(verbose())
+# reset_config()
 opts_api <- setSimulationPathAPI(host = host, 
                                  study_id = study_id, 
                                  token = token, 

@@ -35,6 +35,8 @@
 #' @param study_id \code{character} id of the target study on the API
 #' @param token \code{character} API personnal access token
 #' @param timeout \code{numeric} API timeout (seconds). Default to 60. See also \code{\link{setTimeoutAPI}}
+#' @param httr_config API httr configuration. See \code{\link[httr]{config}}
+#' 
 #' @return A list containing various information about the simulation, in particular:
 #'   \item{studyPath}{path of the Antares study}
 #'   \item{simPath}{path of the simulation}
@@ -104,13 +106,43 @@
 #' # or
 #' setSimulationPath("path_of_the_folder_of_the_study", 0)
 #' 
-#' # on API
-#' setSimulationPath(
+#' # Working with API
+#' #--------------------------
+#' setSimulationPathAPI(
 #'     host = "http://antares_api_adress", 
 #'     study_id = "study_id_on_api", 
 #'     token = "token"
 #' )
 #' 
+#' ## Custom httr options ?
+#' 
+#' # global using httr package
+#' require(httr)
+#' set_config(verbose())
+#' setSimulationPathAPI(
+#'     host = "http://antares_api_adress", 
+#'     study_id = "study_id_on_api", 
+#'     token = "token"
+#' )
+#' 
+#' reset_config()
+#' 
+#' # or in setSimulationPathAPI
+#' setSimulationPathAPI(
+#'     host = "http://antares_api_adress", 
+#'     study_id = "study_id_on_api", 
+#'     token = "token",
+#'     httr_config = config(verbose = TRUE)
+#' )
+#' 
+#' # disable ssl certificate checking ?
+#' setSimulationPathAPI(
+#'     host = "http://antares_api_adress", 
+#'     study_id = "study_id_on_api", 
+#'     token = "token",
+#'     httr_config = config(ssl_verifypeer = FALSE)
+#' )
+#'
 #' # WORKING WITH MULTIPLE SIMULATIONS
 #' #----------------------------------
 #' # Let us assume ten simulations have been run and we want to collect the
