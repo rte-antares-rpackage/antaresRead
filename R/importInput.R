@@ -295,14 +295,14 @@
                                             sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
                                             colnames = "transCapacityDirect",
                                             inputTimeStep = "hourly", type = "matrix",
-                                            fun = fun, colSelect = colSelect)
+                                            fun = "sum", colSelect = colSelect)
       
       ###Read transCapacityIndirect file
       transCapacityIndirect <- .importInputTS(areas[2], timeStep, opts, 
                                               sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
                                               colnames = "transCapacityIndirect",
                                               inputTimeStep = "hourly", type = "matrix",
-                                              fun = fun, colSelect = colSelect)
+                                              fun = "sum", colSelect = colSelect)
       
       res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
       res <- merge(transCapacityDirect, res, by = c("area","timeId", "tsId"))
