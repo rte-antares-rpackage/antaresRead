@@ -598,8 +598,42 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   }
   
   if (linkCapacity) {
-    .addOutputToRes("linkCapacity", links, .importLinkCapacity, NA)
-    res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
+    .addOutputToRes("linkCapacity", links, .importLinkCapacity, timeStep)
+    
+    
+    
+    if("tsId"%in%names(res$linkCapacity)){
+      if(!file.exists(file.path(opts$simDataPath, "..", "ts-numbers"))){
+        stop("Times-Series not found in output, exchange capacities can't be load")
+      }else{
+        #TODO
+        
+        
+        
+        ntc_build <- .getNtcOutputTs(opts)
+        res$linkCapacity <- merge(res$linkCapacity, ntc_build, allow.cartesian = TRUE)
+        res$linkCapacity[, tsId  := NULL]
+        
+        
+        if(synthesis == TRUE){
+          res$linkCapacity <- res$linkCapacity[,
+                                               lapply(.SD, mean),
+                                               by = c("link","timeId"),
+                                               .SDcols = names(res$linkCapacity)[!names(res$linkCapacity)%in%c("link","timeId","mcYear")]]
+          res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
+        }else{
+          
+          res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId", "mcYear"))
+          
+          
+        }
+        
+        
+      }
+      
+    }
+    
+    
     res$linkCapacity <- NULL
   }
   
