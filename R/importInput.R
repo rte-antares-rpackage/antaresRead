@@ -248,134 +248,134 @@
     
     if (opts$antaresVersion >= 820) {
       
-        beginName <- c("hurdlesCostDirect", "hurdlesCostIndirect",
-                       "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
-        fun = c("mean", "mean", "mean", "sum", "sum", "sum")
-        
-      }else{
-        
-        beginName <- c("transCapacityDirect", "transCapacityIndirect",
-                       "hurdlesCostDirect", "hurdlesCostIndirect",
-                       "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
-        fun = c("sum", "sum", "mean", "mean", "mean", "sum", "sum", "sum")
-        
-      }
+      beginName <- c("hurdlesCostDirect", "hurdlesCostIndirect",
+                     "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
+      fun = c("mean", "mean", "mean", "sum", "sum", "sum")
       
-    } else {
-      beginName <- c("transCapacityDirect", "transCapacityIndirect",
-                     "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
-      fun = c("sum", "sum", "mean", "mean", "mean")
-    }
-    
-    if(!is.null(unselect)){
-      colSelect <- which(!beginName%in%unselect)
-      names <- beginName[colSelect]
     }else{
-      colSelect <- NULL
-      names <- beginName
+      
+      beginName <- c("transCapacityDirect", "transCapacityIndirect",
+                     "hurdlesCostDirect", "hurdlesCostIndirect",
+                     "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
+      fun = c("sum", "sum", "mean", "mean", "mean", "sum", "sum", "sum")
+      
     }
     
-
+  } else {
+    beginName <- c("transCapacityDirect", "transCapacityIndirect",
+                   "impedances", "hurdlesCostDirect", "hurdlesCostIndirect")
+    fun = c("sum", "sum", "mean", "mean", "mean")
+  }
+  
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
+  
+  
+  
+  
+  if(opts$antaresVersion >= 820){
+    #For V>8.2 read  transCapacityDirect in separated file, include MC
+    
+    ###Read parameters file
+    
+    res <- .importInputTS(areas[2], timeStep, opts, 
+                          sprintf("%s/%%s_parameters.txt", file.path("links", areas[1])), 
+                          colnames = names,
+                          inputTimeStep = "hourly", 
+                          fun = fun, colSelect = colSelect)
     
     
-    if(opts$antaresVersion >= 820){
-      #For V>8.2 read  transCapacityDirect in separated file, include MC
-      
-      ###Read parameters file
-      
-      res <- .importInputTS(areas[2], timeStep, opts, 
-                            sprintf("%s/%%s_parameters.txt", file.path("links", areas[1])), 
-                            colnames = names,
-                            inputTimeStep = "hourly", 
-                            fun = fun, colSelect = colSelect)
-      
-      
-      ###Read transCapacityDirect file
-      transCapacityDirect <- .importInputTS(areas[2], timeStep, opts, 
+    ###Read transCapacityDirect file
+    transCapacityDirect <- .importInputTS(areas[2], timeStep, opts, 
+                                          sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
+                                          colnames = "transCapacityDirect",
+                                          inputTimeStep = "hourly", type = "matrix",
+                                          fun = "sum", colSelect = colSelect)
+    
+    ###Read transCapacityIndirect file
+    transCapacityIndirect <- .importInputTS(areas[2], timeStep, opts, 
                                             sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
-                                            colnames = "transCapacityDirect",
+                                            colnames = "transCapacityIndirect",
                                             inputTimeStep = "hourly", type = "matrix",
                                             fun = "sum", colSelect = colSelect)
-      
-      ###Read transCapacityIndirect file
-      transCapacityIndirect <- .importInputTS(areas[2], timeStep, opts, 
-                                              sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
-                                              colnames = "transCapacityIndirect",
-                                              inputTimeStep = "hourly", type = "matrix",
-                                              fun = "sum", colSelect = colSelect)
-      
-      res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
-      res <- merge(transCapacityDirect, res, by = c("area","timeId", "tsId"))
-      res <- res[order(area, tsId, timeId)]
-      names <- c("tsId", "transCapacityDirect", "transCapacityIndirect", names)
-    }else{
-      
-      # A bit hacky, but it works !
-      res <- .importInputTS(areas[2], timeStep, opts, 
-                            sprintf("%s/%%s.txt", file.path("links", areas[1])), 
-                            colnames = names,
-                            inputTimeStep = "hourly", 
-                            fun = fun, colSelect = colSelect)
-    }
     
-    res$area <- NULL
-    res$link <- link
+    res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
+    res <- merge(transCapacityDirect, res, by = c("area","timeId", "tsId"))
+    res <- res[order(area, tsId, timeId)]
+    names <- c("tsId", "transCapacityDirect", "transCapacityIndirect", names)
+  }else{
     
-    setcolorder(res, c("link", "timeId", names))
-    
+    # A bit hacky, but it works !
+    res <- .importInputTS(areas[2], timeStep, opts, 
+                          sprintf("%s/%%s.txt", file.path("links", areas[1])), 
+                          colnames = names,
+                          inputTimeStep = "hourly", 
+                          fun = fun, colSelect = colSelect)
   }
   
-  .importThermalModulation <- function(area, opts, timeStep, unselect = NULL, ...) {
-    if (!area %in% opts$areasWithClusters) return(NULL)
-    unselect <- unselect$areas
-    path <- file.path(opts$inputPath, "thermal/prepro", area)
-    
-    if(!"api" %in% opts$typeLoad){
-      clusters <- list.files(path)
-    } else {
-      clusters <- names(read_secure_json(path, token = opts$token, timeout = opts$timeout, config = opts$httr_config))
-    }
-    
-    beginName <- c("marginalCostModulation", "marketBidModulation", 
-                   "capacityModulation", "minGenModulation")
-    if(!is.null(unselect)){
-      colSelect <- which(!beginName%in%unselect)
-      names <- beginName[colSelect]
-    }else{
-      colSelect <- NULL
-      names <- beginName
-    }
-    
-    
-    res <- ldply(clusters, function(cl) {
-      if(is.null(colSelect))
-      {
-        # modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
-        modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), colClasses = "numeric")
-      }else{
-        # modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
-        modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
-      }
-      
-      setnames(modulation, 
-               names(modulation), names)
-      
-      
-      
-      if (all(modulation$minGenModulation == 0)) 
-        modulation[, minGenModulation := NA_real_]
-      
-      modulation$area <- area
-      modulation$cluster <- cl
-      modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
-      modulation$timeId <- opts$timeIdMin:opts$timeIdMax
-      
-      changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
-    })
+  res$area <- NULL
+  res$link <- link
+  
+  setcolorder(res, c("link", "timeId", names))
+  
+}
+
+.importThermalModulation <- function(area, opts, timeStep, unselect = NULL, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
+  unselect <- unselect$areas
+  path <- file.path(opts$inputPath, "thermal/prepro", area)
+  
+  if(!"api" %in% opts$typeLoad){
+    clusters <- list.files(path)
+  } else {
+    clusters <- names(read_secure_json(path, token = opts$token, timeout = opts$timeout, config = opts$httr_config))
   }
   
-  # .changeNameInput <- function(path, opts){
-  #   out <- sub(pattern = "studies", "file", path)
-  #   out <- gsub(" ", "%20", out)
-  # }
+  beginName <- c("marginalCostModulation", "marketBidModulation", 
+                 "capacityModulation", "minGenModulation")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
   
+  
+  res <- ldply(clusters, function(cl) {
+    if(is.null(colSelect))
+    {
+      # modulation <- fread(file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+      modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), colClasses = "numeric")
+    }else{
+      # modulation <- fread(file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+      modulation <- fread_antares(opts = opts, file = file.path(path, cl, "modulation.txt"), select = colSelect, colClasses = "numeric")
+    }
+    
+    setnames(modulation, 
+             names(modulation), names)
+    
+    
+    
+    if (all(modulation$minGenModulation == 0)) 
+      modulation[, minGenModulation := NA_real_]
+    
+    modulation$area <- area
+    modulation$cluster <- cl
+    modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
+    modulation$timeId <- opts$timeIdMin:opts$timeIdMax
+    
+    changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
+  })
+}
+
+# .changeNameInput <- function(path, opts){
+#   out <- sub(pattern = "studies", "file", path)
+#   out <- gsub(" ", "%20", out)
+# }
+
