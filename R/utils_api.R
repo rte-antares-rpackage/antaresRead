@@ -306,12 +306,12 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()){
   )
 }
 
-valid_url <- function(url_in, t = 2){
-  con <- url(url_in)
-  check <- suppressWarnings(try(open.connection(con, open = "rt",timeout = t), silent = T)[1])
-  suppressWarnings(try(close.connection(con), silent = T))
-  ifelse(is.null(check),TRUE ,FALSE )
-}
+# valid_url <- function(url_in, t = 2){
+#   con <- url(url_in)
+#   check <- suppressWarnings(try(open.connection(con, open = "rt",timeout = t), silent = T)[1])
+#   suppressWarnings(try(close.connection(con), silent = T))
+#   ifelse(is.null(check),TRUE ,FALSE )
+# }
 
 #' @import httr jsonlite
 #' @export
@@ -331,7 +331,11 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
     stop("Please specify your access token")
   }
   
-  if(!valid_url(host)){
+  valid_host <- tryCatch({
+    .getSuccess(file.path(host, "health"), token = "", timeout = timeout, config = httr_config)
+  }, error = function(e) FALSE)
+  
+  if(!valid_host){
     stop("setSimulationPathAPI : invalid host '", host, "'")
   }
   
