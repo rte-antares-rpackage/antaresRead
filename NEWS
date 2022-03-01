@@ -1,6 +1,6 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.2.91
+Changes in version 2.2.95
 BUGFIXES:
 * removeVirtualAreas : setting custom prodVars same as new storageVars
 * API : fix study checking + httr options
