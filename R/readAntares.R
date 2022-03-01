@@ -620,6 +620,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                                lapply(.SD, mean),
                                                by = c("link","timeId"),
                                                .SDcols = names(res$linkCapacity)[!names(res$linkCapacity)%in%c("link","timeId","mcYear")]]
+          
+          
+          
           res$links <- merge(res$links, res$linkCapacity, by=c("link", "timeId"))
         }else{
           
