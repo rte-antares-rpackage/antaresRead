@@ -30,7 +30,9 @@ parAggregateMCall <- function(opts,
   
   areas <- getAreas(opts = opts)
   links <- getLinks(opts = opts)
-  clusters <- areas
+  # clusters <- areas
+  clusters <- getAreas(withClustersOnly = TRUE, opts = opts)
+  
   todo <- data.table(V1 = c(areas, links, clusters),
                      V2 = c(rep("area", length(areas)),
                             rep("link", length(links)),
