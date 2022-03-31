@@ -59,6 +59,7 @@ parAggregateMCall <- function(opts,
     names(d) <- X[[1]][2]
     aggregateResult(opts, filtering = TRUE, verbose = 0, selected = d, 
                     timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
+    gc() # clean memory
   }, cl = cl)
   
   if(verbose == 1){
