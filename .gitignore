@@ -9,3 +9,4 @@ revdep/data.sqlite
 revdep/library/
 /doc/
 /Meta/
+*.Rproj
