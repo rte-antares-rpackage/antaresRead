@@ -302,7 +302,6 @@
                                               colnames = "transCapacityIndirect",
                                               inputTimeStep = "hourly", type = "matrix",
                                               fun = "sum", colSelect = colSelect)
-      print(transCapacityDirect)
       res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
       res <- merge(transCapacityDirect, res, by = c("area","timeId", "tsId"))
       res <- res[order(area, tsId, timeId)]
