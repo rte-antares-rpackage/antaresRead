@@ -1,6 +1,6 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.2.10
+Changes in version 2.2.92
 FEATURES:
 * NTC by monte carlo years, antares 8.2 update
   * Update readInputTS when linkCapacity argument is used
