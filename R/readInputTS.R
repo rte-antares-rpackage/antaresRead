@@ -111,6 +111,20 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
     resProduction <- NULL
   }
   
+  
+  ###Check links in study
+  
+  if(!all(linkCapacity%in%opts$linkList)){
+
+      link_miss <- linkCapacity[!linkCapacity%in%opts$linkList]
+    warning(paste0('Some specified links in linkCapacity could not be found in the study : ', paste0(link_miss, collapse = ',')))
+  }
+  
+  
+  
+  
+  
+  
   res <- list() # Object the function will return
   
   # local function that add a type of output to the object "res"
