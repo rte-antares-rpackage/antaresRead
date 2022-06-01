@@ -30,7 +30,9 @@ parAggregateMCall <- function(opts,
   
   areas <- getAreas(opts = opts)
   links <- getLinks(opts = opts)
-  clusters <- areas
+  # clusters <- areas
+  clusters <- getAreas(withClustersOnly = TRUE, opts = opts)
+  
   todo <- data.table(V1 = c(areas, links, clusters),
                      V2 = c(rep("area", length(areas)),
                             rep("link", length(links)),
@@ -59,6 +61,7 @@ parAggregateMCall <- function(opts,
     names(d) <- X[[1]][2]
     aggregateResult(opts, filtering = TRUE, verbose = 0, selected = d, 
                     timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
+    gc() # clean memory
   }, cl = cl)
   
   if(verbose == 1){

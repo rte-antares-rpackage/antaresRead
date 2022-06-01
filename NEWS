@@ -1,12 +1,16 @@
 # Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.2.92
+Changes in version 2.2.97
 FEATURES:
 * NTC by monte carlo years, antares 8.2 update
   * Update readInputTS when linkCapacity argument is used
   * New link inputs 
 
-Changes in version 2.2.91
+Changes in version 2.2.96
+BUGFIXES:
+* #168 : clean memory parAggregateMCall 
+
+Changes in version 2.2.95
 BUGFIXES:
 * removeVirtualAreas : setting custom prodVars same as new storageVars
 * API : fix study checking + httr options
