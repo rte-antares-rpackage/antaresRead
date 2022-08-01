@@ -1987,26 +1987,3 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
     writeChar("\n\n", con, eos = NULL)
   }
 }
-
-#### Tests ####
-
-pathEtude = "W:/ESPACES_PERSO/SL/AM/Projects/ppse_generator_antares/master/Generator/Output/BP21_relance_FB18_final_Por_testv8_mc_2023"
-#pathEtude = "//antrsprdsa006vm/PPSE/ESPACES_PERSO/SL/AM/Projects/ppse_generator_antares/master/Generator/Output/BP50_M23_EU_CC1_calageME_test_2051"
-#pathEtude = "//antrsprdsa012vm/DRD/RESTRUCTURATION_SCRIPT_ANTARES/PPSE/Etudes/BP50_M23_CC1_sobriete_Xeq_H_2051"
-opts = antaresRead::setSimulationPath(pathEtude, simulation = -1)
-verbose = 2
-filtering = FALSE
-selected = NULL
-timestep = c("annual", "daily", "hourly", "monthly", "weekly")
-#timestep = c("annual", "hourly")
-writeOutput = TRUE
-mcYears = 1:20
-mcWeights = rep(1,length(mcYears))
-
-t <- Sys.time()
-lista = parAggregateMCall(opts, 12)
-print(Sys.time() - t)
-
-
-
-
