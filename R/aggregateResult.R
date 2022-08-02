@@ -49,13 +49,18 @@ transformLinkTable <- function(linkTable, RES_mode){
   linkTableMini
 }
 
-createDigestLinksLINAnnual <- function(testPar){
+createDigestLinksLIN <- function(testPar, tmstp){
   #browser()
   digest <- testPar[["links"]][, c("link","FLOW LIN.")]
-  ars <- as.character(testPar[["areas"]][, area])
+  ars <- unique(as.character(testPar[["areas"]][, area]))
   result <- data.table(matrix(0, nrow = length(ars), ncol = length(ars) + 1))
   setnames(result, c("...To",ars))
   result[, "...To" := ars]
+  
+  ## Aggregate by link
+  if (tmstp != "annual"){
+    digest <- digest[, .("FLOW LIN." = sum(`FLOW LIN.`)), by = link]
+  }
   
   for (i in 1:nrow(digest)){
     machin = strsplit(as.character(digest[i,link]), " - ")
@@ -74,13 +79,18 @@ createDigestLinksLINAnnual <- function(testPar){
   result
 }
 
-createDigestLinksQUADAnnual <- function(testPar){
+createDigestLinksQUAD <- function(testPar, tmstp){
   #browser()
   digest <- testPar[["links"]][, c("link","FLOW QUAD.")]
-  ars <- as.character(testPar[["areas"]][, area])
+  ars <- unique(as.character(testPar[["areas"]][, area]))
   result <- data.table(matrix(0, nrow = length(ars), ncol = length(ars) + 1))
   setnames(result, c("...To",ars))
   result[, "...To" := ars]
+  
+  ## Aggregate by link
+  if (tmstp != "annual"){
+    digest <- digest[, .("FLOW QUAD." = sum(`FLOW QUAD.`)), by = link]
+  }
   
   for (i in 1:nrow(digest)){
     machin = strsplit(as.character(digest[i,link]), " - ")
@@ -112,7 +122,6 @@ createDigestAreasAnnual <- function(testPar, linkTable){
   digest <- rbind(linkTable, digest)
   cat("Digest : Ok\n")
   digest
-  
 }
 
 createDigestAreasHourly <- function(testPar, linkTable){
@@ -160,14 +169,17 @@ gridFolderCreation <- function(opts){
   } else {cat("Grid folder : already exists\n")}
 }
 
-writeDigestFile <- function(opts, output, linkTable){
+writeDigestFile <- function(opts, output, tmstp, linkTable){
   digest_file <- paste0(opts$simDataPath, "/mc-all/grid/digest.txt")
   ## première table et retours ligne
   write(x = "digest", file = digest_file)
-  digesta <- createDigestAreasAnnual(output[[1]], linkTable)
+  if (tmstp == "annual") {
+    digesta <- createDigestAreasAnnual(output[[1]], linkTable)
+  } else if (tmstp == "hourly") { digesta <- createDigestAreasHourly(output[[1]], linkTable)}
   first_table = data.table(VARIABLES = ncol(digesta) - 1, AREAS = nrow(digesta) - 2, LINKS = 0)
   write.table(first_table, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
   write(x = "", file = digest_file, append = T)
+
   
   ## Digest areas
   write.table(digesta, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
@@ -179,14 +191,14 @@ writeDigestFile <- function(opts, output, linkTable){
   write(x = rep("\n",5), file = digest_file, append = T)
   
   ## Digest links LIN
-  digesta <- createDigestLinksLINAnnual(output[[1]])
+  digesta <- createDigestLinksLIN(output[[1]], tmstp)
   write(x = "Links (FLOW LIN.)", file = digest_file, append = T)
   write(x = "\tFrom...", file = digest_file, append = T)
   write.table(digesta, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
   write(x = rep("\n",2), file = digest_file, append = T)
   
   ## Digest links QUAD
-  digesta <- createDigestLinksQUADAnnual(output[[1]])
+  digesta <- createDigestLinksQUAD(output[[1]], tmstp)
   write(x = "Links (FLOW QUAD.)", file = digest_file, append = T)
   write(x = "\tFrom...", file = digest_file, append = T)
   write.table(digesta, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
@@ -225,6 +237,26 @@ parAggregateMCall <- function(opts,
   
   resultat <- list()
   
+  # Determiner les timestep dispo
+  timestep_dispo <- c()
+  fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
+  if (dir.exists(fr_ind_path)){
+    timestep_dispo <- unique(lapply(str_split(list.files(fr_ind_path), "-"), function(X){str_split(X[2],"\\.")[[1]][[1]]}))
+  }
+  
+  timestep <- intersect(timestep, timestep_dispo)
+  print(timestep)
+  
+  if (is.null(timestep)){
+    cat("No data found")
+    return (1)  
+  }
+  
+  # Supprimer le dossier mc_all si exist
+  if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
+    unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
+  }
+  
   for (tmstp in timestep){
     closeAllConnections()
     pathEtude <- opts$studyPath
@@ -258,11 +290,6 @@ parAggregateMCall <- function(opts,
       })
     }
     
-    gc()
-    #Dynamic batch value
-    batch = floor(((as.numeric(memuse::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
-    cat("\nBatch :",batch,"\n")
-    
     oldw <- getOption("warn")
     options(warn = -1)
     opts <- antaresRead::setSimulationPath(opts$simPath, simulation = -1)
@@ -273,7 +300,7 @@ parAggregateMCall <- function(opts,
       data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead"))},
       silent = TRUE
     )
-    antaresRead:::.errorTest(linkTable, verbose, "Load of link table")
+    antaresRead:::.errorTest(linkTable, verbose, "\nLoad of link table")
     
     # load link table
     linkTable$progNam <- linkTable$Stats
@@ -296,6 +323,12 @@ parAggregateMCall <- function(opts,
     if(length(mcWeights)!=length(numMc)){
       stop('length of mcWeights must be the same as mcYears')
     }
+    
+    gc()
+    #Dynamic batch value
+    batch = floor(((as.numeric(memuse::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
+    if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
+    cat("\nBatch :",batch,"\n")
     
     coef_div_mc_pond <- sum(mcWeights)
     coef_div_mc_pond_2 <- sum(mcWeights * mcWeights)
@@ -550,7 +583,7 @@ parAggregateMCall <- function(opts,
             }
             
             btot <- btot + as.numeric(Sys.time() - b)
-            antaresRead:::.addMessage(verbose, paste0("Time for reading data : ", round(aTot,1), " secondes"))
+            antaresRead:::.addMessage(verbose, paste0("\nTime for reading data : ", round(aTot,1), " secondes"))
             antaresRead:::.addMessage(verbose, paste0("Time for calculating : ", round(btot,1), " secondes"))
           }, silent = TRUE)
           
@@ -768,7 +801,7 @@ parAggregateMCall <- function(opts,
       })
     }
     # browser()
-    if (tmstp == "annual"){
+    if (tmstp == "annual" | (tmstp == "hourly" & !("annual" %in% timestep))){
       # Create grid folder
       gridFolderCreation(opts)
       
@@ -783,9 +816,7 @@ parAggregateMCall <- function(opts,
       linkTable <- transformLinkTable(linkTable, RES_mode)
       
       # Create digest
-      if (tmstp == "annual"){
-        writeDigestFile(opts, output, linkTable)
-      } 
+      writeDigestFile(opts, output, tmstp, linkTable)
     }
     
     if(length(output)==1) resultat[[tmstp]] <- output[[1]]
@@ -967,7 +998,7 @@ aggregateResult <- function(opts, verbose = 1,
     data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead"))},
     silent = TRUE
   )
-  .errorTest(linkTable, verbose, "Load of link table")
+  .errorTest(linkTable, verbose, "\nLoad of link table")
   
   # load link table
   linkTable$progNam <- linkTable$Stats
@@ -1132,7 +1163,7 @@ aggregateResult <- function(opts, verbose = 1,
           w_sum2 = 0
           mean_m = 0
           S = 0
-          
+
           value <- lapply(value, function(X){.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
           
           btot <- as.numeric(Sys.time() - b)
@@ -1311,7 +1342,7 @@ aggregateResult <- function(opts, verbose = 1,
           .addMessage(verbose, paste0("Time for calculating : ", round(btot,1), " secondes"))
         }, silent = TRUE)
         
-        .errorTest(dtaLoadAndcalcul, verbose, "Load data and calcul")
+        .errorTest(dtaLoadAndcalcul, verbose, "\nLoad data and calcul")
         
         #Write area
         allfiles <- c("values")
@@ -1991,6 +2022,7 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #### Tests ####
 
 pathEtude = "W:/ESPACES_PERSO/SL/AM/Projects/ppse_generator_antares/master/Generator/Output/BP21_relance_FB18_final_Por_testv8_mc_2023"
+pathEtude = "S:/AssilM/PPSE/Studies/Etude_test_1_pbq"
 #pathEtude = "//antrsprdsa006vm/PPSE/ESPACES_PERSO/SL/AM/Projects/ppse_generator_antares/master/Generator/Output/BP50_M23_EU_CC1_calageME_test_2051"
 #pathEtude = "//antrsprdsa012vm/DRD/RESTRUCTURATION_SCRIPT_ANTARES/PPSE/Etudes/BP50_M23_CC1_sobriete_Xeq_H_2051"
 opts = antaresRead::setSimulationPath(pathEtude, simulation = -1)
