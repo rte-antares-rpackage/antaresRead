@@ -448,6 +448,9 @@ parAggregateMCall <- function(opts,
                 lst_idx = 0 
                 left = ((j-1)*batch + 2)
                 right = min((j*batch) + 1,N)
+                
+                lst_dtaTP <- list()                 #init lst pour execution monocore
+
                 if (parallel == TRUE){
                   closeAllConnections()
                   cl <- makeCluster(nbcl)
@@ -465,7 +468,7 @@ parAggregateMCall <- function(opts,
                   cat("\n")
                   #print(tt, units = "Mb")
                   cat("\n",Sys.time() - par_time)
-                }
+                } 
                 
                 for(i in left:right){
                   lst_idx = lst_idx + 1
