@@ -119,6 +119,8 @@ createDigestAreasAnnual <- function(testPar, linkTable){
                   round(digest[,4], 2),
                   round(digest[, !(1:4)]))
 
+  #rapid fix for extra columns in antares 8.1 
+  linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
   digest <- rbind(linkTable, digest)
   cat("Digest : Ok\n")
   digest
@@ -137,6 +139,8 @@ createDigestAreasHourly <- function(testPar, linkTable){
                   round(digest[,4], 2),
                   round(digest[, !(1:4)]))
   
+  #rapid fix for extra columns in antares 8.1 
+  linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
   digest <- rbind(linkTable, digest)
   cat("Digest (hourly) : Ok\n")
   digest
@@ -237,9 +241,11 @@ parAggregateMCall <- function(opts,
   
   resultat <- list()
   
-  # Determiner les timestep dispo
+  # Determiner les timestep dispo depuis un noeud FR ou FRXX
   timestep_dispo <- c()
   fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
+  ar_folders <- list.dirs(paste0(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"/areas"))
+  fr_ind_path <- grep(fr_ind_path, ar_folders, value = T)[1]
   if (dir.exists(fr_ind_path)){
     timestep_dispo <- unique(lapply(str_split(list.files(fr_ind_path), "-"), function(X){str_split(X[2],"\\.")[[1]][[1]]}))
   }
@@ -424,14 +430,13 @@ parAggregateMCall <- function(opts,
             b <- Sys.time()
             #value structure
             value <- antaresRead:::.giveValue(dta, SDcolsStartareas, SDcolsStartClust)
-            N <- length(numMc)
+            N <- max(numMc)
             
             W_sum = 0
             w_sum2 = 0
             mean_m = 0
             S = 0
             
-            # browser()
             value <- lapply(value, function(X){antaresRead:::.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
             
             btot <- as.numeric(Sys.time() - b)
@@ -441,6 +446,7 @@ parAggregateMCall <- function(opts,
                 antaresRead:::.progBar(pb, type, 1, N, coef)
               })
             }
+
             #sequentially add values
             if(N>1)
             {
@@ -448,6 +454,8 @@ parAggregateMCall <- function(opts,
                 lst_idx = 0 
                 left = ((j-1)*batch + 2)
                 right = min((j*batch) + 1,N)
+                
+                curr_years = intersect(left:right, numMc)
                 
                 lst_dtaTP <- list()                 #init lst pour execution monocore
 
@@ -459,7 +467,7 @@ parAggregateMCall <- function(opts,
                   clusterSetRNGStream(cl, 123)
                   par_time <- Sys.time()
                   tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
-                  lst_dtaTP <- plyr::llply(left:right, ParReadAntares, .parallel = T, 
+                  lst_dtaTP <- plyr::llply(curr_years, ParReadAntares, .parallel = T, 
                                            .paropts = list(.options.snow = paropts), 
                                            pth = pathEtude, type = type, areasselect = areasselect,
                                            linksSelect = linksSelect, clustersSelect = clustersSelect,
@@ -470,7 +478,7 @@ parAggregateMCall <- function(opts,
                   cat("\n",Sys.time() - par_time)
                 } 
                 
-                for(i in left:right){
+                for(i in curr_years){
                   lst_idx = lst_idx + 1
                   a <- Sys.time()
                   
@@ -502,7 +510,7 @@ parAggregateMCall <- function(opts,
                   
                   valueTP <- lapply(names(valueTP), function(X){
                     
-                    antaresRead:::.creatStats(valueTP[[X]], value[[X]]$W_sum, value[[X]]$w_sum2, value[[X]]$mean_m, value[[X]]$S , mcWeights[i])
+                    .creatStats(valueTP[[X]], value[[X]]$W_sum, value[[X]]$w_sum2, value[[X]]$mean_m, value[[X]]$S , mcWeights[grep(i,numMc)])
                     
                   })
                   
@@ -804,6 +812,7 @@ parAggregateMCall <- function(opts,
       })
     }
     # browser()
+
     if (tmstp == "annual" | (tmstp == "hourly" & !("annual" %in% timestep))){
       # Create grid folder
       gridFolderCreation(opts)
@@ -2021,4 +2030,3 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
     writeChar("\n\n", con, eos = NULL)
   }
 }
-
