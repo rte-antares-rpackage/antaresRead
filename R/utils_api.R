@@ -11,7 +11,7 @@ fread_antares <- function(opts, file, ...){
       httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout), config = opts$httr_config)
     }
     
-    tryCatch({fread(content(httpResponse, "parsed"), ...)}, error = function(e) NULL)
+    tryCatch({fread(content(httpResponse, "parsed"), ...)}, error = function(e) {message(file); message(e)})
   } else {
     fread(file, ...)
   }
