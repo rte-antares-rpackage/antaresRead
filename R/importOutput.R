@@ -575,10 +575,10 @@
     nameCls <- cls
     
     tsIds <- llply(cls, function(cl) {
-      as.numeric(strsplit(
+      # this changed because the api now already return a proper array
+      as.numeric(
         read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, 
-                         timeout = opts$timeout, config = opts$httr_config),
-        "\n")[[1]][-1]
+                         timeout = opts$timeout, config = opts$httr_config)
       )
     })
     
@@ -593,6 +593,9 @@
     
     # ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
     ts <- fread_antares(opts = opts, file = sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    if (is.null(ts)) {
+      return(NULL)
+    }
     
     
     ldply(1:length(ids), function(i) {
@@ -605,6 +608,8 @@
       )
     })
   })
+
+  # TODO filter null
   
   series <- data.table(series)
   
