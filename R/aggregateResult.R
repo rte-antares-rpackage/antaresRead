@@ -14,6 +14,8 @@
 #' @param selected \code{list} named list (pass to antaresRead) : list(areas = 'a', links = 'a - e')
 #'
 #' @import data.table
+#' @import doParallel
+#' @importFrom stringr str_split
 #'
 #' @export
 #' 
@@ -44,7 +46,7 @@ parAggregateMCall <- function(opts,
   }
   
   timestep <- intersect(timestep, timestep_dispo)
-  print(timestep)
+  if (verbose > 0) cat(timestep,"\n")
   
   if (is.null(timestep)){
     cat("No data found")
@@ -116,7 +118,7 @@ parAggregateMCall <- function(opts,
       numMc <- opts$mcYears
     }
     if(is.null(mcWeights)){
-      mcWeights <- rep(1, length(opts$mcYears))
+      mcWeights <- rep(1, length(numMc))
     }
     
     if(length(mcWeights)!=length(numMc)){
@@ -127,7 +129,7 @@ parAggregateMCall <- function(opts,
     #Dynamic batch value
     batch = floor(((as.numeric(memuse::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
     if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
-    cat("\nBatch :",batch,"\n")
+    if (verbose > 0) cat("\nBatch :",batch,"\n")
     
     coef_div_mc_pond <- sum(mcWeights)
     coef_div_mc_pond_2 <- sum(mcWeights * mcWeights)
@@ -260,15 +262,21 @@ parAggregateMCall <- function(opts,
                   clusterSetRNGStream(cl, 123)
                   par_time <- Sys.time()
                   tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
+                  ## Warning a creuser (non impactant)
+                  options(warn = -1)
                   lst_dtaTP <- plyr::llply(curr_years, .parReadAntares, .parallel = T, 
-                                           .paropts = list(.options.snow = paropts), 
-                                           pth = pathEtude, type = type, areasselect = areasselect,
-                                           linksSelect = linksSelect, clustersSelect = clustersSelect,
-                                           clustersResSelect = clustersResSelect)
+                                                            .paropts = list(.options.snow = paropts), 
+                                                            pth = pathEtude, type = type, areasselect = areasselect,
+                                                            linksSelect = linksSelect, clustersSelect = clustersSelect,
+                                                            clustersResSelect = clustersResSelect)
+                  options(warn = oldw)
                   tt = sum(.Internal(gc(FALSE, FALSE, TRUE))[13:14]) - tt
-                  cat("\n")
-                  #print(tt, units = "Mb")
-                  cat("\n",Sys.time() - par_time)
+                  if (verbose > 0){
+                    cat("\n")
+                    #print(tt, units = "Mb")
+                    cat("\n",Sys.time() - par_time)
+                  }
+
                 } 
                 
                 for(i in curr_years){
@@ -608,7 +616,7 @@ parAggregateMCall <- function(opts,
     
     if (tmstp == "annual" | (tmstp == "hourly" & !("annual" %in% timestep))){
       # Create grid folder
-      .gridFolderCreation(opts)
+      .gridFolderCreation(opts, verbose)
       
       # Transform linkTable for digest (compatible v8)
       RES_mode <- F
@@ -621,7 +629,7 @@ parAggregateMCall <- function(opts,
       linkTable <- .transformLinkTable(linkTable, RES_mode)
       
       # Create digest
-      .writeDigestFile(opts, output, tmstp, linkTable)
+      .writeDigestFile(opts, output, tmstp, linkTable, oldw, verbose)
     }
     
     if(length(output)==1) resultat[[tmstp]] <- output[[1]]
@@ -735,12 +743,12 @@ parAggregateMCall <- function(opts,
     result[`...To` == data_link[[1]][1], data_link[[1]][2] := ifelse(-round(as.numeric(digest[i,"FLOW LIN."])) == 0,
                                                                1000000000000000,
                                                                -round(as.numeric(digest[i,"FLOW LIN."])))]
-    result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"]
+    suppressWarnings(result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"])
   }
   result[result == 0] <- "--"
   result[result == 1000000000000000] <- 0
   result[is.na(result)] <- "X"
-  
+
   result
 }
 
@@ -777,7 +785,7 @@ parAggregateMCall <- function(opts,
     result[`...To` == data_link[[1]][1], data_link[[1]][2] := ifelse(-round(as.numeric(digest[i,"FLOW QUAD."])) == 0,
                                                                1000000000000000,
                                                                -round(as.numeric(digest[i,"FLOW QUAD."])))]
-    result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"]
+    suppressWarnings(result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"])
   }
   result[result == 0] <- "--"
   result[result == 1000000000000000] <- 0
@@ -798,7 +806,7 @@ parAggregateMCall <- function(opts,
 #' @return digest {data.table} results for areas
 #'
 #' @noRd
-.createDigestAreasAnnual <- function(testPar, linkTable){
+.createDigestAreasAnnual <- function(testPar, linkTable, verbose){
   digest <- testPar[["areas"]]
   cols_remove = c("timeId","time")
   cols_remove_2 = grep("_",names(digest),value = T)
@@ -811,7 +819,7 @@ parAggregateMCall <- function(opts,
   #rapid fix for extra columns in antares 8.1 
   linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
   digest <- rbind(linkTable, digest)
-  cat("Digest : Ok\n")
+  if (verbose > 0) cat("Digest : Ok\n")
   digest
 }
 
@@ -827,7 +835,7 @@ parAggregateMCall <- function(opts,
 #' @return digest {data.table} results for areas
 #'
 #' @noRd
-.createDigestAreasHourly <- function(testPar, linkTable){
+.createDigestAreasHourly <- function(testPar, linkTable, verbose){
   digest <- testPar[["areas"]]
   cols_remove = c("month","hour","timeId","time","day")
   cols_remove_2 = grep("_",names(digest),value = T)
@@ -840,10 +848,14 @@ parAggregateMCall <- function(opts,
                   round(digest[,4], 2),
                   round(digest[, !(1:4)]))
   
-  #rapid fix for extra columns in antares 8.1 
-  linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
+  #rapid fix for extra columns in antares 8.1
+  if (length(setdiff(names(digest), names(linkTable))) > 0){
+    linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
+  }
+  
   digest <- rbind(linkTable, digest)
-  cat("Digest (hourly) : Ok\n")
+  if (verbose > 0) cat("Digest (hourly) : Ok\n")
+  
   digest
 }
 
@@ -854,7 +866,7 @@ parAggregateMCall <- function(opts,
 #' @description Create grid folder
 #'
 #' @noRd
-.gridFolderCreation <- function(opts){
+.gridFolderCreation <- function(opts, verbose){
   ##create grid folder if doesnt exist
   grid_folder <- file.path(opts$simDataPath, "mc-all","grid")
   if (!dir.exists(grid_folder)){
@@ -877,8 +889,8 @@ parAggregateMCall <- function(opts,
     write.table(dt_lnks, file = paste0(opts$simDataPath, "/mc-all/grid/links.txt"), 
                 row.names = F, quote = F, sep = "\t")
     ##thermal.txt
-    cat("Grid folder : Ok\n")
-  } else {cat("Grid folder : already exists\n")}
+    if (verbose > 0) cat("Grid folder : Ok\n")
+  } else {if (verbose > 0) cat("Grid folder : already exists\n")}
 }
 
 
@@ -893,13 +905,14 @@ parAggregateMCall <- function(opts,
 #' @param linkTable \code{data.table} table of expressions
 #'
 #' @noRd
-.writeDigestFile <- function(opts, output, tmstp, linkTable){
+.writeDigestFile <- function(opts, output, tmstp, linkTable, oldw, verbose){
+  options(warn = -1)
   digest_file <- paste0(opts$simDataPath, "/mc-all/grid/digest.txt")
   ## première table et retours ligne
   write(x = "digest", file = digest_file)
   if (tmstp == "annual") {
-    digesta <- .createDigestAreasAnnual(output[[1]], linkTable)
-  } else if (tmstp == "hourly") { digesta <- .createDigestAreasHourly(output[[1]], linkTable)}
+    digesta <- .createDigestAreasAnnual(output[[1]], linkTable, verbose)
+  } else if (tmstp == "hourly") { digesta <- .createDigestAreasHourly(output[[1]], linkTable, verbose)}
   first_table = data.table(VARIABLES = ncol(digesta) - 1, AREAS = nrow(digesta) - 2, LINKS = 0)
   write.table(first_table, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
   write(x = "", file = digest_file, append = T)
@@ -933,6 +946,7 @@ parAggregateMCall <- function(opts,
   for (line in lines[-1]){
     write(x = paste0("\t",line), file = digest_file, sep = "\t", append = T)
   }
+  options(warn = oldw)
 }
 
 #' @title parallel read antares

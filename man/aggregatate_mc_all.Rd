@@ -8,11 +8,13 @@
 parAggregateMCall(
   opts,
   nbcl = 8,
-  verbose = 1,
+  verbose = 2,
   timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
   writeOutput = TRUE,
   mcWeights = NULL,
-  mcYears = NULL
+  mcYears = NULL,
+  filtering = FALSE,
+  selected = NULL
 )
 
 aggregateResult(
