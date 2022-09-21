@@ -32,7 +32,8 @@ Imports:
     doParallel,
     jsonlite,
     httr,
-    utils
+    utils,
+    memuse
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,

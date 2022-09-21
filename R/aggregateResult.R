@@ -15,6 +15,7 @@
 #'
 #' @import data.table
 #' @import doParallel
+#' @importFrom plyr llply
 #' @importFrom stringr str_split
 #'
 #' @export
@@ -93,7 +94,7 @@ parAggregateMCall <- function(opts,
     
     oldw <- getOption("warn")
     options(warn = -1)
-    opts <- antaresRead::setSimulationPath(opts$simPath, simulation = -1)
+    opts <- setSimulationPath(opts$simPath, simulation = -1)
     options(warn = oldw)
     
     # Version which readAntares
@@ -101,7 +102,7 @@ parAggregateMCall <- function(opts,
       data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead"))},
       silent = TRUE
     )
-    antaresRead:::.errorTest(linkTable, verbose, "\nLoad of link table")
+    .errorTest(linkTable, verbose, "\nLoad of link table")
     
     # load link table
     linkTable$progNam <- linkTable$Stats
@@ -127,7 +128,7 @@ parAggregateMCall <- function(opts,
     
     gc()
     #Dynamic batch value
-    batch = floor(((as.numeric(memuse::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
+    batch = floor(((as.numeric(memuse:::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
     if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
     if (verbose > 0) cat("\nBatch :",batch,"\n")
     
@@ -141,7 +142,7 @@ parAggregateMCall <- function(opts,
     output <- sapply(tmstp, function(type, verbose)
     {
       
-      antaresRead:::.addMessage(verbose, paste0("------- Mc-all : ", type, " -------"))
+      .addMessage(verbose, paste0("------- Mc-all : ", type, " -------"))
       
       try({
         
@@ -157,8 +158,8 @@ parAggregateMCall <- function(opts,
           clustersSelect <- clustersResSelect <- areasselect <- linksSelect <- "all"
         } else {
           if(is.null(selected)){
-            areasselect <- antaresRead:::.getAreasToAggregate(opts, type)
-            linksSelect <- antaresRead:::.getLinksToAggregate(opts, type)
+            areasselect <- .getAreasToAggregate(opts, type)
+            linksSelect <- .getLinksToAggregate(opts, type)
             clustersSelect <- clustersResSelect <- areasselect
           } else {
             areasselect <- selected$areas
@@ -169,7 +170,7 @@ parAggregateMCall <- function(opts,
         }
         #browser()
         tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
-        dta <- antaresRead::readAntares(area = areasselect,
+        dta <- readAntares(area = areasselect,
                                         links = linksSelect,
                                         clusters = clustersSelect,
                                         clustersRes = clustersResSelect,
@@ -224,7 +225,7 @@ parAggregateMCall <- function(opts,
             
             b <- Sys.time()
             #value structure
-            value <- antaresRead:::.giveValue(dta, SDcolsStartareas, SDcolsStartClust)
+            value <- .giveValue(dta, SDcolsStartareas, SDcolsStartClust)
             N <- max(numMc)
             
             W_sum = 0
@@ -232,13 +233,13 @@ parAggregateMCall <- function(opts,
             mean_m = 0
             S = 0
             
-            value <- lapply(value, function(X){antaresRead:::.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
+            value <- lapply(value, function(X){.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
             
             btot <- as.numeric(Sys.time() - b)
             if(verbose>0)
             {
               try({
-                antaresRead:::.progBar(pb, type, 1, N, coef)
+                .progBar(pb, type, 1, N, coef)
               })
             }
             
@@ -288,7 +289,7 @@ parAggregateMCall <- function(opts,
                   
                   
                   if (parallel == FALSE){
-                    dtaTP <- antaresRead::readAntares(area = areasselect,
+                    dtaTP <- readAntares(area = areasselect,
                                                       links = linksSelect,
                                                       clusters = clustersSelect,
                                                       clustersRes = clustersResSelect,
@@ -304,7 +305,7 @@ parAggregateMCall <- function(opts,
                   aTot <- aTot + as.numeric(Sys.time() - a)
                   b <- Sys.time()
                   
-                  valueTP <- antaresRead:::.giveValue(dtaTP, SDcolsStartareas, SDcolsStartClust)
+                  valueTP <- .giveValue(dtaTP, SDcolsStartareas, SDcolsStartClust)
                   
                   nmKeep <- names(valueTP)
                   # browser()
@@ -319,16 +320,16 @@ parAggregateMCall <- function(opts,
                   
                   # valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
                   
-                  value$areas <- antaresRead:::.updateStats(value[["areas"]], valueTP[["areas"]])
-                  value$links <- antaresRead:::.updateStats(value[["links"]], valueTP[["links"]])
-                  value$clusters <- antaresRead:::.updateStats(value[["clusters"]], valueTP[["clusters"]])
-                  value$clustersRes <- antaresRead:::.updateStats(value[["clustersRes"]], valueTP[["clustersRes"]])
+                  value$areas <- .updateStats(value[["areas"]], valueTP[["areas"]])
+                  value$links <- .updateStats(value[["links"]], valueTP[["links"]])
+                  value$clusters <- .updateStats(value[["clusters"]], valueTP[["clusters"]])
+                  value$clustersRes <- .updateStats(value[["clustersRes"]], valueTP[["clustersRes"]])
                   
                   btot <- btot + as.numeric(Sys.time() - b)
                   if(verbose>0)
                   {
                     try({
-                      antaresRead:::.progBar(pb, type, i, N, coef)
+                      .progBar(pb, type, i, N, coef)
                     })
                   }
                   
@@ -395,11 +396,11 @@ parAggregateMCall <- function(opts,
             }
             
             btot <- btot + as.numeric(Sys.time() - b)
-            antaresRead:::.addMessage(verbose, paste0("\nTime for reading data : ", round(aTot,1), " secondes"))
-            antaresRead:::.addMessage(verbose, paste0("Time for calculating : ", round(btot,1), " secondes"))
+            .addMessage(verbose, paste0("\nTime for reading data : ", round(aTot,1), " secondes"))
+            .addMessage(verbose, paste0("Time for calculating : ", round(btot,1), " secondes"))
           }, silent = TRUE)
           
-          antaresRead:::.errorTest(dtaLoadAndcalcul, verbose, "Load data and calcul")
+          .errorTest(dtaLoadAndcalcul, verbose, "Load data and calcul")
           
           #Write area
           allfiles <- c("values")
@@ -407,10 +408,10 @@ parAggregateMCall <- function(opts,
           if(writeOutput == FALSE){
             if(verbose>0)
             {
-              antaresRead:::.progBar(pb, type, 1, 1, 1, terminate = TRUE)
+              .progBar(pb, type, 1, 1, 1, terminate = TRUE)
             }
             
-            return(antaresRead:::.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
+            return(.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
           } else {
             
             if(!is.null(value$clustersRes) && is.data.frame(value$clustersRes) && nrow(value$clustersRes) > 0){
@@ -455,7 +456,7 @@ parAggregateMCall <- function(opts,
                     nameIndex <- ifelse(type == "weekly", "week", "index")
                     kepNam[which(kepNam == "timeId")] <- nameIndex
                     #write txt
-                    antaresRead:::.writeFileOut(dta = areastowrite, timestep = type, fileType = f,
+                    .writeFileOut(dta = areastowrite, timestep = type, fileType = f,
                                                 ctry = areasel, opts = opts, folderType = "areas", nbvar = nbvar,
                                                 indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
                                                 nomcair = areaSpecialFile$Name, unit = areaSpecialFile$Unit,
@@ -467,7 +468,7 @@ parAggregateMCall <- function(opts,
               }
             }), silent = TRUE)
             
-            antaresRead:::.errorTest(areaWrite, verbose, "Area write")
+            .errorTest(areaWrite, verbose, "Area write")
             
             allfiles <- c("values")
             linkWrite <- try(sapply(allfiles, function(f)
@@ -513,7 +514,7 @@ parAggregateMCall <- function(opts,
                   nameIndex <- ifelse(type == "weekly", "week", "index")
                   kepNam[which(kepNam == "timeId")] <- nameIndex
                   #write txt
-                  antaresRead:::.writeFileOut(dta = linkstowrite, timestep = type, fileType = f,
+                  .writeFileOut(dta = linkstowrite, timestep = type, fileType = f,
                                               ctry = linksel, opts = opts, folderType = "links", nbvar = nbvar,
                                               indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
                                               nomcair = linkSpecialFile$Name, unit = linkSpecialFile$Unit,
@@ -522,7 +523,7 @@ parAggregateMCall <- function(opts,
               }
             }), silent = TRUE)
             
-            antaresRead:::.errorTest(linkWrite, verbose, "Link write")
+            .errorTest(linkWrite, verbose, "Link write")
             
             ##Details
             details <- value$clusters$sum
@@ -588,12 +589,12 @@ parAggregateMCall <- function(opts,
                   indexMax <- max(endClustctry$timeId)
                   ncolFix <- length(nomStruct)
                   #write details txt
-                  antaresRead:::.writeFileOut(dta = endClustctry, timestep = type, fileType = "details",
+                  .writeFileOut(dta = endClustctry, timestep = type, fileType = "details",
                                               ctry = ctry, opts = opts, folderType = "areas", nbvar = nbvar,
                                               indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
                                               nomcair = nomcair, unit = unit, nomStruct = nomStruct,Stats = Stats)
                 }), silent = TRUE)
-                antaresRead:::.errorTest(detailWrite, verbose, "Detail write")
+                .errorTest(detailWrite, verbose, "Detail write")
               }
             }
           }
@@ -601,8 +602,8 @@ parAggregateMCall <- function(opts,
       })
       
       #browser()
-      antaresRead:::.addMessage(verbose, paste0("------- End Mc-all : ", type, " -------"))
-      antaresRead:::.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct)
+      .addMessage(verbose, paste0("------- End Mc-all : ", type, " -------"))
+      .formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct)
     }, verbose = verbose, simplify = FALSE)
     
     
@@ -879,7 +880,7 @@ parAggregateMCall <- function(opts,
     write.table(ars, file = paste0(opts$simDataPath, "/mc-all/grid/areas.txt"), 
                 row.names = F, quote = F, sep = "\t")
     ##links.txt
-    lnks <- antaresRead::getLinks(namesOnly = F)
+    lnks <- getLinks(namesOnly = F)
     lnks <- sapply(lnks, function(X){X <- strsplit(X, " - ")})
     dt_lnks <- data.table()
     for (lnk in lnks){
@@ -965,8 +966,8 @@ parAggregateMCall <- function(opts,
 .parReadAntares <- function(mcYear, pth, type, 
                            areasselect, linksSelect, 
                            clustersSelect, clustersResSelect){
-  antaresRead::setSimulationPath(pth, simulation = -1)
-  dt <- antaresRead::readAntares(area = areasselect, links = linksSelect, 
+  setSimulationPath(pth, simulation = -1)
+  dt <- readAntares(area = areasselect, links = linksSelect, 
                                  clusters = clustersSelect, clustersRes = clustersResSelect, 
                                  timeStep = type, simplify = FALSE, 
                                  mcYears = mcYear, showProgress = FALSE)
@@ -1508,7 +1509,7 @@ aggregateResult <- function(opts, verbose = 1,
   
   oldw <- getOption("warn")
   options(warn = -1)
-  opts <- antaresRead::setSimulationPath(opts$simPath)
+  opts <- setSimulationPath(opts$simPath)
   options(warn = oldw)
   
   # Version which readAntares
@@ -1563,7 +1564,7 @@ aggregateResult <- function(opts, verbose = 1,
       
       if(!filtering)
       {
-        dta <- antaresRead::readAntares(area = "all", links = "all", clusters = "all",
+        dta <- readAntares(area = "all", links = "all", clusters = "all",
                                         clustersRes = "all", timeStep = type, simplify = FALSE, 
                                         mcYears = numMc[1], showProgress = FALSE)
       } else {
@@ -1571,7 +1572,7 @@ aggregateResult <- function(opts, verbose = 1,
           
           areasselect <- .getAreasToAggregate(opts, type)
           linksSelect <- .getLinksToAggregate(opts, type)
-          dta <- antaresRead::readAntares(area = areasselect,
+          dta <- readAntares(area = areasselect,
                                           links = linksSelect,
                                           clusters = areasselect,
                                           clustersRes = areasselect,
@@ -1580,7 +1581,7 @@ aggregateResult <- function(opts, verbose = 1,
                                           mcYears = numMc[1],
                                           showProgress = FALSE)
         } else {
-          dta <- antaresRead::readAntares(area = selected$areas,
+          dta <- readAntares(area = selected$areas,
                                           links = selected$links,
                                           clusters = selected[["clusters"]],
                                           clustersRes = selected[["clustersRes"]],
@@ -1702,20 +1703,20 @@ aggregateResult <- function(opts, verbose = 1,
               
               if(!filtering)
               {
-                dtaTP <- antaresRead::readAntares(area = "all", links = "all", clusters = "all", clustersRes = "all",
+                dtaTP <- readAntares(area = "all", links = "all", clusters = "all", clustersRes = "all",
                                                   timeStep = type, simplify = FALSE, mcYears = numMc[i], showProgress = FALSE)
               } else {
                 
                 if(is.null(selected)){
                   
-                  dtaTP <- antaresRead::readAntares(area = areasselect, 
+                  dtaTP <- readAntares(area = areasselect, 
                                                     links = linksSelect, 
                                                     clusters = areasselect, 
                                                     clustersRes = areasselect,
                                                     timeStep = type, simplify = FALSE, 
                                                     mcYears = numMc[i], showProgress = FALSE)
                 } else{
-                  dtaTP <- antaresRead::readAntares(area = selected$areas,
+                  dtaTP <- readAntares(area = selected$areas,
                                                     links = selected$links,
                                                     clusters = selected[["clusters"]],
                                                     clustersRes = selected[["clustersRes"]],
