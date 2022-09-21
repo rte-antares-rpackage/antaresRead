@@ -391,6 +391,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res$token <- token
   res$timeout <- timeout
   res$httr_config <- httr_config
+  res$modeAPI <- "sync"
   
   class(res) <- c("simOptions")
   
