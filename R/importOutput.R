@@ -574,28 +574,34 @@
     
     nameCls <- cls
     
-    tsIds <- llply(cls, function(cl) {
-      as.numeric(strsplit(
-        read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, 
-                         timeout = opts$timeout, config = opts$httr_config),
-        "\n")[[1]][-1]
-      )
-    })
-    
+    tsIds <- lapply(
+      X = cls,
+      FUN = function(cl) {
+        # this changed because the api now already return a proper array
+        as.numeric(
+          read_secure_json(file.path(pathTSNumbers, area, cl), token = opts$token, 
+                           timeout = opts$timeout, config = opts$httr_config)
+        )
+      }
+    )
     names(tsIds) <- nameCls
+    tsIds <- tsIds[vapply(tsIds, length, FUN.VALUE = integer(1)) > 0]
+    
   }
   
   # Two nested loops: clusters, Monte Carlo simulations.
-  series <- ldply(nameCls, function(cl) {
+  series <- ldply(names(tsIds), function(cl) {
     ids <- tsIds[[cl]][mcYears]
     colToRead <- sort(unique(ids)) # Columns to read in the ts file
     colIds <- sapply(ids, function(i) which(colToRead == i)) # correspondance between the initial ids and the columns in the generated table
     
     # ts <- fread(sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
     ts <- fread_antares(opts = opts, file = sprintf(filePattern, cl), integer64 = "numeric", select = colToRead)
+    if (is.null(ts)) {
+      return(NULL)
+    }
     
-    
-    ldply(1:length(ids), function(i) {
+    ldply(seq_along(ids), function(i) {
       data.frame(
         area = area, 
         cluster = cl, 
@@ -606,7 +612,7 @@
     })
   })
   
-  series <- data.table(series)
+  series <- as.data.table(series)
   
   series <- series[timeId %in% opts$timeIdMin:opts$timeIdMax]
   
