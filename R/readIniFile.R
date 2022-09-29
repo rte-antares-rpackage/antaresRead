@@ -32,8 +32,8 @@ readIniFile <- function(file, stringsAsFactors=FALSE) {
     key <- sapply(pairs, function(p) gsub("^ +| +$","", p[1]))
     value <- lapply(pairs, function(p) {
       v <- gsub("^ +| +$","", p[2])
-      if (v == "true") return(TRUE)
-      if (v == "false") return(FALSE)
+      if (tolower(v) == "true") return(TRUE)
+      if (tolower(v) == "false") return(FALSE)
       type.convert(v, as.is = !stringsAsFactors)
     })
     
