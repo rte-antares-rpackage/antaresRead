@@ -11,7 +11,7 @@
 #'
 #' @name API-methods
 #'
-#' @importFrom httr GET accept_json stop_for_status content add_headers
+#' @importFrom httr GET accept_json stop_for_status content add_headers timeout
 #'
 #' @examples
 #' \dontrun{
@@ -26,8 +26,11 @@
 api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
-  config <- list(
-    accept_json()
+  config <- c(
+    opts$httr_config,
+    list(
+      accept_json()
+    )
   )
   if (!is.null(opts$token) && opts$token != "") {
     config <- c(
@@ -38,6 +41,7 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   result <- GET(
     url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
     config = config,
+    timeout(opts$timeout),
     ...
   )
   stop_for_status(result)
@@ -52,9 +56,12 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
 api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
-  config <- list(
-    accept_json(),
-    content_type_json()
+  config <- c(
+    opts$httr_config,
+    list(
+      accept_json(),
+      content_type_json()
+    )
   )
   if (!is.null(opts$token) && opts$token != "") {
     config <- c(
@@ -79,8 +86,11 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
 api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
-  config <- list(
-    accept_json()
+  config <- c(
+    opts$httr_config,
+    list(
+      accept_json()
+    )
   )
   if (!is.null(opts$token) && opts$token != "") {
     config <- c(
@@ -105,8 +115,11 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
 api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
-  config <- list(
-    accept_json()
+  config <- c(
+    opts$httr_config,
+    list(
+      accept_json()
+    )
   )
   if (!is.null(opts$token) && opts$token != "") {
     config <- c(
