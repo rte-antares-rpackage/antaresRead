@@ -42,7 +42,7 @@ Suggests:
     foreach,
     parallel,
     htmltools
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 biocViews: Infrastructure, DataImport
