@@ -1,117 +1,165 @@
-# Copyright © 2016 RTE Réseau de transport d’électricité
+> Copyright © 2016 RTE Réseau de transport d’électricité
 
-Changes in version 2.2.97
+# antaresRead 2.3.0
+
+* Interact with AntaREST
+
+
+# antaresRead 2.2.97
+
 FEATURES:
+
 * NTC by monte carlo years, antares 8.2 update
   * Update readInputTS when linkCapacity argument is used
   * New link inputs 
 
-Changes in version 2.2.96
+
+# antaresRead 2.2.96
+
 BUGFIXES:
+
 * #168 : clean memory parAggregateMCall 
 
-Changes in version 2.2.95
+# antaresRead 2.2.95
+
 BUGFIXES:
+
 * removeVirtualAreas : setting custom prodVars same as new storageVars
 * API : fix study checking + httr options
 
-Changes in version 2.2.9
+
+# antaresRead 2.2.9
+
 FEATURES:
+
 * Add ENR Cluster support (V8.1)
 * removeVirtualAreas : Can pass storageFlexibility named list
 * removeVirtualAreas : add prodVars, costsVars and costsOn arguments
 * fix linCapacity aggregation
 
 BUGFIXES:
+
 * aggregateResult parallel export (#161)
 
-Changes in version 2.2.8
+
+# antaresRead 2.2.8
+
 FEATURES:
+
 * Fixed bugs in `readAntares` when file is missing
 
-Changes in version 2.2.7
+# antaresRead 2.2.7
+
 FEATURES:
+
 * Fixed bugs in `readInputTS()` for `hydroStorage`
 * New`hvdcModification()` function
 * Add MC Weight functionnality
 * First antares api support
 
-Changes in version 2.2.5
+
+# antaresRead 2.2.5
+
 FEATURES:
+
 * Fixed bugs in `removeVirtualAreas()` in `getLinks()`
 * Updated documentation & added pkgdown website 
 
 
 
-Changes in version 2.2.4 (2019-02-13)
+# antaresRead 2.2.4 (2019-02-13)
+
 FEATURES:
+
 * Compatibility with Antares v7
 
 
-Changes in version 2.2.3 (2019-02-13)
+# antaresRead 2.2.3 (2019-02-13)
+
 BUGFIXES:
+
 * Error with next data.table release
 
 
-Changes in version 2.2.2 (2019-01-15)
+# antaresRead 2.2.2 (2019-01-15)
+
 BUGFIXES:
+
 * Duplicated vignette title
 
 
-Changes in version 2.2.1 (2018-10-16)
+# antaresRead 2.2.1 (2018-10-16)
+
 BUGFIXES:
+
 * ".getStartDate()" : was not working correctly with a first-month not equal to "July" (#121)
 * ".getStartDate()" : was not working correctly when a user wants to change options with an opts  (#122)
 
-Changes in version 2.2.0 (2018-09-28)
+
+# antaresRead 2.2.0 (2018-09-28)
 
 BREAKING CHANGES:
+
 * "removeVirtualAres()" : as a new logical parameter rowBal, if is TRUE (default) then BALANCE will be corrected by ROW. BAL (#antaresProcessing33)
 
 NEW FEATURES:
+
 * "removeVirtualAres()" : now correct BALANCE, COST and production of disticts.(#119)
 
 BUGFIXES:
+
 * "readLayout()" : prevent bug reading multiple studies
 * "readAntares()" : prevent bug dealing with integer64
 * "writeAntaresH5()" was not working anymore due to a new version of rhdf5 (h5close() does not work anymore). (#110)
 
 
-Changes in version 2.1.2 (2018-06-01)
+# antaresRead 2.1.2 (2018-06-01)
 
 BUGFIXES:
+
 * getLinks() was sending an error when there are no links in the study. 
 
-Changes in version 2.1.1 (2018-04-28)
+
+# antaresRead 2.1.1 (2018-04-28)
 
 BUGFIXES:
+
 * readInputTS() was sending bad values for hydroStorage. (#58)
 * changeTimeStep() will print a warning if the user want to aggregate data. (#54)
 * readAntares() will print warnings when a user want to aggregate mustRun data (#54)
 
-Changes in version 2.1.0 (2018-02-23)
+
+# antaresRead 2.1.0 (2018-02-23)
 
 NEW FEATURES:
+
 * readInputTS() has a new parameter "thermalOutages" that permits to read thermal outages characteristics
 * Call removeVirtualAreas several times in writeAntaresH5()
 
 BUGFIXES:
+
 * Correction of some bugs in removeVirtualAreas when there is several virtual nodes of production and storageFlexibility 
 * Correction of some bugs due to the new lubridate version
 
-Changes in version 2.0.2 (2017-11-21)
+
+# antaresRead 2.0.2 (2017-11-21)
 
 BUGFIXES:
+
 * Some tests failed in some platforms on CRAN.
 
-Changes in version 2.0.1 (2017-11-14)
+
+# antaresRead 2.0.1 (2017-11-14)
 
 BUGFIXES:
+
 * readLayout() was not taking a list of simOptions. 
 
-Changes in version 2.0.0 (2017-11-03)
+
+# antaresRead 2.0.0 (2017-11-03)
 
 NEW FEATURES:
+
 * New function "writeAntaresH5()" convert ANTARES outputs to h5 files.
 * The path parameter of "setSimulationPath()" can be a h5 file.
 * New function "isH5Opts()" test if the value returned by setSimulationPath() is referring to an h5 file.
@@ -120,30 +168,36 @@ NEW FEATURES:
 * New vignette "antaresH5" is available.
 
 BUGFIXES:
+
 * removeVirtualAreas() was not moving clusters from virtual production area to the real area. 
 * antaresRead() sometimes returned a antaresDataList with element "thermalModulation". (#51) 
 
-Changes in version 1.1.4 (2017-07-07)
+
+# antaresRead 1.1.4 (2017-07-07)
 
 BUGFIXES:
+
 * setSimulation() was crashing with antares v6.0 because of the folder "maps". (#49)
 
 
-Changes in version 1.1.3 (2017-05-30)
+# antaresRead 1.1.3 (2017-05-30)
 
 BUGFIXES:
+
 * readInputTS was crashing when trying to import cluster data and some clusters were disabled.
 
 
-Changes in version 1.1.2 (2017-04-18)
+# antaresRead 1.1.2 (2017-04-18)
 
 BUGFIXES:
+
 * Fixed an issue that caused compilation to crash on mac OS X
 
 
-Changes in version 1.1.0 (2017-03-31)
+# antaresRead 1.1.0 (2017-03-31)
 
 NEW FEATURES:
+
 * The 'select' parameter of readAntares() has been improved. It now accepts new keywords "areas", "links", "clusters", "districts" to indicate which type of data to read,"mcYears" to import detailed results, "misc", "mustRun", etc. to import the corresponding input data. 
 * A new function setAlias() has been added. It permits to packages developers to define new aliases to use in the 'select' parameter of readAntares() in order to help their users to import the required data.
 * readBindingConstraints() has been improved and returns an object of class 'bindingConstraints' which is a named list where each element has the same structure. 
@@ -151,6 +205,7 @@ NEW FEATURES:
 * readAntares(mustRun = TRUE) now adds a new column "thermalPmin". It is similar to mustRunTotal, except it also takes into account the minimum stable power of the cluster units. 
 
 BUGFIXES:
+
 * Columns 'pumpingCapacity' and 'storageCapacity' created by removeVirtualAreas() were reversed.
 * setSimulationPath() was sometimes setting a start data that was not consistent with parameters "1st january" and "leap year".
 * setSimulationPath() was not working if synthetic results and the first Monte-Carlo scenario were not saved in a given Antares simulation.
@@ -158,23 +213,27 @@ BUGFIXES:
 
 
 
-Changes in version 1.0.0 (2017-02-23)
+# antaresRead 1.0.0 (2017-02-23)
 
 BUGFIXES:
+
 * In some specific situations, date columns could be filled with NA values. (#26)
 * Many small problems that were detected by R CMD CHECK.
 
 
-Changes in version 0.15 (2017-01-25)
+# antaresRead 0.15 (2017-01-25)
 
 BREAKING CHANGES:
+
 * Parameter "synthesis" has been removed from readAntares. The new behavior is now to import synthetic results when "mcYears" is NULL and to import detailed results when "mcYears" is set.
 
 NEW FEATURES:
+
 * New function "getIdCols()" returns the Id columns of an antaresDataTable object.
 * New method "subset()" for antaresDataList objects permits to quickly extract the data for a given area or a given Monte-Carlo scenario.
 
 BUGFIXES:
+
 * In "input" mode, getLinks() could return links that did not exist anymore.
 * removeVirtualAreas was requiring some data that was not necesary. It should be OK now.
 * setSimulationPath() was crashing when one wanted to read the input data of a study before having run any simulation.
@@ -182,9 +241,10 @@ BUGFIXES:
 
 
 
-Changes in version 0.14 (2016-11-14)
+# antaresRead 0.14 (2016-11-14)
 
 NEW FEATURES:
+
 * readAntares() has been significantly improved. Depending on the query, the time needed to import data is decreased by 20% up to 95%. In particular, importing data for clusters is now 20 times faster than before. Moreover, the progress bar is now more precise.
 * removeVirtualAreas() has a new parameter "newCols" that permits to choose whether to create new columns containing the production of the virtual areas or to update the existing ones.
 * removeVirtualAreas() now also removes virtual links from the data. Before it was removing virtual areas but keeping the virtual links.
@@ -192,37 +252,43 @@ NEW FEATURES:
 * New functions as.antaresDataTable and as.antaresDataList have been added to convert compatible objects to these classes.
 
 
-Changes in version 0.13 (2016-10-06)
+# antaresRead 0.13 (2016-10-06)
 
 BREAKING CHANGES:
+
 * add a file LICENSE and copyright to sources files
 
 
-Changes in version 0.12 (2016-08-17)
+# antaresRead 0.12 (2016-08-17)
 
 BREAKING CHANGES:
+
 * The object returned by 'setSimulationPath' and 'simOptions' has been modified. In particular, paths have been renamed to make their utility clearer. Moreover a new element named 'linksDef' contains a table with the specification of each link of the study.
 
 NEW FEATURES:
+
 * getLinks() can now return a table with the specification of the links, thanks to two new parameters "namesOnly" and "withDirection"
 * It is now possible to import several times the same Monte-Carlo scenario. This can be useful for performance test or to use bootstrap methods.
 
 BUGFIXES:
+
 * readClusterDesc was not working in input mode.
 * Sometimes setSimulationPath changed working directory.
 * Solved some performance issues in readAntares() and removeVirtualAreas().
 
 
-Changes in version 0.11 (2016-08-01)
+# antaresRead 0.11 (2016-08-01)
 
 BREAKING CHANGES:
+
 * The parameters of 'getLinks' have been modified because they were unclear. Now user has to to explicitly specify areas to include and/or exclude.   
 
 BUGFIXES:
+
 * setSimulationPath was crashing if parameter 'horizon' was not set in Antares.
 * changeTimeStep sometimes generated NA values because of integer overflow.
 
-Changes in version 0.10 (2016-07-18)
+# antaresRead 0.10 (2016-07-18)
 
 BREAKING CHANGES:
 * Variable mustRunModuction has been renamed minGenModulation for consistency with Antares
@@ -232,43 +298,52 @@ NEW FEATURES:
 * Now, when one filters, add, remove or update columns of an object of class 'antaresDataTable', the result is still of class 'antaresDataTable'.
 
 
-Changes in version 0.9.1 (2016-07-05)
+# antaresRead 0.9.1 (2016-07-05)
 
 BUGFIXES:
+
 * readAntares was incorrectly setting attributes of its ouput. This resulted in errors when using functions of the antaresProcessing package.
 
-Changes in version 0.9 (2016-07-04)
+
+# antaresRead 0.9 (2016-07-04)
 
 BREAKING CHANGES:
+
 * The columns returned by readAntares when 'hydroStorageMaxPower = TRUE' have been renamed.
 
 NEW FEATURES:
+
 * readAntares has a new parameter "thermalModulation" to import modulation time series.
 * New aliases have been added. One can inspect them with "showAliases()".
 
 
-Changes in version 0.8 (2016-06-20)
+# antaresRead 0.8 (2016-06-20)
 
 NEW FEATURES:
+
 * setSimulationPath nows reads costs of unsupplied et spilled energy.
 * ReadLayout computes coordinates for districts and link between them.
 * getAreas has a new parameter "district" to get areas in a set of districts.
 * getLinks has new parameter "areas" to get links connected to a set of areas.
 
 BUGFIXES:
+
 * Small bug fixes that avoid useless warning messages/
 
 
-Changes in version 0.7 (2016-06-07)
+# antaresRead 0.7 (2016-06-07)
 
 BREAKING CHANGES:
+
 * The package has been renamed "antaresRead".
 
 NEW FEATURES:
+
 * changeTimeStep accepts two new functions : min and max.
 * readAntares now computes the number of available units.
 
 BUGFIXES:
+
 * setSimulationPath was crashing if parameter "horizon" was not set in Antares.
 * setSimulationPath throws a warning when two simulations have same name and it uses the most recent one. 
 * In presence of hubs and production nodes, removeVirtualAreas treated production nodes two times.
@@ -276,25 +351,29 @@ BUGFIXES:
 * setSimulationPath was not recognising option "apply-filter = add-all" when retrieving district definition.
 
 
-Changes in version 0.6 (2016-05-27)
+# antaresRead 0.6 (2016-05-27)
 
 NEW FEATURES:
+
 * readAntares and readInputTS always add time columns (time, day, month, hour). changeTimeStep now keeps them if they are present.
 
 BUGFIXES:
+
 * readAntares may not work when some MC years were not exported by Antares.
 * The construction of the weeks was wrong when a year did not start on january.
 * The import of inputs was wrong when the study was not conducted on a whole year but on a smaller period.
 * In removeVirtualNodes, option "reassignCosts" was not working correctly.
 
 
-Changes in version 0.5 (2016-05-11)
+# antaresRead 0.5 (2016-05-11)
 
 BREAKING CHANGES:
+
 * To be consistent with Antares, 'node' has been replaced by 'area' everywhere in the package.
 * Column 'MWh' is now named 'production' when reading clusters output.
 
 NEW FEATURES:
+
 * new function 'readInputTS' to read input time series (without output time series)
 * 'setSimulationPath' now accepts two new values for the argument "simulation": 0 and "input". These values indicate that the user is not interested by the results of any simulation and only wants to read input data.
 * changeTimeStep now accepts for parameter 'fun' a vector of function names that indicate how to aggregate/disagregate each column.
@@ -302,19 +381,22 @@ NEW FEATURES:
 * readAntares can now also add input time series to districts like it does for areas
 
 BUGFIXES:
+
 * 'copyToClipboard' was copying the word "txt" instead of copying data
 * 'removeVirtualNodes' was not creating some columns for production virtual nodes.
 * The option 'mustRun' in readAntares was not functionning correctly
 
 
-Changes in version 0.4 (2016-04-29)
+# antaresRead 0.4 (2016-04-29)
 
 BREAKING CHANGES:
+
 * The parameters and the output of "readAntares" have been modified. The output has now only three components: nodes, links and clusters. If the user asks other information like hydro storage or links capacities, they are added to the corresponding component. The corresponding parameters now expect TRUE/ FALSE instead of a vector of node or link names.
 * "getLinks" has now same parameters and behavior than "getNodes" 
 * Parameter "trace" has been removed in "setSimulationPath".
 
 NEW FEATURES:
+
 * "readAntares" has a new argument "mustRun"
 * "removeVirtualNodes" has been finalised
 * New function "simOptions" to get either global simulation options or simulation options used by "readAntares" to create a given object
@@ -325,9 +407,10 @@ NEW FEATURES:
 * Added package vignette
 
 
-Changes in version 0.3 (2016-04-14)
+# antaresRead 0.3 (2016-04-14)
 
 NEW FEATURES:
+
 * "readAntares" can now read hydro storage, hydro storage maximum power, reserve and links capacity
 * New function "readAntaresNodes": read all the desired data for a set of nodes
 * New function "readBindingConstraints"
@@ -339,12 +422,14 @@ NEW FEATURES:
 * Added this NEWS file :)
 
 
-Changes in version 0.2 (2016-04-05)
+# antaresRead 0.2 (2016-04-05)
 
 BREAKING CHANGES:
+
 * "readOutput" has been renamed "readAntares"
 
 NEW FEATURES:
+
 * "readAntares" can now read thermal availabilities
 * "setSimulationPath" now reads simulation parameters
 * "setSimulationPath" now accepts path to a study and eventually asks the user to choose an output
