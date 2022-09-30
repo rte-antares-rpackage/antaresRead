@@ -7,7 +7,7 @@
 #' @importFrom methods is
 #' @importFrom grDevices col2rgb rgb
 #' @importFrom stats as.formula
-#' @importFrom utils View read.table type.convert write.table 
+#' @importFrom utils View read.table type.convert write.table
 #' @importFrom utils untar
 #' @importFrom stringr str_match str_replace
 
@@ -16,7 +16,7 @@
 pkgEnv <- new.env()
 
 
-pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package = "antaresRead"), 
+pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package = "antaresRead"),
                                 sep = ";", header = TRUE)
 
 pkgEnv$allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
@@ -26,14 +26,14 @@ pkgEnv$allCompute <- c("misc", "thermalAvailabilities", "hydroStorage", "hydroSt
 pkgEnv$miscNames <- c("CHP", "Bio_mass", "Bio_gas", "Waste", "GeoThermal", "Other", "PSP_input", "ROW_Balance")
 
 # Column names for ren
-pkgEnv$ren <- c("WIND", "WIND OFFSHORE", "WIND ONSHORE", 
+pkgEnv$ren <- c("WIND", "WIND OFFSHORE", "WIND ONSHORE",
                 "SOLAR", "SOLAR CONCRT.", "SOLAR PV", "SOLAR ROOFT",
                 "RENW. 1", "RENW. 2", "RENW. 3", "RENW. 4",
-                "H. ROR", "H. STOR", 
+                "H. ROR", "H. STOR",
                 "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4")
 
 # Column names for thermal
-pkgEnv$thermal <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", 
+pkgEnv$thermal <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
                     "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4")
 
 # Column names for generation
@@ -41,8 +41,8 @@ pkgEnv$generation <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", 
                        "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4")
 
 pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
-                       "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4", 
-                       "H. STOR", "H. ROR", "WIND", "WIND OFFSHORE", "WIND ONSHORE", 
+                       "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4",
+                       "H. STOR", "H. ROR", "WIND", "WIND OFFSHORE", "WIND ONSHORE",
                        "RENW. 1", "RENW. 2", "RENW. 3", "RENW. 4",
                        "SOLAR", "SOLAR CONCRT.", "SOLAR PV", "SOLAR ROOFT", "MISC. NDG", "PSP")
 
@@ -61,24 +61,24 @@ setAlias("generation", "Production that can be controlled: thermal and hydrostor
          pkgEnv$generation)
 setAlias("renewable", "Renewable productions", pkgEnv$ren)
 setAlias("thermal", "Thermal productions", pkgEnv$thermal)
-setAlias("netLoad", "Variables used to compute net load", 
-         c("areas", "LOAD", "ROW BAL.", "PSP", "H. ROR", 
+setAlias("netLoad", "Variables used to compute net load",
+         c("areas", "LOAD", "ROW BAL.", "PSP", "H. ROR",
            "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4",
-           "WIND", "WIND OFFSHORE", "WIND ONSHORE", 
+           "WIND", "WIND OFFSHORE", "WIND ONSHORE",
            "SOLAR", "SOLAR CONCRT.", "SOLAR PV", "SOLAR ROOFT",
            "RENW. 1", "RENW. 2", "RENW. 3", "RENW. 4",
            "mustRun"))
 
-setAlias("rmVA_production", "removeVirtualAreas production varaibles", 
+setAlias("rmVA_production", "removeVirtualAreas production varaibles",
          setdiff(unique(c(getAlias("generation"), getAlias("netLoad"), "SPIL. ENRG")), c("LOAD", "areas", "mustRun"))
 )
-         
+
 setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
-         c("OV. COST", "OP. COST", 
+         c("OV. COST", "OP. COST",
            "MRG. PRICE", "CO2 EMIS.", "BALANCE", "ROW BAL.", "PSP", "MISC. NDG",
-           "LOAD", "H. ROR", "WIND", "WIND OFFSHORE", "WIND ONSHORE", 
-           "SOLAR", "SOLAR CONCRT.", "SOLAR PV", "SOLAR ROOFT", 
-           "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", 
+           "LOAD", "H. ROR", "WIND", "WIND OFFSHORE", "WIND ONSHORE",
+           "SOLAR", "SOLAR CONCRT.", "SOLAR PV", "SOLAR ROOFT",
+           "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
            "MISC. DTG", "MISC. DTG 2", "MISC. DTG 3", "MISC. DTG 4",
            "H. STOR", "UNSP. ENRG", "RENW. 1", "RENW. 2", "RENW. 3", "RENW. 4",
            "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG", "DTG MRG", "MAX MRG",
@@ -86,20 +86,20 @@ setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
            "FLOW QUAD.", "CONG. FEE (ALG.)", "CONG. FEE (ABS.)", "MARG. COST",
            "CONG. PROB +", "CONG. PROB -", "HURDLE COST"))
 
-# The goal of the following lines is only to remove many useless warnings in 
+# The goal of the following lines is only to remove many useless warnings in
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
 # They come from the use of the data.table syntax.
 utils::globalVariables(
-  c("timeId", "area", "hydroStorage", "thermalAvailability",
+  c("timeId", "tsId", "area", "hydroStorage", "thermalAvailability",
     "cluster", "FLOW LIN.", "direction", "flow",
     "BALANCE", "totalFlow", "prop", "to", "link", "change",
     "district", "must.run", ".txt", "detailsLength",
     "linkLength", "connectedToVirtualArea", "from", "correction",
     "nominalcapacity", "unitcount", "capacity", "minGenModulation",
     "production", "mustRunPartial", "mustRunTotal", "mcYear",
-    "J", "N", "PSP", "availableUnits", "color", "corrPSP", "fromDistrict", 
-    "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea", 
-    "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict", 
+    "J", "N", "PSP", "availableUnits", "color", "corrPSP", "fromDistrict",
+    "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea",
+    "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
     "NODU", "min.stable.power", "thermalPmin", "name", "value")
 )
@@ -155,8 +155,8 @@ pkgEnvAntareasH5 <- new.env()
 
 pkgEnvAntareasH5$varAreas <- c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE",
                                "ROW BAL.", "PSP", "MISC. NDG",  "LOAD", "H. ROR", "WIND", "SOLAR",
-                               "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG", 
-                               "H. STOR", "UNSP. ENRG", "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG", 
+                               "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG",
+                               "H. STOR", "UNSP. ENRG", "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG",
                                "DTG MRG", "MAX MRG", "NP COST", "NODU")
 
 pkgEnvAntareasH5$varAreas <- as.vector(sapply(pkgEnvAntareasH5$varAreas, function(X){paste0(X, c("", "_min", "_max", "_std"))}))
