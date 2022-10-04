@@ -11,6 +11,7 @@
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/rte-antares-rpackage/antaresRead/workflows/R-CMD-check/badge.svg)](https://github.com/rte-antares-rpackage/antaresRead/actions)
 [![Codecov test coverage](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rte-antares-rpackage/antaresRead?branch=master)
+[![R-CMD-check](https://github.com/rte-antares-rpackage/antaresRead/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rte-antares-rpackage/antaresRead/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 
