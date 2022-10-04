@@ -1,17 +1,13 @@
 #' @importFrom utils URLencode
-#' @import httr
-fread_antares <- function(opts, file, ...){
-  if(opts$typeLoad == "api"){
-    file <- gsub(".txt$", "", file)
-    file <- paste0(file, "&formatted=false")
-    if(!is.null(opts$token) && opts$token != ""){
-      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout),
-                          add_headers(Authorization = paste0("Bearer ", opts$token)), config = opts$httr_config)
-    } else {
-      httpResponse <- GET(utils::URLencode(file), timeout(opts$timeout), config = opts$httr_config)
-    }
-
-    tryCatch({fread(content(httpResponse, "parsed"), ...)}, error = function(e) {message(file); message(e)})
+fread_antares <- function(opts, file, ...) {
+  if (identical(opts$typeLoad, "api")) {
+    file <- gsub("\\.txt$", "", file)
+    response <- api_get(
+      opts = opts,
+      endpoint = I(file),
+      query = list(formatted = FALSE)
+    )
+    tryCatch(fread(response, ...), error = function(e) {message(file); message(e)})
   } else {
     fread(file, ...)
   }
@@ -218,16 +214,18 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 }
 
 
-.getSuccess <- function(path, token, timeout = 60, config = list()){
-  if(!is.null(token) && token != ""){
-    http_status(
-      GET(
-        path, timeout(timeout),
-        add_headers(Authorization = paste0("Bearer ", token)), config = config)
-    )$category == "Success"
+#' @importFrom httr GET timeout add_headers http_status
+.getSuccess <- function(path, token, timeout = 60, config = list()) {
+  if (!is.null(token) && token != "") {
+    response <- GET(
+      path, timeout(timeout),
+      add_headers(Authorization = paste0("Bearer ", token)),
+      config = config
+    )
   } else {
-    http_status(GET(path, timeout(timeout), config = config))$category == "Success"
+    response <- GET(path, timeout(timeout), config = config)
   }
+  http_status(response)$category == "Success"
 }
 
 
@@ -307,7 +305,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 #   ifelse(is.null(check),TRUE ,FALSE )
 # }
 
-#' @import httr jsonlite
+#' @import jsonlite
 #' @export
 #' @rdname setSimulationPath
 setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,

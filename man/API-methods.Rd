@@ -19,7 +19,8 @@ api_delete(opts, endpoint, ..., default_endpoint = "v1/studies")
 \arguments{
 \item{opts}{Antares simulation options or a `list` with an `host = ` slot.}
 
-\item{endpoint}{API endpoint to interrogate, it will be added after `default_endpoint`.}
+\item{endpoint}{API endpoint to interrogate, it will be added after `default_endpoint`.
+Can be a full URL (by wrapping ìn [I()]), in that case `default_endpoint` is ignored.}
 
 \item{...}{Additional arguments passed to API method.}
 
