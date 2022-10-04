@@ -17,36 +17,30 @@ fread_antares <- function(opts, file, ...){
   }
 }
 
-#' @importFrom utils URLencode
-#' @import httr
-read_secure_json <- function(url, token = NULL, timeout = 60, config = list()){
 
-  if(!is.null(token) && token != ""){
-    httpResponse <- GET(utils::URLencode(url), timeout(timeout),
-                        add_headers(Authorization = paste0("Bearer ", token)), config = config)
-  } else {
-    httpResponse <- GET(utils::URLencode(url), timeout(timeout), config = config)
-  }
-
-  x <- jsonlite::fromJSON(content(httpResponse, type = "text", encoding = "UTF-8"), simplifyVector = FALSE)
-
-  recustiveTF <- function(X){
-    if(is.list(X)){
-      lapply(X, recustiveTF)
-    }else{
-      if(!is.null(X)){
-        if (X == "")  return(NA)
-        if (X == "true")  return(TRUE)
-        if (X == "false")  return(FALSE)
-        return(X)
-      }
-      return(X)
+empty_strings_as_NA <- function(x) {
+  if (identical(x, ""))
+    return(NA)
+  if (is.character(x))
+    return(x)
+  rapply(object = x, f = function(y) {
+    if (identical(y, "")) {
+      return(NA)
     }
-  }
-
-  recustiveTF(x)
-
+    return(y)
+  }, how = "replace")
 }
+
+
+#' @importFrom utils URLencode
+read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
+  result <- api_get(
+    opts = list(token = token, timeout = timeout, httr_config = config),
+    endpoint = I(url)
+  )
+  empty_strings_as_NA(result)
+}
+
 
 .getPathsAPI <- function(host, study_id, simulation, ...){
   simNames <- NULL
