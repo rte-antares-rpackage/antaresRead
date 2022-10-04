@@ -82,8 +82,6 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
       add_headers(Authorization = paste("Bearer ", opts$token))
     )
   }
-  if (is.null(opts$timeout))
-    opts$timeout <- 60
   result <- POST(
     url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
     config = config,
@@ -145,8 +143,6 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
       add_headers(Authorization = paste("Bearer ", opts$token))
     )
   }
-  if (is.null(opts$timeout))
-    opts$timeout <- 60
   result <- DELETE(
     url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
     config = config,
