@@ -15,3 +15,4 @@ cheat_sheet
 ^Meta$
 ^\.github$
 ^codecov\.yml$
+man-roxygen/
