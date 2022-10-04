@@ -1,6 +1,6 @@
 context("mcWeights")
 
-#skip("readAntares empty when mcYears is NULL")
+skip("readAntares empty when mcYears is NULL")
 
 setSimulationPath(studyPathSV8)
 
