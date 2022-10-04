@@ -106,20 +106,11 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   }
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
-  config <- c(
-    opts$httr_config,
-    list(
-      accept_json()
-    )
-  )
   if (!is.null(opts$token) && opts$token != "") {
-    config <- c(
-      config,
-      add_headers(Authorization = paste("Bearer ", opts$token))
-    )
+    config <- add_headers(Authorization = paste("Bearer ", opts$token), Accept = "application/json")
+  } else {
+    config <- add_headers(Accept = "application/json")
   }
-  if (is.null(opts$timeout))
-    opts$timeout <- 60
   result <- PUT(
     url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
     config,
