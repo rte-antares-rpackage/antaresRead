@@ -2,15 +2,11 @@
 
 context("Function aggregateResult")
 
+skip("")
+
 pathstd <- tempdir()
 
-test_case_aggregate <- system.file("test_agg", package = "antaresRead")
-
-studies <- list.files(test_case_aggregate, pattern = "\\.tar\\.gz$", full.names = TRUE)
-
-test_case_aggregate <- untar(studies[1], exdir = pathstd)
-
-opts <- antaresRead::setSimulationPath(file.path(pathstd,"test_case_aggregate"), -1)
+opts <- setSimulationPath(studyPathSV8)
 
 
 test_that("test parallel aggregate", {
@@ -19,7 +15,7 @@ test_that("test parallel aggregate", {
   
   mdate_original <- file.mtime(mc_all_path)
   
-  parAggregateMCall(opts, mcYears = c(1,2), verbose = 0)
+  parAggregateMCall(opts, nbcl = 2, mcYears = c(1,2), verbose = 0)
   
   expect_true(file.exists(mc_all_path))
   expect_false(file.mtime(mc_all_path) == mdate_original)

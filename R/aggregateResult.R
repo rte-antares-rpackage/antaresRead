@@ -1,3 +1,7 @@
+#' Creation of Mc_all new (only antares > V6)
+#'
+#' Creation of Mc_all new (only antares > V6) 
+#'
 #' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
 #' @param nbcl \code{numeric} Number of parralel process
 #' @param verbose \code{numeric} show log in console. Defaut to 1
@@ -12,6 +16,7 @@
 #' @param mcYears  \code{numeric} mcYears to load.
 #' @param filtering \code{boolean} filtering control
 #' @param selected \code{list} named list (pass to antaresRead) : list(areas = 'a', links = 'a - e')
+#' @param legacy \code{boolean} run old version of the function
 #'
 #' @import data.table
 #' @import doParallel
@@ -30,24 +35,36 @@ parAggregateMCall <- function(opts,
                               mcWeights = NULL,
                               mcYears = NULL,
                               filtering = FALSE,
-                              selected = NULL){
+                              selected = NULL,
+                              legacy = FALSE){
   
+  if (isTRUE(legacy)) {
+    cat("\nRunning Legacy mode\n")
+    parAggregateMCall_old(opts = opts, nbcl = nbcl, verbose = verbose,
+                          timestep = timestep, writeOutput = writeOutput,
+                          mcWeights = mcWeights,
+                          mcYears = NULL)
+
+    return (2)
+    
+  }
   
   # browser()
   
   resultat <- list()
   
   # Determiner les timestep dispo depuis un noeud FR ou FRXX
-  timestep_dispo <- c()
-  fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
-  ar_folders <- list.dirs(paste0(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"/areas"))
-  fr_ind_path <- grep(fr_ind_path, ar_folders, value = T)[1]
-  if (dir.exists(fr_ind_path)){
-    timestep_dispo <- unique(lapply(str_split(list.files(fr_ind_path), "-"), function(X){str_split(X[2],"\\.")[[1]][[1]]}))
-  }
+  # timestep_dispo <- c()
+  # 
+  # fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
+  # ar_folders <- list.dirs(paste0(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"/areas"))
+  # fr_ind_path <- grep(fr_ind_path, ar_folders, value = T)[1]
   
+  timestep_dispo <- grep(".txt", list.files(file.path(opts$simDataPath,"mc-ind"), recursive = T), value = T)
+  timestep_dispo <- unique(gsub(".*-(.+)\\..*", "\\1", timestep_dispo))
+
   timestep <- intersect(timestep, timestep_dispo)
-  if (verbose > 0) cat(timestep,"\n")
+  if (verbose > 0) print(timestep)
   
   if (is.null(timestep)){
     cat("No data found")
@@ -169,8 +186,8 @@ parAggregateMCall <- function(opts,
           }
         }
         #browser()
-        tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
-        dta <- readAntares(area = areasselect,
+        #tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
+        dta <- readAntares(areas = areasselect,
                                         links = linksSelect,
                                         clusters = clustersSelect,
                                         clustersRes = clustersResSelect,
@@ -178,7 +195,7 @@ parAggregateMCall <- function(opts,
                                         simplify = FALSE,
                                         mcYears = numMc[1],
                                         showProgress = FALSE)
-        tt = sum(.Internal(gc(FALSE, FALSE, TRUE))[13:14]) - tt
+        #tt = sum(.Internal(gc(FALSE, FALSE, TRUE))[13:14]) - tt
         #print(tt, units = "Mb")
         options(warn = oldw)
         
@@ -262,7 +279,6 @@ parAggregateMCall <- function(opts,
                   paropts <- list(preschedule=TRUE)
                   clusterSetRNGStream(cl, 123)
                   par_time <- Sys.time()
-                  tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
                   ## Warning a creuser (non impactant)
                   options(warn = -1)
                   lst_dtaTP <- plyr::llply(curr_years, .parReadAntares, .parallel = T, 
@@ -271,10 +287,8 @@ parAggregateMCall <- function(opts,
                                                             linksSelect = linksSelect, clustersSelect = clustersSelect,
                                                             clustersResSelect = clustersResSelect)
                   options(warn = oldw)
-                  tt = sum(.Internal(gc(FALSE, FALSE, TRUE))[13:14]) - tt
                   if (verbose > 0){
                     cat("\n")
-                    #print(tt, units = "Mb")
                     cat("\n",Sys.time() - par_time)
                   }
 
@@ -289,7 +303,7 @@ parAggregateMCall <- function(opts,
                   
                   
                   if (parallel == FALSE){
-                    dtaTP <- readAntares(area = areasselect,
+                    dtaTP <- readAntares(areas = areasselect,
                                                       links = linksSelect,
                                                       clusters = clustersSelect,
                                                       clustersRes = clustersResSelect,
@@ -598,7 +612,7 @@ parAggregateMCall <- function(opts,
               }
             }
           }
-        }
+        } 
       })
       
       #browser()
@@ -654,18 +668,62 @@ parAggregateMCall <- function(opts,
     t <- Sys.time()
     files <- list.dirs(mc_all_step, recursive = F)
     file.copy(files, mc_all, recursive = T)
-    print(paste(mc_all_step,": Done"))
-    print(Sys.time() - t)
+    if (verbose > 0){
+      print(paste(mc_all_step,": Done"))
+      print(Sys.time() - t)
+    }
   }
   
   unlink(mc_alls, recursive = T)
   
+  # Set synthesis property to true after aggregate
+  # print(simOptions()$synthesis)
+  # simOptions()$synthesis <- TRUE
   
   resultat
 }
 
+#' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
+#' @param verbose \code{numeric} show log in console. Defaut to 1
+#' \itemize{
+#'  \item{0}{ : No log}
+#'  \item{1}{ : Short log}
+#'  \item{2}{ : Long log}
+#'}
+#' @param timestep \code{character} antares timestep
+#' @param writeOutput \code{boolean} write result or not.
+#' @param mcWeights \code{numeric} vector of weigth for mcYears.
+#' @param mcYears  \code{numeric} mcYears to load.
+#' @param filtering \code{boolean} filtering control
+#' @param selected \code{list} named list (pass to antaresRead) : list(areas = 'a', links = 'a - e')
+#' @param legacy \code{boolean} run old version of the function
+#'
+#' @export
+#' 
+#' @rdname aggregatate_mc_all
+#' 
+aggregateResult <- function(opts, 
+                            verbose = 2, 
+                            timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+                            writeOutput = TRUE, # for ADPatch compatibility
+                            mcWeights = NULL,
+                            mcYears = NULL,
+                            filtering = FALSE,
+                            selected = NULL,
+                            legacy = FALSE){
 
+  if (isFALSE(legacy)){
+    parAggregateMCall(opts = opts, nbcl = 1, verbose = verbose, timestep = timestep, writeOutput = writeOutput, 
+                      mcWeights = mcWeights, mcYears = mcYears, filtering = filtering,
+                      selected = selected, legacy = legacy)
+  } else {
+    aggregateResult_old(opts = opts, verbose = verbose, filtering = filtering, 
+                        selected = selected, timestep = timestep, writeOutput = writeOutput, 
+                        mcWeights = mcWeights, mcYears = mcYears)
+  }
 
+  
+}
 
 
 #' @title Transform link table
@@ -967,7 +1025,7 @@ parAggregateMCall <- function(opts,
                            areasselect, linksSelect, 
                            clustersSelect, clustersResSelect){
   setSimulationPath(pth, simulation = -1)
-  dt <- readAntares(area = areasselect, links = linksSelect, 
+  dt <- readAntares(areas = areasselect, links = linksSelect, 
                                  clusters = clustersSelect, clustersRes = clustersResSelect, 
                                  timeStep = type, simplify = FALSE, 
                                  mcYears = mcYear, showProgress = FALSE)
@@ -1455,10 +1513,8 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #' @param mcYears  \code{numeric} mcYears to load.
 #'
 #' @import data.table
-#'
-#' @export
 #' 
-#' @rdname aggregatate_mc_all
+#' @rdname aggregatate_mc_all_old
 #' 
 #' @examples
 #' \dontrun{
@@ -1466,13 +1522,13 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #'
 #' }
 #' 
-aggregateResult <- function(opts, verbose = 1,
-                            filtering = FALSE,
-                            selected = NULL,
-                            timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
-                            writeOutput = FALSE,
-                            mcWeights = NULL,
-                            mcYears = NULL){
+aggregateResult_old <- function(opts, verbose = 1,
+                                filtering = FALSE,
+                                selected = NULL,
+                                timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+                                writeOutput = FALSE,
+                                mcWeights = NULL,
+                                mcYears = NULL){
   
   
   # browser()
@@ -1564,7 +1620,7 @@ aggregateResult <- function(opts, verbose = 1,
       
       if(!filtering)
       {
-        dta <- readAntares(area = "all", links = "all", clusters = "all",
+        dta <- readAntares(areas = "all", links = "all", clusters = "all",
                                         clustersRes = "all", timeStep = type, simplify = FALSE, 
                                         mcYears = numMc[1], showProgress = FALSE)
       } else {
@@ -1572,7 +1628,7 @@ aggregateResult <- function(opts, verbose = 1,
           
           areasselect <- .getAreasToAggregate(opts, type)
           linksSelect <- .getLinksToAggregate(opts, type)
-          dta <- readAntares(area = areasselect,
+          dta <- readAntares(areas = areasselect,
                                           links = linksSelect,
                                           clusters = areasselect,
                                           clustersRes = areasselect,
@@ -1581,7 +1637,7 @@ aggregateResult <- function(opts, verbose = 1,
                                           mcYears = numMc[1],
                                           showProgress = FALSE)
         } else {
-          dta <- readAntares(area = selected$areas,
+          dta <- readAntares(areas = selected$areas,
                                           links = selected$links,
                                           clusters = selected[["clusters"]],
                                           clustersRes = selected[["clustersRes"]],
@@ -1703,20 +1759,20 @@ aggregateResult <- function(opts, verbose = 1,
               
               if(!filtering)
               {
-                dtaTP <- readAntares(area = "all", links = "all", clusters = "all", clustersRes = "all",
+                dtaTP <- readAntares(areas = "all", links = "all", clusters = "all", clustersRes = "all",
                                                   timeStep = type, simplify = FALSE, mcYears = numMc[i], showProgress = FALSE)
               } else {
                 
                 if(is.null(selected)){
                   
-                  dtaTP <- readAntares(area = areasselect, 
+                  dtaTP <- readAntares(areas = areasselect, 
                                                     links = linksSelect, 
                                                     clusters = areasselect, 
                                                     clustersRes = areasselect,
                                                     timeStep = type, simplify = FALSE, 
                                                     mcYears = numMc[i], showProgress = FALSE)
                 } else{
-                  dtaTP <- readAntares(area = selected$areas,
+                  dtaTP <- readAntares(areas = selected$areas,
                                                     links = selected$links,
                                                     clusters = selected[["clusters"]],
                                                     clustersRes = selected[["clustersRes"]],
@@ -2082,73 +2138,80 @@ aggregateResult <- function(opts, verbose = 1,
 
 
 
+#' @param nbcl \code{numeric} Number of parralel process
+#' @param verbose \code{numeric} see logs (1) or not (0)
+#'
+#' @import data.table parallel
+#' @importFrom utils setTxtProgressBar txtProgressBar
+#' @importFrom pbapply pblapply pboptions
+#' @importFrom doParallel registerDoParallel
+#'
+#' 
+#' @rdname aggregatate_mc_all_old
+#' 
+parAggregateMCall_old <- function(opts,
+                              nbcl = 8,
+                              verbose = 1,
+                              timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+                              writeOutput = TRUE, # for ADPatch compatibility
+                              mcWeights = NULL,
+                              mcYears = NULL){
 
 
+  if(verbose == 1){
+    cat("Mc all start\n")
+  }
 
-# 
-# parAggregateMCall_old <- function(opts, 
-#                               nbcl = 8, 
-#                               verbose = 1, 
-#                               timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
-#                               writeOutput = TRUE, # for ADPatch compatibility
-#                               mcWeights = NULL,
-#                               mcYears = NULL){
-#   
-#   
-#   if(verbose == 1){
-#     cat("Mc all start\n")
-#   }
-#   
-#   if(verbose == 0){
-#     pboptions(type = "none")
-#   }
-#   
-#   areas <- getAreas(opts = opts)
-#   links <- getLinks(opts = opts)
-#   # clusters <- areas
-#   clusters <- getAreas(withClustersOnly = TRUE, opts = opts)
-#   
-#   todo <- data.table(V1 = c(areas, links, clusters),
-#                      V2 = c(rep("area", length(areas)),
-#                             rep("link", length(links)),
-#                             rep("cluster", length(clusters))
-#                      ))
-#   
-#   todo <- apply(todo, 1, function(X)list(X))
-#   
-#   if(nbcl>1){
-#     parallel <- TRUE
-#   }else{
-#     parallel <- FALSE
-#   }
-#   
-#   if(parallel){
-#     cl <- makeCluster(nbcl)
-#     clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"), envir = environment())
-#     registerDoParallel(cl)
-#   }else{
-#     cl <- NULL
-#   }
-#   
-#   
-#   pblapply(todo, function(X){
-#     d <- list(X[[1]][1])
-#     names(d) <- X[[1]][2]
-#     aggregateResult(opts, filtering = TRUE, verbose = 0, selected = d, 
-#                     timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
-#     gc() # clean memory
-#   }, cl = cl)
-#   
-#   if(verbose == 1){
-#     cat("Start computing\n")
-#   }
-#   if(parallel){
-#     stopCluster(cl)
-#   }
-#   if(verbose == 1){
-#     cat("Mc all done\n")
-#   }
-# }
-# 
+  if(verbose == 0){
+    pboptions(type = "none")
+  }
+
+  areas <- getAreas(opts = opts)
+  links <- getLinks(opts = opts)
+  # clusters <- areas
+  clusters <- getAreas(withClustersOnly = TRUE, opts = opts)
+
+  todo <- data.table(V1 = c(areas, links, clusters),
+                     V2 = c(rep("area", length(areas)),
+                            rep("link", length(links)),
+                            rep("cluster", length(clusters))
+                     ))
+
+  todo <- apply(todo, 1, function(X)list(X))
+
+  if(nbcl>1){
+    parallel <- TRUE
+  }else{
+    parallel <- FALSE
+  }
+
+  if(parallel){
+    cl <- makeCluster(nbcl)
+    clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"), envir = environment())
+    registerDoParallel(cl)
+  }else{
+    cl <- NULL
+  }
+
+
+  pblapply(todo, function(X){
+    d <- list(X[[1]][1])
+    names(d) <- X[[1]][2]
+    aggregateResult_old(opts, filtering = TRUE, verbose = 0, selected = d,
+                    timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
+    gc() # clean memory
+  }, cl = cl)
+
+  if(verbose == 1){
+    cat("Start computing\n")
+  }
+  if(parallel){
+    stopCluster(cl)
+  }
+  if(verbose == 1){
+    cat("Mc all done\n")
+  }
+}
+
 
 
