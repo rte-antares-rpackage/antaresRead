@@ -53,7 +53,6 @@ parAggregateMCall <- function(opts,
   
   resultat <- list()
   
-  # Determiner les timestep dispo depuis un noeud FR ou FRXX
   # timestep_dispo <- c()
   # 
   # fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
@@ -261,14 +260,18 @@ parAggregateMCall <- function(opts,
             }
             
             #sequentially add values
-            if(N>1)
+            if(length(numMc)>1)
             {
-              for (j in 1:ceiling(N/batch)){
+              for (j in 1:ceiling(length(numMc)/batch)){
                 lst_idx = 0 
-                left = ((j-1)*batch + 2)
-                right = min((j*batch) + 1,N)
                 
-                curr_years = intersect(left:right, numMc)
+                left = max((j-1)*batch + 1, 2)
+                right = min(length(numMc), j*batch)
+                
+                curr_years = setdiff(numMc[left:right],NA)
+                # print(curr_years)
+                
+                #curr_years = intersect(left:right, numMc[-1])
                 
                 lst_dtaTP <- list()                 #init lst pour execution monocore
                 
