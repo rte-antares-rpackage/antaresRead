@@ -263,12 +263,12 @@ parAggregateMCall <- function(opts,
             #sequentially add values
             if(N>1)
             {
-              for (j in 1:ceiling(N/batch)){
+              for (j in 1:ceiling(length(numMc)/batch)){
                 lst_idx = 0 
                 left = ((j-1)*batch + 2)
                 right = min((j*batch) + 1,N)
                 
-                curr_years = intersect(left:right, numMc)
+                curr_years = intersect(left:right, numMc[-1])
                 
                 lst_dtaTP <- list()                 #init lst pour execution monocore
                 
