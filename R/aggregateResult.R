@@ -53,12 +53,6 @@ parAggregateMCall <- function(opts,
   
   resultat <- list()
   
-  # timestep_dispo <- c()
-  # 
-  # fr_ind_path <- file.path(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"areas","fr")
-  # ar_folders <- list.dirs(paste0(list.dirs(file.path(opts$simDataPath,"mc-ind"))[2],"/areas"))
-  # fr_ind_path <- grep(fr_ind_path, ar_folders, value = T)[1]
-  
   timestep_dispo <- grep(".txt", list.files(file.path(opts$simDataPath,"mc-ind"), recursive = T), value = T)
   timestep_dispo <- unique(gsub(".*-(.+)\\..*", "\\1", timestep_dispo))
 
