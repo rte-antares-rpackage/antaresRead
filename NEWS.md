@@ -2,7 +2,9 @@
 
 # antaresRead 2.3.0
 
-* Interact with AntaREST
+* Interact directly with AntaREST API with `api_get()`, `api_post()`, `api_put()`, `api_delete()`.
+* New function to read ini files : `readIni()`.
+
 
 
 # antaresRead 2.2.97
@@ -14,11 +16,14 @@ FEATURES:
   * New link inputs 
 
 
+
 # antaresRead 2.2.96
 
 BUGFIXES:
 
 * #168 : clean memory parAggregateMCall 
+
+
 
 # antaresRead 2.2.95
 
@@ -26,6 +31,7 @@ BUGFIXES:
 
 * removeVirtualAreas : setting custom prodVars same as new storageVars
 * API : fix study checking + httr options
+
 
 
 # antaresRead 2.2.9
@@ -42,11 +48,14 @@ BUGFIXES:
 * aggregateResult parallel export (#161)
 
 
+
 # antaresRead 2.2.8
 
 FEATURES:
 
 * Fixed bugs in `readAntares` when file is missing
+
+
 
 # antaresRead 2.2.7
 
@@ -56,6 +65,7 @@ FEATURES:
 * New`hvdcModification()` function
 * Add MC Weight functionnality
 * First antares api support
+
 
 
 # antaresRead 2.2.5
