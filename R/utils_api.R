@@ -95,7 +95,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 
   ## Read info from json
   simPath <- paths$simPath
-
+  
   # Get basic information about the simulation
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
 
@@ -352,12 +352,13 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout, config = httr_config)
 
   res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token, timeout = timeout, config = httr_config)$antares$caption
-
+  
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
   if (is.null(res$simPath)) {
     res <- append(res, .getInputOptionsAPI(res, token = token, timeout = timeout, config = httr_config))
   } else {
+    res$simPath <- URLencode(res$simPath)
     res <- append(res, .getSimOptionsAPI(res, host, token = token, timeout = timeout, config = httr_config))
   }
 
