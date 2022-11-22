@@ -84,9 +84,9 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
     return(out)
   }
 
-  list(studyPath = studyPath,
-       simPath = simPath,
-       inputPath = inputPath)
+  list(studyPath = URLencode(studyPath),
+       simPath = URLencode(simPath),
+       inputPath = URLencode(inputPath))
 
 }
 
@@ -218,7 +218,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 .getSuccess <- function(path, token, timeout = 60, config = list()) {
   if (!is.null(token) && token != "") {
     response <- GET(
-      path, timeout(timeout),
+      URLencode(path), timeout(timeout),
       add_headers(Authorization = paste0("Bearer ", token)),
       config = config
     )
