@@ -47,7 +47,7 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if (is.null(opts$timeout))
     opts$timeout <- 60
   result <- GET(
-    url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     timeout(opts$timeout),
     ...
@@ -83,7 +83,7 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     )
   }
   result <- POST(
-    url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     ...
   )
@@ -110,7 +110,7 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config <- add_headers(Accept = "application/json")
   }
   result <- PUT(
-    url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config,
     ...
   )
@@ -144,7 +144,7 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     )
   }
   result <- DELETE(
-    url = paste(c(opts$host, default_endpoint, endpoint), collapse = "/"),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     ...
   )
