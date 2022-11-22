@@ -84,9 +84,9 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
     return(out)
   }
 
-  list(studyPath = URLencode(studyPath),
-       simPath = URLencode(simPath),
-       inputPath = URLencode(inputPath))
+  list(studyPath = studyPath,
+       simPath = simPath,
+       inputPath = inputPath)
 
 }
 
