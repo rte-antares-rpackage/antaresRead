@@ -92,10 +92,10 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 
 
 .getSimOptionsAPI <- function(paths, host, ...){
-
+  
   ## Read info from json
   simPath <- paths$simPath
-
+  
   # Get basic information about the simulation
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
 
@@ -218,7 +218,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 .getSuccess <- function(path, token, timeout = 60, config = list()) {
   if (!is.null(token) && token != "") {
     response <- GET(
-      path, timeout(timeout),
+      URLencode(path), timeout(timeout),
       add_headers(Authorization = paste0("Bearer ", token)),
       config = config
     )
@@ -275,15 +275,21 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
   })
 
   # Areas with renewable clusters
-  clusterResList <- read_secure_json(file.path(inputPath, "renewables", "clusters", "&depth=4"), ...)
-  areaHasResClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
-    TF <- FALSE
-    try({
-      f <- clusterResList[[a]]$list
-      if(!is.null(f))return(TRUE)
-    })
-    return(TF)
-  })
+  areaHasResClusters <- logical(0)
+  if (!is.null(params$`other preferences`$`renewable-generation-modelling`)){
+    if(params$`other preferences`$`renewable-generation-modelling` == "clusters"){
+      clusterResList <- read_secure_json(file.path(inputPath, "renewables", "clusters", "&depth=4"), ...)
+      areaHasResClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+        TF <- FALSE
+        try({
+          f <- clusterResList[[a]]$list
+          if(!is.null(f))return(TRUE)
+        })
+        return(TF)
+      })
+    }
+  }
+
 
   list(
     mode = "Input",
@@ -352,12 +358,13 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout, config = httr_config)
 
   res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token, timeout = timeout, config = httr_config)$antares$caption
-
+  
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
-  if (is.null(res$simPath)) {
+  if (is.null(res$simPath) | length(res$simPath) == 0) {
     res <- append(res, .getInputOptionsAPI(res, token = token, timeout = timeout, config = httr_config))
   } else {
+    res$simPath <- URLencode(res$simPath)
     res <- append(res, .getSimOptionsAPI(res, host, token = token, timeout = timeout, config = httr_config))
   }
 

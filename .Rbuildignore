@@ -16,3 +16,4 @@ cheat_sheet
 ^\.github$
 ^codecov\.yml$
 man-roxygen/
+^CRAN-SUBMISSION$
