@@ -1,7 +1,7 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
-Version: 2.3.0.9000
+Version: 2.3.1
 Authors@R: c(
     person("Veronique", "Bachelier", email = "veronique.bachelier@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", role = "aut"),
@@ -42,7 +42,7 @@ Suggests:
     foreach,
     parallel,
     htmltools
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 VignetteBuilder: knitr
 Encoding: UTF-8
 biocViews: Infrastructure, DataImport
