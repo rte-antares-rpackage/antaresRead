@@ -1,5 +1,15 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.3.1
+
+BUGFIXES:
+
+* readAntares : fix memory problems for linkCapacity = TRUE (>v8.2)
+* Support for url with special characters (#181)
+* Fix for setSimulationPathAPI not working with EnR aggregated (<v8.1) (#180)
+
+
+
 # antaresRead 2.3.0
 
 * Interact directly with AntaREST API with `api_get()`, `api_post()`, `api_put()`, `api_delete()`.
