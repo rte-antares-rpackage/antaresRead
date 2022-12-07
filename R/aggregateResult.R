@@ -72,7 +72,7 @@ parAggregateMCall <- function(opts,
   for (tmstp in timestep){
     closeAllConnections()
     pathEtude <- opts$studyPath
-    parallel <- ifelse(nbcl > 1, T, F)
+    parallel <- (nbcl > 1)
     
     Folder <- Files <- Mode <- Name <- progNam <- `production EXP` <- `NODU EXP`<- `NP Cost EXP` <- `production` <- `NODU`<- `NP Cost` <- NULL
     # opts
@@ -102,11 +102,8 @@ parAggregateMCall <- function(opts,
       })
     }
     
-    oldw <- getOption("warn")
-    options(warn = -1)
-    opts <- setSimulationPath(opts$simPath, simulation = -1)
-    options(warn = oldw)
-    
+    opts <- suppressWarnings(setSimulationPath(opts$simPath))
+
     # Version which readAntares
     linkTable <- try({
       data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead"))},
@@ -226,9 +223,7 @@ parAggregateMCall <- function(opts,
                                                           nchar(as.character(struct[[itm]]$time[1]))))
               }
               if(!is.null(struct[[itm]]$day)){
-                struct[[itm]]$day <- ifelse(nchar(struct[[itm]]$day) == 1,
-                                            paste0("0", struct[[itm]]$day),
-                                            as.character(struct[[itm]]$day))
+                struct[[itm]]$day <- sprintf(struct[[itm]]$day, fmt = "%02.0f")
               }
             }
             
@@ -280,7 +275,7 @@ parAggregateMCall <- function(opts,
                   options(warn = -1)
                   lst_dtaTP <- plyr::llply(curr_years, .parReadAntares, .parallel = T, 
                                                             .paropts = list(.options.snow = paropts), 
-                                                            pth = pathEtude, type = type, areasselect = areasselect,
+                                                            pth = opts$simPath, type = type, areasselect = areasselect,
                                                             linksSelect = linksSelect, clustersSelect = clustersSelect,
                                                             clustersResSelect = clustersResSelect)
                   options(warn = oldw)
@@ -641,7 +636,7 @@ parAggregateMCall <- function(opts,
       linkTable <- .transformLinkTable(linkTable, RES_mode)
       
       # Create digest
-      .writeDigestFile(opts, output, tmstp, linkTable, oldw, verbose)
+      suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose))
     }
     
     if(length(output)==1) resultat[[tmstp]] <- output[[1]]
@@ -961,8 +956,7 @@ aggregateResult <- function(opts,
 #' @param linkTable \code{data.table} table of expressions
 #'
 #' @noRd
-.writeDigestFile <- function(opts, output, tmstp, linkTable, oldw, verbose){
-  options(warn = -1)
+.writeDigestFile <- function(opts, output, tmstp, linkTable, verbose){
   digest_file <- paste0(opts$simDataPath, "/mc-all/grid/digest.txt")
   ## première table et retours ligne
   write(x = "digest", file = digest_file)
@@ -1002,7 +996,6 @@ aggregateResult <- function(opts,
   for (line in lines[-1]){
     write(x = paste0("\t",line), file = digest_file, sep = "\t", append = T)
   }
-  options(warn = oldw)
 }
 
 #' @title parallel read antares
@@ -1021,7 +1014,7 @@ aggregateResult <- function(opts,
 .parReadAntares <- function(mcYear, pth, type, 
                            areasselect, linksSelect, 
                            clustersSelect, clustersResSelect){
-  setSimulationPath(pth, simulation = -1)
+  setSimulationPath(pth)
   dt <- readAntares(areas = areasselect, links = linksSelect, 
                                  clusters = clustersSelect, clustersRes = clustersResSelect, 
                                  timeStep = type, simplify = FALSE, 
@@ -1115,6 +1108,7 @@ aggregateResult <- function(opts,
 #' @noRd
 #'
 .creatStats <- function(X, W_sum, w_sum2, mean_m, S, pond = 1){
+  # browser()
   
   W_sum = W_sum + pond
   w_sum2 = w_sum2 + pond * pond
@@ -1240,7 +1234,12 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
   #             na = "")
   
   close(file)
-  
+  # cols <- setdiff(which(sapply(dta, is.numeric)), c("MRG. PRICE", "LOLD", "LOLP", "H. LEV"))
+  # dta[, (cols) := lapply(.SD, round), .SDcols = cols]
+  # if ("MRG. PRICE" %in% colnames(dta)) dta[, `MRG. PRICE` := round(`MRG. PRICE`, 2)]
+  # if ("LOLD" %in% colnames(dta)) dta[, `LOLD` := round(`LOLD`, 2)]
+  # if ("LOLP" %in% colnames(dta)) dta[, `LOLP` := round(`LOLP`, 2)]
+  # if ("H. LEV" %in% colnames(dta)) dta[, `H. LEV` := round(`H. LEV`, 2)]
   data.table::fwrite(cbind(NA, dta), outputFile,
                      append = TRUE,
                      row.names = FALSE,
@@ -1587,7 +1586,7 @@ aggregateResult_old <- function(opts, verbose = 1,
     numMc <- opts$mcYears
   }
   if(is.null(mcWeights)){
-    mcWeights <- rep(1, length(opts$mcYears))
+    mcWeights <- rep(1, length(numMc))
   }
   
   if(length(mcWeights)!=length(numMc)){
