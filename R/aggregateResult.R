@@ -71,7 +71,7 @@ parAggregateMCall <- function(opts,
   
   for (tmstp in timestep){
     closeAllConnections()
-    pathEtude <- opts$studyPath
+    pathEtude <- opts$simPath
     parallel <- (nbcl > 1)
     
     Folder <- Files <- Mode <- Name <- progNam <- `production EXP` <- `NODU EXP`<- `NP Cost EXP` <- `production` <- `NODU`<- `NP Cost` <- NULL
@@ -83,24 +83,11 @@ parAggregateMCall <- function(opts,
     # writeOutput = FALSE
     # mcWeights = c(1, 2)
     # mcYears = c(1, 3)
-    # 
-    if(writeOutput == FALSE){
-      coef = 1.4
-    }else{
-      coef = 1
-    }
-    
-    if(writeOutput == FALSE & length(tmstp)>1){
-      stop("If you want data return you must choose a unique timestep")
-    }
-    
-    
-    if(verbose > 0)
-    {
-      try({
-        pb <- txtProgressBar(style = 3)
-      })
-    }
+
+    if(writeOutput == FALSE){ coef = 1.4 } else { coef = 1 }
+    if(writeOutput == FALSE & length(tmstp)>1) stop("If you want data return you must choose a unique timestep")
+
+    if(verbose > 0) try ({pb <- txtProgressBar(style = 3)})
     
     opts <- suppressWarnings(setSimulationPath(opts$simPath))
 
@@ -152,13 +139,10 @@ parAggregateMCall <- function(opts,
       .addMessage(verbose, paste0("------- Mc-all : ", type, " -------"))
       
       try({
-        
         # browser()
         # load first MC-year
         a <- Sys.time()
-        
         oldw <- getOption("warn")
-        options(warn = -1)
         
         if(!filtering)
         {
@@ -177,17 +161,16 @@ parAggregateMCall <- function(opts,
         }
         #browser()
         #tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
-        dta <- readAntares(areas = areasselect,
-                                        links = linksSelect,
-                                        clusters = clustersSelect,
-                                        clustersRes = clustersResSelect,
-                                        timeStep = type,
-                                        simplify = FALSE,
-                                        mcYears = numMc[1],
-                                        showProgress = FALSE)
+        dta <- suppressWarnings(readAntares(areas = areasselect,
+                                            links = linksSelect,
+                                            clusters = clustersSelect,
+                                            clustersRes = clustersResSelect,
+                                            timeStep = type,
+                                            simplify = FALSE,
+                                            mcYears = numMc[1],
+                                            showProgress = FALSE))
         #tt = sum(.Internal(gc(FALSE, FALSE, TRUE))[13:14]) - tt
         #print(tt, units = "Mb")
-        options(warn = oldw)
         
         if(length(dta)>0){
           
@@ -231,7 +214,7 @@ parAggregateMCall <- function(opts,
             b <- Sys.time()
             #value structure
             value <- .giveValue(dta, SDcolsStartareas, SDcolsStartClust)
-            N <- max(numMc)
+            N <- length(numMc)
             
             W_sum = 0
             w_sum2 = 0
@@ -249,13 +232,13 @@ parAggregateMCall <- function(opts,
             }
             
             #sequentially add values
-            if(length(numMc)>1)
+            if(N>1)
             {
-              for (j in 1:ceiling(length(numMc)/batch)){
+              for (j in 1:ceiling(N/batch)){
                 lst_idx = 0 
                 
                 left = max((j-1)*batch + 1, 2)
-                right = min(length(numMc), j*batch)
+                right = min(N, j*batch)
                 
                 curr_years = setdiff(numMc[left:right],NA)
                 # print(curr_years)
@@ -301,7 +284,7 @@ parAggregateMCall <- function(opts,
                                                       clustersRes = clustersResSelect,
                                                       timeStep = type,
                                                       simplify = FALSE,
-                                                      mcYears = numMc[i],
+                                                      mcYears = i,
                                                       showProgress = FALSE)
                   } else { dtaTP <- lst_dtaTP[[lst_idx]]}
                   
@@ -408,6 +391,8 @@ parAggregateMCall <- function(opts,
           
           .errorTest(dtaLoadAndcalcul, verbose, "Load data and calcul")
           
+          # browser()
+          
           #Write area
           allfiles <- c("values")
           
@@ -430,11 +415,15 @@ parAggregateMCall <- function(opts,
               areaSpecialFile <- linkTable[Folder == "area" & Files == f & Mode == tolower(opts$mode)]
               namekeep <- paste(areaSpecialFile$Name, areaSpecialFile$Stats)
               namekeepprog <- paste(areaSpecialFile$Name, areaSpecialFile$progNam)
+              #mc-all variables !
+              mcall_vars_area <- paste0(areaSpecialFile$Name, "_", areaSpecialFile$progNam)
+              mcall_vars_area <- gsub("_EXP", "", mcall_vars_area)
               areas <- cbind(value$areas$sum,  value$areas$std, value$areas$min, value$areas$max)
               if(nrow(areas) > 0)
               {
-                areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$areas)]
-                areas <- areas[, .SD, .SDcols = match(opts$variables$areas, names(areas))]
+                # areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$areas)]
+                # areas <- areas[, .SD, .SDcols = match(opts$variables$areas, names(areas))]
+                areas <- areas[, .SD, .SDcols = intersect(mcall_vars_area,names(areas))]
                 
                 nbvar <- ncol(areas)
                 areas <- cbind(struct$areas, areas)
@@ -442,10 +431,10 @@ parAggregateMCall <- function(opts,
                 areas[, c("mcYear", "time") := NULL]
                 allAreas <- unique(areas$area)
                 
-                for(i in 1:length(opts$variables$areas))
+                for(i in 1:length(mcall_vars_area))
                 {
-                  var <- opts$variables$areas[i]
-                  dig <- areaSpecialFile[var == paste(Name,progNam )]$digits
+                  var <- mcall_vars_area[i]
+                  dig <- areaSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
                   if(length(dig)>0)areas[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
                 }
                 
@@ -483,13 +472,16 @@ parAggregateMCall <- function(opts,
               linkSpecialFile <- linkTable[Folder == "link" & Files == f & Mode == tolower(opts$mode)]
               namekeep <- paste(linkSpecialFile$Name, linkSpecialFile$Stats)
               namekeepprog <- paste(linkSpecialFile$Name, linkSpecialFile$progNam)
+              #mc-all variables !
+              mcall_vars_links <- paste0(linkSpecialFile$Name, "_", linkSpecialFile$progNam)
+              mcall_vars_links <- gsub("_EXP", "", mcall_vars_links)
               links <- cbind(value$links$sum,  value$links$std, value$links$min, value$links$max)
               if(nrow(links) > 0)
               {
                 
-                
-                links <- links[, .SD, .SDcols = which(names(links)%in%opts$variables$links)]
-                links <- links[, .SD, .SDcols = match(opts$variables$links, names(links))]
+                links <- links[, .SD, .SDcols = intersect(mcall_vars_links,names(links))]
+                # links <- links[, .SD, .SDcols = which(names(links)%in%opts$variables$links)]
+                # links <- links[, .SD, .SDcols = match(opts$variables$links, names(links))]
                 
                 # 
                 # areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$links)]
@@ -503,10 +495,10 @@ parAggregateMCall <- function(opts,
                 links[, c("mcYear", "time") := NULL]
                 allLink<- unique(links$link)
                 
-                for(i in 1:length(opts$variables$links))
+                for(i in 1:length(mcall_vars_links))
                 {
-                  var <- opts$variables$links[i]
-                  dig <- linkSpecialFile[var == paste(Name,progNam )]$digits
+                  var <- mcall_vars_links[i]
+                  dig <- linkSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
                   if(length(dig)>0)links[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
                 }
                 
@@ -551,6 +543,7 @@ parAggregateMCall <- function(opts,
                   if(tolower(opts$mode) == "economy")
                   {
                     nameBy <- c("production", "NP Cost", "NODU")
+                    if (opts$antaresVersion >= 830) nameBy <- c(nameBy, "profit")
                   }else{
                     nameBy <- c("production")
                   }
@@ -1914,6 +1907,8 @@ aggregateResult_old <- function(opts, verbose = 1,
         }, silent = TRUE)
         
         .errorTest(dtaLoadAndcalcul, verbose, "\nLoad data and calcul")
+        
+        # browser()
         
         #Write area
         allfiles <- c("values")
