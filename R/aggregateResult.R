@@ -44,29 +44,28 @@ parAggregateMCall <- function(opts,
                           timestep = timestep, writeOutput = writeOutput,
                           mcWeights = mcWeights,
                           mcYears = NULL)
-
     return (2)
-    
   }
   
   # browser()
   
   resultat <- list()
   
+  #Get all available timestep####
   timestep_dispo <- grep(".txt", list.files(file.path(opts$simDataPath,"mc-ind"), recursive = T), value = T)
   timestep_dispo <- unique(gsub(".*-(.+)\\..*", "\\1", timestep_dispo))
-
   timestep <- intersect(timestep, timestep_dispo)
-  if (verbose > 0) print(timestep)
   
+  if (verbose > 0) print(timestep)
   if (is.null(timestep)){
     cat("No data found")
     return (1)  
   }
   
-  # Supprimer le dossier mc_all si exist
+  # Supprimer le dossier mc_all si exist####
   if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
     unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
+    setSimulationPath(opts$simPath)
   }
   
   for (tmstp in timestep){
@@ -91,41 +90,32 @@ parAggregateMCall <- function(opts,
     
     opts <- suppressWarnings(setSimulationPath(opts$simPath))
 
-    # Version which readAntares
+    # Version which readAntares####
+    RES_mode <- F
+    if (opts$antaresVersion >= 810) 
+      if (opts$parameters$`other preferences`$`renewable-generation-modelling` == "clusters")
+        RES_mode <- T
+    linkTable_file <- ifelse(RES_mode, "/format_output/tableOutput_aggreg_v8.csv", "/format_output/tableOutput_aggreg.csv")
+    
     linkTable <- try({
-      data.table::fread(system.file("/format_output/tableOutput_aggreg.csv", package = "antaresRead"))},
+      data.table::fread(system.file(linkTable_file, package = "antaresRead"))},
       silent = TRUE
     )
     .errorTest(linkTable, verbose, "\nLoad of link table")
     
-    # load link table
+    # load link table####
     linkTable$progNam <- linkTable$Stats
     linkTable$progNam[which(linkTable$progNam == "values")] <- "EXP"
     # dtaMc <- paste0(opts$simDataPath, "/mc-ind")
     if(!is.null(mcYears)){
       numMc <- mcYears
-      if(length(numMc) == 1){
-        if(numMc%in% c("all", "All")){
-          numMc <- opts$mcYears
-        }
-      }
-    } else{
-      numMc <- opts$mcYears
-    }
-    if(is.null(mcWeights)){
-      mcWeights <- rep(1, length(numMc))
-    }
-    
-    if(length(mcWeights)!=length(numMc)){
-      stop('length of mcWeights must be the same as mcYears')
-    }
-    
-    gc()
-    #Dynamic batch value
-    batch = floor(((as.numeric(memuse:::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
-    if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
-    if (verbose > 0) cat("\nBatch :",batch,"\n")
-    
+      if(length(numMc) == 1) if(numMc%in% c("all", "All")) numMc <- opts$mcYears
+      
+    } else numMc <- opts$mcYears
+
+    if(is.null(mcWeights)) mcWeights <- rep(1, length(numMc))
+    if(length(mcWeights)!=length(numMc)) stop('length of mcWeights must be the same as mcYears')
+
     coef_div_mc_pond <- sum(mcWeights)
     coef_div_mc_pond_2 <- sum(mcWeights * mcWeights)
     
@@ -133,14 +123,29 @@ parAggregateMCall <- function(opts,
     #allTyped <- c("annual", "daily", "hourly", "monthly", "weekly")
     #allTyped <- 'hourly'
     
+    gc()
+    #Dynamic batch value####
+    batch = floor(((as.numeric(memuse:::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
+    if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
+    if (verbose > 0) cat("\nBatch :",batch,"\n")
+    
+    #Parallel config####
+    if (parallel){
+      closeAllConnections()
+      cl <- makeCluster(nbcl)
+      registerDoParallel(cl)
+      paropts <- list(preschedule=TRUE)
+      clusterSetRNGStream(cl, 123)
+    }
+
+    #Start mc-all calculation####
     output <- sapply(tmstp, function(type, verbose)
     {
       
       .addMessage(verbose, paste0("------- Mc-all : ", type, " -------"))
       
       try({
-        # browser()
-        # load first MC-year
+        #load first MC-year####
         a <- Sys.time()
         oldw <- getOption("warn")
         
@@ -159,7 +164,7 @@ parAggregateMCall <- function(opts,
             clustersResSelect <- selected[["clustersRes"]]
           }
         }
-        #browser()
+        #get image of memory before and after reading one mcYear
         #tt <- sum(.Internal(gc(FALSE, TRUE, TRUE))[13:14])
         dta <- suppressWarnings(readAntares(areas = areasselect,
                                             links = linksSelect,
@@ -173,9 +178,7 @@ parAggregateMCall <- function(opts,
         #print(tt, units = "Mb")
         
         if(length(dta)>0){
-          
           dtaLoadAndcalcul <- try({
-            
             aTot <- as.numeric(Sys.time() - a)
             
             SDcolsStartareas <- switch(type,
@@ -187,109 +190,69 @@ parAggregateMCall <- function(opts,
             )
             
             SDcolsStartClust <-  SDcolsStartareas + 1
-            #make structure
             
+            #make structure####
             struct <- list()
-            for (itm in names(dta)){
-              if(!is.null(dta[[itm]])){
-                if (itm %in% c("areas","links")){
-                  struct[[itm]] <- dta[[itm]][,.SD, .SDcols = 1:SDcolsStartareas]
-                } else {
-                  struct[[itm]] <- dta[[itm]][,.SD, .SDcols = 1:SDcolsStartClust]
-                }
+            for (elmt in c("areas","links","clusters","clustersRes")){
+              if (!is.null(dta[[elmt]]))
+                struct[[elmt]] <- dta[[elmt]][,.SD, .SDcols = 1:ifelse(elmt %in% c("areas","links"), SDcolsStartareas, SDcolsStartClust)]
+              
+              if (!is.null(struct[[elmt]]$day))
+                struct[[elmt]]$day <- sprintf(struct[[elmt]]$day, fmt = "%02.0f")
+              
+              if (type == "weekly"){
+                if (!is.null(struct[[elmt]]))
+                  struct[[elmt]]$timeId <- as.numeric(substr(struct[[elmt]]$time, 
+                                                             nchar(as.character(struct[[elmt]]$time[1]))-1,
+                                                             nchar(as.character(struct[[elmt]]$time[1]))))
               }
             }
-            
-            for (itm in names(struct)){
-              if(type == "weekly" & (!is.null(struct[[itm]]))){
-                struct[[itm]]$timeId <- as.numeric(substr(struct[[itm]]$time, nchar(as.character(struct[[itm]]$time[1]))-1,
-                                                          nchar(as.character(struct[[itm]]$time[1]))))
-              }
-              if(!is.null(struct[[itm]]$day)){
-                struct[[itm]]$day <- sprintf(struct[[itm]]$day, fmt = "%02.0f")
-              }
-            }
-            
-            
             b <- Sys.time()
-            #value structure
+            
+            #value structure####
             value <- .giveValue(dta, SDcolsStartareas, SDcolsStartClust)
             N <- length(numMc)
-            
-            W_sum = 0
-            w_sum2 = 0
-            mean_m = 0
-            S = 0
+            W_sum = w_sum2 = mean_m = S = 0
             
             value <- lapply(value, function(X){.creatStats(X, W_sum, w_sum2, mean_m, S, mcWeights[1])})
             
             btot <- as.numeric(Sys.time() - b)
-            if(verbose>0)
-            {
-              try({
-                .progBar(pb, type, 1, N, coef)
-              })
-            }
+            if(verbose>0) try({.progBar(pb, type, 1, N, coef)})
             
-            #sequentially add values
+            #sequentially add values####
             if(N>1)
             {
               for (j in 1:ceiling(N/batch)){
                 lst_idx = 0 
-                
                 left = max((j-1)*batch + 1, 2)
                 right = min(N, j*batch)
-                
                 curr_years = setdiff(numMc[left:right],NA)
-                # print(curr_years)
-                
-                #curr_years = intersect(left:right, numMc[-1])
-                
                 lst_dtaTP <- list()                 #init lst pour execution monocore
                 
-                if (parallel == TRUE){
-                  closeAllConnections()
-                  cl <- makeCluster(nbcl)
-                  registerDoParallel(cl)
-                  paropts <- list(preschedule=TRUE)
-                  clusterSetRNGStream(cl, 123)
+                if (parallel){
                   par_time <- Sys.time()
-                  ## Warning a creuser (non impactant)
-                  options(warn = -1)
-                  lst_dtaTP <- plyr::llply(curr_years, .parReadAntares, .parallel = T, 
+                  lst_dtaTP <- suppressWarnings(plyr::llply(curr_years, .parReadAntares, .parallel = T, 
                                                             .paropts = list(.options.snow = paropts), 
                                                             pth = opts$simPath, type = type, areasselect = areasselect,
                                                             linksSelect = linksSelect, clustersSelect = clustersSelect,
-                                                            clustersResSelect = clustersResSelect)
-                  options(warn = oldw)
-                  if (verbose > 0){
-                    cat("\n")
-                    cat("\n",Sys.time() - par_time)
-                  }
-
+                                                            clustersResSelect = clustersResSelect))
+                  if (verbose > 0) cat("\n\n",Sys.time() - par_time)
                 } 
                 
                 for(i in curr_years){
                   lst_idx = lst_idx + 1
                   a <- Sys.time()
-                  
-                  oldw <- getOption("warn")
-                  options(warn = -1)
-                  
-                  
-                  if (parallel == FALSE){
-                    dtaTP <- readAntares(areas = areasselect,
-                                                      links = linksSelect,
-                                                      clusters = clustersSelect,
-                                                      clustersRes = clustersResSelect,
-                                                      timeStep = type,
-                                                      simplify = FALSE,
-                                                      mcYears = i,
-                                                      showProgress = FALSE)
+
+                  if (!parallel){
+                    dtaTP <- suppressWarnings(readAntares(areas = areasselect,
+                                                          links = linksSelect,
+                                                          clusters = clustersSelect,
+                                                          clustersRes = clustersResSelect,
+                                                          timeStep = type,
+                                                          simplify = FALSE,
+                                                          mcYears = i,
+                                                          showProgress = FALSE))
                   } else { dtaTP <- lst_dtaTP[[lst_idx]]}
-                  
-                  
-                  options(warn = oldw)
                   
                   aTot <- aTot + as.numeric(Sys.time() - a)
                   b <- Sys.time()
@@ -297,31 +260,23 @@ parAggregateMCall <- function(opts,
                   valueTP <- .giveValue(dtaTP, SDcolsStartareas, SDcolsStartClust)
                   
                   nmKeep <- names(valueTP)
-                  # browser()
                   
                   valueTP <- lapply(names(valueTP), function(X){
-                    
                     .creatStats(valueTP[[X]], value[[X]]$W_sum, value[[X]]$w_sum2, value[[X]]$mean_m, value[[X]]$S , mcWeights[grep(i,numMc)])
-                    
                   })
                   
                   names(valueTP) <- nmKeep 
                   
                   # valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
                   
-                  value$areas <- .updateStats(value[["areas"]], valueTP[["areas"]])
-                  value$links <- .updateStats(value[["links"]], valueTP[["links"]])
-                  value$clusters <- .updateStats(value[["clusters"]], valueTP[["clusters"]])
-                  value$clustersRes <- .updateStats(value[["clustersRes"]], valueTP[["clustersRes"]])
-                  
-                  btot <- btot + as.numeric(Sys.time() - b)
-                  if(verbose>0)
-                  {
-                    try({
-                      .progBar(pb, type, i, N, coef)
-                    })
+                  for (elmt in c("areas","links","clusters","clustersRes")){
+                    value[[elmt]] <- .updateStats(value[[elmt]], valueTP[[elmt]])
                   }
+ 
+                  btot <- btot + as.numeric(Sys.time() - b)
+                  if(verbose>0) try({.progBar(pb, type, i, N, coef)})
                   
+                  #free memory after each iteration####
                   lst_dtaTP[[lst_idx]] <- 0
                 }
               }
@@ -332,28 +287,14 @@ parAggregateMCall <- function(opts,
               b <- Sys.time()
               
               coef_div_var = (coef_div_mc_pond )#- coef_div_mc_pond_2 / coef_div_mc_pond
-              value$areas$std <- sqrt(value$areas$var / coef_div_var)
-              #nan due to round
-              for (i in names(value$areas$std))
-                value$areas$std[is.nan(get(i)), (i) := 0]
               
-              value$links$std <- sqrt(value$links$var / coef_div_var)
-              #nan due to round
-              for (i in names(value$links$std))
-                value$links$std[is.nan(get(i)), (i) := 0]
-              
-              if(!is.null(value[["clusters"]])){
-                value$clusters$std <- sqrt(value$clusters$var / coef_div_var)
-                #nan due to round
-                for (i in names(value$clusters$std))
-                  value$clusters$std[is.nan(get(i)), (i) := 0]
-              }
-              
-              if(!is.null(value[["clustersRes"]])){
-                value$clustersRes$std <- sqrt(value$clustersRes$var / coef_div_var)
-                #nan due to round
-                for (i in names(value$clustersRes$std))
-                  value$clustersRes$std[is.nan(get(i)), (i) := 0]
+              for (elmt in c("areas","links","clusters","clustersRes")){
+                if (!is.null(value[[elmt]])){
+                  value[[elmt]]$std <- sqrt(value[[elmt]]$var / coef_div_var)
+                  #nan due to round
+                  for (i in names(value[[elmt]]$std))
+                    value[[elmt]]$std[is.nan(get(i)), (i) := 0]
+                }
               }
             } else {
               # std to 0
@@ -393,28 +334,23 @@ parAggregateMCall <- function(opts,
           
           # browser()
           
-          #Write area
+          #write mc-all files####
           allfiles <- c("values")
           
           if(writeOutput == FALSE){
-            if(verbose>0)
-            {
-              .progBar(pb, type, 1, 1, 1, terminate = TRUE)
-            }
-            
+            if(verbose>0) .progBar(pb, type, 1, 1, 1, terminate = TRUE)
             return(.formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct))
-          } else {
             
+          } else {
             if(!is.null(value$clustersRes) && is.data.frame(value$clustersRes) && nrow(value$clustersRes) > 0){
               warning("Writing clusterRes file is not at moment available")
             }
             
+            #write areas####
             areaWrite <- try(sapply(allfiles, function(f)
             {
               #prepare data for all country
               areaSpecialFile <- linkTable[Folder == "area" & Files == f & Mode == tolower(opts$mode)]
-              namekeep <- paste(areaSpecialFile$Name, areaSpecialFile$Stats)
-              namekeepprog <- paste(areaSpecialFile$Name, areaSpecialFile$progNam)
               #mc-all variables !
               mcall_vars_area <- paste0(areaSpecialFile$Name, "_", areaSpecialFile$progNam)
               mcall_vars_area <- gsub("_EXP", "", mcall_vars_area)
@@ -466,12 +402,11 @@ parAggregateMCall <- function(opts,
             .errorTest(areaWrite, verbose, "Area write")
             
             allfiles <- c("values")
+            #write links####
             linkWrite <- try(sapply(allfiles, function(f)
             {
               #prepare data for all link
               linkSpecialFile <- linkTable[Folder == "link" & Files == f & Mode == tolower(opts$mode)]
-              namekeep <- paste(linkSpecialFile$Name, linkSpecialFile$Stats)
-              namekeepprog <- paste(linkSpecialFile$Name, linkSpecialFile$progNam)
               #mc-all variables !
               mcall_vars_links <- paste0(linkSpecialFile$Name, "_", linkSpecialFile$progNam)
               mcall_vars_links <- gsub("_EXP", "", mcall_vars_links)
@@ -482,12 +417,6 @@ parAggregateMCall <- function(opts,
                 links <- links[, .SD, .SDcols = intersect(mcall_vars_links,names(links))]
                 # links <- links[, .SD, .SDcols = which(names(links)%in%opts$variables$links)]
                 # links <- links[, .SD, .SDcols = match(opts$variables$links, names(links))]
-                
-                # 
-                # areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$links)]
-                # areas <- areas[, .SD, .SDcols = match(opts$variables$areas, names(areas))]
-                # 
-                # 
                 
                 nbvar <- ncol(links)
                 links <- cbind(struct$links, links)
@@ -523,7 +452,8 @@ parAggregateMCall <- function(opts,
             
             .errorTest(linkWrite, verbose, "Link write")
             
-            ##Details
+            #write details####
+            # browser()
             details <- value$clusters$sum
             
             if(!is.null(struct$clusters$day))
@@ -531,9 +461,7 @@ parAggregateMCall <- function(opts,
               if(length(struct$clusters$day) > 0)
               {
                 endClust <- cbind(struct$clusters, details)
-                
                 endClust[, c("mcYear") := NULL]
-                
                 detailWrite <- try(sapply(unique(endClust$area),  function(ctry){
                   #for each country prepare file
                   endClustctry <- endClust[area == ctry]
@@ -606,30 +534,23 @@ parAggregateMCall <- function(opts,
     }, verbose = verbose, simplify = FALSE)
     
     
-    if(verbose>0)
-    {
-      try({
-        close(pb)
-      })
-    }
-    # browser()
-    
+    if(verbose>0) try({ close(pb) })
     if (tmstp == "annual" | (tmstp == "hourly" & !("annual" %in% timestep))){
-      # Create grid folder
+      # Create grid folder####
       .gridFolderCreation(opts, verbose)
       
-      # Transform linkTable for digest (compatible v8)
-      RES_mode <- F
-      if (opts$antaresVersion >= 810){
-        if (opts$parameters$`other preferences`$`renewable-generation-modelling` == "clusters"){
-          RES_mode <- T
-        }
-      }
+      # # Transform linkTable for digest (compatible v8)
+      # RES_mode <- F
+      # if (opts$antaresVersion >= 810){
+      #   if (opts$parameters$`other preferences`$`renewable-generation-modelling` == "clusters"){
+      #     RES_mode <- T
+      #   }
+      # }
+      # 
+      # linkTable <- .transformLinkTable(linkTable, RES_mode)
       
-      linkTable <- .transformLinkTable(linkTable, RES_mode)
-      
-      # Create digest
-      suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose))
+      # Create digest####
+      # suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose))
     }
     
     if(length(output)==1) resultat[[tmstp]] <- output[[1]]
