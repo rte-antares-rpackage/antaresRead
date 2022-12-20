@@ -531,32 +531,21 @@ parAggregateMCall <- function(opts,
               }
             }
           }
+          LOLD_data[, isLOLD_cum := 100 * isLOLD_cum/N]
+          assign("LOLD_data", LOLD_data, envir = globalenv())
         } 
       })
       
       #browser()
-      LOLD_data[, isLOLD_cum := 100 * isLOLD_cum/N]
-      assign("LOLD_data", LOLD_data, envir = globalenv())
       .addMessage(verbose, paste0("------- End Mc-all : ", type, " -------"))
       .formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct)
     }, verbose = verbose, simplify = FALSE)
     
     
     if(verbose>0) try({ close(pb) })
-    if (tmstp == "annual" | (tmstp == "hourly" & !("annual" %in% timestep))){
+    if (tmstp == "hourly" | (tmstp == "annual" & !("hourly" %in% timestep))){
       # Create grid folder####
       .gridFolderCreation(opts, verbose)
-      
-      # # Transform linkTable for digest (compatible v8)
-      # RES_mode <- F
-      # if (opts$antaresVersion >= 810){
-      #   if (opts$parameters$`other preferences`$`renewable-generation-modelling` == "clusters"){
-      #     RES_mode <- T
-      #   }
-      # }
-      # 
-      # linkTable <- .transformLinkTable(linkTable, RES_mode)
-      
       # Create digest####
       suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
     }
