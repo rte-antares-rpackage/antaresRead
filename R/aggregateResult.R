@@ -219,6 +219,10 @@ parAggregateMCall <- function(opts,
             btot <- as.numeric(Sys.time() - b)
             if(verbose>0) try({.progBar(pb, type, 1, N, coef)})
             
+            #LOLD_data####
+            LOLD_data <- data.table(area = unique(dta$areas[, area]), isLOLD_cum = 0)
+            LOLD_data[area %in% unique(dta$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + 1]
+            
             #sequentially add values####
             if(N>1)
             {
@@ -253,6 +257,8 @@ parAggregateMCall <- function(opts,
                                                           mcYears = i,
                                                           showProgress = FALSE))
                   } else { dtaTP <- lst_dtaTP[[lst_idx]]}
+                  
+                  LOLD_data[area %in% unique(dtaTP$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + 1]
                   
                   aTot <- aTot + as.numeric(Sys.time() - a)
                   b <- Sys.time()
@@ -456,9 +462,9 @@ parAggregateMCall <- function(opts,
             # browser()
             details <- value$clusters$sum
             
-            if(!is.null(struct$clusters$day))
+            if(!is.null(struct$clusters$day) | 1)
             {
-              if(length(struct$clusters$day) > 0)
+              if(length(struct$clusters$day) > 0 | 1)
               {
                 endClust <- cbind(struct$clusters, details)
                 endClust[, c("mcYear") := NULL]
@@ -529,6 +535,8 @@ parAggregateMCall <- function(opts,
       })
       
       #browser()
+      LOLD_data[, isLOLD_cum := 100 * isLOLD_cum/N]
+      assign("LOLD_data", LOLD_data, envir = globalenv())
       .addMessage(verbose, paste0("------- End Mc-all : ", type, " -------"))
       .formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct)
     }, verbose = verbose, simplify = FALSE)
@@ -550,7 +558,7 @@ parAggregateMCall <- function(opts,
       # linkTable <- .transformLinkTable(linkTable, RES_mode)
       
       # Create digest####
-      # suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose))
+      suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
     }
     
     if(length(output)==1) resultat[[tmstp]] <- output[[1]]
@@ -776,14 +784,18 @@ aggregateResult <- function(opts,
   cols_remove = c("timeId","time")
   cols_remove_2 = grep("_",names(digest),value = T)
   digest <- digest[, -c(cols_remove,cols_remove_2), with = F]
-  digest <- cbind(digest[,1],
-                  round(digest[,c(2,3)]),
-                  round(digest[,4], 2),
-                  round(digest[, !(1:4)]))
-
-  #rapid fix for extra columns in antares 8.1 
-  linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
-  digest <- rbind(linkTable, digest)
+  
+  for(i in 2:length(names(digest)))
+  {
+    var <- names(digest)[i]
+    dig <- linkTable[Folder == "area" & Mode == "economy" & Stats %in% c("EXP","values") & 
+                       (Name == var | paste0(Name,"_",progNam) == var)]$digits
+    if(length(dig)>0) digest[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+  }
+  
+  digest_names <- transpose(linkTable[Folder == "area" & Mode == "economy" & progNam == "EXP", c("Name", "Unit", "Stats")])
+  setnames(digest_names, as.character(digest_names[1]))
+  digest <- rbind(cbind(data.table(area = list("","")), digest_names[-1]), digest)
   if (verbose > 0) cat("Digest : Ok\n")
   digest
 }
@@ -800,7 +812,7 @@ aggregateResult <- function(opts,
 #' @return digest {data.table} results for areas
 #'
 #' @noRd
-.createDigestAreasHourly <- function(testPar, linkTable, verbose){
+.createDigestAreasHourly <- function(testPar, linkTable, verbose, LOLD_data){
   digest <- testPar[["areas"]]
   cols_remove = c("month","hour","timeId","time","day")
   cols_remove_2 = grep("_",names(digest),value = T)
@@ -808,17 +820,20 @@ aggregateResult <- function(opts,
   setnames(digest, "MRG. PRICE", "mrgprice")
   digest <- digest[, "MRG. PRICE" := mrgprice/8736][, lapply(.SD, sum, na.rm=TRUE), by="area"][, mrgprice := NULL]
   digest <- digest[, unique(c("OV. COST", "OP. COST", "MRG. PRICE", names(digest))), with = F]
-  digest <- cbind(digest[,1],
-                  round(digest[,c(2,3)]),
-                  round(digest[,4], 2),
-                  round(digest[, !(1:4)]))
-  
-  #rapid fix for extra columns in antares 8.1
-  if (length(setdiff(names(digest), names(linkTable))) > 0){
-    linkTable[, setdiff(names(digest), names(linkTable)) := c("MWh","EXP")]
+  digest <- merge(digest, LOLD_data)[, LOLP := isLOLD_cum][, isLOLD_cum := NULL]
+
+  for(i in 2:length(names(digest)))
+  {
+    var <- names(digest)[i]
+    dig <- linkTable[Folder == "area" & Mode == "economy" & Stats %in% c("EXP","values") & 
+                       (Name == var | paste0(Name,"_",progNam) == var)]$digits
+    if(length(dig)>0) digest[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
   }
   
-  digest <- rbind(linkTable, digest)
+  #rapid fix for extra columns in antares 8.1 (to do)
+  digest_names <- transpose(linkTable[Folder == "area" & Mode == "economy" & progNam == "EXP", c("Name", "Unit", "Stats")])
+  setnames(digest_names, as.character(digest_names[1]))
+  digest <- rbind(cbind(data.table(area = list("","")), digest_names[-1]), digest)
   if (verbose > 0) cat("Digest (hourly) : Ok\n")
   
   digest
@@ -868,15 +883,17 @@ aggregateResult <- function(opts,
 #' @param output \code{list} of data after aggregation
 #' @param tmstp \code{character} current timestep
 #' @param linkTable \code{data.table} table of expressions
+#' @param verbose \code{integer} level of console output detail
+#' @param LOLD_data \code{data.table} data for number of mcYears with LOLD
 #'
 #' @noRd
-.writeDigestFile <- function(opts, output, tmstp, linkTable, verbose){
+.writeDigestFile <- function(opts, output, tmstp, linkTable, verbose, LOLD_data){
   digest_file <- paste0(opts$simDataPath, "/mc-all/grid/digest.txt")
   ## première table et retours ligne
   write(x = "digest", file = digest_file)
   if (tmstp == "annual") {
     digesta <- .createDigestAreasAnnual(output[[1]], linkTable, verbose)
-  } else if (tmstp == "hourly") { digesta <- .createDigestAreasHourly(output[[1]], linkTable, verbose)}
+  } else if (tmstp == "hourly") { digesta <- .createDigestAreasHourly(output[[1]], linkTable, verbose, LOLD_data)}
   first_table = data.table(VARIABLES = ncol(digesta) - 1, AREAS = nrow(digesta) - 2, LINKS = 0)
   write.table(first_table, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
   write(x = "", file = digest_file, append = T)
