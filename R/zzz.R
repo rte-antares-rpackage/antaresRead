@@ -91,7 +91,7 @@ setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
 # They come from the use of the data.table syntax.
 utils::globalVariables(
   c("timeId", "tsId", "area", "hydroStorage", "thermalAvailability",
-    "cluster", "FLOW LIN.", "direction", "flow",
+    "cluster", "FLOW LIN.", "FLOW QUAD.", "direction", "flow",
     "BALANCE", "totalFlow", "prop", "to", "link", "change",
     "district", "must.run", ".txt", "detailsLength",
     "linkLength", "connectedToVirtualArea", "from", "correction",
@@ -101,7 +101,9 @@ utils::globalVariables(
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea",
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
-    "NODU", "min.stable.power", "thermalPmin", "name", "value")
+    "NODU", "min.stable.power", "thermalPmin", "name", "value",
+    "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
+    "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status")
 )
 
 #-----------------------------  HDF5 ------------------------------------#
