@@ -22,6 +22,7 @@
 #' @import doParallel
 #' @importFrom plyr llply
 #' @importFrom stringr str_split
+#' @importFrom memuse Sys.meminfo
 #'
 #' @export
 #' 
@@ -125,7 +126,7 @@ parAggregateMCall <- function(opts,
     
     gc()
     #Dynamic batch value####
-    batch = floor(((as.numeric(memuse:::Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
+    batch = floor(((as.numeric(Sys.meminfo()[[2]])/(1024*1024*1024)) * 0.7)/2)
     if (batch > 1 & length(numMc)%%batch == 1) batch <- batch + 1
     if (verbose > 0) cat("\nBatch :",batch,"\n")
     
@@ -570,7 +571,7 @@ parAggregateMCall <- function(opts,
                     nbvar <- length(nomcair)
                     unit <- rep("", length(nomcair))
                     unit[grep("production",nomcair)] <- "MWh"
-                    nomcair <- gsub("production","",nomcair)
+                    nomcair <- gsub("production_","",nomcair)
                     Stats <- rep("EXP", length(unit))
                     nameIndex <- ifelse(type == "weekly", "week", "index")
                     nomStruct[which(nomStruct == "timeId")] <- nameIndex
