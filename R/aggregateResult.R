@@ -459,7 +459,6 @@ parAggregateMCall <- function(opts,
             .errorTest(linkWrite, verbose, "Link write")
             
             #write details####
-            # browser()
             details <- value$clusters$sum
             
             if(!is.null(struct$clusters$day) | 1)
@@ -512,9 +511,9 @@ parAggregateMCall <- function(opts,
                   unit[grep("production",nomcair)] <- "MWh"
                   unit[grep("NP Cost",nomcair)] <- "NP Cost - Euro"
                   unit[grep("NODU",nomcair)] <- "NODU"
-                  nomcair <- gsub("production","",nomcair)
-                  nomcair <- gsub("NP Cost","",nomcair)
-                  nomcair <- gsub("NODU","",nomcair)
+                  nomcair <- gsub("production_","",nomcair)
+                  nomcair <- gsub("NP Cost_","",nomcair)
+                  nomcair <- gsub("NODU_","",nomcair)
                   Stats <- rep("EXP", length(unit))
                   nameIndex <- ifelse(type == "weekly", "week", "index")
                   nomStruct[which(nomStruct == "timeId")] <- nameIndex
@@ -528,6 +527,64 @@ parAggregateMCall <- function(opts,
                                               nomcair = nomcair, unit = unit, nomStruct = nomStruct,Stats = Stats)
                 }), silent = TRUE)
                 .errorTest(detailWrite, verbose, "Detail write")
+              }
+            }
+            
+            #write details-res####
+            if (!is.null(value$clustersRes)){
+              detailsRes <- value$clustersRes$sum
+              
+              if(!is.null(struct$clustersRes$day) | 1)
+              {
+                if(length(struct$clustersRes$day) > 0 | 1)
+                {
+                  endClust <- cbind(struct$clustersRes, detailsRes)
+                  endClust[, c("mcYear") := NULL]
+                  detailResWrite <- try(sapply(unique(endClust$area),  function(ctry){
+                    #for each country prepare file
+                    endClustctry <- endClust[area == ctry]
+                    orderBeg <- unique(endClustctry$time)
+                    endClustctry[,c("area") := NULL]
+
+                    nameBy <- c("production", "col2")
+                    
+                    nomStruct <- names(endClustctry)[!names(endClustctry) %in% c("cluster", nameBy)]
+                    
+                    tmp_formula <- nomStruct
+                    # tmp_formula <- gsub(" ", "_", tmp_formula)
+                    tmp_formula <- paste0("`", tmp_formula, "`")
+                    
+                    tmp_formula <- as.formula(paste0(paste0(tmp_formula, collapse = " + "), "~cluster"))
+                    
+                    endClustctry[, c(nameBy) := list(round(`production`))]
+
+                    endClustctry <- data.table::dcast(endClustctry, tmp_formula,
+                                                      value.var = c(nameBy))
+                    
+                    endClustctry <- endClustctry[match(orderBeg, endClustctry$time)]
+                    endClustctry <- endClustctry[, !grep("col2",names(endClustctry),value = T), with = F]
+                    endClustctry[,c("time") := NULL]
+                    nomStruct <- nomStruct[-which(nomStruct == "time")]
+                    nomcair <- names(endClustctry)
+                    nomcair <- nomcair[!nomcair%in%nomStruct]
+                    nbvar <- length(nomcair)
+                    unit <- rep("", length(nomcair))
+                    unit[grep("production",nomcair)] <- "MWh"
+                    nomcair <- gsub("production","",nomcair)
+                    Stats <- rep("EXP", length(unit))
+                    nameIndex <- ifelse(type == "weekly", "week", "index")
+                    nomStruct[which(nomStruct == "timeId")] <- nameIndex
+                    indexMin <- min(endClustctry$timeId)
+                    indexMax <- max(endClustctry$timeId)
+                    ncolFix <- length(nomStruct)
+                    #write detailsRes txt
+                    .writeFileOut(dta = endClustctry, timestep = type, fileType = "details-res",
+                                  ctry = ctry, opts = opts, folderType = "areas", nbvar = nbvar,
+                                  indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
+                                  nomcair = nomcair, unit = unit, nomStruct = nomStruct,Stats = Stats)
+                  }), silent = TRUE)
+                  .errorTest(detailResWrite, verbose, "Detail Res write")
+                }
               }
             }
           }
@@ -1104,12 +1161,12 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 .writeFileOut <- function(dta, timestep, fileType, ctry, opts, folderType, nbvar,
                           indexMin, indexMax, ncolFix, nomcair, unit, nomStruct, Stats){
   
-  
   # threads for fwrite
   data.table::setDTthreads(2)
   
   folderTypesansS <- substr(folderType, 1, nchar(folderType)-1)
   abrtype <- substr(fileType, 1, 2)
+  if (fileType == "details-res") abrtype <- "res"
   
   if(timestep == "annual"){
     nomStruct <- ""
