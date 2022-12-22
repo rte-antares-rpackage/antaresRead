@@ -474,13 +474,7 @@ parAggregateMCall <- function(opts,
                   orderBeg <- unique(endClustctry$time)
                   endClustctry[,c("area") := NULL]
                   
-                  if(tolower(opts$mode) == "economy")
-                  {
-                    nameBy <- c("production", "NP Cost", "NODU")
-                    if (opts$antaresVersion >= 830) nameBy <- c(nameBy, "profit")
-                  }else{
-                    nameBy <- c("production")
-                  }
+                  nameBy <- setdiff(names(endClustctry), names(struct$clusters))
                   # if("NP Cost"%in%names(endClustctry)){}
                   nomStruct <- names(endClustctry)[!names(endClustctry) %in% c("cluster", nameBy)]
                   
@@ -490,14 +484,7 @@ parAggregateMCall <- function(opts,
                   
                   tmp_formula <- as.formula(paste0(paste0(tmp_formula, collapse = " + "), "~cluster"))
                   
-                  if(tolower(opts$mode) == "economy")
-                  {
-                    endClustctry[, c(nameBy) := list(round(`production`),
-                                                     round(`NP Cost`),
-                                                     round(`NODU`))]
-                  }else{
-                    endClustctry[, c(nameBy) := list(round(`production`))]
-                  }
+                  endClustctry[, c(nameBy) := lapply(.SD, round), .SDcols = nameBy]
                   
                   endClustctry <- data.table::dcast(endClustctry, tmp_formula,
                                                     value.var = c(nameBy))
@@ -512,9 +499,11 @@ parAggregateMCall <- function(opts,
                   unit[grep("production",nomcair)] <- "MWh"
                   unit[grep("NP Cost",nomcair)] <- "NP Cost - Euro"
                   unit[grep("NODU",nomcair)] <- "NODU"
+                  unit[grep("profit",nomcair)] <- "Profit - Euro"
                   nomcair <- gsub("production_","",nomcair)
                   nomcair <- gsub("NP Cost_","",nomcair)
                   nomcair <- gsub("NODU_","",nomcair)
+                  nomcair <- gsub("profit_","",nomcair)
                   Stats <- rep("EXP", length(unit))
                   nameIndex <- ifelse(type == "weekly", "week", "index")
                   nomStruct[which(nomStruct == "timeId")] <- nameIndex
@@ -563,8 +552,7 @@ parAggregateMCall <- function(opts,
                                                       value.var = c(nameBy))
                     
                     endClustctry <- endClustctry[match(orderBeg, endClustctry$time)]
-                    endClustctry <- endClustctry[, !grep("col2",names(endClustctry),value = T), with = F]
-                    endClustctry[,c("time") := NULL]
+                    endClustctry[,c("time", grep("col2",names(endClustctry),value = T)) := NULL]
                     nomStruct <- nomStruct[-which(nomStruct == "time")]
                     nomcair <- names(endClustctry)
                     nomcair <- nomcair[!nomcair%in%nomStruct]
