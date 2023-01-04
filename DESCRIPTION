@@ -27,6 +27,7 @@ Imports:
     methods,
     stats,
     stringr,
+    stringi,
     shiny,
     pbapply,
     doParallel,

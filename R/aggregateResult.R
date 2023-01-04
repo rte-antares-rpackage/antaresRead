@@ -22,6 +22,7 @@
 #' @import doParallel
 #' @importFrom plyr llply
 #' @importFrom stringr str_split
+#' @importFrom stringi stri_replace_last_fixed
 #' @importFrom memuse Sys.meminfo
 #'
 #' @export
@@ -63,9 +64,9 @@ parAggregateMCall <- function(opts,
     return (1)  
   }
   
-  # Supprimer le dossier mc_all si exist####
+  # Renommer le dossier mc_all si exist####
   if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
-    unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
+    file.rename(file.path(opts$simDataPath,"mc-all"), file.path(opts$simDataPath,"original-mc-all"))
     setSimulationPath(opts$simPath)
   }
   
@@ -600,15 +601,15 @@ parAggregateMCall <- function(opts,
     resultat[[tmstp]] <- output
     
     mc_all <- file.path(opts$simDataPath, "mc-all")
-    file.rename(from = mc_all, str_replace(mc_all, "mc-all", paste0("mc-all-",tmstp)))
+    file.rename(from = mc_all, stri_replace_last_fixed(mc_all, "mc-all", paste0("mc-all-",tmstp)))
   }
   
+  #aggregate timesteps####
   mc_all_hourly <- file.path(opts$simDataPath, "mc-all-hourly")
+  mc_all <- file.path(opts$simDataPath, "mc-all")
   if (file.exists(mc_all_hourly)){
     file.rename(from = mc_all_hourly, str_replace(mc_all_hourly, "mc-all-hourly", "mc-all"))
-    mc_all <- file.path(opts$simDataPath, "mc-all")
   } else {
-    mc_all <- file.path(opts$simDataPath, "mc-all")
     dir.create(mc_all)
   }
   
@@ -625,9 +626,15 @@ parAggregateMCall <- function(opts,
   
   unlink(mc_alls, recursive = T)
   
-  # Set synthesis property to true after aggregate
-  # print(simOptions()$synthesis)
-  # simOptions()$synthesis <- TRUE
+  #add other nodes from original mc-all####
+  original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
+  if (file.exists(original_mc_all_path)){
+    old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
+    old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
+    new_areas <- file.path(mc_all,"areas")
+    new_links <- file.path(mc_all,"links")
+    file.copy(old_areas, new_areas, overwrite = F, recursive = T)
+  }
   
   resultat
 }
