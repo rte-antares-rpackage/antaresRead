@@ -40,6 +40,8 @@ parAggregateMCall <- function(opts,
                               selected = NULL,
                               legacy = FALSE){
   
+  total_time <- Sys.time()
+  
   if (isTRUE(legacy)) {
     cat("\nRunning Legacy mode\n")
     parAggregateMCall_old(opts = opts, nbcl = nbcl, verbose = verbose,
@@ -66,7 +68,11 @@ parAggregateMCall <- function(opts,
   
   # Renommer le dossier mc_all si exist####
   if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
-    file.rename(file.path(opts$simDataPath,"mc-all"), file.path(opts$simDataPath,"original-mc-all"))
+    if (dir.exists(file.path(opts$simDataPath, "original-mc-all"))){
+      unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
+    } else {
+      file.rename(file.path(opts$simDataPath,"mc-all"), file.path(opts$simDataPath,"original-mc-all"))
+    }
     setSimulationPath(opts$simPath)
   }
   
@@ -635,6 +641,9 @@ parAggregateMCall <- function(opts,
     new_links <- file.path(mc_all,"links")
     file.copy(old_areas, new_areas, overwrite = F, recursive = T)
   }
+  
+  print("mc-all total time :")
+  print(Sys.time() - total_time)
   
   resultat
 }
