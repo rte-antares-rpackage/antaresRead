@@ -10,9 +10,10 @@ options("antaresRead.skip_h5_on_appveyor" = TRUE)
 
 path0 <- tempdir()
 
-sourcedir <- system.file("inst/testdata", package = "antaresRead")
+#sourcedir <- system.file("inst/testdata", package = "antaresRead")
+sourcedir <- system.file("testdata", package = "antaresRead")
 testH5 <- TRUE
-if(sourcedir == ""){ sourcedir <- system.file("testdata", package = "antaresRead")}
+#if(sourcedir == ""){ }
 
 ## force tests to be executed if in dev release which we define as
 ## having a sub-release, eg 0.9.15.5 is one whereas 0.9.16 is not
@@ -128,8 +129,9 @@ if (sourcedir != "") {
 
 ##Source dir for V8
 
-sourcedir_V8 <- system.file("inst/test_v8", package = "antaresRead")
-if(sourcedir_V8 == ""){ sourcedir_V8 <- system.file("test_v8", package = "antaresRead")}
+#sourcedir_V8 <- system.file("inst/test_v8", package = "antaresRead")
+sourcedir_V8 <- system.file("test_v8", package = "antaresRead")
+#if(sourcedir_V8 == ""){ sourcedir_V8 <- system.file("test_v8", package = "antaresRead")}
 
 
 if(sourcedir_V8 != ""){

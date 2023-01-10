@@ -1,7 +1,7 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
-Version: 2.3.2
+Version: 2.3.2.9000
 Authors@R: c(
     person("Veronique", "Bachelier", email = "veronique.bachelier@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", role = "aut"),
@@ -27,12 +27,14 @@ Imports:
     methods,
     stats,
     stringr,
+    stringi,
     shiny,
     pbapply,
     doParallel,
     jsonlite,
     httr,
-    utils
+    utils,
+    memuse
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,

@@ -3,27 +3,31 @@
 \name{parAggregateMCall}
 \alias{parAggregateMCall}
 \alias{aggregateResult}
-\title{Creation of Mc_all (only antares > V6)}
+\title{Creation of Mc_all new (only antares > V6)}
 \usage{
 parAggregateMCall(
   opts,
   nbcl = 8,
-  verbose = 1,
+  verbose = 2,
   timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
   writeOutput = TRUE,
   mcWeights = NULL,
-  mcYears = NULL
+  mcYears = NULL,
+  filtering = FALSE,
+  selected = NULL,
+  legacy = FALSE
 )
 
 aggregateResult(
   opts,
-  verbose = 1,
+  verbose = 2,
+  timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+  writeOutput = TRUE,
+  mcWeights = NULL,
+  mcYears = NULL,
   filtering = FALSE,
   selected = NULL,
-  timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
-  writeOutput = FALSE,
-  mcWeights = NULL,
-  mcYears = NULL
+  legacy = FALSE
 )
 }
 \arguments{
@@ -49,14 +53,9 @@ aggregateResult(
 \item{filtering}{\code{boolean} filtering control}
 
 \item{selected}{\code{list} named list (pass to antaresRead) : list(areas = 'a', links = 'a - e')}
+
+\item{legacy}{\code{boolean} run old version of the function}
 }
 \description{
-Creation of Mc_all (only antares > V6)
-}
-\examples{
-\dontrun{
-   aggregateResult(opts)
-
-}
-
+Creation of Mc_all new (only antares > V6)
 }
