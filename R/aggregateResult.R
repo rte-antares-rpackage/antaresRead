@@ -585,7 +585,7 @@ parAggregateMCall <- function(opts,
             }
           }
           LOLD_data[, isLOLD_cum := 100 * isLOLD_cum/N]
-          assign("LOLD_data", LOLD_data, envir = globalenv())
+          assign("LOLD_data", LOLD_data, envir = parent.env(environment()))
         } 
       })
       
@@ -635,6 +635,7 @@ parAggregateMCall <- function(opts,
   #add other nodes from original mc-all####
   original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
   if (file.exists(original_mc_all_path)){
+    print("Adding original mc-all data")
     old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
     old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
     new_areas <- file.path(mc_all,"areas")

@@ -1,5 +1,27 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.4.0
+
+NEW FEATURES:
+Major upgrade to `aggregateResult()` and `parAggregateMCall()` :
+* Faster & memory efficient
+* Support for Antares studies up to v8.3 (v8.4 experimental)
+* Dynamic timestep detection
+* Creation of grid folder
+* Recycling of original mc-all data
+
+
+
+# antaresRead 2.3.2
+
+NEW FEATURES:
+added "profit by cluster" when reading cluster data
+
+BUGFIXES:
+Fix for 404 error when some output is missing in API mode(#188)
+
+
+
 # antaresRead 2.3.1
 
 BUGFIXES:
