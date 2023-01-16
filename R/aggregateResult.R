@@ -67,7 +67,7 @@ parAggregateMCall <- function(opts,
   }
   
   # Renommer le dossier mc_all si exist####
-  if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
+  if (writeOutput && dir.exists(file.path(opts$simDataPath,"mc-all"))){
     if (dir.exists(file.path(opts$simDataPath, "original-mc-all"))){
       unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
     } else {
@@ -596,56 +596,62 @@ parAggregateMCall <- function(opts,
     
     
     if(verbose>0) try({ close(pb) })
-    if (tmstp == "hourly" | (tmstp == "annual" & !("hourly" %in% timestep))){
-      # Create grid folder####
-      .gridFolderCreation(opts, verbose)
-      # Create digest####
-      suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
+    if (writeOutput){
+      if (tmstp == "hourly" | (tmstp == "annual" & !("hourly" %in% timestep))){
+        # Create grid folder####
+        .gridFolderCreation(opts, verbose)
+        # Create digest####
+        suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
+      }
+      
+      mc_all <- file.path(opts$simDataPath, "mc-all")
+      file.rename(from = mc_all, stri_replace_last_fixed(mc_all, "mc-all", paste0("mc-all-",tmstp)))
     }
-    
-    if(length(output)==1) resultat[[tmstp]] <- output[[1]]
-    resultat[[tmstp]] <- output
-    
+
+    resultat[[tmstp]] <- output[[1]]
+  }
+  
+  if (writeOutput){
+    #aggregate timesteps####
+    mc_all_hourly <- file.path(opts$simDataPath, "mc-all-hourly")
     mc_all <- file.path(opts$simDataPath, "mc-all")
-    file.rename(from = mc_all, stri_replace_last_fixed(mc_all, "mc-all", paste0("mc-all-",tmstp)))
-  }
-  
-  #aggregate timesteps####
-  mc_all_hourly <- file.path(opts$simDataPath, "mc-all-hourly")
-  mc_all <- file.path(opts$simDataPath, "mc-all")
-  if (file.exists(mc_all_hourly)){
-    file.rename(from = mc_all_hourly, str_replace(mc_all_hourly, "mc-all-hourly", "mc-all"))
-  } else {
-    dir.create(mc_all)
-  }
-  
-  mc_alls <- grep("mc-all-", list.dirs(opts$simDataPath, recursive = F), value = T)
-  for (mc_all_step in mc_alls){
-    t <- Sys.time()
-    files <- list.dirs(mc_all_step, recursive = F)
-    file.copy(files, mc_all, recursive = T)
-    if (verbose > 0){
-      print(paste(mc_all_step,": Done"))
-      print(Sys.time() - t)
+    if (file.exists(mc_all_hourly)){
+      file.rename(from = mc_all_hourly, str_replace(mc_all_hourly, "mc-all-hourly", "mc-all"))
+    } else {
+      dir.create(mc_all)
+    }
+    
+    mc_alls <- grep("mc-all-", list.dirs(opts$simDataPath, recursive = F), value = T)
+    for (mc_all_step in mc_alls){
+      t <- Sys.time()
+      files <- list.dirs(mc_all_step, recursive = F)
+      file.copy(files, mc_all, recursive = T)
+      if (verbose > 0){
+        print(paste(mc_all_step,": Done"))
+        print(Sys.time() - t)
+      }
+    }
+    
+    unlink(mc_alls, recursive = T)
+    
+    #add other nodes from original mc-all####
+    original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
+    if (file.exists(original_mc_all_path)){
+      print("Adding original mc-all data")
+      old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
+      old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
+      new_areas <- file.path(mc_all,"areas")
+      new_links <- file.path(mc_all,"links")
+      file.copy(old_areas, new_areas, overwrite = F, recursive = T)
     }
   }
   
-  unlink(mc_alls, recursive = T)
-  
-  #add other nodes from original mc-all####
-  original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
-  if (file.exists(original_mc_all_path)){
-    print("Adding original mc-all data")
-    old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
-    old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
-    new_areas <- file.path(mc_all,"areas")
-    new_links <- file.path(mc_all,"links")
-    file.copy(old_areas, new_areas, overwrite = F, recursive = T)
+  if(verbose > 0){
+    print("mc-all total time :")
+    print(Sys.time() - total_time)
   }
-  
-  print("mc-all total time :")
-  print(Sys.time() - total_time)
-  
+
+  if (length(resultat) == 1) return (resultat[[1]])
   resultat
 }
 

@@ -1,7 +1,5 @@
 context("mcWeights")
 
-skip("readAntares empty when mcYears is NULL")
-
 setSimulationPath(studyPathSV8)
 
 sapply(c("hourly", "daily", "weekly", "monthly", "annual"), function(tim){
