@@ -19,8 +19,16 @@ readAntaresClusters <- function(clusters, selected = c("production", "NP Cost", 
   
   ##Add check control for all
   allClusters <- readClusterDesc()[, c("area","cluster")]
-  clusters <- .checkArg(clusters, unique(allClusters$cluster), "clusters %s do not exist in the simulation.")
-  clusters <- .checkArg(clusters, unique(allClusters[area %in% opts$areasWithClusters]$cluster), "clusters %s have no output.")
+  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clusters), 
+                                                                   tolower(unique(allClusters$cluster)), 
+                                                                   "clusters %s do not exist in the simulation."))
+  clusters <- allClusters$cluster[ind_cluster]
+  
+  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clusters), 
+                                                                   tolower(unique(allClusters[area %in% opts$areasWithClusters]$cluster)), 
+                                                                   "clusters %s have no output."))
+  clusters <- allClusters$cluster[ind_cluster]
+  
   areas <- unique(allClusters[cluster %in% clusters]$area)
   
   res <- readAntares(clusters = areas, timeStep = timeStep, opts = opts, 
