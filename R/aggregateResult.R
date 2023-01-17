@@ -67,7 +67,7 @@ parAggregateMCall <- function(opts,
   }
   
   # Renommer le dossier mc_all si exist####
-  if (dir.exists(file.path(opts$simDataPath,"mc-all"))){
+  if (writeOutput && dir.exists(file.path(opts$simDataPath,"mc-all"))){
     if (dir.exists(file.path(opts$simDataPath, "original-mc-all"))){
       unlink(file.path(opts$simDataPath,"mc-all"), recursive = T)
     } else {
@@ -90,14 +90,14 @@ parAggregateMCall <- function(opts,
     # writeOutput = FALSE
     # mcWeights = c(1, 2)
     # mcYears = c(1, 3)
-
+    
     if(writeOutput == FALSE){ coef = 1.4 } else { coef = 1 }
     if(writeOutput == FALSE & length(tmstp)>1) stop("If you want data return you must choose a unique timestep")
-
+    
     if(verbose > 0) try ({pb <- txtProgressBar(style = 3)})
     
     opts <- suppressWarnings(setSimulationPath(opts$simPath))
-
+    
     # Version which readAntares####
     RES_mode <- F
     if (opts$antaresVersion >= 810) 
@@ -120,10 +120,10 @@ parAggregateMCall <- function(opts,
       if(length(numMc) == 1) if(numMc%in% c("all", "All")) numMc <- opts$mcYears
       
     } else numMc <- opts$mcYears
-
+    
     if(is.null(mcWeights)) mcWeights <- rep(1, length(numMc))
     if(length(mcWeights)!=length(numMc)) stop('length of mcWeights must be the same as mcYears')
-
+    
     coef_div_mc_pond <- sum(mcWeights)
     coef_div_mc_pond_2 <- sum(mcWeights * mcWeights)
     
@@ -145,7 +145,7 @@ parAggregateMCall <- function(opts,
       paropts <- list(preschedule=TRUE)
       clusterSetRNGStream(cl, 123)
     }
-
+    
     #Start mc-all calculation####
     output <- sapply(tmstp, function(type, verbose)
     {
@@ -254,7 +254,7 @@ parAggregateMCall <- function(opts,
                 for(i in curr_years){
                   lst_idx = lst_idx + 1
                   a <- Sys.time()
-
+                  
                   if (!parallel){
                     dtaTP <- suppressWarnings(readAntares(areas = areasselect,
                                                           links = linksSelect,
@@ -286,7 +286,7 @@ parAggregateMCall <- function(opts,
                   for (elmt in c("areas","links","clusters","clustersRes")){
                     value[[elmt]] <- .updateStats(value[[elmt]], valueTP[[elmt]])
                   }
- 
+                  
                   btot <- btot + as.numeric(Sys.time() - b)
                   if(verbose>0) try({.progBar(pb, type, i, N, coef)})
                   
@@ -402,10 +402,10 @@ parAggregateMCall <- function(opts,
                     kepNam[which(kepNam == "timeId")] <- nameIndex
                     #write txt
                     .writeFileOut(dta = areastowrite, timestep = type, fileType = f,
-                                                ctry = areasel, opts = opts, folderType = "areas", nbvar = nbvar,
-                                                indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
-                                                nomcair = areaSpecialFile$Name, unit = areaSpecialFile$Unit,
-                                                nomStruct = kepNam,Stats = areaSpecialFile$Stats)
+                                  ctry = areasel, opts = opts, folderType = "areas", nbvar = nbvar,
+                                  indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
+                                  nomcair = areaSpecialFile$Name, unit = areaSpecialFile$Unit,
+                                  nomStruct = kepNam,Stats = areaSpecialFile$Stats)
                     
                     
                   })
@@ -456,10 +456,10 @@ parAggregateMCall <- function(opts,
                   kepNam[which(kepNam == "timeId")] <- nameIndex
                   #write txt
                   .writeFileOut(dta = linkstowrite, timestep = type, fileType = f,
-                                              ctry = linksel, opts = opts, folderType = "links", nbvar = nbvar,
-                                              indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
-                                              nomcair = linkSpecialFile$Name, unit = linkSpecialFile$Unit,
-                                              nomStruct = kepNam,Stats = linkSpecialFile$Stats)
+                                ctry = linksel, opts = opts, folderType = "links", nbvar = nbvar,
+                                indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
+                                nomcair = linkSpecialFile$Name, unit = linkSpecialFile$Unit,
+                                nomStruct = kepNam,Stats = linkSpecialFile$Stats)
                 })
               }
             }), silent = TRUE)
@@ -519,9 +519,9 @@ parAggregateMCall <- function(opts,
                   ncolFix <- length(nomStruct)
                   #write details txt
                   .writeFileOut(dta = endClustctry, timestep = type, fileType = "details",
-                                              ctry = ctry, opts = opts, folderType = "areas", nbvar = nbvar,
-                                              indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
-                                              nomcair = nomcair, unit = unit, nomStruct = nomStruct,Stats = Stats)
+                                ctry = ctry, opts = opts, folderType = "areas", nbvar = nbvar,
+                                indexMin = indexMin, indexMax = indexMax, ncolFix = ncolFix,
+                                nomcair = nomcair, unit = unit, nomStruct = nomStruct,Stats = Stats)
                 }), silent = TRUE)
                 .errorTest(detailWrite, verbose, "Detail write")
               }
@@ -542,7 +542,7 @@ parAggregateMCall <- function(opts,
                     endClustctry <- endClust[area == ctry]
                     orderBeg <- unique(endClustctry$time)
                     endClustctry[,c("area") := NULL]
-
+                    
                     nameBy <- c("production", "col2")
                     
                     nomStruct <- names(endClustctry)[!names(endClustctry) %in% c("cluster", nameBy)]
@@ -554,7 +554,7 @@ parAggregateMCall <- function(opts,
                     tmp_formula <- as.formula(paste0(paste0(tmp_formula, collapse = " + "), "~cluster"))
                     
                     endClustctry[, c(nameBy) := list(round(`production`))]
-
+                    
                     endClustctry <- data.table::dcast(endClustctry, tmp_formula,
                                                       value.var = c(nameBy))
                     
@@ -596,56 +596,62 @@ parAggregateMCall <- function(opts,
     
     
     if(verbose>0) try({ close(pb) })
-    if (tmstp == "hourly" | (tmstp == "annual" & !("hourly" %in% timestep))){
-      # Create grid folder####
-      .gridFolderCreation(opts, verbose)
-      # Create digest####
-      suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
+    if (writeOutput){
+      if (tmstp == "hourly" | (tmstp == "annual" & !("hourly" %in% timestep))){
+        # Create grid folder####
+        .gridFolderCreation(opts, verbose)
+        # Create digest####
+        suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
+      }
+      
+      mc_all <- file.path(opts$simDataPath, "mc-all")
+      file.rename(from = mc_all, stri_replace_last_fixed(mc_all, "mc-all", paste0("mc-all-",tmstp)))
     }
     
-    if(length(output)==1) resultat[[tmstp]] <- output[[1]]
-    resultat[[tmstp]] <- output
-    
+    resultat[[tmstp]] <- output[[1]]
+  }
+  
+  if (writeOutput){
+    #aggregate timesteps####
+    mc_all_hourly <- file.path(opts$simDataPath, "mc-all-hourly")
     mc_all <- file.path(opts$simDataPath, "mc-all")
-    file.rename(from = mc_all, stri_replace_last_fixed(mc_all, "mc-all", paste0("mc-all-",tmstp)))
-  }
-  
-  #aggregate timesteps####
-  mc_all_hourly <- file.path(opts$simDataPath, "mc-all-hourly")
-  mc_all <- file.path(opts$simDataPath, "mc-all")
-  if (file.exists(mc_all_hourly)){
-    file.rename(from = mc_all_hourly, str_replace(mc_all_hourly, "mc-all-hourly", "mc-all"))
-  } else {
-    dir.create(mc_all)
-  }
-  
-  mc_alls <- grep("mc-all-", list.dirs(opts$simDataPath, recursive = F), value = T)
-  for (mc_all_step in mc_alls){
-    t <- Sys.time()
-    files <- list.dirs(mc_all_step, recursive = F)
-    file.copy(files, mc_all, recursive = T)
-    if (verbose > 0){
-      print(paste(mc_all_step,": Done"))
-      print(Sys.time() - t)
+    if (file.exists(mc_all_hourly)){
+      file.rename(from = mc_all_hourly, str_replace(mc_all_hourly, "mc-all-hourly", "mc-all"))
+    } else {
+      dir.create(mc_all)
+    }
+    
+    mc_alls <- grep("mc-all-", list.dirs(opts$simDataPath, recursive = F), value = T)
+    for (mc_all_step in mc_alls){
+      t <- Sys.time()
+      files <- list.dirs(mc_all_step, recursive = F)
+      file.copy(files, mc_all, recursive = T)
+      if (verbose > 0){
+        print(paste(mc_all_step,": Done"))
+        print(Sys.time() - t)
+      }
+    }
+    
+    unlink(mc_alls, recursive = T)
+    
+    #add other nodes from original mc-all####
+    original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
+    if (file.exists(original_mc_all_path)){
+      print("Adding original mc-all data")
+      old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
+      old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
+      new_areas <- file.path(mc_all,"areas")
+      new_links <- file.path(mc_all,"links")
+      file.copy(old_areas, new_areas, overwrite = F, recursive = T)
     }
   }
   
-  unlink(mc_alls, recursive = T)
-  
-  #add other nodes from original mc-all####
-  original_mc_all_path <- file.path(opts$simDataPath,"original-mc-all")
-  if (file.exists(original_mc_all_path)){
-    print("Adding original mc-all data")
-    old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
-    old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
-    new_areas <- file.path(mc_all,"areas")
-    new_links <- file.path(mc_all,"links")
-    file.copy(old_areas, new_areas, overwrite = F, recursive = T)
+  if(verbose > 0){
+    print("mc-all total time :")
+    print(Sys.time() - total_time)
   }
   
-  print("mc-all total time :")
-  print(Sys.time() - total_time)
-  
+  if (length(resultat) == 1) return (resultat[[1]])
   resultat
 }
 
@@ -677,7 +683,7 @@ aggregateResult <- function(opts,
                             filtering = FALSE,
                             selected = NULL,
                             legacy = FALSE){
-
+  
   if (isFALSE(legacy)){
     parAggregateMCall(opts = opts, nbcl = 1, verbose = verbose, timestep = timestep, writeOutput = writeOutput, 
                       mcWeights = mcWeights, mcYears = mcYears, filtering = filtering,
@@ -687,7 +693,7 @@ aggregateResult <- function(opts,
                         selected = selected, timestep = timestep, writeOutput = writeOutput, 
                         mcWeights = mcWeights, mcYears = mcYears)
   }
-
+  
   
 }
 
@@ -763,17 +769,17 @@ aggregateResult <- function(opts,
   for (i in 1:nrow(digest)){
     data_link = strsplit(as.character(digest[i,link]), " - ")
     result[`...To` == data_link[[1]][2], data_link[[1]][1] := ifelse(round(as.numeric(digest[i,"FLOW LIN."])) == 0,
-                                                               1000000000000000,
-                                                               round(as.numeric(digest[i,"FLOW LIN."])))]
+                                                                     1000000000000000,
+                                                                     round(as.numeric(digest[i,"FLOW LIN."])))]
     result[`...To` == data_link[[1]][1], data_link[[1]][2] := ifelse(-round(as.numeric(digest[i,"FLOW LIN."])) == 0,
-                                                               1000000000000000,
-                                                               -round(as.numeric(digest[i,"FLOW LIN."])))]
+                                                                     1000000000000000,
+                                                                     -round(as.numeric(digest[i,"FLOW LIN."])))]
     suppressWarnings(result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"])
   }
   result[result == 0] <- "--"
   result[result == 1000000000000000] <- 0
   result[is.na(result)] <- "X"
-
+  
   result
 }
 
@@ -805,11 +811,11 @@ aggregateResult <- function(opts,
   for (i in 1:nrow(digest)){
     data_link = strsplit(as.character(digest[i,link]), " - ")
     result[`...To` == data_link[[1]][2], data_link[[1]][1] := ifelse(round(as.numeric(digest[i,"FLOW QUAD."])) == 0,
-                                                               1000000000000000,
-                                                               round(as.numeric(digest[i,"FLOW QUAD."])))]
+                                                                     1000000000000000,
+                                                                     round(as.numeric(digest[i,"FLOW QUAD."])))]
     result[`...To` == data_link[[1]][1], data_link[[1]][2] := ifelse(-round(as.numeric(digest[i,"FLOW QUAD."])) == 0,
-                                                               1000000000000000,
-                                                               -round(as.numeric(digest[i,"FLOW QUAD."])))]
+                                                                     1000000000000000,
+                                                                     -round(as.numeric(digest[i,"FLOW QUAD."])))]
     suppressWarnings(result[`...To` == data_link[[1]][1], data_link[[1]][1] := "X"])
   }
   result[result == 0] <- "--"
@@ -873,7 +879,7 @@ aggregateResult <- function(opts,
   digest <- digest[, "MRG. PRICE" := mrgprice/8736][, lapply(.SD, sum, na.rm=TRUE), by="area"][, mrgprice := NULL]
   digest <- digest[, unique(c("OV. COST", "OP. COST", "MRG. PRICE", names(digest))), with = F]
   digest <- merge(digest, LOLD_data)[, LOLP := isLOLD_cum][, isLOLD_cum := NULL]
-
+  
   for(i in 2:length(names(digest)))
   {
     var <- names(digest)[i]
@@ -949,7 +955,7 @@ aggregateResult <- function(opts,
   first_table = data.table(VARIABLES = ncol(digesta) - 1, AREAS = nrow(digesta) - 2, LINKS = 0)
   write.table(first_table, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
   write(x = "", file = digest_file, append = T)
-
+  
   
   ## Digest areas
   write.table(digesta, file = digest_file, row.names = F, quote = F, sep = "\t", append = T)
@@ -995,13 +1001,13 @@ aggregateResult <- function(opts,
 #'
 #' @noRd
 .parReadAntares <- function(mcYear, pth, type, 
-                           areasselect, linksSelect, 
-                           clustersSelect, clustersResSelect){
+                            areasselect, linksSelect, 
+                            clustersSelect, clustersResSelect){
   setSimulationPath(pth)
   dt <- readAntares(areas = areasselect, links = linksSelect, 
-                                 clusters = clustersSelect, clustersRes = clustersResSelect, 
-                                 timeStep = type, simplify = FALSE, 
-                                 mcYears = mcYear, showProgress = FALSE)
+                    clusters = clustersSelect, clustersRes = clustersResSelect, 
+                    timeStep = type, simplify = FALSE, 
+                    mcYears = mcYear, showProgress = FALSE)
   dt
 }
 
@@ -1600,30 +1606,30 @@ aggregateResult_old <- function(opts, verbose = 1,
       if(!filtering)
       {
         dta <- readAntares(areas = "all", links = "all", clusters = "all",
-                                        clustersRes = "all", timeStep = type, simplify = FALSE, 
-                                        mcYears = numMc[1], showProgress = FALSE)
+                           clustersRes = "all", timeStep = type, simplify = FALSE, 
+                           mcYears = numMc[1], showProgress = FALSE)
       } else {
         if(is.null(selected)){
           
           areasselect <- .getAreasToAggregate(opts, type)
           linksSelect <- .getLinksToAggregate(opts, type)
           dta <- readAntares(areas = areasselect,
-                                          links = linksSelect,
-                                          clusters = areasselect,
-                                          clustersRes = areasselect,
-                                          timeStep = type,
-                                          simplify = FALSE,
-                                          mcYears = numMc[1],
-                                          showProgress = FALSE)
+                             links = linksSelect,
+                             clusters = areasselect,
+                             clustersRes = areasselect,
+                             timeStep = type,
+                             simplify = FALSE,
+                             mcYears = numMc[1],
+                             showProgress = FALSE)
         } else {
           dta <- readAntares(areas = selected$areas,
-                                          links = selected$links,
-                                          clusters = selected[["clusters"]],
-                                          clustersRes = selected[["clustersRes"]],
-                                          timeStep = type,
-                                          simplify = FALSE,
-                                          mcYears = numMc[1],
-                                          showProgress = FALSE)
+                             links = selected$links,
+                             clusters = selected[["clusters"]],
+                             clustersRes = selected[["clustersRes"]],
+                             timeStep = type,
+                             simplify = FALSE,
+                             mcYears = numMc[1],
+                             showProgress = FALSE)
           
         }
       }
@@ -1739,26 +1745,26 @@ aggregateResult_old <- function(opts, verbose = 1,
               if(!filtering)
               {
                 dtaTP <- readAntares(areas = "all", links = "all", clusters = "all", clustersRes = "all",
-                                                  timeStep = type, simplify = FALSE, mcYears = numMc[i], showProgress = FALSE)
+                                     timeStep = type, simplify = FALSE, mcYears = numMc[i], showProgress = FALSE)
               } else {
                 
                 if(is.null(selected)){
                   
                   dtaTP <- readAntares(areas = areasselect, 
-                                                    links = linksSelect, 
-                                                    clusters = areasselect, 
-                                                    clustersRes = areasselect,
-                                                    timeStep = type, simplify = FALSE, 
-                                                    mcYears = numMc[i], showProgress = FALSE)
+                                       links = linksSelect, 
+                                       clusters = areasselect, 
+                                       clustersRes = areasselect,
+                                       timeStep = type, simplify = FALSE, 
+                                       mcYears = numMc[i], showProgress = FALSE)
                 } else{
                   dtaTP <- readAntares(areas = selected$areas,
-                                                    links = selected$links,
-                                                    clusters = selected[["clusters"]],
-                                                    clustersRes = selected[["clustersRes"]],
-                                                    timeStep = type,
-                                                    simplify = FALSE,
-                                                    mcYears = numMc[i],
-                                                    showProgress = FALSE)
+                                       links = selected$links,
+                                       clusters = selected[["clusters"]],
+                                       clustersRes = selected[["clustersRes"]],
+                                       timeStep = type,
+                                       simplify = FALSE,
+                                       mcYears = numMc[i],
+                                       showProgress = FALSE)
                   
                 }
               }
@@ -2131,41 +2137,41 @@ aggregateResult_old <- function(opts, verbose = 1,
 #' @rdname aggregatate_mc_all_old
 #' 
 parAggregateMCall_old <- function(opts,
-                              nbcl = 8,
-                              verbose = 1,
-                              timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
-                              writeOutput = TRUE, # for ADPatch compatibility
-                              mcWeights = NULL,
-                              mcYears = NULL){
-
-
+                                  nbcl = 8,
+                                  verbose = 1,
+                                  timestep = c("annual", "daily", "hourly", "monthly", "weekly"),
+                                  writeOutput = TRUE, # for ADPatch compatibility
+                                  mcWeights = NULL,
+                                  mcYears = NULL){
+  
+  
   if(verbose == 1){
     cat("Mc all start\n")
   }
-
+  
   if(verbose == 0){
     pboptions(type = "none")
   }
-
+  
   areas <- getAreas(opts = opts)
   links <- getLinks(opts = opts)
   # clusters <- areas
   clusters <- getAreas(withClustersOnly = TRUE, opts = opts)
-
+  
   todo <- data.table(V1 = c(areas, links, clusters),
                      V2 = c(rep("area", length(areas)),
                             rep("link", length(links)),
                             rep("cluster", length(clusters))
                      ))
-
+  
   todo <- apply(todo, 1, function(X)list(X))
-
+  
   if(nbcl>1){
     parallel <- TRUE
   }else{
     parallel <- FALSE
   }
-
+  
   if(parallel){
     cl <- makeCluster(nbcl)
     clusterExport(cl, c("opts", "timestep", "writeOutput", "mcWeights", "mcYears"), envir = environment())
@@ -2173,16 +2179,16 @@ parAggregateMCall_old <- function(opts,
   }else{
     cl <- NULL
   }
-
-
+  
+  
   pblapply(todo, function(X){
     d <- list(X[[1]][1])
     names(d) <- X[[1]][2]
     aggregateResult_old(opts, filtering = TRUE, verbose = 0, selected = d,
-                    timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
+                        timestep = timestep, writeOutput = writeOutput, mcWeights = mcWeights, mcYears = mcYears)
     gc() # clean memory
   }, cl = cl)
-
+  
   if(verbose == 1){
     cat("Start computing\n")
   }
