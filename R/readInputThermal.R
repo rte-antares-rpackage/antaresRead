@@ -46,7 +46,7 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE,
   if(identical(clusters, "all")) clusters <- allClusters
 
   if (length(setdiff(tolower(clusters), tolower(allClusters))) > 0){
-    cat(c("the following clusters are not available : ",setdiff(clusters, allClusters)))
+    cat(c("the following clusters are not available : ",setdiff(tolower(clusters), tolower(allClusters))))
     stop("Some clusters are not available in the areas specified")
   }
   
@@ -57,17 +57,18 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE,
   thermalTS <- as.data.table(ldply(clusters, function(cl) {
     
     area <- unique(allAreasClusters[cluster == cl]$area)
-    if (length(area) > 1) stop(cl," is in more than one area")
-    filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", area)
-    resCl <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
-                          inputTimeStep = "hourly", type = "matrix")
+    if (length(area) > 1) warning(cl," is in more than one area")
+    resCl <- ldply(area, function(x){
+      filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", x)
+      mid <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
+                            inputTimeStep = "hourly", type = "matrix")
+      if (is.null(mid)) return (data.table())
+      mid$area <- x
+      mid$cluster <- cl
+      mid
+    })
     
-    if (is.null(resCl)) return(NULL)
-    
-    resCl$area <- area
-    resCl$cluster <- cl
-    
-    resCl <- dcast(resCl, area + cluster + timeId ~ tsId, value.var = "ThermalAvailabilities")
+    resCl <- dcast(as.data.table(resCl), area + cluster + timeId ~ tsId, value.var = "ThermalAvailabilities")
   }))
   
   tsCols <- setdiff(colnames(thermalTS), c("area", "cluster", "timeId"))
