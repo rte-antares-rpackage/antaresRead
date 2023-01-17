@@ -27,7 +27,7 @@ readAntaresClusters <- function(clusters, selected = c("production", "NP Cost", 
   ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clusters), 
                                                                    tolower(unique(allClusters[area %in% opts$areasWithClusters]$cluster)), 
                                                                    "clusters %s have no output."))
-  clusters <- allClusters$cluster[ind_cluster]
+  clusters <- unique(allClusters$cluster[ind_cluster])
   
   areas <- unique(allClusters[cluster %in% clusters]$area)
   

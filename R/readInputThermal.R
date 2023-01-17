@@ -51,7 +51,7 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE,
   }
   
   ind_cluster <- which(tolower(allClusters) %in% tolower(clusters))
-  clusters <- allClusters[ind_cluster]
+  clusters <- unique(allClusters[ind_cluster])
   res <- list() # Object the function will return
   
   thermalTS <- as.data.table(ldply(clusters, function(cl) {
