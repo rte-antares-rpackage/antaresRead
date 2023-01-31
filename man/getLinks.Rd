@@ -10,7 +10,8 @@ getLinks(
   opts = simOptions(),
   internalOnly = FALSE,
   namesOnly = TRUE,
-  withDirection = FALSE
+  withDirection = FALSE,
+  withTransmission = FALSE
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ which is equal is equal to
 The column \code{area} contains only areas that are compatible with parameters 
 \code{areas} and \code{exclude}. Note that the same link can appear twice 
 in the table with different directions.}
+
+\item{withTransmission}{Used only if \code{namesOnly = FALSE}. If \code{TRUE}, a column is added to indicate 
+type of transmission capacities for links.}
 }
 \value{
 If \code{namesOnly = TRUE} the function returns a vector containing link names 
