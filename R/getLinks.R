@@ -98,7 +98,7 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
     inward_links <- links[, .(area = to, link, to = from)]
     inward_links[, direction := -1]
     
-    links <- rbind(outward_links, inward_links)
+    links <- rbind(outward_links, inward_links)[area %in% areas]
   }
   
   if (withTransmission){

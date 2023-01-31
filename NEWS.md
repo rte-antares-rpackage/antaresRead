@@ -1,5 +1,15 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.4.2
+
+NEW FEATURES:
+
+Function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional
+column with type of transmission capacities
+
+
+
+
 # antaresRead 2.4.1
 
 NEW FEATURES:
