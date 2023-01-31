@@ -28,7 +28,10 @@
 #'   \code{to} to \code{area}.
 #'   The column \code{area} contains only areas that are compatible with parameters 
 #'   \code{areas} and \code{exclude}. Note that the same link can appear twice 
-#'   in the table with different directions.  
+#'   in the table with different directions.
+#' @param withTransmission
+#'   Used only if \code{namesOnly = FALSE}. If \code{TRUE}, a column is added to indicate 
+#'   type of transmission capacities for links.
 #'   
 #' @inheritParams readAntares
 #'
@@ -73,7 +76,7 @@
 #'
 getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(), 
                      internalOnly=FALSE, namesOnly = TRUE, 
-                     withDirection = FALSE) {
+                     withDirection = FALSE, withTransmission = FALSE) {
 
   if (is.null(areas)) areas <- getAreas(opts = opts)
   
@@ -88,15 +91,37 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
   links <- links[!from %in% exclude & !to %in% exclude]
   
   if (namesOnly) return(links$link)
-  if (!withDirection) return(links)
-
-  outward_links <- links[, .(area = from, link, to = to)]
-  outward_links[, direction := 1]
-
-  inward_links <- links[, .(area = to, link, to = from)]
-  inward_links[, direction := -1]
-
-  links <- rbind(outward_links, inward_links)
+  if (withDirection){
+    outward_links <- links[, .(area = from, link, to = to)]
+    outward_links[, direction := 1]
+    
+    inward_links <- links[, .(area = to, link, to = from)]
+    inward_links[, direction := -1]
+    
+    links <- rbind(outward_links, inward_links)[area %in% areas]
+  }
   
-  links[area %in% areas]
+  if (withTransmission){
+    infinite <- ldply(areas, function(f) {
+      if (opts$typeLoad %in% "api"){
+        properties <- tryCatch({readIni(file.path("input", "links", f, "properties"))},
+                               error=function(cond){
+                                 message("Area ", f, " has no links.")
+                                 return (NULL)
+                               })
+      } else {
+        if (!dir.exists(file.path(opts$inputPath, "links", f))) return(NULL)
+        properties <- readIniFile(file.path(opts$inputPath, "links", f, "properties.ini"))
+        
+      }
+      to <- names(properties)
+      if (length(to) == 0) return(NULL)
+      
+      res <- ldply(to, function(x){data.frame(link = paste(f, "-", x), transmission = properties[[x]]$`transmission-capacities`)})
+      res
+    })
+    if ("link" %in% colnames(infinite)) links <- merge(links, as.data.table(infinite), by = "link")
+  }
+
+  links
 }
