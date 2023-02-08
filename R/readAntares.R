@@ -456,7 +456,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                              parallel = parallel)
   if(!is.null(res$districts) && nrow(res$districts) == 0) res$districts <- NULL
   
-  if(!is.null(bindingConstraints)){
+  if(bindingConstraints){
     if (opts$antaresVersion < 840)
       warning("bindingConstraints output is only available in studies v8.4 or above")
     else
