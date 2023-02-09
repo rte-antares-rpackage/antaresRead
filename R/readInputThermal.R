@@ -9,11 +9,12 @@
 #' 
 #' @param clusters vector of clusters names for which thermal time series must be read.
 #' @param thermalModulation if TRUE, return thermalModulation data
+#' @param thermalData if TRUE, return thermalData from prepro
 #' @inheritParams readAntares
 #' 
 #' @return 
-#' If thermalModulation is TRUE, an object of class "antaresDataList" is returned. It is a list of
-#' data.tables for thermalAvailabilities and thermalModulation
+#' If thermalModulation or thermalData is TRUE, an object of class "antaresDataList" is returned. It is a list of
+#' data.tables for selected input
 #' 
 #' Else the result is a data.table with class "antaresDataTable".
 #' 
@@ -26,7 +27,7 @@
 #' \code{\link{getAreas}}, \code{\link{getLinks}}
 #' 
 #' @export
-readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, 
+readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermalData = FALSE,
                              opts = simOptions(),
                              timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                              simplify = TRUE, parallel = FALSE,
@@ -85,6 +86,16 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE,
     setcolorder(thermalMod, c("area", "cluster", "timeId", setdiff(names(thermalMod), c("area", "cluster", "timeId"))))
     
     if (nrow(thermalMod) > 0) res$thermalModulation <- thermalMod
+  }
+  
+  # thermalData processing
+  if (thermalData){
+    areas <- unique(allAreasClusters[cluster %in% clusters]$area)
+    thermalDat <- as.data.table(ldply(areas, .importThermalData, opts = opts, timeStep = timeStep))
+    thermalDat <- thermalDat[cluster %in% clusters]
+    setcolorder(thermalDat, c("area", "cluster", "timeId", setdiff(names(thermalDat), c("area", "cluster", "timeId"))))
+    
+    if (nrow(thermalDat) > 0) res$thermalData <- thermalDat
   }
     
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
