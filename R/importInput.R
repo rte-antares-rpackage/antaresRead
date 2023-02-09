@@ -371,7 +371,7 @@
     data <- data[opts$timeIdMin:realTimeIdMax]
     data$timeId <- opts$timeIdMin:realTimeIdMax
     
-    changeTimeStep(data, timeStep, "hourly", fun = "mean")
+    changeTimeStep(data, timeStep, "daily", fun = "mean")
   })
 }
 
