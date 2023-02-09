@@ -88,11 +88,13 @@ changeTimeStep <- function(x, newTimeStep, oldTimeStep, fun = "sum", opts=simOpt
   if (!is.null(x$week)) x$week <- NULL
   if (!is.null(x$month)) x$month <- NULL
   
+  if(!is.null(x)) realTimeIdMax <- ifelse(nrow(x) == 8760, 8760, opts$timeIdMax)
+  
   # Strategy: if oldTimeStep is not hourly, first desagregate data at hourly
   # level. Then, in all cases aggregate hourly data at the desired level.
   refTime <- data.table(
-    oldTimeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, oldTimeStep, opts),
-    timeId = .getTimeId(opts$timeIdMin:opts$timeIdMax, newTimeStep, opts)
+    oldTimeId = .getTimeId(opts$timeIdMin:realTimeIdMax, oldTimeStep, opts),
+    timeId = .getTimeId(opts$timeIdMin:realTimeIdMax, newTimeStep, opts)
   )
   
   x <- copy(x)

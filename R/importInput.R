@@ -43,10 +43,6 @@
   
   # If file does not exists or is empty, but we know the columns, then we
   # create a table filled with 0. Else we return NULL
-  timeRange <- switch(inputTimeStep, 
-                      hourly=c(opts$timeIdMin, opts$timeIdMax), 
-                      daily=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "daily", opts)), 
-                      monthly=range(.getTimeId(opts$timeIdMin:opts$timeIdMax, "monthly", opts)))
   
   
   if (opts$typeLoad == 'api' || (file.exists(path) && !file.size(path) == 0)) {
@@ -65,6 +61,13 @@
         inputTS <- .reorderInputTSHydroStorage(inputTS, path, opts)
       }
     }
+    
+    if(!is.null(inputTS)) realTimeIdMax <- ifelse(nrow(inputTS) == 8760, 8760, opts$timeIdMax)
+    
+    timeRange <- switch(inputTimeStep, 
+                        hourly=c(opts$timeIdMin, realTimeIdMax), 
+                        daily=range(.getTimeId(opts$timeIdMin:realTimeIdMax, "daily", opts)), 
+                        monthly=range(.getTimeId(opts$timeIdMin:realTimeIdMax, "monthly", opts)))
     
     if(!is.null(inputTS)){
       inputTS <- inputTS[timeRange[1]:timeRange[2]]
@@ -361,10 +364,12 @@
     setnames(data, 
              names(data), names)
     
+    if(!is.null(data)) realTimeIdMax <- ifelse(nrow(data) == 8760, 8760, opts$timeIdMax)
+    
     data$area <- area
     data$cluster <- cl
-    data <- data[opts$timeIdMin:opts$timeIdMax]
-    data$timeId <- opts$timeIdMin:opts$timeIdMax
+    data <- data[opts$timeIdMin:realTimeIdMax]
+    data$timeId <- opts$timeIdMin:realTimeIdMax
     
     changeTimeStep(data, timeStep, "hourly", fun = "mean")
   })
@@ -410,10 +415,12 @@
     if (all(modulation$minGenModulation == 0)) 
       modulation[, minGenModulation := NA_real_]
     
+    if(!is.null(modulation)) realTimeIdMax <- ifelse(nrow(modulation) == 8760, 8760, opts$timeIdMax)
+    
     modulation$area <- area
     modulation$cluster <- cl
-    modulation <- modulation[opts$timeIdMin:opts$timeIdMax]
-    modulation$timeId <- opts$timeIdMin:opts$timeIdMax
+    modulation <- modulation[opts$timeIdMin:realTimeIdMax]
+    modulation$timeId <- opts$timeIdMin:realTimeIdMax
     
     changeTimeStep(modulation, timeStep, "hourly", fun = "mean")
   })
