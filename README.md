@@ -39,6 +39,7 @@ vignette("antares")
 
 Finally, you can download a cheatsheet that summarize in a single page how to use the package: https://github.com/rte-antares-rpackage/antaresRead/raw/master/cheat_sheet/antares_cheat_sheet_en.pdf .
 
+See website for more documentation: https://rte-antares-rpackage.github.io/antaresRead/
 
 
 
