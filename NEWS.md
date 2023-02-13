@@ -4,9 +4,8 @@
 
 NEW FEATURES:
 
-Function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional
-column with type of transmission capacities
-
+* New function `getGeographicTrimming()` returns filtering options for selected areas (links optional).
+* Existing function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional column with type of transmission capacities.
 
 
 
@@ -38,11 +37,11 @@ Major upgrade to `aggregateResult()` and `parAggregateMCall()` :
 
 NEW FEATURES:
 
-added "profit by cluster" when reading cluster data
+added "profit by cluster" when reading cluster data.
 
 BUGFIXES:
 
-Fix for 404 error when some output is missing in API mode(#188)
+Fix for 404 error when some output is missing in API mode(#188).
 
 
 
