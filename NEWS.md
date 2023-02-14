@@ -4,10 +4,12 @@
 
 NEW FEATURES:
 
-Function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional
-column with type of transmission capacities
+* New function `getGeographicTrimming()` returns filtering options for selected areas (links optional).
+* New function added : `readInputRes()` for reading renewable clusters input data 
 
 
+* Existing function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional column with type of transmission capacities.
+* Existing function `readInputThermal()` : added new argument for thermalData
 
 
 # antaresRead 2.4.1
@@ -38,11 +40,11 @@ Major upgrade to `aggregateResult()` and `parAggregateMCall()` :
 
 NEW FEATURES:
 
-added "profit by cluster" when reading cluster data
+added "profit by cluster" when reading cluster data.
 
 BUGFIXES:
 
-Fix for 404 error when some output is missing in API mode(#188)
+Fix for 404 error when some output is missing in API mode(#188).
 
 
 

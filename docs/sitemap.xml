@@ -58,6 +58,9 @@
     <loc>/reference/getAreas.html</loc>
   </url>
   <url>
+    <loc>/reference/getGeographicTrimming.html</loc>
+  </url>
+  <url>
     <loc>/reference/getIdCols.html</loc>
   </url>
   <url>
@@ -92,6 +95,9 @@
   </url>
   <url>
     <loc>/reference/readClusterDesc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/readInputRES.html</loc>
   </url>
   <url>
     <loc>/reference/readInputThermal.html</loc>
