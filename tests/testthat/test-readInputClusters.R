@@ -23,5 +23,13 @@ sapply(studyPathS, function(studyPath){
       expect_equal(nrow(input$thermalModulation) %% (24 * 7 * nweeks), 0)
     })
     
+    test_that("Thermal data importation works", {
+      input <- readInputThermal(clusters = "peak_must_run_partial", thermalModulation = TRUE, showProgress = FALSE)
+      expect_is(input, "antaresDataList")
+      expect_is(input$thermalModulation, "antaresDataTable")
+      expect_gt(nrow(input$thermalModulation), 0)
+      expect_equal(nrow(input$thermalModulation) %% (24 * 7 * nweeks), 0)
+    })
+    
   }
 })

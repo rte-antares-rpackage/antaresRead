@@ -324,6 +324,52 @@
   
 }
 
+
+
+
+.importThermalData <- function(area, opts, timeStep, unselect = NULL, ...) {
+  if (!area %in% opts$areasWithClusters) return(NULL)
+  unselect <- unselect$areas
+  path <- file.path(opts$inputPath, "thermal/prepro", area)
+  
+  if(!"api" %in% opts$typeLoad){
+    clusters <- list.files(path)
+  } else {
+    clusters <- names(read_secure_json(path, token = opts$token, timeout = opts$timeout, config = opts$httr_config))
+  }
+  
+  beginName <- c("FODuration", "PODuration", "FORate", "PORate", "NPOMin", "NPOMax")
+  if(!is.null(unselect)){
+    colSelect <- which(!beginName%in%unselect)
+    names <- beginName[colSelect]
+  }else{
+    colSelect <- NULL
+    names <- beginName
+  }
+  
+  
+  res <- ldply(clusters, function(cl) {
+    if(is.null(colSelect))
+    {
+      # data <- fread(file.path(path, cl, "data.txt"), colClasses = "numeric")
+      data <- fread_antares(opts = opts, file = file.path(path, cl, "data.txt"), colClasses = "numeric")
+    }else{
+      # data <- fread(file.path(path, cl, "data.txt"), select = colSelect, colClasses = "numeric")
+      data <- fread_antares(opts = opts, file = file.path(path, cl, "data.txt"), select = colSelect, colClasses = "numeric")
+    }
+    
+    setnames(data, 
+             names(data), names)
+    
+    data$area <- area
+    data$cluster <- cl
+    data <- data[opts$timeIdMin:opts$timeIdMax]
+    data$timeId <- opts$timeIdMin:opts$timeIdMax
+    
+    changeTimeStep(data, timeStep, "daily", fun = "mean")
+  })
+}
+
 .importThermalModulation <- function(area, opts, timeStep, unselect = NULL, ...) {
   if (!area %in% opts$areasWithClusters) return(NULL)
   unselect <- unselect$areas
@@ -359,11 +405,8 @@
     setnames(modulation, 
              names(modulation), names)
     
-    
-    
     if (all(modulation$minGenModulation == 0)) 
       modulation[, minGenModulation := NA_real_]
-    
     modulation$area <- area
     modulation$cluster <- cl
     modulation <- modulation[opts$timeIdMin:opts$timeIdMax]

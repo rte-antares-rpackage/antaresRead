@@ -5,8 +5,11 @@
 NEW FEATURES:
 
 * New function `getGeographicTrimming()` returns filtering options for selected areas (links optional).
-* Existing function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional column with type of transmission capacities.
+* New function added : `readInputRes()` for reading renewable clusters input data 
 
+
+* Existing function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional column with type of transmission capacities.
+* Existing function `readInputThermal()` : added new argument for thermalData
 
 
 # antaresRead 2.4.1
