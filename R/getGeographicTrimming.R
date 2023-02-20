@@ -11,7 +11,7 @@
 #' @export
 getGeographicTrimming <- function(areas = NULL, links = TRUE, opts = simOptions()){
   if (is.null(areas)) stop("You need to select at least one area.")
-  if (areas == "all") areas <- opts$areaList
+  if (length(areas) == 1 && areas == "all") areas <- opts$areaList
 
   res <- list()
   
