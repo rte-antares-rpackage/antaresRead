@@ -103,7 +103,8 @@ utils::globalVariables(
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
     "NODU", "min.stable.power", "thermalPmin", "name", "value",
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
-    "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status")
+    "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
+    "MRG. PRICE", "H. LEV", "V2", "V1")
 )
 
 #-----------------------------  HDF5 ------------------------------------#

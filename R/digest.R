@@ -74,7 +74,7 @@ mergeDigests <- function(digest_new, digest_ori){
   setcolorder(linNew, colnames(linOri))
   setorder(linNew, `...To`)
   for (nm in missingLinks){
-    idx = which(c(linNew[,..nm])[[1]] %in% "ORI")
+    idx = which(c(linNew[,nm,with = F])[[1]] %in% "ORI")
     linNew[idx, eval(nm) := linOri[idx, nm, with = F]]
   }
   res$lin <- linNew
@@ -88,7 +88,7 @@ mergeDigests <- function(digest_new, digest_ori){
   setcolorder(quadNew, colnames(quadOri))
   setorder(quadNew, `...To`)
   for (nm in missingLinks){
-    idx = which(c(quadNew[,..nm])[[1]] %in% "ORI")
+    idx = which(c(quadNew[,nm, with = F])[[1]] %in% "ORI")
     quadNew[idx, eval(nm) := quadOri[idx, nm, with = F]]
   }
   res$quad <- quadNew
