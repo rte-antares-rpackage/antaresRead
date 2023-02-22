@@ -1,15 +1,28 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.4.3
+
+NEW FEATURES:
+
+* New functions `readDigestFile()`, `mergeDigests()` and `writeDigest()` to manipulate digest file.
+* Mc-all aggregation loads original digest file in addition to the one created
+
+BUGFIXES:
+
+* Major corrections to mc-all and mc-ind aggregation (LOLP, H. LEV)
+* Fixed existing write digest.txt part in mc-all aggregation 
+
+
+
 # antaresRead 2.4.2
 
 NEW FEATURES:
 
 * New function `getGeographicTrimming()` returns filtering options for selected areas (links optional).
-* New function added : `readInputRes()` for reading renewable clusters input data 
-
-
+* New function `readInputRes()` for reading renewable clusters input data 
 * Existing function `getLinks()` now has a new argument **withTransmission**. if TRUE, return additional column with type of transmission capacities.
 * Existing function `readInputThermal()` : added new argument for thermalData
+
 
 
 # antaresRead 2.4.1
