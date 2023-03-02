@@ -646,6 +646,7 @@ parAggregateMCall <- function(opts,
       new_areas <- file.path(mc_all,"areas")
       new_links <- file.path(mc_all,"links")
       file.copy(old_areas, new_areas, overwrite = F, recursive = T)
+      file.copy(old_links, new_links, overwrite = F, recursive = T)
       
       ##merge digests 
       finalDigest <- mergeDigests(readDigestFile(opts),
