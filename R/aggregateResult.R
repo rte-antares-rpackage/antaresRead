@@ -643,10 +643,14 @@ parAggregateMCall <- function(opts,
       print("Adding original mc-all data")
       old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
       old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
+      old_thermal <- file.path(original_mc_all_path,"grid","thermal.txt")
       new_areas <- file.path(mc_all,"areas")
       new_links <- file.path(mc_all,"links")
+      new_thermal <- file.path(mc_all,"grid")
       file.copy(old_areas, new_areas, overwrite = F, recursive = T)
       file.copy(old_links, new_links, overwrite = F, recursive = T)
+      file.copy(old_thermal, new_thermal)
+      
       
       ##merge digests 
       finalDigest <- mergeDigests(readDigestFile(opts),
