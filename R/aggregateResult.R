@@ -228,6 +228,9 @@ parAggregateMCall <- function(opts,
             btot <- as.numeric(Sys.time() - b)
             if(verbose>0) try({.progBar(pb, type, 1, N, coef)})
             
+            #Record years####
+            recordYears <- .createRecordYears(value, numMc[1])
+            
             #LOLD_data####
             LOLD_data <- data.table(area = unique(dta$areas[, area]), isLOLD_cum = 0)
             LOLD_data[area %in% unique(dta$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == numMc[1]]]
@@ -267,8 +270,6 @@ parAggregateMCall <- function(opts,
                                                           showProgress = FALSE))
                   } else { dtaTP <- lst_dtaTP[[lst_idx]]}
                   
-                  LOLD_data[area %in% unique(dtaTP$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == i]]
-                  
                   aTot <- aTot + as.numeric(Sys.time() - a)
                   b <- Sys.time()
                   
@@ -281,6 +282,10 @@ parAggregateMCall <- function(opts,
                   })
                   
                   names(valueTP) <- nmKeep 
+                  
+                  #LOLP and record years
+                  LOLD_data[area %in% unique(dtaTP$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == i]]
+                  recordYears <- .updateRecordYears(recordYears, value, valueTP, i)
                   
                   # valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
                   
@@ -351,7 +356,7 @@ parAggregateMCall <- function(opts,
           # browser()
           
           #write mc-all files####
-          allfiles <- c("values")
+          allfiles <- c("values", "id")
           
           if(writeOutput == FALSE){
             if(verbose>0) .progBar(pb, type, 1, 1, 1, terminate = TRUE)
@@ -362,15 +367,21 @@ parAggregateMCall <- function(opts,
               warning("Writing clusterRes file is not at moment available")
             }
             
-            #write areas####
+            #write areas + record years####
             areaWrite <- try(sapply(allfiles, function(f)
             {
               #prepare data for all country
-              areaSpecialFile <- linkTable[Folder == "area" & Files == f & Mode == tolower(opts$mode)]
+              areaSpecialFile <- linkTable[Folder == "area" & 
+                                             Files == "values" & Mode == tolower(opts$mode)]
+              
+              if (f == "id") areaSpecialFile <- areaSpecialFile[Stats %in% c("min","max")]
               #mc-all variables !
               mcall_vars_area <- paste0(areaSpecialFile$Name, "_", areaSpecialFile$progNam)
               mcall_vars_area <- gsub("_EXP", "", mcall_vars_area)
-              areas <- cbind(value$areas$sum,  value$areas$std, value$areas$min, value$areas$max)
+              if (f == "values")
+                areas <- cbind(value$areas$sum, value$areas$std, value$areas$min, value$areas$max)
+              else
+                areas <- cbind(recordYears$areas$min, recordYears$areas$max)
               if(nrow(areas) > 0)
               {
                 # areas <- areas[, .SD, .SDcols = which(names(areas)%in%opts$variables$areas)]
@@ -383,13 +394,13 @@ parAggregateMCall <- function(opts,
                 areas[, c("mcYear", "time") := NULL]
                 allAreas <- unique(areas$area)
                 
-                for(i in 1:length(mcall_vars_area))
-                {
-                  var <- mcall_vars_area[i]
-                  dig <- areaSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
-                  if(length(dig)>0)areas[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
-                }
-                
+                if (f == "values")
+                  for(i in 1:length(mcall_vars_area))
+                  {
+                    var <- mcall_vars_area[i]
+                    dig <- areaSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
+                    if(length(dig)>0)areas[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+                  }
                 
                 if(length(allAreas) > 0)
                 {
@@ -415,18 +426,23 @@ parAggregateMCall <- function(opts,
               }
             }), silent = TRUE)
             
-            .errorTest(areaWrite, verbose, "Area write")
+            .errorTest(areaWrite, verbose, "Area (+ record years) write")
             
-            allfiles <- c("values")
-            #write links####
+            allfiles <- c("values", "id")
+            #write links + record years ####
             linkWrite <- try(sapply(allfiles, function(f)
             {
               #prepare data for all link
-              linkSpecialFile <- linkTable[Folder == "link" & Files == f & Mode == tolower(opts$mode)]
+              linkSpecialFile <- linkTable[Folder == "link" & 
+                                             Files == "values" & Mode == tolower(opts$mode)]
+              if (f == "id") linkSpecialFile <- linkSpecialFile[Stats %in% c("min","max")]
               #mc-all variables !
               mcall_vars_links <- paste0(linkSpecialFile$Name, "_", linkSpecialFile$progNam)
               mcall_vars_links <- gsub("_EXP", "", mcall_vars_links)
-              links <- cbind(value$links$sum,  value$links$std, value$links$min, value$links$max)
+              if (f == "values")
+                links <- cbind(value$links$sum,  value$links$std, value$links$min, value$links$max)
+              else
+                links <- cbind(recordYears$links$min, recordYears$links$max)
               if(nrow(links) > 0)
               {
                 
@@ -440,11 +456,13 @@ parAggregateMCall <- function(opts,
                 links[, c("mcYear", "time") := NULL]
                 allLink<- unique(links$link)
                 
-                for(i in 1:length(mcall_vars_links))
-                {
-                  var <- mcall_vars_links[i]
-                  dig <- linkSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
-                  if(length(dig)>0)links[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+                if (f == "values"){
+                  for(i in 1:length(mcall_vars_links))
+                  {
+                    var <- mcall_vars_links[i]
+                    dig <- linkSpecialFile[Name == var | paste0(Name,"_",progNam) == var]$digits
+                    if(length(dig)>0)links[, c(var) := .(do.call(round, args = list(get(var), digits = dig)))]
+                  }
                 }
                 
                 sapply(allLink,  function(linksel){
@@ -466,7 +484,7 @@ parAggregateMCall <- function(opts,
               }
             }), silent = TRUE)
             
-            .errorTest(linkWrite, verbose, "Link write")
+            .errorTest(linkWrite, verbose, "Link (+ record years) write")
             
             #write details####
             if (!is.null(value$clustersRes)){
@@ -643,10 +661,14 @@ parAggregateMCall <- function(opts,
       print("Adding original mc-all data")
       old_areas <- list.dirs(file.path(original_mc_all_path,"areas"), recursive = F)
       old_links <- list.dirs(file.path(original_mc_all_path,"links"), recursive = F)
+      old_thermal <- file.path(original_mc_all_path,"grid","thermal.txt")
       new_areas <- file.path(mc_all,"areas")
       new_links <- file.path(mc_all,"links")
+      new_thermal <- file.path(mc_all,"grid")
       file.copy(old_areas, new_areas, overwrite = F, recursive = T)
       file.copy(old_links, new_links, overwrite = F, recursive = T)
+      file.copy(old_thermal, new_thermal)
+      
       
       ##merge digests 
       finalDigest <- mergeDigests(readDigestFile(opts),
@@ -998,6 +1020,32 @@ aggregateResult <- function(opts,
 }
 
 
+
+.createRecordYears <- function(value, year){
+  recordYears <- list()
+  
+  recordYears$areas$min <- copy(value$areas$min)
+  recordYears$areas$max <- copy(value$areas$max)
+  recordYears$links$min <- copy(value$links$min)
+  recordYears$links$max <- copy(value$links$max)
+  
+  recordYears$areas$min[!is.na(recordYears$areas$min)] <- year
+  recordYears$areas$max[!is.na(recordYears$areas$max)] <- year
+  recordYears$links$min[!is.na(recordYears$links$min)] <- year
+  recordYears$links$max[!is.na(recordYears$links$max)] <- year
+  
+  recordYears
+}
+
+.updateRecordYears <- function(recordYears, value, valueTP, year){
+  
+  recordYears$areas$min[!is.na(recordYears$areas$min) & valueTP$areas$min < value$areas$min] <- year
+  recordYears$areas$max[!is.na(recordYears$areas$max) & valueTP$areas$max > value$areas$max] <- year
+  recordYears$links$min[!is.na(recordYears$links$min) & valueTP$links$min < value$links$min] <- year
+  recordYears$links$max[!is.na(recordYears$links$max) & valueTP$links$max > value$links$max] <- year
+  
+  recordYears 
+}
 
 
 .formatOutput <- function(out, struct){
