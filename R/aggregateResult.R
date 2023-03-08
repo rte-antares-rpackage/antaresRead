@@ -228,6 +228,9 @@ parAggregateMCall <- function(opts,
             btot <- as.numeric(Sys.time() - b)
             if(verbose>0) try({.progBar(pb, type, 1, N, coef)})
             
+            #Record years####
+            recordYears <- .createRecordYears(value, numMc[1])
+            
             #LOLD_data####
             LOLD_data <- data.table(area = unique(dta$areas[, area]), isLOLD_cum = 0)
             LOLD_data[area %in% unique(dta$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == numMc[1]]]
@@ -267,8 +270,6 @@ parAggregateMCall <- function(opts,
                                                           showProgress = FALSE))
                   } else { dtaTP <- lst_dtaTP[[lst_idx]]}
                   
-                  LOLD_data[area %in% unique(dtaTP$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == i]]
-                  
                   aTot <- aTot + as.numeric(Sys.time() - a)
                   b <- Sys.time()
                   
@@ -281,6 +282,10 @@ parAggregateMCall <- function(opts,
                   })
                   
                   names(valueTP) <- nmKeep 
+                  
+                  #LOLP and record years
+                  LOLD_data[area %in% unique(dtaTP$areas[LOLD > 0, area]), isLOLD_cum := isLOLD_cum + mcWeights[numMc == i]]
+                  recordYears <- .updateRecordYears(recordYears, value, valueTP, i)
                   
                   # valueTP <- mapply(function(X, Y){.creatStats(X, Y$W_sum, Y$w_sum2, Y$mean_m, Y$S , mcWeights[i])}, X = valueTP, Y = value, SIMPLIFY = FALSE)
                   
@@ -1002,6 +1007,32 @@ aggregateResult <- function(opts,
 }
 
 
+
+.createRecordYears <- function(value, year){
+  recordYears <- list()
+  
+  recordYears$areas$min <- copy(value$areas$min)
+  recordYears$areas$max <- copy(value$areas$max)
+  recordYears$links$min <- copy(value$links$min)
+  recordYears$links$max <- copy(value$links$max)
+  
+  recordYears$areas$min[!is.na(recordYears$areas$min)] <- year
+  recordYears$areas$max[!is.na(recordYears$areas$max)] <- year
+  recordYears$links$min[!is.na(recordYears$links$min)] <- year
+  recordYears$links$max[!is.na(recordYears$links$max)] <- year
+  
+  recordYears
+}
+
+.updateRecordYears <- function(recordYears, value, valueTP, year){
+  
+  recordYears$areas$min[!is.na(recordYears$areas$min) & valueTP$areas$min < value$areas$min] <- year
+  recordYears$areas$max[!is.na(recordYears$areas$max) & valueTP$areas$max > value$areas$max] <- year
+  recordYears$links$min[!is.na(recordYears$links$min) & valueTP$links$min < value$links$min] <- year
+  recordYears$links$max[!is.na(recordYears$links$max) & valueTP$links$max > value$links$max] <- year
+  
+  recordYears 
+}
 
 
 .formatOutput <- function(out, struct){
