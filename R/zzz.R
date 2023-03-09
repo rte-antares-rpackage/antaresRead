@@ -49,7 +49,7 @@ pkgEnv$production <- c("NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL",
 # list of column names that are id variables in output files. When they are
 # present in an output file, they are automatically imported, whatever the value
 # of "select" is.
-pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "mcYear", "timeId", "time", "day", "week", "month", "hour")
+pkgEnv$idVars <- c("area", "district", "sector", "cluster", "link", "bindingConstraint", "mcYear", "timeId", "time", "day", "week", "month", "hour")
 
 pkgEnv$idTimeVars <- c("timeId", "time", "day", "week", "month", "hour")
 

@@ -500,6 +500,164 @@
   
 }
 
+#' .importOutputForBindingConstraints
+#'
+#' Private function used to import the output for binding constraints.
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForBindingConstraints <- function(timeStep, mcYears = NULL, 
+                                  showProgress, opts, parallel, 
+                                  sameNames = T, processFun = NULL) {
+  folder <- "binding_constraints"
+  fileName <- "binding-constraints"
+  objectName <- "bindingConstraint"
+
+  if (showProgress) cat("Importing binding constraints\n")
+  
+  if (is.null(mcYears)) {
+    args <- expand.grid(id = "bindingConstraints")
+    args$path <- sprintf("%s/mc-all/%s/%s-%s.txt", 
+                         opts$simDataPath, folder, fileName, timeStep)
+  } else {
+    args <- expand.grid(id = "bindingConstraints", mcYear = mcYears)
+    args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s-%s.txt",
+                         opts$simDataPath, args$mcYear, folder, fileName, timeStep)
+  }
+  
+  if(opts$typeLoad == "api"){
+    # args$path <- sapply(args$path, .changeName, opts = opts)
+    # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
+    # print(outputMissing)
+    outputMissing <- rep(FALSE, nrow(args))
+  }else{
+    outputMissing <- !file.exists(args$path)
+  }
+  if (all(outputMissing)) {
+    message("No data corresponding to your query.")
+    return(NULL)
+  } else if (any(outputMissing)) {
+    message("Some requested output files are missing.")
+    args <- args[!outputMissing, ]
+  }
+  
+  # columns to retrieve
+  api = "api" %in% opts$typeLoad
+  colNames <- .getOutputHeader(
+    args$path[1], objectName, api = api, 
+    token = opts$token, timeout = opts$timeout, config = opts$httr_config
+  )
+  
+  # read all columns except the time variables that will be recreated
+  selectCol <- which(!colNames %in% pkgEnv$idVars)
+  colNames <- colNames[selectCol]
+  
+  # time ids
+  if (timeStep == "annual") {
+    timeIds <- 1L
+  } else {
+    timeRange <- .getTimeId(c(opts$timeIdMin, opts$timeIdMax), timeStep, opts)
+    timeIds <- seq(timeRange[1], timeRange[2])
+  }
+  
+  
+  if(!is.null((getDefaultReactiveDomain())))
+  {
+    n <- nrow(args)
+    withProgress(message = 'antaresRead', value = 0, {
+      res <- llply(
+        1:nrow(args), 
+        function(i) {
+          incProgress(1/n, detail = paste0("Importing ", folder, " data"))
+          data <- NULL
+          try({
+            
+            if (length(selectCol) == 0) {
+              if(opts$typeLoad != "api"){
+                data <- data.table(timeId = timeIds)
+              } else {
+                data <- NULL
+              }
+            } else {
+              data <- fread_antares(opts = opts, file = args$path[i], 
+                                    sep = "\t", header = F, skip = 7,
+                                    select = selectCol, integer64 = "numeric",
+                                    na.strings = "N/A")
+              
+              if(!is.null(data)){
+                # fix data.table bug on integer64
+                any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
+                if(length(any_int64) > 0){
+                  data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+                }
+                
+                setnames(data, names(data), colNames)
+                data[, timeId := timeIds]
+              }
+            }
+            
+            if(!is.null(data)){
+              if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+              if (!is.null(processFun)) data <- processFun(data)
+            }
+            data
+          })
+          data
+        }, 
+        .progress = ifelse(showProgress, "text", "none"),
+        .parallel = parallel,
+        .paropts = list(.packages = "antaresRead")
+      )
+    })
+    
+  }else{
+    res <- llply(
+      1:nrow(args), 
+      function(i) {
+
+        if (length(selectCol) == 0) {
+          if(opts$typeLoad != "api"){
+            data <- data.table(timeId = timeIds)
+          } else {
+            data <- NULL
+          }
+        } else {
+          data <- fread_antares(opts = opts, file = args$path[i], 
+                                sep = "\t", header = F, skip = 7,
+                                select = selectCol, integer64 = "numeric",
+                                na.strings = "N/A", showProgress = FALSE)
+          
+          if(!is.null(data)){
+            # fix data.table bug on integer64
+            any_int64 <- colnames(data)[which(sapply(data, function(x) "integer64" %in% class(x)))]
+            if(length(any_int64) > 0){
+              data[, c(any_int64) := lapply(.SD, as.numeric), .SDcols = any_int64]
+            }
+            
+            setnames(data, names(data), colNames)
+            data[, timeId := timeIds]
+          }
+          
+        }
+        
+        if(!is.null(data)){
+          if (!is.null(mcYears)) data[, mcYear := args$mcYear[i]]
+          if (!is.null(processFun)) data <- processFun(data)
+        }
+        data
+      }, 
+      .progress = ifelse(showProgress, "text", "none"),
+      .parallel = parallel,
+      .paropts = list(.packages = "antaresRead")
+    )
+  }
+  
+  rbindlist(res)
+}
+
 #' .importOutputForLink
 #'
 #' Private function used to import the output of one link.

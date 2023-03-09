@@ -10,6 +10,7 @@ readAntares(
   clusters = NULL,
   districts = NULL,
   clustersRes = NULL,
+  bindingConstraints = FALSE,
   misc = FALSE,
   thermalAvailabilities = FALSE,
   hydroStorage = FALSE,
@@ -51,6 +52,8 @@ districts.}
 import results at renewable cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import renewable clusters from all
 areas.}
+
+\item{bindingConstraints}{Should binding constraints be imported (v8.4+)?}
 
 \item{misc}{Vector containing the name of the areas for which you want to
 import misc.}

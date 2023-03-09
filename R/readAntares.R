@@ -85,6 +85,8 @@
 #'   import results at renewable cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import renewable clusters from all
 #'   areas.
+#' @param bindingConstraints
+#'   Should binding constraints be imported (v8.4+)?
 #' @param districts
 #'   Vector containing the names of the districts to import. If \code{NULL},
 #'   no district is imported. The special value \code{"all"} tells the function to import all
@@ -208,7 +210,7 @@
 #' @export
 #'
 readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
-                        districts = NULL, clustersRes = NULL,
+                        districts = NULL, clustersRes = NULL, bindingConstraints = FALSE,
                         misc = FALSE, thermalAvailabilities = FALSE,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
@@ -454,6 +456,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                              parallel = parallel)
   if(!is.null(res$districts) && nrow(res$districts) == 0) res$districts <- NULL
   
+  if(bindingConstraints){
+    if (opts$antaresVersion < 840)
+      warning("bindingConstraints output is only available in studies v8.4 or above")
+    else
+      res$bindingConstraints <- .importOutputForBindingConstraints(timeStep, mcYears, 
+                                                                   showProgress, opts, parallel = parallel)
+  }
+
   # Add to parameter areas the areas present in the districts the user wants
   if (!is.null(districts)) {
     districts <- opts$districtsDef[district %in% districts]
