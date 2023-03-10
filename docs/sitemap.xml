@@ -76,6 +76,9 @@
     <loc>/reference/isH5Opts.html</loc>
   </url>
   <url>
+    <loc>/reference/mergeDigests.html</loc>
+  </url>
+  <url>
     <loc>/reference/ponderateMcAggregation.html</loc>
   </url>
   <url>
@@ -95,6 +98,9 @@
   </url>
   <url>
     <loc>/reference/readClusterDesc.html</loc>
+  </url>
+  <url>
+    <loc>/reference/readDigestFile.html</loc>
   </url>
   <url>
     <loc>/reference/readInputRES.html</loc>
@@ -140,5 +146,8 @@
   </url>
   <url>
     <loc>/reference/writeAntaresH5.html</loc>
+  </url>
+  <url>
+    <loc>/reference/writeDigest.html</loc>
   </url>
 </urlset>

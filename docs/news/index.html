@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -61,12 +61,28 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="2.5.0" id="antaresread-250">antaresRead 2.5.0<a class="anchor" aria-label="anchor" href="#antaresread-250"></a></h2>
+<p>NEW FEATURES:</p>
+<ul><li>Full support of studies up to v8.5</li>
+<li>Function <code><a href="../reference/readAntares.html">readAntares()</a></code> has new argument for binding constraints output (v8.4+)</li>
+<li>New functions <code><a href="../reference/readDigestFile.html">readDigestFile()</a></code>, <code><a href="../reference/mergeDigests.html">mergeDigests()</a></code> and <code><a href="../reference/writeDigest.html">writeDigest()</a></code> to manipulate digest file.</li>
+<li>Mc-all aggregation :<ul><li>added computation of record years</li>
+<li>merges original <code>digest.txt</code> with the one created</li>
+<li>loads original <code>thermal.txt</code>
+</li>
+</ul></li>
+</ul><p>BUGFIXES:</p>
+<ul><li>Major corrections to mc-all and mc-ind aggregation (LOLP, H. LEV)</li>
+<li>Fixed existing write digest.txt part in mc-all aggregation</li>
+<li>Fixed copy of original links in mc-all aggregation</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="2.4.2" id="antaresread-242">antaresRead 2.4.2<a class="anchor" aria-label="anchor" href="#antaresread-242"></a></h2>
 <p>NEW FEATURES:</p>
-<ul><li><p>New function <code><a href="../reference/getGeographicTrimming.html">getGeographicTrimming()</a></code> returns filtering options for selected areas (links optional).</p></li>
-<li><p>New function added : <code>readInputRes()</code> for reading renewable clusters input data</p></li>
-<li><p>Existing function <code><a href="../reference/getLinks.html">getLinks()</a></code> now has a new argument <strong>withTransmission</strong>. if TRUE, return additional column with type of transmission capacities.</p></li>
-<li><p>Existing function <code><a href="../reference/readInputThermal.html">readInputThermal()</a></code> : added new argument for thermalData</p></li>
+<ul><li>New function <code><a href="../reference/getGeographicTrimming.html">getGeographicTrimming()</a></code> returns filtering options for selected areas (links optional).</li>
+<li>New function <code>readInputRes()</code> for reading renewable clusters input data</li>
+<li>Existing function <code><a href="../reference/getLinks.html">getLinks()</a></code> now has a new argument <strong>withTransmission</strong>. if TRUE, return additional column with type of transmission capacities.</li>
+<li>Existing function <code><a href="../reference/readInputThermal.html">readInputThermal()</a></code> : added new argument for thermalData</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.4.1" id="antaresread-241">antaresRead 2.4.1<a class="anchor" aria-label="anchor" href="#antaresread-241"></a></h2>

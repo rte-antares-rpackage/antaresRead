@@ -1,16 +1,22 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 2.4.3
+# antaresRead 2.5.0
 
 NEW FEATURES:
 
+* Full support of studies up to v8.5
+* Function `readAntares()` has new argument for binding constraints output (v8.4+)
 * New functions `readDigestFile()`, `mergeDigests()` and `writeDigest()` to manipulate digest file.
-* Mc-all aggregation loads original digest file in addition to the one created
+* Mc-all aggregation : 
+  * added computation of record years
+  * merges original `digest.txt` with the one created
+  * loads original `thermal.txt`
 
 BUGFIXES:
 
 * Major corrections to mc-all and mc-ind aggregation (LOLP, H. LEV)
 * Fixed existing write digest.txt part in mc-all aggregation 
+* Fixed copy of original links in mc-all aggregation
 
 
 

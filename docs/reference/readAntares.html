@@ -26,7 +26,7 @@ readLayout, readBindingConstraints)'><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.4.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
       </span>
     </div>
 
@@ -90,6 +90,7 @@ package starting with "read" (<code><a href="readClusterDesc.html">readClusterDe
 <span>  clusters <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  districts <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  clustersRes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  bindingConstraints <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  misc <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  thermalAvailabilities <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  hydroStorage <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -142,6 +143,10 @@ districts.</p></dd>
 import results at renewable cluster level. If <code>NULL</code> no cluster is imported. The
 special value <code>"all"</code> tells the function to import renewable clusters from all
 areas.</p></dd>
+
+
+<dt>bindingConstraints</dt>
+<dd><p>Should binding constraints be imported (v8.4+)?</p></dd>
 
 
 <dt>misc</dt>
