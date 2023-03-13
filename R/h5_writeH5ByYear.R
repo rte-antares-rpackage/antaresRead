@@ -282,8 +282,8 @@ writeAntaresH5 <- function(path = NULL, timeSteps = c("hourly", "daily", "weekly
 
 #' Convert antares output to h5 file
 #'
+#' @keywords internal
 #' @export
-#' @noRd
 .writeAntaresH5Fun <- function(path,
                                timeSteps,
                                opts,

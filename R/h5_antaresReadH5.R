@@ -22,7 +22,7 @@
 #'
 #' @import parallel plyr
 #' 
-#' @noRd
+#' @keywords internal
 #' @export
 # Need to be export for antaresViz
 .h5ReadAntares <- function(path, areas = NULL, links = NULL, clusters = NULL,
