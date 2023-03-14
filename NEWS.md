@@ -5,7 +5,7 @@
 NEW FEATURES:
 
 * Full support of studies up to v8.5
-* Function `readAntares()` has new argument for binding constraints output (v8.4+)
+* Function `readAntares()` has new argument for binding constraints output (v8.4+) (#173)
 * New functions `readDigestFile()`, `mergeDigests()` and `writeDigest()` to manipulate digest file.
 * Mc-all aggregation : 
   * added computation of record years
