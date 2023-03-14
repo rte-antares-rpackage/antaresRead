@@ -421,42 +421,57 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   if (!synthesis & !yearByYear) stop("No results found")
   
-  # List of available areas and links
-  if (file.exists(file.path(simDataPath, "mc-all"))) {
-    dataPath <- file.path(simDataPath, "mc-all")
-  } else {
-    tmp <- list.files(file.path(simDataPath, "mc-ind"), pattern = "^\\d{5}$", 
-                      full.names = TRUE)
-    dataPath <- tmp[1]
-  }
+  dataPath_mc_all <- file.path(simDataPath, "mc-all")
+  dataPath_mc_ind <- list.files(file.path(simDataPath, "mc-ind"), pattern = "^\\d{5}$", 
+                                full.names = TRUE)[1]
   
-  areaList <- list.files(file.path(dataPath, "areas"))
+  if (file.exists(file.path(simDataPath, "mc-all"))) dataPath <- dataPath_mc_all else
+    dataPath <- dataPath_mc_ind
+  
+  # List of available areas and links
+  areaList_mc_all <- list.files(file.path(dataPath_mc_all, "areas"))
+  areaList_mc_ind <- list.files(file.path(dataPath_mc_ind, "areas"))
+  areaList <- sort(union(areaList_mc_all, areaList_mc_ind))
+  
   districtList <- areaList[areaList %like% "^@"]
   areaList <- areaList[!areaList %like% "^@"]
   
-  linkList <- list.files(file.path(dataPath, "links"))
+  linkList_mc_all <- list.files(file.path(dataPath_mc_all, "links"))
+  linkList_mc_ind <- list.files(file.path(dataPath_mc_ind, "links"))
+  linkList <- sort(union(linkList_mc_all, linkList_mc_ind))
   
   # Areas containing thermal clusters
-  hasClusters <- laply(file.path(dataPath, "areas", areaList), function(x) {
+  hasClusters_mc_all <- laply(file.path(dataPath_mc_all, "areas", areaList_mc_all), function(x) {
+    f <- list.files(x)
+    any(grepl("(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)", f))
+  })
+  hasClusters_mc_ind <- laply(file.path(dataPath_mc_ind, "areas", areaList_mc_ind), function(x) {
     f <- list.files(x)
     any(grepl("(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)", f))
   })
   
-  areasWithClusters <- areaList[hasClusters]
+  areasWithClusters <- sort(union(areaList_mc_all[hasClusters_mc_all], areaList_mc_ind[hasClusters_mc_ind]))
   
   # Areas containing renewable clusters
-  hasResClusters <- laply(file.path(dataPath, "areas", areaList), function(x) {
+  hasResClusters_mc_all <- laply(file.path(dataPath_mc_all, "areas", areaList_mc_all), function(x) {
+    f <- list.files(x)
+    any(grepl("details-res-", f))
+  })
+  hasResClusters_mc_ind <- laply(file.path(dataPath_mc_ind, "areas", areaList_mc_ind), function(x) {
     f <- list.files(x)
     any(grepl("details-res-", f))
   })
   
-  areasWithResClusters <- areaList[hasResClusters]
+  areasWithResClusters <- sort(union(areaList_mc_all[hasResClusters_mc_all], 
+                                     areaList_mc_ind[hasResClusters_mc_ind]))
   
   # Available variables
   variables <- list()
   
   # Available variables for areas
-  d <- file.path(dataPath, "areas", areaList[1])
+  if (dataPath == dataPath_mc_all) d <- file.path(dataPath_mc_all, "areas", areaList_mc_all[1]) else 
+    d <- file.path(dataPath_mc_ind, "areas", areaList_mc_ind[1])
+  
   f <- list.files(d)
   f <- f[grep("values", f)]
   if (length(f) > 0) {
