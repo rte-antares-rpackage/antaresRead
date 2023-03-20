@@ -1,5 +1,14 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+
+# antaresRead 2.5.1
+
+BUGFIXES:
+
+* Major correction to `setSimulationPath()` (mc-all/mc-ind) (#199)
+
+
+
 # antaresRead 2.5.0
 
 NEW FEATURES:
