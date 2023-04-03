@@ -7,6 +7,11 @@ BUGFIXES:
 
 * Major correction to `setSimulationPath()` (mc-all/mc-ind) (#199)
 
+DEV:
+
+* Added new test study v8.5.
+* Package no longer tested on study v6.
+
 
 
 # antaresRead 2.5.0
