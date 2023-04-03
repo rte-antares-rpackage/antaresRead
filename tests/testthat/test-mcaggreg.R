@@ -1,8 +1,6 @@
 
 context("Test mc-all build")
 
-skip("")
-
 opts <- antaresRead::setSimulationPath(tail(studyPathS, 1))
 
 outh <- readAntares(areas = "all",
@@ -16,7 +14,7 @@ outm <- readAntares(areas = "all",
 outa <- readAntares(areas = "all",
                     links = "all", timeStep = "annual", showProgress = FALSE)
 
-aggregateResult(opts, timestep = "hourly", writeOutput = TRUE, verbose = 0)
+aggregateResult_old(opts, timestep = "hourly", writeOutput = TRUE, verbose = 0)
 
 outhafter <- readAntares(areas = "all", links = "all",
                          showProgress = FALSE)
