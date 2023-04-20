@@ -618,9 +618,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
         if(!file.exists(file.path(opts$simDataPath, "..", "ts-numbers"))){
           stop("Times-Series not found in output, exchange capacities can't be load")
         }else{
-
           mcYears_filter <- mcYears
-          if (is.null(mcYears) | mcYears[1] == "all") mcYears_filter <- opts$mcYears
+          if (is.null(mcYears)){
+            mcYears_filter <- opts$mcYears
+          }else if(mcYears[1] == "all"){
+            mcYears_filter <- opts$mcYears
+          }
           
           ntc_build <- .getNtcOutputTs(opts)[mcYear %in% mcYears_filter & link %in% unique(res$links$link)]
           res$linkCapacity <- merge(res$linkCapacity, ntc_build, allow.cartesian = TRUE)
