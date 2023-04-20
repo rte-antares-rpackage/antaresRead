@@ -58,7 +58,20 @@ readBindingConstraints <- function(opts = simOptions()) {
   }
   
   for (i in 1:length(bindingConstraints)) {
-    path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
+    # v860
+    if(opts$antaresVersion>=860){
+      path_lt <- file.path(opts$inputPath, 
+                           sprintf("bindingconstraints/%s.txt", 
+                                   paste0(bindingConstraints[[i]]$id, "_lt")))
+      path_gt <- file.path(opts$inputPath, 
+                           sprintf("bindingconstraints/%s.txt", 
+                                   paste0(bindingConstraints[[i]]$id, "_gt")))
+      path_eq <- file.path(opts$inputPath, 
+                           sprintf("bindingconstraints/%s.txt", 
+                                   paste0(bindingConstraints[[i]]$id, "_eq")))
+      
+    }else
+      path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
     
     nrows <- switch(bindingConstraints[[i]]$type,
                     hourly = 24*7*52,
@@ -69,38 +82,71 @@ readBindingConstraints <- function(opts = simOptions()) {
     
     if (opts$typeLoad != "api" && file.size(path) == 0) {
       bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
+      setnames(bindingConstraints[[i]]$values, 
+               names(bindingConstraints[[i]]$values),
+               c("less", "greater", "equal"))
     } else {
       # bindingConstraints[[i]]$values <- fread(path)
-      tmp_values <- fread_antares(opts = opts, file = path)
-      if(is.null(tmp_values)){
-        tmp_values <- as.data.table(matrix(0L, nrow = nrows, 3))
+      # v860
+      if(opts$antaresVersion>=860){
+        tmp_values <- lapply(c(path_lt, path_gt, path_eq), 
+                               fread_antares, opts = opts)
+        
+        names(tmp_values) <- c("lt", "gt", "eq")
+        
+        if(is.null(tmp_values)){
+          tmp_values <- list(`lt`= matrix(0L, nrow = nrows),
+                             `gt`= matrix(0L, nrow = nrows),
+                             `eq`= matrix(0L, nrow = nrows))
+        }
+      }else{
+        tmp_values <- fread_antares(opts = opts, file = path)
+        if(is.null(tmp_values)){
+          tmp_values <- as.data.table(matrix(0L, nrow = nrows, 3))
+        }
+        bindingConstraints[[i]]$values <- tmp_values
+        setnames(bindingConstraints[[i]]$values, 
+                 names(bindingConstraints[[i]]$values),
+                 c("less", "greater", "equal"))
       }
-      bindingConstraints[[i]]$values <- tmp_values
+     
+     
     }
-    
-    setnames(bindingConstraints[[i]]$values, 
-             names(bindingConstraints[[i]]$values),
-             c("less", "greater", "equal"))
-    
   }
   
   res <- unname(bindingConstraints)
   
   constraintNames <- vapply(res, function(x) x$name, character(1))
   
+  # re structure list
   res <- lapply(res, function(x) {
     coefs <- x
-    for (v in c("name", "id", "enabled", "type", "operator", "values")) {
+    names_elements <- c("name", "id", "enabled", "type", "operator", "values")
+    
+    # v860
+    if(opts$antaresVersion>=860)
+      names_elements <- append(names_elements, "group")
+      
+    for (v in names_elements) {
       coefs[[v]] <- NULL
     }
     
-    list(
+    # v860
+    if(opts$antaresVersion>=860)
+      list(
+        enabled = x$enabled,
+        timeStep = x$type,
+        operator = x$operator,
+        group = x$group,
+        coefs = unlist(coefs),
+        values = x$values)
+    else
+      list(
       enabled = x$enabled,
       timeStep = x$type,
       operator = x$operator,
       coefs = unlist(coefs),
-      values = x$values
-    )
+      values = x$values)
   })
   
   names(res) <- constraintNames
