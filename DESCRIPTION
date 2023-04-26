@@ -1,9 +1,9 @@
 Package: antaresRead
 Type: Package
 Title: Import, Manipulate and Explore the Results of an 'Antares' Simulation
-Version: 2.5.1
+Version: 2.5.2
 Authors@R: c(
-    person("Veronique", "Bachelier", email = "veronique.bachelier@rte-france.com", role = c("aut", "cre")),
+    person("Tatiana", "Vargas", email = "tatiana.vargas@rte-france.com", role = c("aut", "cre")),
     person("Jalal-Edine", "ZAWAM", role = "aut"),
     person("Frederic", "Breant", role = "ctb"),
     person("Francois", "Guillem", role = "aut"),
