@@ -99,6 +99,7 @@ readBindingConstraints <- function(opts = simOptions()) {
                              `gt`= matrix(0L, nrow = nrows),
                              `eq`= matrix(0L, nrow = nrows))
         }
+        bindingConstraints[[i]]$values <- tmp_values
       }else{
         tmp_values <- fread_antares(opts = opts, file = path)
         if(is.null(tmp_values)){
@@ -121,8 +122,14 @@ readBindingConstraints <- function(opts = simOptions()) {
   # re structure list
   res <- lapply(res, function(x) {
     coefs <- x
+    # default names of parameters
     names_elements <- c("name", "id", "enabled", "type", "operator", "values")
     
+    # v832
+    if (opts$antaresVersion>=832)
+      names_elements <- append(names_elements, 
+                               c("filter-year-by-year", "filter-synthesis"))
+
     # v860
     if(opts$antaresVersion>=860)
       names_elements <- append(names_elements, "group")
@@ -131,12 +138,26 @@ readBindingConstraints <- function(opts = simOptions()) {
       coefs[[v]] <- NULL
     }
     
-    # v860
-    if(opts$antaresVersion>=860)
+    # update list 
+    
+    # v832
+    if(opts$antaresVersion>=832)
       list(
         enabled = x$enabled,
         timeStep = x$type,
         operator = x$operator,
+        `filter-year-by-year` = x$`filter-year-by-year`,
+        `filter-synthesis` = x$`filter-synthesis`,
+        coefs = unlist(coefs),
+        values = x$values)
+    # v860
+    else if(opts$antaresVersion>=860)
+      list(
+        enabled = x$enabled,
+        timeStep = x$type,
+        operator = x$operator,
+        `filter-year-by-year` = x$`filter-year-by-year`,
+        `filter-synthesis` = x$`filter-synthesis`,
         group = x$group,
         coefs = unlist(coefs),
         values = x$values)
