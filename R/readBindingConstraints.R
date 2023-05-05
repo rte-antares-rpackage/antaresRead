@@ -57,7 +57,16 @@ readBindingConstraints <- function(opts = simOptions()) {
     return(NULL)
   }
   
+  # read txt files
   for (i in 1:length(bindingConstraints)) {
+    # check to return 0 values if empty file (only for < v860)
+    nrows <- switch(bindingConstraints[[i]]$type,
+                    hourly = 24*7*52,
+                    daily = 7 * 52,
+                    weekly = 52,
+                    monthly = 12,
+                    annual = 1)
+    
     # v860
     if(opts$antaresVersion>=860){
       path_lt <- file.path(opts$inputPath, 
@@ -70,50 +79,49 @@ readBindingConstraints <- function(opts = simOptions()) {
                            sprintf("bindingconstraints/%s.txt", 
                                    paste0(bindingConstraints[[i]]$id, "_eq")))
       
-    }else
-      path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
-    
-    nrows <- switch(bindingConstraints[[i]]$type,
-                    hourly = 24*7*52,
-                    daily = 7 * 52,
-                    weekly = 52,
-                    monthly = 12,
-                    annual = 1)
-    
-    if (opts$typeLoad != "api" && file.size(path) == 0) {
-      bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
-      setnames(bindingConstraints[[i]]$values, 
-               names(bindingConstraints[[i]]$values),
-               c("less", "greater", "equal"))
-    } else {
-      # bindingConstraints[[i]]$values <- fread(path)
-      # v860
-      if(opts$antaresVersion>=860){
+      suppressWarnings(
         tmp_values <- lapply(c(path_lt, path_gt, path_eq), 
-                               fread_antares, opts = opts)
-        
-        names(tmp_values) <- c("lt", "gt", "eq")
-        
-        if(is.null(tmp_values)){
-          tmp_values <- list(`lt`= matrix(0L, nrow = nrows),
-                             `gt`= matrix(0L, nrow = nrows),
-                             `eq`= matrix(0L, nrow = nrows))
-        }
-        bindingConstraints[[i]]$values <- tmp_values
-      }else{
+                             fread_antares, opts = opts)
+      )
+      
+      names(tmp_values) <- c("lt", "gt", "eq")
+      
+      # this test do nothing => tmp_values never NULL
+        # return 0 row/col for empty file or error if file does not exist
+      if(is.null(tmp_values)){
+        tmp_values <- list(`lt`= matrix(0L, nrow = nrows),
+                           `gt`= matrix(0L, nrow = nrows),
+                           `eq`= matrix(0L, nrow = nrows))
+      }
+      bindingConstraints[[i]]$values <- tmp_values
+      
+    }else{
+      path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
+      
+      # why return 0 if  file.size(path) == 0 ? 
+      if(opts$typeLoad != "api" && file.size(path) == 0){
+        bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
+        setnames(bindingConstraints[[i]]$values, 
+                 names(bindingConstraints[[i]]$values),
+                 c("less", "greater", "equal"))
+      }
+      else{
+        # bindingConstraints[[i]]$values <- fread(path)
         tmp_values <- fread_antares(opts = opts, file = path)
+        
+        # this test do nothing => tmp_values never NULL
+          # return 0 row/col for empty file or error if file does not exist
         if(is.null(tmp_values)){
           tmp_values <- as.data.table(matrix(0L, nrow = nrows, 3))
         }
+        
         bindingConstraints[[i]]$values <- tmp_values
         setnames(bindingConstraints[[i]]$values, 
                  names(bindingConstraints[[i]]$values),
                  c("less", "greater", "equal"))
       }
-     
-     
     }
-  }
+  }  
   
   res <- unname(bindingConstraints)
   
@@ -140,18 +148,8 @@ readBindingConstraints <- function(opts = simOptions()) {
     
     # update list 
     
-    # v832
-    if(opts$antaresVersion>=832)
-      list(
-        enabled = x$enabled,
-        timeStep = x$type,
-        operator = x$operator,
-        `filter-year-by-year` = x$`filter-year-by-year`,
-        `filter-synthesis` = x$`filter-synthesis`,
-        coefs = unlist(coefs),
-        values = x$values)
     # v860
-    else if(opts$antaresVersion>=860)
+    if(opts$antaresVersion>=860)
       list(
         enabled = x$enabled,
         timeStep = x$type,
@@ -159,6 +157,16 @@ readBindingConstraints <- function(opts = simOptions()) {
         `filter-year-by-year` = x$`filter-year-by-year`,
         `filter-synthesis` = x$`filter-synthesis`,
         group = x$group,
+        coefs = unlist(coefs),
+        values = x$values)
+    # v832
+    else if(opts$antaresVersion>=832)
+      list(
+        enabled = x$enabled,
+        timeStep = x$type,
+        operator = x$operator,
+        `filter-year-by-year` = x$`filter-year-by-year`,
+        `filter-synthesis` = x$`filter-synthesis`,
         coefs = unlist(coefs),
         values = x$values)
     else
