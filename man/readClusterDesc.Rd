@@ -3,11 +3,14 @@
 \name{readClusterDesc}
 \alias{readClusterDesc}
 \alias{readClusterResDesc}
+\alias{readClusterSTDesc}
 \title{Import clusters description}
 \usage{
 readClusterDesc(opts = simOptions())
 
 readClusterResDesc(opts = simOptions())
+
+readClusterSTDesc(opts = simOptions())
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
@@ -34,6 +37,8 @@ study. You can use the argument \code{opts} to specify another study.
 \code{readClusterDesc} : read thermal clusters
 
 \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
+
+\code{readClusterSTDesc} : read ST-storages clusters (Antares >= V8.6)
 }
 \description{
 This function reads in the input files of an antares study the
@@ -51,6 +56,9 @@ readClusterDesc()
 
 # renewable
 readClusterResDesc()
+
+# ST-storages
+readClusterSTDesc()
 
 # By default, the function reads cluster descriptions for the default study,
 # but it is possible to specify another study with parameter "opts"

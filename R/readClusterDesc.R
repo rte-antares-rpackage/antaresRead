@@ -32,6 +32,8 @@
 #' \code{readClusterDesc} : read thermal clusters
 #' 
 #' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
+#' 
+#' \code{readClusterSTDesc} : read ST-storages clusters (Antares >= V8.6)
 #'
 #' @examples
 #' 
@@ -42,6 +44,9 @@
 #' 
 #' # renewable
 #' readClusterResDesc()
+#' 
+#' # ST-storages
+#' readClusterSTDesc()
 #' 
 #' # By default, the function reads cluster descriptions for the default study,
 #' # but it is possible to specify another study with parameter "opts"
@@ -71,6 +76,18 @@ readClusterResDesc <- function(opts = simOptions()) {
   }
   .readClusterDesc(opts = simOptions(), dir = "renewables/clusters")
 }
+
+
+#' @export
+#'
+#' @rdname readClusterDesc
+readClusterSTDesc <- function(opts = simOptions()) {
+  if (opts$antaresVersion < 860) {
+    stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
+  }
+  .readClusterDesc(opts = simOptions(), dir = "ST-storages/clusters")
+}
+
 
 
 .readClusterDesc <- function(opts = simOptions(), 
