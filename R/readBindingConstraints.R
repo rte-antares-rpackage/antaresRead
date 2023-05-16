@@ -59,7 +59,7 @@ readBindingConstraints <- function(opts = simOptions()) {
   
   # read txt files
   for (i in 1:length(bindingConstraints)) {
-    # check to return 0 values if empty file (only for < v860)
+    # check to return 0 values if empty file (only for < v870)
     nrows <- switch(bindingConstraints[[i]]$type,
                     hourly = 24*7*52,
                     daily = 7 * 52,
@@ -67,8 +67,8 @@ readBindingConstraints <- function(opts = simOptions()) {
                     monthly = 12,
                     annual = 1)
     
-    # v860
-    if(opts$antaresVersion>=860){
+    # v870
+    if(opts$antaresVersion>=870){
       path_lt <- file.path(opts$inputPath, 
                            sprintf("bindingconstraints/%s.txt", 
                                    paste0(bindingConstraints[[i]]$id, "_lt")))
@@ -138,8 +138,8 @@ readBindingConstraints <- function(opts = simOptions()) {
       names_elements <- append(names_elements, 
                                c("filter-year-by-year", "filter-synthesis"))
 
-    # v860
-    if(opts$antaresVersion>=860)
+    # v870
+    if(opts$antaresVersion>=870)
       names_elements <- append(names_elements, "group")
       
     for (v in names_elements) {
@@ -148,8 +148,8 @@ readBindingConstraints <- function(opts = simOptions()) {
     
     # update list 
     
-    # v860
-    if(opts$antaresVersion>=860)
+    # v870
+    if(opts$antaresVersion>=870)
       list(
         enabled = x$enabled,
         timeStep = x$type,

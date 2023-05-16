@@ -1,11 +1,11 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# antaresRead 2.5.2
+# antaresRead 2.5.3
 
-### Breaking changes (Antares v8.6) : 
+### Breaking changes (Antares v8.7) : 
 
-* Existing function `readBindingConstraints()` (cf. Antares v8.6 changelog)
+* Existing function `readBindingConstraints()` (cf. Antares v8.7 changelog)
 
 
 # antaresRead 2.5.1
