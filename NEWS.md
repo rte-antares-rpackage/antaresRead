@@ -7,6 +7,13 @@
 
 * Existing function `readBindingConstraints()` (cf. Antares v8.7 changelog)
 
+# antaresRead 2.5.2
+
+BREAKING CHANGES:
+
+* `setSimulationPathAPI` generate new global parameter `sleep` to add timer to API request
+
+
 
 # antaresRead 2.5.1
 
