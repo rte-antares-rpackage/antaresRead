@@ -82,13 +82,14 @@ readClusterResDesc <- function(opts = simOptions()) {
 #'
 #' @rdname readClusterDesc
 readClusterSTDesc <- function(opts = simOptions()) {
-  if (!file.exists(file.path(opts$inputPath, "ST-storages"))) {
-    stop("readClusterSTDesc is available only if the study contains ST-storages or Antares version >= 8.6)", call. = FALSE)
+  if (opts$antaresVersion < 860) {
+    stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
   }
   .readClusterDesc(opts = simOptions(), dir = "ST-storages/clusters")
 }
 
 
+  
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
