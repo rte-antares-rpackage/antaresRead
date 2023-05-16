@@ -33,7 +33,7 @@
 #' 
 #' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 #' 
-#' \code{readClusterSTDesc} : read ST-storages clusters (Antares >= V8.6)
+#' \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
 #'
 #' @examples
 #' 
@@ -45,7 +45,7 @@
 #' # renewable
 #' readClusterResDesc()
 #' 
-#' # ST-storages
+#' # st-storage
 #' readClusterSTDesc()
 #' 
 #' # By default, the function reads cluster descriptions for the default study,
@@ -85,7 +85,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
   if (opts$antaresVersion < 860) {
     stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
   }
-  .readClusterDesc(opts = simOptions(), dir = "ST-storages/clusters")
+  .readClusterDesc(opts = simOptions(), dir = "st-storage/clusters")
 }
 
 
