@@ -38,7 +38,7 @@ study. You can use the argument \code{opts} to specify another study.
 
 \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 
-\code{readClusterSTDesc} : read ST-storages clusters (Antares >= V8.6)
+\code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
 }
 \description{
 This function reads in the input files of an antares study the
@@ -57,7 +57,7 @@ readClusterDesc()
 # renewable
 readClusterResDesc()
 
-# ST-storages
+# st-storage
 readClusterSTDesc()
 
 # By default, the function reads cluster descriptions for the default study,
