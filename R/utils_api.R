@@ -313,6 +313,8 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 
 #' @import jsonlite
 #' @export
+#' @return  
+#' \item{sleep}{timer for api commande execute}
 #' @rdname setSimulationPath
 setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
                                  timeout = 60, httr_config = list()) {
@@ -391,6 +393,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res$timeout <- timeout
   res$httr_config <- httr_config
   res$modeAPI <- "sync"
+  
+  # timer for api commande execute
+  res$sleep <- 0.5
 
   class(res) <- c("simOptions")
 

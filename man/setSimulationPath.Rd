@@ -76,6 +76,8 @@ A list containing various information about the simulation, in particular:
   \item{firstWeekday}{First day of the week.}
   \item{districtsDef}{data.table containing the specification of the districts.}
   \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
+
+\item{sleep}{timer for api commande execute}
 }
 \description{
 This function has to be used before the \code{read} functions. It sets the path to
