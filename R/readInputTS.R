@@ -3,6 +3,8 @@
 #' Read Input time series
 #' 
 #' @description 
+#' `r antaresRead:::badge_api_ok()`
+#' 
 #' \code{readInputTS} is a function that reads time series from an antares 
 #' project. But contrary to \code{\link{readAntares}}, it only reads time series
 #' stored in the input folder, so it can work in "input" mode. 

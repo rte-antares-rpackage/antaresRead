@@ -18,14 +18,14 @@ getLinks(
 \item{areas}{Vector containing area names. It represents the set of areas we are interested
 in. If \code{NULL}, all areas of the study are used.}
 
-\item{exclude}{Vector containing area names. If not \code{NULL}, all links connected to 
+\item{exclude}{Vector containing area names. If not \code{NULL}, all links connected to
 one of these areas are omitted.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
-\item{internalOnly}{If \code{TRUE}, only links that connect two areas from parameter \code{areas} are returned. 
-If not, the function also returns all the links that connect an area from the list with 
+\item{internalOnly}{If \code{TRUE}, only links that connect two areas from parameter \code{areas} are returned.
+If not, the function also returns all the links that connect an area from the list with
 an area outside the list.}
 
 \item{namesOnly}{If \code{TRUE}, the function returns a vector with link names, else it
@@ -33,21 +33,21 @@ returns a table containing the name, the origin and the destination of each
 selected link.}
 
 \item{withDirection}{Used only if \code{namesOnly = FALSE}. If \code{FALSE}, then the function
-returns a table with one line per link, containing the link name, the 
+returns a table with one line per link, containing the link name, the
 origin and the destination of the link. If \code{TRUE}, then it returns a
 table with columns \code{area}, \code{link}, \code{to} and \code{direction}
 which is equal is equal to
 1 if the link connects \code{area} to \code{to} and -1 if it connects
 \code{to} to \code{area}.
-The column \code{area} contains only areas that are compatible with parameters 
-\code{areas} and \code{exclude}. Note that the same link can appear twice 
+The column \code{area} contains only areas that are compatible with parameters
+\code{areas} and \code{exclude}. Note that the same link can appear twice
 in the table with different directions.}
 
-\item{withTransmission}{Used only if \code{namesOnly = FALSE}. If \code{TRUE}, a column is added to indicate 
+\item{withTransmission}{Used only if \code{namesOnly = FALSE}. If \code{TRUE}, a column is added to indicate
 type of transmission capacities for links.}
 }
 \value{
-If \code{namesOnly = TRUE} the function returns a vector containing link names 
+If \code{namesOnly = TRUE} the function returns a vector containing link names
 
 If \code{namesOnly = FALSE} and \code{withDirection = FALSE}, it returns a
 \code{data.table} with \strong{exactly one line per link} and with three columns:

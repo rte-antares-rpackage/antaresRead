@@ -72,33 +72,33 @@ containing the number of available units in a cluster is created.If synthesis is
 \item{linkCapacity}{Should link capacities be imported ?}
 
 \item{mustRun}{Should must run productions be added to the result? If TRUE,
-then four columns are added: \code{mustRun} contains the production of 
+then four columns are added: \code{mustRun} contains the production of
 clusters that are in complete must run mode; \code{mustRunPartial}
 contains the partial must run production of clusters; \code{mustRunTotal}
 is the sum of the two previous columns. Finally \code{thermalPmin} is
 similar to mustRunTotal except it also takes into account the production
 induced by the minimum stable power of the units of a cluster. More
-precisely, for a given cluster and a given time step, it is equal to 
+precisely, for a given cluster and a given time step, it is equal to
 \code{min(NODU x min.stable.power, mustRunTotal)}.}
 
 \item{thermalModulation}{Should thermal modulation time series be imported ? If \code{TRUE}, the
 columns "marginalCostModulation", "marketBidModulation", "capacityModulation"
 and "minGenModulation" are added to the cluster data.}
 
-\item{select}{Character vector containing the name of the columns to import. If this 
-argument is \code{NULL}, all variables are imported. Special names 
-\code{"allAreas"} and \code{"allLinks"} indicate to the function to import 
-all variables for areas or for links. Since version 1.0, values "misc", 
+\item{select}{Character vector containing the name of the columns to import. If this
+argument is \code{NULL}, all variables are imported. Special names
+\code{"allAreas"} and \code{"allLinks"} indicate to the function to import
+all variables for areas or for links. Since version 1.0, values "misc",
 "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower", "reserve",
 "linkCapacity", "mustRun", "thermalModulation" are also accepted and can
 replace the corresponding arguments. The list of available variables can be
 seen with the command \code{simOptions()$variables}.  Id variables like
 \code{area}, \code{link} or \code{timeId} are automatically imported.
-Note that \code{select} is *not* taken into account when importing cluster
+Note that \code{select} is \emph{not} taken into account when importing cluster
 data.}
 
 \item{mcYears}{Index of the Monte-Carlo years to import. If \code{NULL}, synthetic results
-are read, else the specified Monte-Carlo simulations are imported. The 
+are read, else the specified Monte-Carlo simulations are imported. The
 special value \code{all} tells the function to import all Monte-Carlo
 simulations.}
 
@@ -159,13 +159,13 @@ size of the output. Different strategies are available depending on your
 objective:
 
 \itemize{
-  \item Use a larger time step (parameter \code{timeStep})
-  \item Filter the elements to import (parameters \code{areas},\code{links},
-    \code{clusters} and \code{districts})
-  \item Select only a few columns (parameter \code{select})
-  \item read only a subset of Monte-Carlo simulations (parameter
-    \code{mcYears}). For instance one can import a random sample of
-    100 simulations with \code{mcYears = sample(simOptions()$mcYears, 100)}
+\item Use a larger time step (parameter \code{timeStep})
+\item Filter the elements to import (parameters \code{areas},\code{links},
+\code{clusters} and \code{districts})
+\item Select only a few columns (parameter \code{select})
+\item read only a subset of Monte-Carlo simulations (parameter
+\code{mcYears}). For instance one can import a random sample of
+100 simulations with \code{mcYears = sample(simOptions()$mcYears, 100)}
 }
 }
 \section{Parallelization}{

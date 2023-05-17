@@ -35,11 +35,11 @@ importation.}
 data.table with class "antaresDataTable".
 }
 \description{
-\code{readInputRes} is a function that reads renewable time series from an antares 
+\code{readInputRes} is a function that reads renewable time series from an antares
 project. But contrary to \code{\link{readAntares}}, it only reads time series
 stored in the input folder, so it can work in "input" mode.
 }
 \seealso{
-\code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
+\code{\link{setSimulationPath}}, \code{\link{readAntares}},
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }

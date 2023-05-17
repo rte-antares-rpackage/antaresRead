@@ -44,6 +44,6 @@ This function converts a list of tables or table into an
 \code{antaresDataList} object.
 
 An \code{antaresDataList} is a list of tables of class\code{antaresDataTable}.
-It also has attributes that store the time step, the type of data and the 
+It also has attributes that store the time step, the type of data and the
 simulation options.
 }

@@ -70,13 +70,15 @@ data.tables, each element representing one type of element (load, wind,
 solar, etc.).
 }
 \description{
-\code{readInputTS} is a function that reads time series from an antares 
+\ifelse{html}{\figure{badge_api_ok.svg}{options: alt='Antares API OK'}}{Antares API: \strong{OK}}
+
+\code{readInputTS} is a function that reads time series from an antares
 project. But contrary to \code{\link{readAntares}}, it only reads time series
 stored in the input folder, so it can work in "input" mode.
 }
 \note{
 All parameters expecting a vector of areas or links names also accept the
-special value "all". It indicates the function to read the desired time 
+special value "all". It indicates the function to read the desired time
 series for all areas or links.
 }
 \examples{
@@ -103,6 +105,6 @@ matplot(myArea[, - (1:2), with = FALSE], type = "l")
 
 }
 \seealso{
-\code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
+\code{\link{setSimulationPath}}, \code{\link{readAntares}},
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }

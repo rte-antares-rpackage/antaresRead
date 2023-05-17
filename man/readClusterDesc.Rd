@@ -18,7 +18,7 @@ readClusterSTDesc(opts = simOptions())
 }
 \value{
 A data.table with one line per cluster. The columns of the data.table may
-change between different projects, but there will always be the following 
+change between different projects, but there will always be the following
 columns:
 
 \item{area}{Name of the area containing the cluster}
@@ -28,7 +28,7 @@ columns:
 \item{nominalcapacity}{production capacity of each unit}
 
 The other present columns depends on the version of antares and the options
-that have been set: if an option is unset for all clusters, it will not 
+that have been set: if an option is unset for all clusters, it will not
 appear in the table.
 
 By default, the function reads the cluster description of the default antares
@@ -42,7 +42,7 @@ study. You can use the argument \code{opts} to specify another study.
 }
 \description{
 This function reads in the input files of an antares study the
-characteristics of each cluster. 
+characteristics of each cluster.
 
 Be aware that clusters descriptions are read
 in the input files so they may have changed since a simulation has been run.

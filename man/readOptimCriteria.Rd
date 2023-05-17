@@ -13,7 +13,7 @@ readOptimCriteria(opts = simOptions())
 \value{
 A table of class \code{antaresDataTable}. It contains the usual columns
 \code{timeID}, \code{mcYear}, \code{time} and two columns "criterion1" and
-"criterion2" containing the values of the criteria. Time step can be daily 
+"criterion2" containing the values of the criteria. Time step can be daily
 or weekly depending on the optimization options.
 }
 \description{
