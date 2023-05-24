@@ -380,6 +380,12 @@ setSimulationPath <- function(path, simulation = NULL) {
     file.exists(f) && file.info(f)$size > 0
   })
   
+  # Areas with st-storatge clusters
+  areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    f <- file.path(inputPath, "st-storage/clusters", a, "list.ini")
+    file.exists(f) && file.info(f)$size > 0
+  })
+  
   res <- list(
     mode = "Input",
     antaresVersion = antaresVersion,
@@ -389,6 +395,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linksDef = linksDef,
     areasWithClusters = areaList[areaHasClusters],
     areasWithResClusters = areaList[areaHasResClusters],
+    areasWithSTClusters = areaList[areaHasSTClusters],
     parameters = params
   )
 

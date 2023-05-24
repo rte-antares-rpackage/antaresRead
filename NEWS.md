@@ -3,10 +3,20 @@
 
 # antaresRead 2.5.2
 
-BREAKING CHANGES:
+NEW FEATURES (Antares v8.6, cf. Antares v8.6 changelog) :
+
+* `readClusterSTDesc()` read "short-term storage" clusters parameters (input files of an antares study)
+
+
+BREAKING CHANGES (Antares v8.6) :
+
+* `readInputTS()` is now compatible with "short-term storage" to read time series
+* `setSimulationPath()` has new parameter `areasWithSTClusters` (name of area with "st-storage" cluster)
+
+
+BUGFIXES : 
 
 * `setSimulationPathAPI` generate new global parameter `sleep` to add timer to API request
-
 
 
 # antaresRead 2.5.1
