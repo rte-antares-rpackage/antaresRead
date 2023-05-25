@@ -436,10 +436,14 @@
   }
   
   # "st-storage" have 5 txt files output for each cluster
-  list_names_txt_files <- list.files(file.path(opts$inputPath, 
-                                               "st-storage/series", area, clusters))
+  list_names_txt_files <- unique(
+    list.files(file.path(opts$inputPath, 
+                         "st-storage/series", area, clusters))
+    )
+  
   list_names_less_txt <- sub(pattern = ".txt", replacement = "", x = list_names_txt_files)
 
+  # read TS for every cluster
   ldply(clusters, function(cl) {
     pattern <- paste0("%s/%s/%%s/", list_names_txt_files)
     filePatterns <- sprintf(pattern, "st-storage/series", area)
@@ -460,16 +464,9 @@
                     })
     
     res <- rbindlist(res)
-    
-    # area, timeStep, opts, fileNamePattern, colnames, 
-    # inputTimeStep, fun = "sum", type = "simple", colSelect = NULL, ...
-    
-    # res <- .importInputTS(cl, timeStep, opts, filePattern, "st-storage",
-    #                       inputTimeStep = "hourly", type = "matrix")
-    
-    
-    
-    if (is.null(res)) return(NULL)
+
+    if (is.null(res)) 
+      return(NULL)
     
     res$area <- area
     res$cluster <- cl
