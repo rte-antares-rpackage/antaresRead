@@ -7,20 +7,20 @@
 \method{subset}{antaresDataList}(x, y = NULL, areas = NULL, timeIds = NULL, mcYears = NULL, ...)
 }
 \arguments{
-\item{x}{Object of class \code{antaresDataList} created with 
+\item{x}{Object of class \code{antaresDataList} created with
 \code{\link{readAntares}}.}
 
-\item{y}{A table containing at least one of the columns "area", "timeId" or 
+\item{y}{A table containing at least one of the columns "area", "timeId" or
 "mcYear". If it is not \code{NULL}, then only tuples \code{(area, timeId,
-mcYear)} present in this table are kept.}
+  mcYear)} present in this table are kept.}
 
-\item{areas}{Vector of area names to keep in the result. If \code{NULL}, all 
+\item{areas}{Vector of area names to keep in the result. If \code{NULL}, all
 areas are kept.}
 
-\item{timeIds}{Vector of time ids to keep. If \code{NULL}, all time ids are 
+\item{timeIds}{Vector of time ids to keep. If \code{NULL}, all time ids are
 kept.}
 
-\item{mcYears}{Vector of monte-carlo years to keep. If \code{NULL}, all time 
+\item{mcYears}{Vector of monte-carlo years to keep. If \code{NULL}, all time
 ids are kept.}
 
 \item{...}{Currently unused.}

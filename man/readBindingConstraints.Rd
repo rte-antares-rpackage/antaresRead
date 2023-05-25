@@ -20,18 +20,18 @@ readBindingConstraints(opts = simOptions())
 \value{
 \code{readBindingConstraints} returns an object of class \code{bindingConstraints}.
 It is a named list with one element per read constraint. Each element is itself
-a list with the following elements: 
+a list with the following elements:
 \item{enabled}{is the constraint enabled ?}
 \item{timeStep}{time step the constraint applies to}
 \item{operator}{type of constraint: equality, inequality on one side or both sides}
 \item{coefficients}{elements containing the coefficients used by the constraint}
 \item{values}{values used by the constraint. It contains one line per time step
-  and three columns "less", "greater" and "equal"}
+and three columns "less", "greater" and "equal"}
 
 The \code{summary} method returns a data.frame with one line per constraint.
 }
 \description{
-This function reads the binding constraints of an Antares project. 
+This function reads the binding constraints of an Antares project.
 
 Be aware that binding constraints are read in the input files of a study. So
 they may have changed since a simulation has been run.

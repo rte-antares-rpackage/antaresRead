@@ -48,6 +48,7 @@ Suggests:
     parallel,
     htmltools
 RoxygenNote: 7.2.2
+Roxygen: list(markdown = TRUE)
 VignetteBuilder: knitr
 Encoding: UTF-8
 biocViews: Infrastructure, DataImport

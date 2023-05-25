@@ -3,6 +3,8 @@
 #' Read Input time series
 #' 
 #' @description 
+#' `r antaresRead:::badge_api_ok()`
+#' 
 #' \code{readInputTS} is a function that reads time series from an antares 
 #' project. But contrary to \code{\link{readAntares}}, it only reads time series
 #' stored in the input folder, so it can work in "input" mode. 
@@ -29,6 +31,9 @@
 #'   vector of links names for which links characteristics time series must be read
 #' @param resProduction
 #'   vector of areas names for which renewables clusters production time series must be read.
+#' @param st_storage 
+#'   vector of areas names for which st-storage clusters production time series must be read.  
+#' 
 #' @inheritParams readAntares
 #' 
 #' @return 
@@ -76,6 +81,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
                         wind = NULL, solar = NULL, misc = NULL,
                         reserve = NULL, linkCapacity = NULL, 
                         resProduction = NULL,
+                        st_storage= NULL,
                         opts = simOptions(),
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         simplify = TRUE, parallel = FALSE,
@@ -85,8 +91,10 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   
   # Can the importation be parallelized ?
   if (parallel) {
-    if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
-    if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
+    if(!requireNamespace("foreach")) 
+      stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
+    if (!foreach::getDoParRegistered()) 
+      stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
   
   # Manage special value "all"
@@ -101,7 +109,9 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if(identical(reserve, "all")) reserve <- opts$areaList
   if(identical(linkCapacity, "all")) linkCapacity <- opts$linkList
   if(identical(resProduction, "all")) resProduction <- opts$areasWithResClusters
+  if(identical(st_storage, "all")) st_storage <- opts$areasWithSTClusters
   
+  # check if study is compatible with "renewables" 
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
@@ -111,9 +121,15 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
     resProduction <- NULL
   }
   
+  # check if study is compatible with "st-storage"
+  if(!opts$antaresVersion >= 860){
+    if(!is.null(st_storage)){
+      warning("'st-storage' clusters production time series can only be imported on studies with Antares >= 8.6.0")
+      st_storage <- NULL
+      }
+    }
   
-  ###Check links in study
-  
+  #Check links in study
   if(!all(linkCapacity%in%opts$linkList)){
 
       link_miss <- linkCapacity[!linkCapacity%in%opts$linkList]
@@ -159,6 +175,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("reserve", reserve, .importReserves)
   .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity)
   .addOutputToRes("resProduction", resProduction, .importResProduction)
+  .addOutputToRes("st-storage", st_storage, .importSTStorage)
   
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   

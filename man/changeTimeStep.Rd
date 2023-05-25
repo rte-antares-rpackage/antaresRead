@@ -9,29 +9,29 @@ changeTimeStep(x, newTimeStep, oldTimeStep, fun = "sum", opts = simOptions())
 \arguments{
 \item{x}{data.table with a column "timeId" or an object of class "antaresDataList"}
 
-\item{newTimeStep}{Desired time step.The possible values are hourly, daily, weekly, 
+\item{newTimeStep}{Desired time step.The possible values are hourly, daily, weekly,
 monthly and annual.}
 
 \item{oldTimeStep}{Current time step of the data. This argument is optional for an object of
 class \code{antaresData} because the time step of the data is stored inside
 the object}
 
-\item{fun}{Character vector with one element per column to (des)aggregate indicating 
+\item{fun}{Character vector with one element per column to (des)aggregate indicating
 the function to use ("sum", "mean", "min" or "max") for this column. It can
-be a single element, in that case the same function is applied to every 
+be a single element, in that case the same function is applied to every
 columns.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 }
 \value{
-Either a data.table or an object of class "antaresDataList" depending on the 
+Either a data.table or an object of class "antaresDataList" depending on the
 class of \code{x}
 }
 \description{
 This function changes the timestep of a table or an \code{antaresData} object
 and performs the required aggregation or desaggregation. We can specify
-(des)aggregate functions by columns, see the param `fun`.
+(des)aggregate functions by columns, see the param \code{fun}.
 }
 \examples{
 \dontrun{

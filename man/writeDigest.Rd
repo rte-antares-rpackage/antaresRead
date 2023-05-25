@@ -13,7 +13,7 @@ writeDigest(digest, opts = simOptions())
 }
 \value{
 updated digest
-  list of 5 tables (begin, areas, middle, links lin., links quad.)
+list of 5 tables (begin, areas, middle, links lin., links quad.)
 }
 \description{
 Write digest file

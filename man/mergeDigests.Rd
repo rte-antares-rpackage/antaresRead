@@ -13,7 +13,7 @@ mergeDigests(digest_new, digest_ori)
 }
 \value{
 updated digest
-  list of 5 tables (begin, areas, middle, links lin., links quad.)
+list of 5 tables (begin, areas, middle, links lin., links quad.)
 }
 \description{
 Merge two digests

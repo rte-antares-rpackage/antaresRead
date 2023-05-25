@@ -32,7 +32,7 @@ list of area names. If \code{NULL}, all areas are selected}
 
 \item{exclude}{Character vector. If \code{regexpExclude} is TRUE, this vector is
 interpreted as a list of regular expressions and each area validating one
-of them is excluded. Else it is interpreted as list of area names to 
+of them is excluded. Else it is interpreted as list of area names to
 exclude. If \code{NULL}, not any area is excluded.}
 
 \item{withClustersOnly}{Should the function return only nodes containing clusters ?}
@@ -51,12 +51,12 @@ expressions ?}
 to the specified districts are returned.}
 }
 \value{
-A character vector containing the name of the areas/districts satisfying the 
+A character vector containing the name of the areas/districts satisfying the
 rules defined by the parameters.
 }
 \description{
-\code{getAreas} and \code{getDistricts} are utility functions that builds 
-list of areas or districts by using regular expressions to select and/or 
+\code{getAreas} and \code{getDistricts} are utility functions that builds
+list of areas or districts by using regular expressions to select and/or
 exclude areas/districts
 }
 \seealso{

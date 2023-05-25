@@ -20,7 +20,7 @@ to read some data (path of the study, area list, link list, start date,
 etc.).
 }
 \details{
-\code{simOptions} extracts these options from an object of class 
+\code{simOptions} extracts these options from an object of class
 \code{antaresTable} or \code{antaresOutput}. It can be useful when working on
 multiple simulations, either to check how some object has been created or to
 use it in some functions like \code{\link{getAreas}} or
