@@ -1,5 +1,7 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
+
+# v710----
 context("Function readInputTS")
 sapply(studyPathS, function(studyPath){
   
@@ -122,3 +124,20 @@ test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax"
 
 }
 })
+
+
+# v860----
+
+path_85 <- grep(pattern = "85", x = studyPathSV8, value = TRUE)
+opts85 <- setSimulationPath(path_85, simulation = "input")
+opts85$antaresVersion <- 860
+
+test_that("readInputTs mingen file v860", {
+  
+  # to read 8760
+  opts85$timeIdMax <- 8760
+  
+  mingen_TS <- readInputTS(mingen = "all", opts = opts85, timeStep = "hourly")
+  
+})
+
