@@ -17,6 +17,9 @@
 #'   vector of areas names for which run of river time series must be read.
 #' @param hydroStorage
 #'   vector of areas names for which hydrolic storage time series must be read.
+#' @param mingen 
+#' vector of areas names for which Hydro Pmin time series must be read.  
+#' (only for Antares version >= 860)  
 #' @param hydroStorageMaxPower
 #'   vector of areas names for which hydrolic storage maximum power time series must be read.
 #' @param wind
@@ -77,7 +80,7 @@
 #' 
 #' @export
 readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL, 
-                        hydroStorage = NULL, hydroStorageMaxPower = NULL, 
+                        mingen= NULL, hydroStorage = NULL, hydroStorageMaxPower = NULL, 
                         wind = NULL, solar = NULL, misc = NULL,
                         reserve = NULL, linkCapacity = NULL, 
                         resProduction = NULL,
@@ -101,6 +104,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if(identical(load, "all")) load <- opts$areaList
   if(identical(thermalAvailabilities, "all")) thermalAvailabilities <- opts$areasWithClusters
   if(identical(ror, "all")) ror <- opts$areaList
+  if(identical(mingen, "all")) mingen <- opts$areaList
   if(identical(hydroStorage, "all")) hydroStorage <- opts$areaList
   if(identical(hydroStorageMaxPower, "all")) hydroStorageMaxPower <- opts$areaList
   if(identical(wind, "all")) wind <- opts$areaList
@@ -121,11 +125,16 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
     resProduction <- NULL
   }
   
-  # check if study is compatible with "st-storage"
+  # check if study is compatible with "st-storage" (v860)
+  # check if study is compatible with "mingen" (v860)
   if(!opts$antaresVersion >= 860){
     if(!is.null(st_storage)){
       warning("'st-storage' clusters production time series can only be imported on studies with Antares >= 8.6.0")
       st_storage <- NULL
+      }
+    if(!is.null(mingen)){
+      warning("'mingen' Pmin time series can only be imported on studies with Antares >= 8.6.0")
+      mingen <- NULL
       }
     }
   
@@ -167,6 +176,7 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("load", load, .importLoad)
   .addOutputToRes("thermalAvailabilities", thermalAvailabilities, .importThermalAvailabilities)
   .addOutputToRes("ror", ror, .importROR)
+  .addOutputToRes("mingen", mingen, .importmingen)
   .addOutputToRes("hydroStorage", hydroStorage, .importHydroStorageInput)
   .addOutputToRes("hydroStorageMaxPower", hydroStorageMaxPower, .importHydroStorageMaxPower)
   .addOutputToRes("wind", wind, .importWind)

@@ -157,6 +157,12 @@
                  inputTimeStep = "hourly", type = "matrix")
 }
 
+# "mingen" (v860)
+.importmingen <- function(area, timeStep, opts, ...){
+  .importInputTS(area, timeStep, opts, "hydro/series/%s/mingen.txt", "mingen", 
+                 inputTimeStep = "hourly", type = "matrix")
+}
+
 .importHydroStorageInput <- function(area, timeStep, opts, ...) {
   inputTimeStepV <- ifelse(opts$antaresVersion >= 650, yes = "daily", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
@@ -422,7 +428,7 @@
 # }
 
 
-# "st-storage"
+# "st-storage" (v860)
 .importSTStorage <- function(area, timeStep, opts, ...){
 
   if (!area %in% opts$areasWithSTClusters) 

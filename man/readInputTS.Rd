@@ -8,6 +8,7 @@ readInputTS(
   load = NULL,
   thermalAvailabilities = NULL,
   ror = NULL,
+  mingen = NULL,
   hydroStorage = NULL,
   hydroStorageMaxPower = NULL,
   wind = NULL,
@@ -30,6 +31,9 @@ readInputTS(
 \item{thermalAvailabilities}{vector of areas names for which thermal availabilities of clusters must be read.}
 
 \item{ror}{vector of areas names for which run of river time series must be read.}
+
+\item{mingen}{vector of areas names for which Hydro Pmin time series must be read.
+(only for Antares version >= 860)}
 
 \item{hydroStorage}{vector of areas names for which hydrolic storage time series must be read.}
 

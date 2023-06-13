@@ -1,7 +1,7 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# antaresRead 2.5.2
+# antaresRead 2.6.0
 
 NEW FEATURES (Antares v8.6, cf. Antares v8.6 changelog) :
 
@@ -10,7 +10,9 @@ NEW FEATURES (Antares v8.6, cf. Antares v8.6 changelog) :
 
 BREAKING CHANGES (Antares v8.6) :
 
-* `readInputTS()` is now compatible with "short-term storage" to read time series
+* `readInputTS()` is now compatible to read time series with :  
+  - "short-term storage"  
+  - "mingen" (pmin hydro value)
 * `setSimulationPath()` has new parameter `areasWithSTClusters` (name of area with "st-storage" cluster)
 
 
