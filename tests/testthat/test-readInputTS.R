@@ -128,16 +128,35 @@ test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax"
 
 # v860----
 
-path_85 <- grep(pattern = "85", x = studyPathSV8, value = TRUE)
-opts85 <- setSimulationPath(path_85, simulation = "input")
-opts85$antaresVersion <- 860
+path_study_test <- grep(pattern = "86", x = studyPathSV8, value = TRUE)
+opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
 test_that("readInputTs mingen file v860", {
   
   # to read 8760
-  opts85$timeIdMax <- 8760
+  opts_study_test$timeIdMax <- 8760
   
-  mingen_TS <- readInputTS(mingen = "all", opts = opts85, timeStep = "hourly")
+  # read mingen file of study 
+  mingen_TS <- readInputTS(mingen = "all", opts = opts_study_test, timeStep = "hourly")
+  
+  # test class object
+  testthat::expect_true("data.table" %in% class(mingen_TS))
+  testthat::expect_true("antaresDataTable" %in% class(mingen_TS))
+  
+  
+  # select one area 
+  area_mingen <- unique(mingen_TS$area)[1]
+  
+  # dimension of mingen file for this area
+  dim_file <- max(mingen_TS[area %in% area_mingen, tsId])
+  
+  # check dim file
+  path_file <- file.path(opts_study_test$inputPath, "hydro", "series", area_mingen, "mingen.txt")
+  
+  nb_col <- dim(antaresRead:::fread_antares(file = path_file, opts = opts_study_test))[2]
+  
+  # check similar dim
+  testthat::expect_equal(dim_file, nb_col)
   
 })
 

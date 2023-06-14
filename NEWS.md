@@ -20,6 +20,10 @@ BUGFIXES :
 
 * `setSimulationPathAPI` generate new global parameter `sleep` to add timer to API request
 
+DATA : 
+
+* A test study in tar.gz format is available in version `v8.6.0`
+
 
 # antaresRead 2.5.1
 
