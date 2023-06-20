@@ -19,6 +19,7 @@ BREAKING CHANGES (Antares v8.6) :
 BUGFIXES : 
 
 * `setSimulationPathAPI` generate new global parameter `sleep` to add timer to API request
+* Correction of `.importOutput()` to use `readAntares()` with `parallel == TRUE` in shiny application
 
 DATA : 
 
