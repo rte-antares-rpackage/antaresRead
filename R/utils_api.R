@@ -256,10 +256,9 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 
   }, allLinks, names(allLinks)))
 
+  # info <- read_secure_json(studyPath, ...)
 
-  info <- read_secure_json(studyPath, ...)
-
-  antaresVersion <- info$study$antares$version
+  antaresVersion <- paths$version
   params <- read_secure_json(file.path(studyPath, "settings", "generaldata"), ...)
 
   # Areas with clusters
@@ -359,7 +358,11 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
   res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout, config = httr_config)
 
-  res$studyName <- read_secure_json(file.path(res$studyPath, "study"), token = token, timeout = timeout, config = httr_config)$antares$caption
+  res$studyName <- read_secure_json(file.path(res$studyPath, "study"), 
+                                    token = token, timeout = timeout, 
+                                    config = httr_config)$antares$caption
+  
+  res$version <- check_study$version
   
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
@@ -393,6 +396,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res$timeout <- timeout
   res$httr_config <- httr_config
   res$modeAPI <- "sync"
+  
+  # delete version to keep only "antares_version"
+  res$version <- NULL
   
   # timer for api commande execute
   res$sleep <- 0.5
