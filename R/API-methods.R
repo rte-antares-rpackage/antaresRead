@@ -55,7 +55,13 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   #fix for skipping 404 when some output is missing
   url_elements <- strsplit(result$url, "%2F")[[1]]
   condition_status_check <- !(!is.na(url_elements[4]) & url_elements[4] %in% c("economy","adequacy") & result$status_code == 404)
-  if (condition_status_check) stop_for_status(result) else warn_for_status(result)
+  if(condition_status_check){
+    mess_error <- content(result)
+    mess_error <- paste0("\n[description] : ", mess_error$description,
+                         "\n[IniReaderError] : ", mess_error$exception)
+    stop_for_status(result, task = mess_error)
+  }else 
+    warn_for_status(result)
   content(result)
 }
 
