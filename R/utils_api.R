@@ -256,8 +256,9 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
 
   }, allLinks, names(allLinks)))
 
-  # info <- read_secure_json(studyPath, ...)
 
+  # info <- read_secure_json(studyPath, ...)
+  
   antaresVersion <- paths$version
   params <- read_secure_json(file.path(studyPath, "settings", "generaldata"), ...)
 
@@ -396,6 +397,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res$timeout <- timeout
   res$httr_config <- httr_config
   res$modeAPI <- "sync"
+  
   
   # delete version to keep only "antares_version"
   res$version <- NULL

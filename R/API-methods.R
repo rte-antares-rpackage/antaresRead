@@ -58,10 +58,10 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if(condition_status_check){
     mess_error <- content(result)
     mess_error <- paste0("\n[description] : ", mess_error$description,
-                         "\n[IniReaderError]", mess_error$exception)
+                         "\n[IniReaderError] : ", mess_error$exception)
     stop_for_status(result, task = mess_error)
-    }else 
-      warn_for_status(result)
+  }else 
+    warn_for_status(result)
   content(result)
 }
 
