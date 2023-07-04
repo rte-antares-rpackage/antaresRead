@@ -57,8 +57,11 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   condition_status_check <- !(!is.na(url_elements[4]) & url_elements[4] %in% c("economy","adequacy") & result$status_code == 404)
   if(condition_status_check){
     mess_error <- content(result)
-    mess_error <- paste0("\n[description] : ", mess_error$description,
-                         "\n[IniReaderError]", mess_error$exception)
+    if(!is.null(names(mess_error)))
+      mess_error <- paste0("\n[description] : ", mess_error$description,
+                           "\n[IniReaderError] : ", mess_error$exception)
+    else
+      mess_error <- NULL
     stop_for_status(result, task = mess_error)
     }else 
       warn_for_status(result)
