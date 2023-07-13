@@ -121,7 +121,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
       if(nrow(clusters)==0)return(NULL)
       clusters$area <- Y1
       clusters[, .SD, .SDcols = order(names(clusters))]
-    },jsoncld, names(jsoncld)), fill = TRUE)
+    },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
     
     res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     

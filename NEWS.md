@@ -22,6 +22,8 @@ BUGFIXES :
 * Correction of `.importOutput()` to use `readAntares()` with `parallel == TRUE` in shiny application
 * `setSimulationPathAPI()` delete a redundant API request
 * `readIniAPI()` read well file `generaldata` for sections "playlist" and "variables selection"
+* `readClusterDesc()` minor fix in API mode 
+
 
 DATA : 
 
