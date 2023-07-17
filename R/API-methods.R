@@ -58,8 +58,8 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   if(condition_status_check){
     mess_error <- content(result)
     if(!is.null(names(mess_error)))
-      mess_error <- paste0("\n[description] : ", mess_error$description,
-                           "\n[IniReaderError] : ", mess_error$exception)
+      mess_error <- paste0("\n[Description] : ", mess_error$description,
+                           "\n[Exception] : ", mess_error$exception)
     else
       mess_error <- NULL
     stop_for_status(result, task = mess_error)
@@ -99,7 +99,13 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config = config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                         "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
 

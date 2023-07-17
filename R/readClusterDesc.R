@@ -123,6 +123,9 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters[, .SD, .SDcols = order(names(clusters))]
     },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
     
+    if(length(res) == 0) 
+      stop("Cannot find cluster description.", call. = FALSE)
+    
     res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     
   }else{

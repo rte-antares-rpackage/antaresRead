@@ -21,7 +21,7 @@ BUGFIXES :
 * `setSimulationPathAPI` generate new global parameter `sleep` to add timer to API request
 * Correction of `.importOutput()` to use `readAntares()` with `parallel == TRUE` in shiny application
 * `setSimulationPathAPI()` delete a redundant API request
-* `readClusterDesc()` minor fix in API mode 
+* `readClusterDesc()` minor fix in API mode + fix if no cluster exists => return specific error message
 
 DATA : 
 
