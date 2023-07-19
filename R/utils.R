@@ -4,12 +4,3 @@ badge_api_ok <- function() {
 badge_api_no <- function() {
   "\\ifelse{html}{\\figure{badge_api_no.svg}{options: alt='Antares API NO'}}{Antares API: \\strong{NO}}"
 }
-
-is_named <- function(x) {
-  nms <- names(x)
-  if (is.null(nms))
-    return(FALSE)
-  if (any(!nzchar(nms)))
-    return(FALSE)
-  TRUE
-}
