@@ -24,7 +24,6 @@ BUGFIXES :
 * `readIniAPI()` read well file `generaldata` for sections "playlist" and "variables selection"
 * `readClusterDesc()` minor fix in API mode 
 
-
 DATA : 
 
 * A test study in tar.gz format is available in version `v8.6.0`

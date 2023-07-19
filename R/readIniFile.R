@@ -69,11 +69,11 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
-    
+
     key <- lapply(pairs, `[`, 1)
     key <- unlist(key)
     key <- trimws(key)
-    
+
     value <- lapply(pairs, `[`, 2)
     value <- as.list(trimws(unlist(value)))
     value <- lapply(value, function(x) {
@@ -83,7 +83,7 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
         utils::type.convert(x, as.is = TRUE)
       }
     })
-    
+
     L[[i]] <- value
     names(L[[i]]) <- key
   }
@@ -105,17 +105,12 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
       formatted = TRUE
     )
   )
-  
   # reformat list contains unnamed list
   .format_list(api_get_ini_file)
 }
 
-
 # reformat list from JSON format 
 .format_list <- function(list_x){
-  # test if list() contains list()
-  is_named(list_x[[2]]$`playlist +`)
-  
   # check list to find sub list
   check_class_list <- lapply(list_x, function(x) 
     lapply(x, class) %in% "list")
@@ -149,7 +144,11 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
     }
   })
   
-  # return list reformated
-  append(list_x[-index_true], 
-         list_to_reformat)
+  # return original list 
+  if(identical(index_true, integer(0)))
+    list_x
+  else
+    # return list reformated
+    append(list_x[-index_true], 
+           list_to_reformat)
 }
