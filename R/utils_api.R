@@ -288,6 +288,17 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
       })
     }
   }
+  
+  # Areas with st-storage (>=860) 
+  clusterSTList <- read_secure_json(file.path(inputPath, "st-storage", "clusters", "&depth=4"), ...)
+  areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    TF <- FALSE
+    try({
+      f <- clusterSTList[[a]]$list
+      if(!is.null(f))return(TRUE)
+    })
+    return(TF)
+  })
 
 
   list(
@@ -299,6 +310,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
     linksDef = linksDef,
     areasWithClusters = areaList[areaHasClusters],
     areasWithResClusters = areaList[areaHasResClusters],
+    areasWithSTClusters = areaList[areaHasSTClusters],
     parameters = params
   )
 }
