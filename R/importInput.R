@@ -435,19 +435,36 @@
     return(NULL)
   
   if(!"api" %in% opts$typeLoad){
-    clusters <- list.files(file.path(opts$inputPath, "st-storage/series", area))
+    clusters <- list.files(
+      file.path(opts$inputPath, 
+                "st-storage/series", 
+                area)
+      )
     
     # "st-storage" have 5 txt files output for each cluster
     list_names_txt_files <- unique(
-      list.files(file.path(opts$inputPath, 
-                           "st-storage/series", area, clusters))
+      list.files(
+        file.path(opts$inputPath,  
+                  "st-storage/series", 
+                  area, 
+                  clusters)
+        )
     )
     
-    list_names_less_txt <- sub(pattern = ".txt", replacement = "", x = list_names_txt_files)
+    list_names_less_txt <- sub(pattern = ".txt", 
+                               replacement = "", 
+                               x = list_names_txt_files)
     
   } else {
-    list_info_clusters <- read_secure_json(file.path(opts$inputPath, "st-storage/series", area), 
-                                           token = opts$token, timeout = opts$timeout, config = opts$httr_config)
+    list_info_clusters <- read_secure_json(
+      file.path(opts$inputPath, 
+                "st-storage/series", 
+                area), 
+      token = opts$token, 
+      timeout = opts$timeout, 
+      config = opts$httr_config
+      )
+    
     clusters <- names(list_info_clusters)
     
     files_names <- names(list_info_clusters[[1]])
@@ -458,8 +475,10 @@
   
   # read TS for every cluster
   ldply(clusters, function(cl) {
-    pattern <- paste0("%s/%s/%%s/", list_names_txt_files)
-    filePatterns <- sprintf(pattern, "st-storage/series", area)
+    pattern <- paste0("%s/%s/%%s/", 
+                      list_names_txt_files)
+    filePatterns <- sprintf(pattern, 
+                            "st-storage/series", area)
     
     res <- lapply(filePatterns, 
                   function(.x){
@@ -484,8 +503,16 @@
     res$area <- area
     res$cluster <- cl
     
-    setcolorder(res, c("area", "cluster", "timeId", setdiff(names(res), 
-                                                            c("area", "cluster", "timeId"))))
+    setcolorder(res, 
+                c("area", 
+                  "cluster", 
+                  "timeId", 
+                  setdiff(
+                    names(res), 
+                    c("area", 
+                      "cluster", 
+                      "timeId")))
+                )
   })
   
   # added a column "name_file" to tag the file name
