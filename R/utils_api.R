@@ -290,29 +290,42 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
   }
   
   # Areas with st-storage (>=860) 
-  clusterSTList <- read_secure_json(file.path(inputPath, "st-storage", "clusters", "&depth=4"), ...)
-  areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
-    TF <- FALSE
-    try({
-      f <- clusterSTList[[a]]$list
-      if(!is.null(f))return(TRUE)
+  if(paths$version>=860){
+    clusterSTList <- read_secure_json(file.path(inputPath, "st-storage", "clusters", "&depth=4"), ...)
+    areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+      TF <- FALSE
+      try({
+        f <- clusterSTList[[a]]$list
+        if(!is.null(f))return(TRUE)
+      })
+      return(TF)
     })
-    return(TF)
-  })
-
-
-  list(
-    mode = "Input",
-    antaresVersion = antaresVersion,
-    areaList = areaList,
-    districtList = districtList,
-    linkList = as.character(linksDef$link),
-    linksDef = linksDef,
-    areasWithClusters = areaList[areaHasClusters],
-    areasWithResClusters = areaList[areaHasResClusters],
-    areasWithSTClusters = areaList[areaHasSTClusters],
-    parameters = params
-  )
+    
+    # return
+    list(
+      mode = "Input",
+      antaresVersion = antaresVersion,
+      areaList = areaList,
+      districtList = districtList,
+      linkList = as.character(linksDef$link),
+      linksDef = linksDef,
+      areasWithClusters = areaList[areaHasClusters],
+      areasWithResClusters = areaList[areaHasResClusters],
+      areasWithSTClusters = areaList[areaHasSTClusters],
+      parameters = params
+    )
+  }else
+    list(
+      mode = "Input",
+      antaresVersion = antaresVersion,
+      areaList = areaList,
+      districtList = districtList,
+      linkList = as.character(linksDef$link),
+      linksDef = linksDef,
+      areasWithClusters = areaList[areaHasClusters],
+      areasWithResClusters = areaList[areaHasResClusters],
+      parameters = params
+    )
 }
 
 # valid_url <- function(url_in, t = 2){
