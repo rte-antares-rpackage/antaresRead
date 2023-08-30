@@ -20,7 +20,7 @@ on an AntaREST API with setSimulationPathAPI"><!-- mathjax --><script src="https
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -87,7 +87,7 @@ on an AntaREST API with <code>setSimulationPathAPI</code></p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>path</dt>
-<dd><p>(optional) 
+<dd><p>(optional)
 Path to the simulation. It can either be the path to a directory containing
 an antares project or directly to the directory containing the output of a
 simulation.  If missing, a window opens and lets the user choose the
@@ -97,9 +97,9 @@ directory of the simulation interactively. Can also choose .h5 file, if <code>rh
 <dt>simulation</dt>
 <dd><p>(optional) Only used if "path" represents the path of a study and not of the
 output of a simulation. It can be either the name of the simulation or a
-number indicating which simulation to use. It is possible to use negative 
+number indicating which simulation to use. It is possible to use negative
 values to select a simulation from the last one: for instance -1 will
-select the most recent simulation, -2 will the penultimate one, etc. There 
+select the most recent simulation, -2 will the penultimate one, etc. There
 are two special values 0 and "input" that tells the function that the user
 is not interested by the results of any simulation, but only by the inputs.
 In such a case, the function <code><a href="readAntares.html">readAntares</a></code> is unavailable.</p></dd>
@@ -133,78 +133,82 @@ In such a case, the function <code><a href="readAntares.html">readAntares</a></c
 <dl><dt>studyPath</dt>
 <dd><p>path of the Antares study</p></dd>
 
-  <dt>simPath</dt>
+<dt>simPath</dt>
 <dd><p>path of the simulation</p></dd>
 
-  <dt>inputPath</dt>
+<dt>inputPath</dt>
 <dd><p>path of the input folder of the study</p></dd>
 
-  <dt>studyName</dt>
+<dt>studyName</dt>
 <dd><p>Name of the study</p></dd>
 
-  <dt>simDataPath</dt>
+<dt>simDataPath</dt>
 <dd><p>path of the folder containing the data of the simulation</p></dd>
 
-  <dt>name</dt>
+<dt>name</dt>
 <dd><p>name of the simulation</p></dd>
 
-  <dt>mode</dt>
+<dt>mode</dt>
 <dd><p>type of simulation: economy, adequacy, draft or input</p></dd>
 
-  <dt>synthesis</dt>
+<dt>synthesis</dt>
 <dd><p>Are synthetic results available ?</p></dd>
 
-  <dt>yearByYear</dt>
+<dt>yearByYear</dt>
 <dd><p>Are the results for each Monte Carlo simulation available ?</p></dd>
 
-  <dt>scenarios</dt>
-<dd><p>Are the Monte-Carlo scenarii stored in output ? This is 
-    important to reconstruct some input time series that have been used in 
-    each Monte-Carlo simulation.</p></dd>
+<dt>scenarios</dt>
+<dd><p>Are the Monte-Carlo scenarii stored in output ? This is
+important to reconstruct some input time series that have been used in
+each Monte-Carlo simulation.</p></dd>
 
-  <dt>mcYears</dt>
+<dt>mcYears</dt>
 <dd><p>Vector containing the number of the exported Monte-Carlo scenarios</p></dd>
 
-  <dt>antaresVersion</dt>
+<dt>antaresVersion</dt>
 <dd><p>Version of Antares used to run the simulation.</p></dd>
 
-  <dt>areaList</dt>
+<dt>areaList</dt>
 <dd><p>Vector of the available areas.</p></dd>
 
-  <dt>districtList</dt>
+<dt>districtList</dt>
 <dd><p>Vector of the available districts.</p></dd>
 
-  <dt>linkList</dt>
+<dt>linkList</dt>
 <dd><p>Vector of the available links.</p></dd>
 
-  <dt>areasWithClusters</dt>
+<dt>areasWithClusters</dt>
 <dd><p>Vector of areas containing clusters.</p></dd>
 
-  <dt>variables</dt>
+<dt>variables</dt>
 <dd><p>Available variables for areas, districts and links.</p></dd>
 
-  <dt>parameters</dt>
+<dt>parameters</dt>
 <dd><p>Other parameters of the simulation.</p></dd>
 
-  <dt>timeIdMin</dt>
+<dt>timeIdMin</dt>
 <dd><p>Minimum time id of the simulation. It is generally equal to one but can
-    be higher if working on a subperiod.</p></dd>
+be higher if working on a subperiod.</p></dd>
 
-  <dt>timeIdMax</dt>
+<dt>timeIdMax</dt>
 <dd><p>maximum time id of the simulation.</p></dd>
 
-  <dt>start</dt>
+<dt>start</dt>
 <dd><p>Date of the first day of the year in the simulation. This date corresponds
-    to timeId = 1.</p></dd>
+to timeId = 1.</p></dd>
 
-  <dt>firstWeekday</dt>
+<dt>firstWeekday</dt>
 <dd><p>First day of the week.</p></dd>
 
-  <dt>districtsDef</dt>
+<dt>districtsDef</dt>
 <dd><p>data.table containing the specification of the districts.</p></dd>
 
-  <dt>energyCosts</dt>
+<dt>energyCosts</dt>
 <dd><p>list containing the cost of spilled and unsupplied energy.</p></dd>
+
+
+<dt>sleep</dt>
+<dd><p>timer for api commande execute</p></dd>
 
 </dl></div>
     <div id="details">
@@ -218,8 +222,8 @@ and pass this variable to the functions of the package (see examples).</p>
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="simOptions.html">simOptions</a></code>, <code><a href="readAntares.html">readAntares</a></code>, <code><a href="readLayout.html">readLayout</a></code>, 
-  <code><a href="readClusterDesc.html">readClusterDesc</a></code>, <code><a href="readBindingConstraints.html">readBindingConstraints</a></code></p></div>
+    <div class="dont-index"><p><code><a href="simOptions.html">simOptions</a></code>, <code><a href="readAntares.html">readAntares</a></code>, <code><a href="readLayout.html">readLayout</a></code>,
+<code><a href="readClusterDesc.html">readClusterDesc</a></code>, <code><a href="readBindingConstraints.html">readBindingConstraints</a></code></p></div>
     </div>
 
     <div id="ref-examples">
@@ -332,7 +336,7 @@ and pass this variable to the functions of the package (see examples).</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Veronique Bachelier, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
+  <p></p><p>Developed by Tatiana Vargas, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
 </div>
 
 <div class="pkgdown">

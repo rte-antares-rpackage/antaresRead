@@ -26,7 +26,7 @@ readLayout, readBindingConstraints)'><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -179,13 +179,13 @@ containing the number of available units in a cluster is created.If synthesis is
 
 <dt>mustRun</dt>
 <dd><p>Should must run productions be added to the result? If TRUE,
-then four columns are added: <code>mustRun</code> contains the production of 
+then four columns are added: <code>mustRun</code> contains the production of
 clusters that are in complete must run mode; <code>mustRunPartial</code>
 contains the partial must run production of clusters; <code>mustRunTotal</code>
 is the sum of the two previous columns. Finally <code>thermalPmin</code> is
 similar to mustRunTotal except it also takes into account the production
 induced by the minimum stable power of the units of a cluster. More
-precisely, for a given cluster and a given time step, it is equal to 
+precisely, for a given cluster and a given time step, it is equal to
 <code>min(NODU x min.stable.power, mustRunTotal)</code>.</p></dd>
 
 
@@ -196,22 +196,22 @@ and "minGenModulation" are added to the cluster data.</p></dd>
 
 
 <dt>select</dt>
-<dd><p>Character vector containing the name of the columns to import. If this 
-argument is <code>NULL</code>, all variables are imported. Special names 
-<code>"allAreas"</code> and <code>"allLinks"</code> indicate to the function to import 
-all variables for areas or for links. Since version 1.0, values "misc", 
+<dd><p>Character vector containing the name of the columns to import. If this
+argument is <code>NULL</code>, all variables are imported. Special names
+<code>"allAreas"</code> and <code>"allLinks"</code> indicate to the function to import
+all variables for areas or for links. Since version 1.0, values "misc",
 "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower", "reserve",
 "linkCapacity", "mustRun", "thermalModulation" are also accepted and can
 replace the corresponding arguments. The list of available variables can be
 seen with the command <code>simOptions()$variables</code>.  Id variables like
 <code>area</code>, <code>link</code> or <code>timeId</code> are automatically imported.
-Note that <code>select</code> is *not* taken into account when importing cluster
+Note that <code>select</code> is <em>not</em> taken into account when importing cluster
 data.</p></dd>
 
 
 <dt>mcYears</dt>
 <dd><p>Index of the Monte-Carlo years to import. If <code>NULL</code>, synthetic results
-are read, else the specified Monte-Carlo simulations are imported. The 
+are read, else the specified Monte-Carlo simulations are imported. The
 special value <code>all</code> tells the function to import all Monte-Carlo
 simulations.</p></dd>
 
@@ -275,11 +275,11 @@ size of the output. Different strategies are available depending on your
 objective:</p>
 <ul><li><p>Use a larger time step (parameter <code>timeStep</code>)</p></li>
 <li><p>Filter the elements to import (parameters <code>areas</code>,<code>links</code>,
-    <code>clusters</code> and <code>districts</code>)</p></li>
+<code>clusters</code> and <code>districts</code>)</p></li>
 <li><p>Select only a few columns (parameter <code>select</code>)</p></li>
 <li><p>read only a subset of Monte-Carlo simulations (parameter
-    <code>mcYears</code>). For instance one can import a random sample of
-    100 simulations with <code>mcYears = sample(simOptions()$mcYears, 100)</code></p></li>
+<code>mcYears</code>). For instance one can import a random sample of
+100 simulations with <code>mcYears = sample(simOptions()$mcYears, 100)</code></p></li>
 </ul></div>
     <div id="parallelization">
     <h2>Parallelization</h2>
@@ -351,7 +351,7 @@ session.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Veronique Bachelier, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
+  <p></p><p>Developed by Tatiana Vargas, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
 </div>
 
 <div class="pkgdown">

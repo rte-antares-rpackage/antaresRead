@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -60,6 +60,30 @@
       <small>Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.6.0" id="antaresread-260">antaresRead 2.6.0<a class="anchor" aria-label="anchor" href="#antaresread-260"></a></h2>
+<p>NEW FEATURES (Antares v8.6, cf. Antares v8.6 changelog) :</p>
+<ul><li>
+<code><a href="../reference/readClusterDesc.html">readClusterSTDesc()</a></code> read “short-term storage” clusters parameters (input files of an antares study)</li></ul><p>BREAKING CHANGES (Antares v8.6) :</p>
+<ul><li>
+<code><a href="../reference/readInputTS.html">readInputTS()</a></code> is now compatible to read time series with :<ul><li>“short-term storage”<br></li>
+<li>“mingen” (pmin hydro value)</li>
+</ul></li>
+<li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPath()</a></code> has new parameter <code>areasWithSTClusters</code> (name of area with “st-storage” cluster)</li>
+</ul><p>BUGFIXES :</p>
+<ul><li>
+<code>setSimulationPathAPI</code> generate new global parameter <code>sleep</code> to add timer to API request</li>
+<li>Correction of <code>.importOutput()</code> to use <code><a href="../reference/readAntares.html">readAntares()</a></code> with <code>parallel == TRUE</code> in shiny application</li>
+<li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> delete a redundant API request</li>
+<li>
+<code><a href="../reference/readClusterDesc.html">readClusterDesc()</a></code> minor fix in API mode + fix if no cluster exists =&gt; return specific error message</li>
+<li>
+<code><a href="../reference/read-ini.html">readIniAPI()</a></code> read well file <code>generaldata</code> for sections “playlist” and “variables selection”</li>
+</ul><p>DATA :</p>
+<ul><li>A test study in tar.gz format is available in version <code>v8.6.0</code>
+</li></ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.5.1" id="antaresread-251">antaresRead 2.5.1<a class="anchor" aria-label="anchor" href="#antaresread-251"></a></h2>
 <p>BUGFIXES:</p>
@@ -420,7 +444,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Veronique Bachelier, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
+  <p></p><p>Developed by Tatiana Vargas, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
 </div>
 
 <div class="pkgdown">
