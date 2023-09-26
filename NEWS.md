@@ -1,5 +1,7 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.6.1 (devlopment)
+Fix `setSimulationPathAPI()` error message with bad id
 
 # antaresRead 2.6.0
 
