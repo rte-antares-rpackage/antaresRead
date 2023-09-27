@@ -139,7 +139,7 @@ readInputRES <- function(clusters = NULL, opts = simOptions(),
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
   
-  allAreasClusters <- readClusterResDesc()[area %in% opts$areasWithResClusters, c("area", "cluster")]
+  allAreasClusters <- readClusterResDesc(opts = opts)[area %in% opts$areasWithResClusters, c("area", "cluster")]
   allClusters <- unique(allAreasClusters$cluster)
   # Manage special value "all"
   if(identical(clusters, "all")) clusters <- allClusters

@@ -3,7 +3,8 @@
 # antaresRead 2.6.1 (devlopment)
 BUGFIXES : 
 
-* `readInputThermal()` fix "opts" parameter linked in sub function `readClusterDesc()`
+* `readInputThermal()` / `readInputRES()` fix "opts" parameter linked in sub function 
+
 
 # antaresRead 2.6.0
 
