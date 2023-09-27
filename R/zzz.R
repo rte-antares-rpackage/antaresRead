@@ -11,6 +11,8 @@
 #' @importFrom utils untar
 #' @importFrom stringr str_match str_replace
 
+# private variables ----
+
 # Private variables accessible only by functions from the package
 
 pkgEnv <- new.env()
@@ -106,6 +108,45 @@ utils::globalVariables(
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
     "MRG. PRICE", "H. LEV", "V2", "V1")
 )
+
+## thematic ----
+data_thematic <- read.table(system.file("variables_selection/variables_thematic_by_version.csv", 
+                                        package = "antaresRead"),
+                            sep = ";", 
+                            header = TRUE, 
+                            na.strings = c("NA","NaN", ""))
+
+  # ref versions
+start_vers <- 8.0
+end_vers <- 8.6
+dot_values_vers <- seq(from = start_vers, to = end_vers, 
+                       by = 0.1)
+start_vers <- 800
+end_vers <- 860
+version <- seq(from = start_vers, to = end_vers, 
+               by = 10)
+ref_columns <- data.frame(version_dot= dot_values_vers, 
+                          version= version)
+
+  # rename columns
+pattern_search <- paste(format(ref_columns$version_dot, digits = 2), 
+                        collapse="|")
+
+new_columns_names <- sapply(format(ref_columns$version_dot, 
+                                   digits = 2), function(x){
+  index <- grep(x, x = names(data_thematic))
+  as.character(ref_columns$version[index])
+})
+
+names(data_thematic) <- new_columns_names
+
+  # convert to long format
+setDT(data_thematic)
+data_thematic = melt(data_thematic,   
+                     measure.vars = names(data_thematic),
+                     na.rm = TRUE)
+names(data_thematic) <- c("version", "variable")
+pkgEnv$thematic <- data_thematic
 
 #-----------------------------  HDF5 ------------------------------------#
 
