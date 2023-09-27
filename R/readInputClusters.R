@@ -41,7 +41,7 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermal
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
   
-  allAreasClusters <- readClusterDesc()[area %in% opts$areasWithClusters, c("area", "cluster")]
+  allAreasClusters <- readClusterDesc(opts = opts)[area %in% opts$areasWithClusters, c("area", "cluster")]
   allClusters <- unique(allAreasClusters$cluster)
   # Manage special value "all"
   if(identical(clusters, "all")) clusters <- allClusters
