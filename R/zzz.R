@@ -144,7 +144,7 @@ names(data_thematic) <- new_columns_names
 setDT(data_thematic)
 data_thematic = melt(data_thematic,   
                      measure.vars = names(data_thematic),
-                     na.rm = TRUE)
+                     na.rm = TRUE, variable.factor = FALSE)
 names(data_thematic) <- c("version", "variable")
 pkgEnv$thematic <- data_thematic
 
