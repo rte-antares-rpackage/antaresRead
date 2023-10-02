@@ -16,6 +16,7 @@
 #' @noRd
 #'
 .getOutputHeader <- function(path, objectName, api = FALSE, token = NULL, timeout = 60, config = list()) {
+  
   if(!api){
     colname <- read.table(path, header = F, skip = 4, nrows = 3, sep = "\t")
   } else {
@@ -32,9 +33,17 @@
                         error = function(e) NULL)
   }
   if(!is.null(colname)){
-    colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
-    colname[1:2] <- c(objectName, "timeId")
-    colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+    path_elts <- unlist(strsplit(path, split = "/"))
+    if (startsWith(path_elts[length(path_elts)], "details-")) {
+      # Put a custom separator XXX to be able to split data if necessary
+      colname <- apply(colname[c(1:3),], 2, paste, collapse = "XXX") 
+      colname[1:2] <- c(objectName, "timeId")
+      colname <- gsub("^XXX{1,}|XXXEXP$|XXXvalues$|XXX{1,}$", "", colname)
+    } else {
+      colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
+      colname[1:2] <- c(objectName, "timeId")
+      colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+    }
   }
   
   colname
@@ -277,6 +286,17 @@
   )
 }
 
+#' Create the referential to switch from a column name found in an output file to a business name
+#'
+.createRefOutputForClusters <- function() {
+
+  ref <- data.frame("technical" = c("MWh", "NP Cost - Euro", "NODU", "Profit - Euro"),
+                    "business" = c("production", "NP Cost", "NODU", "profit")
+                    )
+  
+  return(ref)
+}
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the thermal clusters of one area
@@ -289,31 +309,32 @@
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                      showProgress, opts, mustRun = FALSE, parallel) {
   
-  # In output files, there is one file per area with the follwing form:
+  # In output files, there is one file per area with the following form:
   # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
   # the following function reshapes the result to have variable cluster in column.
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
+    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
+    clusters <- n[idx]
+    # Split the data with the specific separator defined in .getOutputHeader()
+    specific_separator <- "XXX"
+    outputElts <- lapply(strsplit(clusters, split = specific_separator),
+                           function(x) list("cluster" = x[-length(x)], "var" = x[length(x)])
+                         )
+    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
+    
+    # output colnames
+    ref_colNames <- .createRefOutputForClusters()
+    colNames <- sapply(outputElts, "[[", "var")
+    colNames <- ref_colNames[ref_colNames$technical %in% colNames, "business"]
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
-    
-    # Get final value columns
-    if (sum(idx) / length(clusterNames) == 4) {
-      colNames <- c("production", "NP Cost", "NODU", "profit")
-    } else if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
     
     # Loop over clusters
     nclusters <- length(clusterNames)
@@ -384,7 +405,7 @@
         #copy of warning in ChangeTimeStep
         warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
         
-        messageWarningMcYears<-paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
+        messageWarningMcYears <- paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
         
         if( is.null(mcYears) ){
           warning(messageWarningMcYears, call. = FALSE)
@@ -451,7 +472,7 @@
 .importOutputForResClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-  # In output files, there is one file per area with the follwing form:
+  # In output files, there is one file per area with the following form:
   # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
   # the following function reshapes the result to have variable cluster in column.
   # To improve greatly the performance we use our knowledge of the position of 
@@ -460,22 +481,22 @@
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
+    clusters <- n[idx]
+    # Split the data with the specific separator defined in .getOutputHeader()
+    specific_separator <- "XXX"
+    outputElts <- lapply(strsplit(clusters, split = specific_separator),
+                           function(x) list("cluster" = x[-length(x)], "var" = x[length(x)])
+                         )
+    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
+    
+    # output colnames
+    ref_colNames <- .createRefOutputForClusters()
+    colNames <- sapply(outputElts, "[[", "var")
+    colNames <- ref_colNames[ref_colNames$technical %in% colNames, "business"]
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
-    
-    # Get final value columns
-    # Get final value columns
-    # colNames <- c("resProduction")
-    if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
     
     # Loop over clusters
     nclusters <- length(clusterNames)

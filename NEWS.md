@@ -23,6 +23,7 @@ BUGFIXES :
 * `setSimulationPathAPI()` delete a redundant API request
 * `readClusterDesc()` minor fix in API mode + fix if no cluster exists => return specific error message
 * `readIniAPI()` read well file `generaldata` for sections "playlist" and "variables selection"
+* `.importOutputForClusters` and `importOutputForResClusters` use a referential to convert a technical name found in output file to a business name in an Antares data.table
 
 
 DATA : 
