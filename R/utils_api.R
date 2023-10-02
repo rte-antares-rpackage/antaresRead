@@ -370,32 +370,47 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
                      timeout = timeout, config = httr_config
     )
   }, error = function(e){
-    stop("Can't connect to API. Please verify host & token")
+    # catch message from api_get() (from API)
+    stop(e)
   })
 
+  # generic tests (legacy)
   if(isTRUE(all.equal(names(check_study), "detail"))){
     stop("Can't connect to API. Please verify token")
   }
 
+  # generic tests (legacy)
   if(!study_id %in% check_study$id){
     stop("Can't find your 'study_id' on the API")
   }
 
-  res <- .getPathsAPI(host, study_id, simulation, token = token, timeout = timeout, config = httr_config)
+  res <- .getPathsAPI(host, 
+                      study_id, 
+                      simulation, 
+                      token = token, 
+                      timeout = timeout, 
+                      config = httr_config)
 
-  res$studyName <- read_secure_json(file.path(res$studyPath, "study"), 
-                                    token = token, timeout = timeout, 
-                                    config = httr_config)$antares$caption
+  res$studyName <- check_study$name
   
   res$version <- check_study$version
   
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
   if (is.null(res$simPath) | length(res$simPath) == 0) {
-    res <- append(res, .getInputOptionsAPI(res, token = token, timeout = timeout, config = httr_config))
+    res <- append(res, 
+                  .getInputOptionsAPI(res, 
+                                      token = token, 
+                                      timeout = timeout, 
+                                      config = httr_config))
   } else {
     res$simPath <- URLencode(res$simPath)
-    res <- append(res, .getSimOptionsAPI(res, host, token = token, timeout = timeout, config = httr_config))
+    res <- append(res, 
+                  .getSimOptionsAPI(res, 
+                                    host, 
+                                    token = token, 
+                                    timeout = timeout, 
+                                    config = httr_config))
   }
 
   # dates, TimeId min and max
