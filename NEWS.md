@@ -1,7 +1,11 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 # antaresRead 2.6.1 (devlopment)
-Fix `setSimulationPathAPI()` error message with bad id
+
+BUGFIXES :  
+
+* `setSimulationPathAPI()` error message with bad id
+* `readInputThermal()` / `readInputRES()` fix "opts" parameter linked in sub function 
 
 # antaresRead 2.6.0
 
