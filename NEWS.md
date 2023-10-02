@@ -1,5 +1,10 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.6.1 (devlopment)
+BUGFIXES : 
+
+* `readInputThermal()` / `readInputRES()` fix "opts" parameter linked in sub function 
+
 
 # antaresRead 2.6.0
 
