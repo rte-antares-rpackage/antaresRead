@@ -18,7 +18,7 @@ readAntaresClusters <- function(clusters, selected = c("production", "NP Cost", 
     stop("Cannot use 'readAntaresClusters' in 'Input' mode.")
   
   ##Add check control for all
-  allClusters <- readClusterDesc()[, c("area","cluster")]
+  allClusters <- readClusterDesc(opts = opts)[, c("area","cluster")]
   ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clusters), 
                                                                    tolower(unique(allClusters$cluster)), 
                                                                    "clusters %s do not exist in the simulation."))

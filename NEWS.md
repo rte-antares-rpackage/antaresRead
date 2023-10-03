@@ -1,9 +1,11 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 # antaresRead 2.6.1 (devlopment)
-BUGFIXES : 
 
-* `readInputThermal()` / `readInputRES()` fix "opts" parameter linked in sub function 
+BUGFIXES :  
+
+* `setSimulationPathAPI()` error message with bad id
+* correction in `readClusterDesc()` calls to add "opts"
 
 
 # antaresRead 2.6.0
