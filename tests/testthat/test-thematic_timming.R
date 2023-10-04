@@ -2,6 +2,17 @@
 path_study_test <- grep(pattern = "86", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
+# Empty section "selection variables" ----
+test_that("Empty selection variables", {
+  # template study 860 as no section
+  
+  # read general data [variables selection] (thematic trimming)
+  testthat::expect_warning(
+    getThematicTrimming(opts = opts_study_test), 
+    regexp = "`variables selection` section in file 'generaldata.ini' does not exist"
+  )
+  })
+
 # ADD VARIABLES ----
 test_that("read selection variables (+)", {
     # use generaldata test file 

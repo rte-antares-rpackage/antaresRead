@@ -1,6 +1,27 @@
 
 
-
+#' @title  Get the Thematic trimming of an Antares study  
+#'  
+#' @description 
+#' `r antaresRead:::badge_api_no()`  
+#' 
+#' 
+#' This function reads the "selection variables" section of the study's 
+#' "generaldata.ini" file.
+#' 
+#' 
+#' @inheritParams readAntares
+#' 
+#' @return `data.frame` with 2 columns :  
+#'  - `variables` : names are displayed according to the study version  
+#'  - `status_selection` : have 2 possible values {"active"; "skip"}
+#' 
+#' @export
+#' @examples 
+#' \dontrun{
+#' # Get Thematic trimming of Antares study version >= v8.0
+#' getThematicTrimming()
+#' }
 getThematicTrimming <- function(opts = simOptions()){
   stopifnot(inherits(opts, "simOptions"))
   
@@ -45,7 +66,7 @@ getThematicTrimming <- function(opts = simOptions()){
         )
       return(df_thematic)
     }else{
-      # mange subtraction variables
+      # manage subtraction variables
       col_names <- vs_section[check_pattern_remove]
       col_names <- unlist(col_names, use.names = FALSE)
       
