@@ -2,6 +2,9 @@
 
 # antaresRead 2.6.1 (devlopment)
 
+NEW FEATURES :  
+* `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`
+
 BUGFIXES :  
 
 * `setSimulationPathAPI()` error message with bad id
