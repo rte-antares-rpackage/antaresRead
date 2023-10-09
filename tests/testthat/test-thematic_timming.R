@@ -2,16 +2,33 @@
 path_study_test <- grep(pattern = "86", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
+
+# test_that("Empty selection variables", {
+#   # template study 860 as no section
+#   
+#   # read general data [variables selection] (thematic trimming)
+#   testthat::expect_warning(
+#     getThematicTrimming(opts = opts_study_test), 
+#     regexp = "`variables selection` section in file 'generaldata.ini' does not exist"
+#   )
+#   })
+
 # Empty section "selection variables" ----
-test_that("Empty selection variables", {
-  # template study 860 as no section
+test_that("read generaldata with empty [selection variables]", {
+  # read general data [variables selection] 
+  read_thematic <- getThematicTrimming(opts = opts_study_test)
   
-  # read general data [variables selection] (thematic trimming)
-  testthat::expect_warning(
-    getThematicTrimming(opts = opts_study_test), 
-    regexp = "`variables selection` section in file 'generaldata.ini' does not exist"
-  )
-  })
+  # check variables names according to antares version
+  antares_version <- opts_study_test$antaresVersion
+  filter_vars_version <- pkgEnv$thematic[version<=antares_version,]
+  
+  # test if variables are all in output
+  testthat::expect_true(all(filter_vars_version$variable%in%
+                              read_thematic$variables))
+  # test status values
+  testthat::expect_equal(object = unique(read_thematic$status_selection), 
+                         expected = "active")
+})
 
 # ADD VARIABLES ----
 test_that("read selection variables (+)", {
