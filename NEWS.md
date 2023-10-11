@@ -30,6 +30,7 @@ BUGFIXES :
 * `setSimulationPathAPI()` delete a redundant API request
 * `readClusterDesc()` minor fix in API mode + fix if no cluster exists => return specific error message
 * `readIniAPI()` read well file `generaldata` for sections "playlist" and "variables selection"
+* `api_get()` able to read data if content type of the response is `application/octet-stream`
 
 
 DATA : 

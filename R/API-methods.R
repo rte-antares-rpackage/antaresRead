@@ -65,7 +65,11 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     stop_for_status(result, task = mess_error)
     }else 
       warn_for_status(result)
-  content(result)
+  if (result$headers$`content-type` == "application/octet-stream") {
+    content(result, as = "text")
+  } else {
+    content(result)
+  }
 }
 
 #' @export
