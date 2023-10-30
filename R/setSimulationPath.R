@@ -246,8 +246,13 @@ setSimulationPath <- function(path, simulation = NULL) {
 
 .giv_sim <- function(simulation, simNames, path){
   if (is.numeric(simulation)) {
-    if (simulation > 0) sim <- simNames[simulation]
-    else sim <- rev(simNames)[abs(simulation)]
+    if(abs(simulation)>length(simNames))
+      stop(paste0("Parameter 'simulation' is greater than 
+                  the number of simulations (", length(simNames), ")"), call. = FALSE)
+    if (simulation > 0) 
+      sim <- simNames[simulation]
+    else 
+      sim <- rev(simNames)[abs(simulation)]
   } else {
     if (any(simNames == simulation)) sim <- simulation
     else {
