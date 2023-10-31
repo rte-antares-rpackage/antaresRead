@@ -246,8 +246,13 @@ setSimulationPath <- function(path, simulation = NULL) {
 
 .giv_sim <- function(simulation, simNames, path){
   if (is.numeric(simulation)) {
-    if (simulation > 0) sim <- simNames[simulation]
-    else sim <- rev(simNames)[abs(simulation)]
+    if(abs(simulation)>length(simNames))
+      stop(paste0("Parameter 'simulation' is greater than 
+                  the number of simulations (", length(simNames), ")"), call. = FALSE)
+    if (simulation > 0) 
+      sim <- simNames[simulation]
+    else 
+      sim <- rev(simNames)[abs(simulation)]
   } else {
     if (any(simNames == simulation)) sim <- simulation
     else {
@@ -380,6 +385,12 @@ setSimulationPath <- function(path, simulation = NULL) {
     file.exists(f) && file.info(f)$size > 0
   })
   
+  # Areas with st-storatge clusters
+  areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
+    f <- file.path(inputPath, "st-storage/clusters", a, "list.ini")
+    file.exists(f) && file.info(f)$size > 0
+  })
+  
   res <- list(
     mode = "Input",
     antaresVersion = antaresVersion,
@@ -389,6 +400,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linksDef = linksDef,
     areasWithClusters = areaList[areaHasClusters],
     areasWithResClusters = areaList[areaHasResClusters],
+    areasWithSTClusters = areaList[areaHasSTClusters],
     parameters = params
   )
 

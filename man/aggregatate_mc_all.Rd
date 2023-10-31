@@ -37,9 +37,9 @@ aggregateResult(
 
 \item{verbose}{\code{numeric} show log in console. Defaut to 1
 \itemize{
- \item{0}{ : No log}
- \item{1}{ : Short log}
- \item{2}{ : Long log}
+\item{0}{ : No log}
+\item{1}{ : Short log}
+\item{2}{ : Long log}
 }}
 
 \item{timestep}{\code{character} antares timestep}

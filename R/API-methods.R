@@ -55,7 +55,16 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
   #fix for skipping 404 when some output is missing
   url_elements <- strsplit(result$url, "%2F")[[1]]
   condition_status_check <- !(!is.na(url_elements[4]) & url_elements[4] %in% c("economy","adequacy") & result$status_code == 404)
-  if (condition_status_check) stop_for_status(result) else warn_for_status(result)
+  if(condition_status_check){
+    mess_error <- content(result)
+    if(!is.null(names(mess_error)))
+      mess_error <- paste0("\n[Description] : ", mess_error$description,
+                           "\n[Exception] : ", mess_error$exception)
+    else
+      mess_error <- NULL
+    stop_for_status(result, task = mess_error)
+    }else 
+      warn_for_status(result)
   content(result)
 }
 
@@ -90,7 +99,13 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config = config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                         "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
 

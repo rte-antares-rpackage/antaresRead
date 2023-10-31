@@ -8,6 +8,7 @@ readInputTS(
   load = NULL,
   thermalAvailabilities = NULL,
   ror = NULL,
+  mingen = NULL,
   hydroStorage = NULL,
   hydroStorageMaxPower = NULL,
   wind = NULL,
@@ -16,6 +17,7 @@ readInputTS(
   reserve = NULL,
   linkCapacity = NULL,
   resProduction = NULL,
+  st_storage = NULL,
   opts = simOptions(),
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
   simplify = TRUE,
@@ -29,6 +31,9 @@ readInputTS(
 \item{thermalAvailabilities}{vector of areas names for which thermal availabilities of clusters must be read.}
 
 \item{ror}{vector of areas names for which run of river time series must be read.}
+
+\item{mingen}{vector of areas names for which Hydro Pmin time series must be read.
+(only for Antares version >= 860)}
 
 \item{hydroStorage}{vector of areas names for which hydrolic storage time series must be read.}
 
@@ -45,6 +50,8 @@ readInputTS(
 \item{linkCapacity}{vector of links names for which links characteristics time series must be read}
 
 \item{resProduction}{vector of areas names for which renewables clusters production time series must be read.}
+
+\item{st_storage}{vector of areas names for which st-storage clusters production time series must be read.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
@@ -70,13 +77,15 @@ data.tables, each element representing one type of element (load, wind,
 solar, etc.).
 }
 \description{
-\code{readInputTS} is a function that reads time series from an antares 
+\ifelse{html}{\figure{badge_api_ok.svg}{options: alt='Antares API OK'}}{Antares API: \strong{OK}}
+
+\code{readInputTS} is a function that reads time series from an antares
 project. But contrary to \code{\link{readAntares}}, it only reads time series
 stored in the input folder, so it can work in "input" mode.
 }
 \note{
 All parameters expecting a vector of areas or links names also accept the
-special value "all". It indicates the function to read the desired time 
+special value "all". It indicates the function to read the desired time
 series for all areas or links.
 }
 \examples{
@@ -103,6 +112,6 @@ matplot(myArea[, - (1:2), with = FALSE], type = "l")
 
 }
 \seealso{
-\code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
+\code{\link{setSimulationPath}}, \code{\link{readAntares}},
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }

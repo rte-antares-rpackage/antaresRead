@@ -17,7 +17,7 @@ readIniAPI(study_id, path, host, token = NULL)
 \item{pathIni}{Path to config/ini file to read.}
 
 \item{opts}{List of simulation parameters returned by the function
-[antaresRead::setSimulationPath()]}
+\code{\link[=setSimulationPath]{setSimulationPath()}}}
 
 \item{default_ext}{Default extension used for config files.}
 

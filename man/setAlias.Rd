@@ -13,26 +13,26 @@ setAlias(name, desc, select)
 getAlias(name)
 }
 \arguments{
-\item{names}{optional vector of alias names. If provided, the full list of 
-columns selected by these aliases is displayed. Else only the name and a 
+\item{names}{optional vector of alias names. If provided, the full list of
+columns selected by these aliases is displayed. Else only the name and a
 short description of all aliases is displayed.}
 
 \item{name}{Alias name}
 
 \item{desc}{Short description indicating why the new alias is interesting}
 
-\item{select}{character vector containing columns and/or types of data to 
+\item{select}{character vector containing columns and/or types of data to
 import.}
 }
 \value{
-\code{setAlias} is only used for its side effects. A data.frame with columns 
-'name', 'desc' and 'select'. \code{showAliases} invisibly returns a 
+\code{setAlias} is only used for its side effects. A data.frame with columns
+'name', 'desc' and 'select'. \code{showAliases} invisibly returns a
 data.frame with columns "name", "desc" and "select".
 }
 \description{
-Aliases are short names that can be used in the \code{select} parameter in 
+Aliases are short names that can be used in the \code{select} parameter in
 function \code{\link{readAntares}} to tell the function which columns and/or
-type of data to import. 
+type of data to import.
 
 \code{setAlias} can be used to create a new alias. It can be especially
 useful for package developers to help their users select the data required

@@ -17,19 +17,19 @@ removeVirtualAreas(
 )
 }
 \arguments{
-\item{x}{An object of class \code{antaresDataList} with at least components 
+\item{x}{An object of class \code{antaresDataList} with at least components
 \code{areas} and \code{links}.}
 
-\item{storageFlexibility}{A vector containing the names of the virtual 
-storage/flexibility areas. Can also be a named list. Names are columns 
+\item{storageFlexibility}{A vector containing the names of the virtual
+storage/flexibility areas. Can also be a named list. Names are columns
 to add and elements the virtual areas to group.}
 
-\item{production}{A vector containing the names of the virtual production 
+\item{production}{A vector containing the names of the virtual production
 areas.}
 
-\item{reassignCosts}{If TRUE, the production costs of the virtual areas are 
-reallocated to the real areas they are connected to. If the virtual areas 
-are connected to a virtual hub, their costs are first reallocated to the 
+\item{reassignCosts}{If TRUE, the production costs of the virtual areas are
+reallocated to the real areas they are connected to. If the virtual areas
+are connected to a virtual hub, their costs are first reallocated to the
 hub and then the costs of the hub are reallocated to the real areas.}
 
 \item{newCols}{If \code{TRUE}, new columns containing the production of the virtual
@@ -39,13 +39,13 @@ the real areas they are connected to.}
 \item{rowBal}{If \code{TRUE}, then BALANCE will be corrected by ROW. BAL:
 BALANCE := BALANCE - "ROW. BAL"}
 
-\item{prodVars}{Virtual productions columns to add to real area. 
+\item{prodVars}{Virtual productions columns to add to real area.
 Default to \code{getAlias("rmVA_production")}}
 
 \item{costsVars}{If parameter \code{reassignCosts} is TRUE, affected columns.
 Default to \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.} and \code{NP COST}}
 
-\item{costsOn}{If parameter \code{reassignCosts} is TRUE, then the costs of the 
+\item{costsOn}{If parameter \code{reassignCosts} is TRUE, then the costs of the
 virtual areas are reassigned to the real areas they are connected to.
 You can choose to reassigned production & storageFlexibility virtuals areas
 ("both", default), or only "production" or "storageFlexibility" virtuals areas}
@@ -57,75 +57,75 @@ corrections.
 }
 \description{
 This function removes virtual areas from an \code{antaresDataList} object and
-corrects the data for the real areas. The \code{antaresDataList} object 
+corrects the data for the real areas. The \code{antaresDataList} object
 should contain area and link data to function correctly.
 }
 \details{
 Two types of virtual areas have been defined corresponding to different types
 of modeling in Antares and different types of post-treatment to do:
-  
-\itemize{ 
-  \item Flexibility/storage areas are areas created to model 
-    pumping unit or any other flexibility that behave as a storage. For those 
-    virtual areas, the important results are flows on the links. 
-  \item Production areas are areas created to isolate some generation from 
-    the "real" areas. They can be isolate for several reasons: to distinguish 
-    time-series (for example wind onshore/offshore), to select some specific 
-    unit to participate to day-ahead reserve, etc.
+
+\itemize{
+\item Flexibility/storage areas are areas created to model
+pumping unit or any other flexibility that behave as a storage. For those
+virtual areas, the important results are flows on the links.
+\item Production areas are areas created to isolate some generation from
+the "real" areas. They can be isolate for several reasons: to distinguish
+time-series (for example wind onshore/offshore), to select some specific
+unit to participate to day-ahead reserve, etc.
 }
-  
+
 \code{removeVirtualAreas} performs different corrections:
-  
-\itemize{ 
-  \item Correct the balance of the real areas (and districts) by removing the flows
-    to or from virtual areas.
-  
-  \item If parameter \code{reassignCosts} is TRUE, then the costs of the 
-    virtual areas are reassigned to the real areas they are connected to. The
-    default affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
-    and \code{NP COST}. If a virtual area is connected to a single real area,
-    all its costs are attributed to the real area. If it is connected to
-    several real areas, then costs at a given time step are divided between
-    them proportionally to the flows between them and the virtual area.
-    An aggregation is done at the end to correct districts costs. 
-  
-  \item For each storage/flexibility area, a column named like the area is 
-    created. It contains the values of the flow between the virtual area and 
-    the real areas. This column is interpreted as a production of
-    electricity: it is positive if the flow from the virtual area to the real
-    area is positive and negative otherwise. If parameter \code{newCols} is
-    \code{FALSE}, the values are added to the variable \code{PSP} and the 
-    columns is removed.
-    An aggregation is done at the end to add virtual storage/flexibility to districts. 
-    
-  \item If the parameter \code{production} is specified, then the non null
-    productions of the virtual areas are either added to the ones of the real 
-    areas they are connected to if \code{newCols = FALSE} or put in new 
-    columns if \code{newCols = TRUE}. In the second case the columns are 
-    named \code{*_virtual} where "\code{*}" is a type of 
-    production (wind, solar, nuclear, ...). Productions that are zero for
-    all virtual areas are omited.
-    If virtual production areas contains clusters then they will be move to the
-    real area. 
-    An aggregation is done at the end to add virtual production to districts. 
-  
-  \item Finally, virtual areas and the links connected to them are removed
-    from the data. 
+
+\itemize{
+\item Correct the balance of the real areas (and districts) by removing the flows
+to or from virtual areas.
+
+\item If parameter \code{reassignCosts} is TRUE, then the costs of the
+virtual areas are reassigned to the real areas they are connected to. The
+default affected columns are \code{OV. COST}, \code{OP. COST}, \code{CO2 EMIS.}
+and \code{NP COST}. If a virtual area is connected to a single real area,
+all its costs are attributed to the real area. If it is connected to
+several real areas, then costs at a given time step are divided between
+them proportionally to the flows between them and the virtual area.
+An aggregation is done at the end to correct districts costs.
+
+\item For each storage/flexibility area, a column named like the area is
+created. It contains the values of the flow between the virtual area and
+the real areas. This column is interpreted as a production of
+electricity: it is positive if the flow from the virtual area to the real
+area is positive and negative otherwise. If parameter \code{newCols} is
+\code{FALSE}, the values are added to the variable \code{PSP} and the
+columns is removed.
+An aggregation is done at the end to add virtual storage/flexibility to districts.
+
+\item If the parameter \code{production} is specified, then the non null
+productions of the virtual areas are either added to the ones of the real
+areas they are connected to if \code{newCols = FALSE} or put in new
+columns if \code{newCols = TRUE}. In the second case the columns are
+named \code{*_virtual} where "\code{*}" is a type of
+production (wind, solar, nuclear, ...). Productions that are zero for
+all virtual areas are omited.
+If virtual production areas contains clusters then they will be move to the
+real area.
+An aggregation is done at the end to add virtual production to districts.
+
+\item Finally, virtual areas and the links connected to them are removed
+from the data.
 }
-  
+
 The functions makes a few assumptions about the network. If they are
-violated it will not act correctly: 
-  
-\itemize{ 
-  \item storage/flexibility
-    areas can be connected to other storage/flexibility areas (hubs), but at 
-    least one of them is connected to a real area. That means that there is
-    no group of virtual areas disconnected from the real network. If such a
-    group exists, you can either remove them manually or simply not import
-    them.
-  \item production areas are connected to one and only one real area. They
-    cannot be connected to virtual areas. But a real area may by connected to
-    several production areas.
+violated it will not act correctly:
+
+\itemize{
+\item storage/flexibility
+areas can be connected to other storage/flexibility areas (hubs), but at
+least one of them is connected to a real area. That means that there is
+no group of virtual areas disconnected from the real network. If such a
+group exists, you can either remove them manually or simply not import
+them.
+\item production areas are connected to one and only one real area. They
+cannot be connected to virtual areas. But a real area may by connected to
+several production areas.
 }
 }
 \examples{

@@ -20,7 +20,7 @@ in the input files so they may have changed since a simulation has been run."><!
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.0</span>
       </span>
     </div>
 
@@ -74,7 +74,9 @@ in the input files so they may have changed since a simulation has been run.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readClusterDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">readClusterResDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">readClusterResDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">readClusterSTDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -89,7 +91,7 @@ in the input files so they may have changed since a simulation has been run.</p>
     
 
 <p>A data.table with one line per cluster. The columns of the data.table may
-change between different projects, but there will always be the following 
+change between different projects, but there will always be the following
 columns:</p>
 <dl><dt>area</dt>
 <dd><p>Name of the area containing the cluster</p></dd>
@@ -108,7 +110,7 @@ columns:</p>
 
 
 </dl><p>The other present columns depends on the version of antares and the options
-that have been set: if an option is unset for all clusters, it will not 
+that have been set: if an option is unset for all clusters, it will not
 appear in the table.</p>
 
 
@@ -120,6 +122,9 @@ study. You can use the argument <code>opts</code> to specify another study.</p>
 
 
 <p><code>readClusterResDesc</code> : read renewable clusters (Antares &gt;= V8.1)</p>
+
+
+<p><code>readClusterSTDesc</code> : read st-storage clusters (Antares &gt;= V8.6)</p>
     </div>
 
     <div id="ref-examples">
@@ -132,6 +137,9 @@ study. You can use the argument <code>opts</code> to specify another study.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># renewable</span></span></span>
 <span class="r-in"><span><span class="fu">readClusterResDesc</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># st-storage</span></span></span>
+<span class="r-in"><span><span class="fu">readClusterSTDesc</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># By default, the function reads cluster descriptions for the default study,</span></span></span>
 <span class="r-in"><span><span class="co"># but it is possible to specify another study with parameter "opts"</span></span></span>
@@ -153,7 +161,7 @@ study. You can use the argument <code>opts</code> to specify another study.</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Veronique Bachelier, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
+  <p></p><p>Developed by Tatiana Vargas, Jalal-Edine ZAWAM, Francois Guillem, Benoit Thieurmel, Titouan Robert.</p>
 </div>
 
 <div class="pkgdown">

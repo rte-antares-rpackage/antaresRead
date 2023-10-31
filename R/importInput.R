@@ -157,6 +157,12 @@
                  inputTimeStep = "hourly", type = "matrix")
 }
 
+# "mingen" (v860)
+.importmingen <- function(area, timeStep, opts, ...){
+  .importInputTS(area, timeStep, opts, "hydro/series/%s/mingen.txt", "mingen", 
+                 inputTimeStep = "hourly", type = "matrix")
+}
+
 .importHydroStorageInput <- function(area, timeStep, opts, ...) {
   inputTimeStepV <- ifelse(opts$antaresVersion >= 650, yes = "daily", no = "monthly")
   .importInputTS(area, timeStep, opts, "hydro/series/%s/mod.txt", "hydroStorage", 
@@ -421,3 +427,94 @@
 #   out <- gsub(" ", "%20", out)
 # }
 
+
+# "st-storage" (v860)
+.importSTStorage <- function(area, timeStep, opts, ...){
+
+  if (!area %in% opts$areasWithSTClusters) 
+    return(NULL)
+  
+  if(!"api" %in% opts$typeLoad){
+    clusters <- list.files(
+      file.path(opts$inputPath, 
+                "st-storage/series", 
+                area)
+      )
+    
+    # "st-storage" have 5 txt files output for each cluster
+    list_names_txt_files <- unique(
+      list.files(
+        file.path(opts$inputPath,  
+                  "st-storage/series", 
+                  area, 
+                  clusters)
+        )
+    )
+    
+    list_names_less_txt <- sub(pattern = ".txt", 
+                               replacement = "", 
+                               x = list_names_txt_files)
+    
+  } else {
+    list_info_clusters <- read_secure_json(
+      file.path(opts$inputPath, 
+                "st-storage/series", 
+                area), 
+      token = opts$token, 
+      timeout = opts$timeout, 
+      config = opts$httr_config
+      )
+    
+    clusters <- names(list_info_clusters)
+    
+    files_names <- names(list_info_clusters[[1]])
+    
+    list_names_txt_files <- paste0(files_names, ".txt")
+    list_names_less_txt <- files_names 
+  }
+  
+  # read TS for every cluster
+  ldply(clusters, function(cl) {
+    pattern <- paste0("%s/%s/%%s/", 
+                      list_names_txt_files)
+    filePatterns <- sprintf(pattern, 
+                            "st-storage/series", area)
+    
+    res <- lapply(filePatterns, 
+                  function(.x){
+                    index_name_file <- which(filePatterns %in% .x)
+                    
+                    res_temp <- .importInputTS(area= cl, 
+                                               timeStep= timeStep, 
+                                               opts= opts, 
+                                               fileNamePattern= .x,
+                                               colnames= "st-storage",
+                                               inputTimeStep = "hourly", 
+                                               type = "matrix")
+                    res_temp$name_file <- list_names_less_txt[index_name_file]
+                    res_temp
+                    })
+    
+    res <- rbindlist(res)
+
+    if (is.null(res)) 
+      return(NULL)
+    
+    res$area <- area
+    res$cluster <- cl
+    
+    setcolorder(res, 
+                c("area", 
+                  "cluster", 
+                  "timeId", 
+                  setdiff(
+                    names(res), 
+                    c("area", 
+                      "cluster", 
+                      "timeId")))
+                )
+  })
+  
+  # added a column "name_file" to tag the file name
+  
+}

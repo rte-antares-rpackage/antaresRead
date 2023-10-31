@@ -97,7 +97,7 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
 #' @export
 #' @rdname read-ini
 readIniAPI <- function(study_id, path, host, token = NULL) {
-  api_get(
+  api_get_ini_file <- api_get(
     opts = list(host = host, token = token),
     endpoint = paste0(study_id, "/raw"),
     query = list(
@@ -105,4 +105,50 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
       formatted = TRUE
     )
   )
+  # reformat list contains unnamed list
+  .format_list(api_get_ini_file)
+}
+
+# reformat list from JSON format 
+.format_list <- function(list_x){
+  # check list to find sub list
+  check_class_list <- lapply(list_x, function(x) 
+    lapply(x, class) %in% "list")
+  
+  is_true_list <- lapply(check_class_list, function(x) 
+    any(x %in% TRUE))
+  
+  index_true <- which(is_true_list %in% TRUE)
+  
+  # reformat sub list
+  list_to_reformat <- list_x[index_true]
+  
+  list_to_reformat <- lapply(list_to_reformat, function(x){
+    index_list <- which(
+      lapply(x, class) %in% "list")
+    
+    # reformat only unnamed list
+    if(is.name(x[index_list]))
+      return(x)
+    else{
+      elements <- unlist(x[index_list], use.names = FALSE)
+      if(class(elements)%in%"character"){
+        elements <- paste("'", elements, "'", sep="", collapse=",")
+        elements <- paste0("[", elements, "]")
+      }else{
+        elements <- paste0(elements, collapse= ",")
+        elements <- paste0("[", elements, "]")
+      }
+      x[index_list] <- elements
+      x
+    }
+  })
+  
+  # return original list 
+  if(identical(index_true, integer(0)))
+    list_x
+  else
+    # return list reformated
+    append(list_x[-index_true], 
+           list_to_reformat)
 }

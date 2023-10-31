@@ -32,6 +32,8 @@
 #' \code{readClusterDesc} : read thermal clusters
 #' 
 #' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
+#' 
+#' \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
 #'
 #' @examples
 #' 
@@ -42,6 +44,9 @@
 #' 
 #' # renewable
 #' readClusterResDesc()
+#' 
+#' # st-storage
+#' readClusterSTDesc()
 #' 
 #' # By default, the function reads cluster descriptions for the default study,
 #' # but it is possible to specify another study with parameter "opts"
@@ -69,10 +74,22 @@ readClusterResDesc <- function(opts = simOptions()) {
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
     stop("readClusterDesc is available only on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
   }
-  .readClusterDesc(opts = simOptions(), dir = "renewables/clusters")
+  .readClusterDesc(opts = opts, dir = "renewables/clusters")
 }
 
 
+#' @export
+#'
+#' @rdname readClusterDesc
+readClusterSTDesc <- function(opts = simOptions()) {
+  if (opts$antaresVersion < 860) {
+    stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
+  }
+  .readClusterDesc(opts = opts, dir = "st-storage/clusters")
+}
+
+
+  
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
@@ -104,7 +121,10 @@ readClusterResDesc <- function(opts = simOptions()) {
       if(nrow(clusters)==0)return(NULL)
       clusters$area <- Y1
       clusters[, .SD, .SDcols = order(names(clusters))]
-    },jsoncld, names(jsoncld)), fill = TRUE)
+    },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
+    
+    if(length(res) == 0) 
+      stop("Cannot find cluster description.", call. = FALSE)
     
     res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     

@@ -44,15 +44,15 @@ data.tables for selected input
 Else the result is a data.table with class "antaresDataTable".
 }
 \description{
-\code{readInputThermal} is a function that reads thermal time series from an antares 
+\code{readInputThermal} is a function that reads thermal time series from an antares
 project. But contrary to \code{\link{readAntares}}, it only reads time series
 stored in the input folder, so it can work in "input" mode.
 }
 \note{
-the clusters parameter can also accept the special value "all". 
+the clusters parameter can also accept the special value "all".
 It indicates the function to read the desired time series for all clusters.
 }
 \seealso{
-\code{\link{setSimulationPath}}, \code{\link{readAntares}}, 
+\code{\link{setSimulationPath}}, \code{\link{readAntares}},
 \code{\link{getAreas}}, \code{\link{getLinks}}
 }

@@ -17,7 +17,7 @@ setSimulationPathAPI(
 )
 }
 \arguments{
-\item{path}{(optional) 
+\item{path}{(optional)
 Path to the simulation. It can either be the path to a directory containing
 an antares project or directly to the directory containing the output of a
 simulation.  If missing, a window opens and lets the user choose the
@@ -25,9 +25,9 @@ directory of the simulation interactively. Can also choose .h5 file, if \code{rh
 
 \item{simulation}{(optional) Only used if "path" represents the path of a study and not of the
 output of a simulation. It can be either the name of the simulation or a
-number indicating which simulation to use. It is possible to use negative 
+number indicating which simulation to use. It is possible to use negative
 values to select a simulation from the last one: for instance -1 will
-select the most recent simulation, -2 will the penultimate one, etc. There 
+select the most recent simulation, -2 will the penultimate one, etc. There
 are two special values 0 and "input" that tells the function that the user
 is not interested by the results of any simulation, but only by the inputs.
 In such a case, the function \code{\link{readAntares}} is unavailable.}
@@ -44,38 +44,38 @@ In such a case, the function \code{\link{readAntares}} is unavailable.}
 }
 \value{
 A list containing various information about the simulation, in particular:
-  \item{studyPath}{path of the Antares study}
-  \item{simPath}{path of the simulation}
-  \item{inputPath}{path of the input folder of the study}
-  \item{studyName}{Name of the study}
-  \item{simDataPath}{path of the folder containing the data of the simulation}
-  \item{name}{name of the simulation}
-  \item{mode}{type of simulation: economy, adequacy, draft or input}
-  \item{synthesis}{Are synthetic results available ?}
-  \item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
-  \item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is 
-    important to reconstruct some input time series that have been used in 
-    each Monte-Carlo simulation.}
-  \item{mcYears}{Vector containing the number of the exported Monte-Carlo scenarios}
-  \item{antaresVersion}{Version of Antares used to run the simulation.}
-  \item{areaList}{Vector of the available areas.}
-  \item{districtList}{Vector of the available districts.}
-  \item{linkList}{Vector of the available links.}
-  \item{areasWithClusters}{Vector of areas containing clusters.}
-  \item{variables}{Available variables for areas, districts and links.}
-  \item{parameters}{Other parameters of the simulation.}
-  \item{timeIdMin}{
-    Minimum time id of the simulation. It is generally equal to one but can
-    be higher if working on a subperiod.
-  }
-  \item{timeIdMax}{maximum time id of the simulation.}
-  \item{start}{
-    Date of the first day of the year in the simulation. This date corresponds
-    to timeId = 1.
-  }
-  \item{firstWeekday}{First day of the week.}
-  \item{districtsDef}{data.table containing the specification of the districts.}
-  \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
+\item{studyPath}{path of the Antares study}
+\item{simPath}{path of the simulation}
+\item{inputPath}{path of the input folder of the study}
+\item{studyName}{Name of the study}
+\item{simDataPath}{path of the folder containing the data of the simulation}
+\item{name}{name of the simulation}
+\item{mode}{type of simulation: economy, adequacy, draft or input}
+\item{synthesis}{Are synthetic results available ?}
+\item{yearByYear}{Are the results for each Monte Carlo simulation available ?}
+\item{scenarios}{Are the Monte-Carlo scenarii stored in output ? This is
+important to reconstruct some input time series that have been used in
+each Monte-Carlo simulation.}
+\item{mcYears}{Vector containing the number of the exported Monte-Carlo scenarios}
+\item{antaresVersion}{Version of Antares used to run the simulation.}
+\item{areaList}{Vector of the available areas.}
+\item{districtList}{Vector of the available districts.}
+\item{linkList}{Vector of the available links.}
+\item{areasWithClusters}{Vector of areas containing clusters.}
+\item{variables}{Available variables for areas, districts and links.}
+\item{parameters}{Other parameters of the simulation.}
+\item{timeIdMin}{
+Minimum time id of the simulation. It is generally equal to one but can
+be higher if working on a subperiod.
+}
+\item{timeIdMax}{maximum time id of the simulation.}
+\item{start}{
+Date of the first day of the year in the simulation. This date corresponds
+to timeId = 1.
+}
+\item{firstWeekday}{First day of the week.}
+\item{districtsDef}{data.table containing the specification of the districts.}
+\item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
 
 \item{sleep}{timer for api commande execute}
 }
@@ -195,6 +195,6 @@ matplot(output[area == area[1], !c("area", "timeId"), with = FALSE],
 
 }
 \seealso{
-\code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
-  \code{\link{readClusterDesc}}, \code{\link{readBindingConstraints}}
+\code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}},
+\code{\link{readClusterDesc}}, \code{\link{readBindingConstraints}}
 }

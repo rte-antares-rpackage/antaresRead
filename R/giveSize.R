@@ -171,7 +171,7 @@ setRam <- function(x){
   clusWithData <- data.table()
   if(!is.null(clusters))
   {
-    clusWithData  <- tryCatch(readClusterDesc(), error = function(e) data.table())
+    clusWithData  <- tryCatch(readClusterDesc(opts = opts), error = function(e) data.table())
     if("all" %in% clusters){
       enabled <- TRUE
       if("enabled" %in% names(clusWithData))

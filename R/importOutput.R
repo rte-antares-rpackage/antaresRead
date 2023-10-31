@@ -139,7 +139,7 @@
       res <- llply(
         1:nrow(args), 
         function(i) {
-          incProgress(1/n, detail = paste0("Importing ", folder, " data"))
+          if(showProgress){ incProgress(1/n, detail = paste0("Importing ", folder, " data")) }
           data <- NULL
           try({
             if (!sameNames) {

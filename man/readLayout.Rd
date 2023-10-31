@@ -15,12 +15,12 @@ readLayout(opts = simOptions(), xyCompare = c("union", "intersect"))
 \value{
 A list with three elements:
 \item{areas: }{A data.frame containing the name, the color and the coordinate
-   of each area}
+of each area}
 \item{district: }{A data.frame containing the name, the color and the coordinate
-   of each district}
+of each district}
 \item{links: }{A data.frame containing the name, the coordinates of the origin
-   and the destination of each link}
-   
+and the destination of each link}
+
 By default, \code{readLayout} reads the layout for the current default
 antares study. It is possible to specify another study with the parameter
 \code{opts}. And we can pass multiple studies using a \code{list} of opts.
@@ -28,7 +28,7 @@ antares study. It is possible to specify another study with the parameter
 \description{
 This function reads in the input files of an antares study the current areas
 layout, ie. the position of the areas It may be useful for plotting the
-network. 
+network.
 
 Be aware that the layout is read in the input files so they may have
 changed since a simulation has been run.
