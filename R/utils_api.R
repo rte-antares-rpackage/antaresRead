@@ -47,7 +47,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
   outputPath <- file.path(path,  "output")
   if(is.null(simulation) | (!is.null(simulation) && !simulation %in% c(0, "input"))){
     outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), ...))
-    simNames <- setdiff(basename(outputContent), "maps")
+    simNames <- setdiff(basename(outputContent), c("maps", "logs"))
   }
   if (length(simNames) == 0) {
     if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
@@ -196,6 +196,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
       simDataPath = simDataPath,
       name = as.character(info$name),
       mode = as.character(info$mode),
+      simDate = info$date,
       synthesis = synthesis,
       yearByYear = yearByYear,
       scenarios = scenarios,

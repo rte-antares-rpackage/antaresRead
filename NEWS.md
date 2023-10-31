@@ -4,7 +4,9 @@
 
 BUGFIXES :  
 
-* `setSimulationPathAPI()` error message with bad id
+* `setSimulationPathAPI()` :  
+  - returns an API exception if the requested study ID is incorrect 
+  - `simulation` the simulation parameter works with negative values within the limit of the number of simulations
 * correction in `readClusterDesc()` calls to add "opts"
 
 
