@@ -24,13 +24,35 @@
 #' }
 getThematicTrimming <- function(opts = simOptions()){
   stopifnot(inherits(opts, "simOptions"))
+  stopifnot(opts$antaresVersion>=800)
+  
+  ##
+  # API bloc
+  ##
+  if(antaresRead:::is_api_study(opts = opts)){
+    # use endpoint from API "Get thematic trimming config"
+    endpoint_to_use <- "config/thematictrimming/form"
+    endpoint_to_use <- file.path(opts$study_id, 
+                                 endpoint_to_use)
+    
+    thematic_vars <- api_get(opts = opts, 
+                             endpoint = endpoint_to_use)
+    
+    return(thematic_vars)
+  }
+  
+  ##
+  # Desktop
+  ##
   
   # read study to update opts meta data 
-  opts_study <- setSimulationPath(opts$studyPath, 
-                                  simulation = "input")
+  suppressWarnings(
+    opts_study <- setSimulationPath(opts$studyPath, 
+                                    simulation = "input")
+  )
   
-  # use global referentiel
-  ref_list_vars_thematic <- antaresRead:::pkgEnv$thematic
+  # use private referentiel
+  ref_list_vars_thematic <- pkgEnv$thematic
   
   # filter vars with version
   ref_list_vars_thematic <- ref_list_vars_thematic[version<=opts_study$antaresVersion,]

@@ -2,6 +2,8 @@
 path_study_test <- grep(pattern = "86", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
+# NOTES : 
+  # In this study test there is no section [selection variables] 
 
 # test_that("Empty selection variables", {
 #   # template study 860 as no section
