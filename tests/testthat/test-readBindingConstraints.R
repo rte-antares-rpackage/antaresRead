@@ -30,7 +30,7 @@ test_that("Both operator",{
 #unlink(studyPathS, recursive = TRUE)  
 
 # >= v800 ----
-# 
+#  
 opts <- antaresRead::setSimulationPath(studyPathSV8[1], "input")
 
 test_that("test if exist data value file", {
@@ -48,6 +48,17 @@ test_that("test if exist data value file", {
 
 
 # >= v870 ----
-#
+# 
 
+# read latest version study
+path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
+test_that("Read scenarised BC", {
+  
+  bc <- readBindingConstraints(opts = opts_study_test)
+  
+  # test class object return
+  testthat::expect_equal(class(bc), "bindingConstraints")
+  
+})

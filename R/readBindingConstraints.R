@@ -44,6 +44,10 @@ readBindingConstraints <- function(opts = simOptions()) {
     }
   }
   
+  ##
+  # API BLOC
+  ##
+  
   if(opts$typeLoad == 'api'){
     bindingConstraints <- read_secure_json(file.path(opts$inputPath, "bindingconstraints", "bindingconstraints"), 
                                            opts$token, timeout = opts$timeout, config = opts$httr_config)
@@ -51,6 +55,10 @@ readBindingConstraints <- function(opts = simOptions()) {
     path <- file.path(opts$inputPath, "bindingconstraints/bindingconstraints.ini")
     bindingConstraints <- readIniFile(path, stringsAsFactors = FALSE)
   }
+  
+  ##
+  # Exception if no properties
+  ##
   
   if(length(bindingConstraints) == 0) {
     warning("It looks like there is no binding constraints is this study.")
@@ -69,22 +77,27 @@ readBindingConstraints <- function(opts = simOptions()) {
     
     # v870
     if(opts$antaresVersion>=870){
-      path_lt <- file.path(opts$inputPath, 
+      
+      parse_type <- switch(bindingConstraints[[i]]$operator,
+                      less = "lt",
+                      greater = "gt",
+                      equal = "eq",
+                      both = c("lt", "gt")) # "both" case ? 
+      
+      path_file_value <- file.path(opts$inputPath, 
                            sprintf("bindingconstraints/%s.txt", 
-                                   paste0(bindingConstraints[[i]]$id, "_lt")))
-      path_gt <- file.path(opts$inputPath, 
-                           sprintf("bindingconstraints/%s.txt", 
-                                   paste0(bindingConstraints[[i]]$id, "_gt")))
-      path_eq <- file.path(opts$inputPath, 
-                           sprintf("bindingconstraints/%s.txt", 
-                                   paste0(bindingConstraints[[i]]$id, "_eq")))
+                                   paste0(bindingConstraints[[i]]$id, 
+                                          "_",
+                                          parse_type)))
+      
       
       suppressWarnings(
-        tmp_values <- lapply(c(path_lt, path_gt, path_eq), 
-                             fread_antares, opts = opts)
+        tmp_values <- lapply(path_file_value, 
+                             fread_antares, 
+                             opts = opts)
       )
       
-      names(tmp_values) <- c("lt", "gt", "eq")
+      names(tmp_values) <- parse_type
       
       # this test do nothing => tmp_values never NULL
         # return 0 row/col for empty file or error if file does not exist
@@ -96,7 +109,9 @@ readBindingConstraints <- function(opts = simOptions()) {
       bindingConstraints[[i]]$values <- tmp_values
       
     }else{
-      path <- file.path(opts$inputPath, sprintf("bindingconstraints/%s.txt", bindingConstraints[[i]]$id))
+      path <- file.path(opts$inputPath, 
+                        sprintf("bindingconstraints/%s.txt", 
+                                bindingConstraints[[i]]$id))
       
       # why return 0 if  file.size(path) == 0 ? 
       if(opts$typeLoad != "api" && file.size(path) == 0){
