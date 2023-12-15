@@ -65,9 +65,12 @@ readBindingConstraints <- function(opts = simOptions()) {
     return(NULL)
   }
   
+  ##
   # read txt files
+  ##
   for (i in 1:length(bindingConstraints)) {
-    # check to return 0 values if empty file (only for < v870)
+    
+    # dimension according to parameter "type" to return default value (TS file)
     nrows <- switch(bindingConstraints[[i]]$type,
                     hourly = 24*7*52,
                     daily = 7 * 52,
@@ -90,25 +93,34 @@ readBindingConstraints <- function(opts = simOptions()) {
                                           "_",
                                           parse_type)))
       
-      
-      suppressWarnings(
-        tmp_values <- lapply(path_file_value, 
-                             fread_antares, 
-                             opts = opts)
-      )
-      
-      names(tmp_values) <- parse_type
-      
-      # this test do nothing => tmp_values never NULL
-        # return 0 row/col for empty file or error if file does not exist
+      # check path file
+      if(!file.exists(path_file_value)){
+        warning("Time series file for binding constraint ", 
+                bindingConstraints[[i]]$id, 
+                " not exist", 
+                call. = FALSE)
+        tmp_values <- NULL
+      }else{
+        tmp_values <- fread_antares(opts = opts, file = path_file_value)
+        }
+        
+      # check if txt file is empty
+      if(nrow(tmp_values)==0){
+        warning("Time series file for binding constraint ", 
+                bindingConstraints[[i]]$id, 
+                " is empty", 
+                call. = FALSE)
+        tmp_values <- NULL
+      }
+        
+      # [return] default values 
       if(is.null(tmp_values)){
-        tmp_values <- list(`lt`= matrix(0L, nrow = nrows),
-                           `gt`= matrix(0L, nrow = nrows),
-                           `eq`= matrix(0L, nrow = nrows))
+        default_scenarised_values <- matrix(0L, nrow = nrows, ncol = 1)
+        tmp_values <- default_scenarised_values
       }
       bindingConstraints[[i]]$values <- tmp_values
       
-    }else{
+    }else{ # <870
       path <- file.path(opts$inputPath, 
                         sprintf("bindingconstraints/%s.txt", 
                                 bindingConstraints[[i]]$id))
@@ -138,12 +150,15 @@ readBindingConstraints <- function(opts = simOptions()) {
     }
   }  
   
-  res <- unname(bindingConstraints)
+  # manage full list object
+  # res <- unname(bindingConstraints)
   
-  constraintNames <- vapply(res, function(x) x$name, character(1))
+  constraintNames <- sapply(bindingConstraints, 
+                            `[[`, 
+                            "name")
   
   # re structure list
-  res <- lapply(res, function(x) {
+  bindingConstraints <- lapply(bindingConstraints, function(x) {
     coefs <- x
     # default names of parameters
     names_elements <- c("name", "id", "enabled", "type", "operator", "values")
@@ -193,9 +208,9 @@ readBindingConstraints <- function(opts = simOptions()) {
       values = x$values)
   })
   
-  names(res) <- constraintNames
-  class(res) <- "bindingConstraints"
-  res
+  names(bindingConstraints) <- constraintNames
+  class(bindingConstraints) <- "bindingConstraints"
+  bindingConstraints
 }
 
 #' @param object Object returned by readBindingConstraints

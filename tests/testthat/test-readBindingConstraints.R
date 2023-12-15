@@ -26,11 +26,9 @@ test_that("Both operator",{
                     names(sumConstraints)))
 })  
 
-##delete study ----
-#unlink(studyPathS, recursive = TRUE)  
 
 # >= v800 ----
-#  
+
 opts <- antaresRead::setSimulationPath(studyPathSV8[1], "input")
 
 test_that("test if exist data value file", {
@@ -40,7 +38,8 @@ test_that("test if exist data value file", {
   testthat::expect_equal(class(bc), "bindingConstraints")
 
   names_bc_test <- paste0(names(bc), ".txt")
-  path_test_bc <- paste0(file.path(opts$inputPath, "bindingconstraints", names_bc_test))
+  path_test_bc <- paste0(file.path(opts$inputPath, "bindingconstraints", 
+                                   names_bc_test))
   
   # test if values files exists
   testthat::expect_true(all(unlist(lapply(path_test_bc, file.exists))))
@@ -48,17 +47,21 @@ test_that("test if exist data value file", {
 
 
 # >= v870 ----
-# 
+
+# read latest version of empty study
+setup_study_empty(sourcedir_empty_study)
+opts_test_empty <- antaresRead::setSimulationPath(study_empty_latest_version,
+                                            "input")
 
 # read latest version study
 path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
 test_that("Read scenarised BC", {
-  
+
   bc <- readBindingConstraints(opts = opts_study_test)
-  
+
   # test class object return
   testthat::expect_equal(class(bc), "bindingConstraints")
-  
+
 })
