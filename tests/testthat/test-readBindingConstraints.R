@@ -19,7 +19,7 @@ test_that("summary.bindingConstraints",{
   
 test_that("Both operator",{
   constraints <- readBindingConstraints(opts)
-  constraints[[1]]$operator <- "both"
+  constraints[[1]]$properties$operator <- "both"
   sumConstraints <- summary(constraints)
   expect_is(sumConstraints, "data.frame")
   expect_true(all(c("enabled", "timeStep", "equation") %in% 

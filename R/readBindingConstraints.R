@@ -115,7 +115,8 @@ readBindingConstraints <- function(opts = simOptions()) {
         
       # [return] default values 
       if(is.null(tmp_values)){
-        default_scenarised_values <- matrix(0L, nrow = nrows, ncol = 1)
+        default_scenarised_values <- as.data.table(
+          matrix(0L, nrow = nrows, ncol = 1))
         tmp_values <- default_scenarised_values
       }
       bindingConstraints[[i]]$values <- tmp_values
@@ -127,7 +128,8 @@ readBindingConstraints <- function(opts = simOptions()) {
       
       # why return 0 if  file.size(path) == 0 ? 
       if(opts$typeLoad != "api" && file.size(path) == 0){
-        bindingConstraints[[i]]$values <- as.data.table(matrix(0L, nrow = nrows, 3))
+        bindingConstraints[[i]]$values <- as.data.table(
+          matrix(0L, nrow = nrows, 3))
         setnames(bindingConstraints[[i]]$values, 
                  names(bindingConstraints[[i]]$values),
                  c("less", "greater", "equal"))
@@ -150,62 +152,86 @@ readBindingConstraints <- function(opts = simOptions()) {
     }
   }  
   
+  ##
   # manage full list object
-  # res <- unname(bindingConstraints)
+  ##
   
+  # to return named list
   constraintNames <- sapply(bindingConstraints, 
                             `[[`, 
                             "name")
   
-  # re structure list
+  # re structure list ($properties, $coefs, $values)
+    # [breaking changes] add "$properties" for all version
   bindingConstraints <- lapply(bindingConstraints, function(x) {
-    coefs <- x
     # default names of parameters
     names_elements <- c("name", "id", "enabled", "type", "operator", "values")
     
+    # get links information from list
+    coefs_elements <- setdiff(names(x), names_elements)
+    coefs_values <- x[which(names(x)%in%coefs_elements)]
+    
+    ##
+    # manage properties with version
+    ##
+    
     # v832
-    if (opts$antaresVersion>=832)
-      names_elements <- append(names_elements, 
-                               c("filter-year-by-year", "filter-synthesis"))
-
-    # v870
-    if(opts$antaresVersion>=870)
-      names_elements <- append(names_elements, "group")
+    if (opts$antaresVersion>=832){
+      names_elements_832 <- c("filter-year-by-year", 
+                              "filter-synthesis")
+      elements_832 <- x[which(names(x)%in%names_elements_832)]
       
-    for (v in names_elements) {
-      coefs[[v]] <- NULL
+      coefs_values[names_elements_832] <- NULL
     }
     
+    # v870
+    if(opts$antaresVersion>=870){
+      names_elements_870 <- "group"
+      elements_870 <- x[which(names(x)%in%names_elements_870)]
+      
+      coefs_values[names_elements_870] <- NULL
+    }
+      
+    ##
     # update list 
+    ##
+    
+    # core elements list
+    core_list <- list(
+      properties = list(
+        name = x$name,
+        id = x$id,
+        enabled = x$enabled,
+        timeStep = x$type,
+        operator = x$operator),
+      coefs = unlist(coefs_values),
+      values = x$values)
+    
+    # add properties according to version
+      # decreasing approach
     
     # v870
-    if(opts$antaresVersion>=870)
-      list(
-        enabled = x$enabled,
-        timeStep = x$type,
-        operator = x$operator,
-        `filter-year-by-year` = x$`filter-year-by-year`,
-        `filter-synthesis` = x$`filter-synthesis`,
-        group = x$group,
-        coefs = unlist(coefs),
-        values = x$values)
+    if(opts$antaresVersion>=870){
+      list_870 <- list()
+      list_870$properties = append(core_list$properties, 
+                                   c(
+                                     unlist(elements_832),
+                                     unlist(elements_870)))
+      list_870 <- append(list_870, 
+                         core_list[c(2,3)])
+      return(list_870)
+    }
     # v832
-    else if(opts$antaresVersion>=832)
-      list(
-        enabled = x$enabled,
-        timeStep = x$type,
-        operator = x$operator,
-        `filter-year-by-year` = x$`filter-year-by-year`,
-        `filter-synthesis` = x$`filter-synthesis`,
-        coefs = unlist(coefs),
-        values = x$values)
-    else
-      list(
-      enabled = x$enabled,
-      timeStep = x$type,
-      operator = x$operator,
-      coefs = unlist(coefs),
-      values = x$values)
+    if(opts$antaresVersion>=832){
+      list_832 <- list()
+      list_832$properties = append(core_list$properties, 
+                                   unlist(elements_832))
+      list_832 <- append(list_832, 
+                         core_list[c(2,3)])
+      return(list_832)
+    }
+
+    return(core_list)
   })
   
   names(bindingConstraints) <- constraintNames
@@ -231,7 +257,7 @@ summary.bindingConstraints <- function(object, ...) {
     lhs <- gsub("^ (\\+ )?", "", lhs)
     lhs <- gsub("1 x ", "", lhs)
     
-    if (x$operator == "both") {
+    if (x$properties$operator == "both") {
       # Left inequality
       rhs <- mean(x$values$greater)
       range <- range(x$values$greater)
@@ -249,9 +275,9 @@ summary.bindingConstraints <- function(object, ...) {
         res <- sprintf("%s < [%s, %s]", res, range[1], range[2])
       }
     } else {
-      operator <- switch(x$operator, equal = "=", less = "<", greater = ">")
-      rhs <- mean(x$values[[x$operator]])
-      range <- range(x$values[[x$operator]])
+      operator <- switch(x$properties$operator, equal = "=", less = "<", greater = ">")
+      rhs <- mean(x$values[[x$properties$operator]])
+      range <- range(x$values[[x$properties$operator]])
       if(range[1] == range[2]) {
         res <- sprintf("%s %s %s", lhs, operator, rhs)
       } else {
@@ -262,8 +288,8 @@ summary.bindingConstraints <- function(object, ...) {
     res
   })
   
-  timeStep <- vapply(object, function(x) x$timeStep, character(1))
-  enabled <- vapply(object, function(x) x$enabled, logical(1))
+  timeStep <- vapply(object, function(x) x$properties$timeStep, character(1))
+  enabled <- vapply(object, function(x) x$properties$enabled, logical(1))
   
   data.frame(
     enabled = enabled, 
