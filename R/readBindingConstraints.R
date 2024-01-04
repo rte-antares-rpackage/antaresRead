@@ -164,7 +164,7 @@ readBindingConstraints <- function(opts = simOptions()) {
   # re structure list ($properties, $coefs, $values)
     # [breaking changes] add "$properties" for all version
   bindingConstraints <- lapply(bindingConstraints, function(x) {
-    # default names of parameters
+    # default names of parameters (core parameters)
     names_elements <- c("name", "id", "enabled", "type", "operator", "values")
     
     # get links information from list
@@ -172,8 +172,9 @@ readBindingConstraints <- function(opts = simOptions()) {
     coefs_values <- x[which(names(x)%in%coefs_elements)]
     
     ##
-    # manage properties with version
+    # manage properties with version (filter)
     ##
+      # filter on parameters to keep only links information
     
     # v832
     if (opts$antaresVersion>=832){
