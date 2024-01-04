@@ -74,7 +74,7 @@ readClusterResDesc <- function(opts = simOptions()) {
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
     stop("readClusterDesc is available only on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
   }
-  .readClusterDesc(opts = simOptions(), dir = "renewables/clusters")
+  .readClusterDesc(opts = opts, dir = "renewables/clusters")
 }
 
 
@@ -85,7 +85,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
   if (opts$antaresVersion < 860) {
     stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
   }
-  .readClusterDesc(opts = simOptions(), dir = "st-storage/clusters")
+  .readClusterDesc(opts = opts, dir = "st-storage/clusters")
 }
 
 
