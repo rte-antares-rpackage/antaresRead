@@ -35,8 +35,7 @@
 #' 
 #' @export
 readBindingConstraints <- function(opts = simOptions()) {
-  
-  if(isH5Opts(opts)){
+if(isH5Opts(opts)){
     if(.requireRhdf5_Antares(stopP = FALSE)){
       return(h5ReadBindingConstraints(opts))
     } else {
@@ -93,35 +92,72 @@ readBindingConstraints <- function(opts = simOptions()) {
                                           "_",
                                           parse_type)))
       
+      # check if "both" case
+      both_case <- bindingConstraints[[i]]$operator %in% "both"
+      
       # check path file
-      if(!file.exists(path_file_value)){
-        warning("Time series file for binding constraint ", 
+        # multiple path for "both" case
+      if(!all(file.exists(path_file_value)))
+        stop("Time series file for binding constraint ", 
                 bindingConstraints[[i]]$id, 
                 " not exist", 
                 call. = FALSE)
-        tmp_values <- NULL
-      }else{
-        tmp_values <- fread_antares(opts = opts, file = path_file_value)
-        }
         
-      # check if txt file is empty
-      if(nrow(tmp_values)==0){
+      # Read files
+        # both case 
+      if(both_case){
+        tmp_values <- lapply(path_file_value, 
+                             fread_antares, 
+                             opts = opts)
+        names(tmp_values) <- c("less", "greater")
+       }
+      else
+        tmp_values <- fread_antares(opts = opts, 
+                                    file = path_file_value)
+        
+        
+      # check empty values to return default values
+        # both case
+      default_scenarised_values <- as.data.table(
+        matrix(0L, nrow = nrows, ncol = 1))
+      
+      if(both_case){
+        check_nrow <- unlist(lapply(tmp_values, nrow))
+        if(any(check_nrow %in% 0)){
+          warning("Time series files for binding constraint ", 
+                  bindingConstraints[[i]]$id, 
+                  " are empty", 
+                  call. = FALSE)
+          
+          tmp_values[["less"]] <- default_scenarised_values
+          tmp_values[["greater"]] <- default_scenarised_values
+          # tmp_values <- lapply(tmp_values, 
+          #        function(x){
+          #          x[["less"]] <- default_scenarised_values
+          #          x[["greater"]] <- default_scenarised_values
+          #        })
+         }
+      }
+      else
+        if(nrow(tmp_values)==0){
         warning("Time series file for binding constraint ", 
                 bindingConstraints[[i]]$id, 
                 " is empty", 
                 call. = FALSE)
-        tmp_values <- NULL
-      }
-        
-      # [return] default values 
-      if(is.null(tmp_values)){
-        default_scenarised_values <- as.data.table(
-          matrix(0L, nrow = nrows, ncol = 1))
         tmp_values <- default_scenarised_values
-      }
+        }
+        
+      # # [return] default values 
+      # if(is.null(tmp_values)){
+      #   default_scenarised_values <- as.data.table(
+      #     matrix(0L, nrow = nrows, ncol = 1))
+      #   tmp_values <- default_scenarised_values
+      # }
+      
+      # return
       bindingConstraints[[i]]$values <- tmp_values
       
-    }else{ # <870
+    }else{ # <870 (legacy)
       path <- file.path(opts$inputPath, 
                         sprintf("bindingconstraints/%s.txt", 
                                 bindingConstraints[[i]]$id))
