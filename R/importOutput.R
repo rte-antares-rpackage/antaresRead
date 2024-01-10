@@ -306,12 +306,12 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
-		
-		corr_clusters <- pkgEnv$output_correspondance
-		cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_TYPE")
-		corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_TYPE == "clusters", cols_to_keep]
     
-		# Get cluster names
+    corr_clusters <- pkgEnv$output_correspondance
+    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_TYPE")
+    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_TYPE == "clusters", cols_to_keep]
+    
+    # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
     clusters <- n[idx]
@@ -324,9 +324,9 @@
     
     # output colnames
     colNames <- sapply(outputElts, "[[", "var")
-		cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
-		corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
-		colNames <- corr_clusters[order(corr_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
+    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
+    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
+    colNames <- corr_clusters[order(corr_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
     
     # Id vars names
     idVarsId <- which(!idx)
@@ -474,12 +474,12 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
-	
-		corr_res_clusters <- pkgEnv$output_correspondance
-		cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_TYPE")
-		corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_TYPE == "res_clusters", cols_to_keep]
+  
+    corr_res_clusters <- pkgEnv$output_correspondance
+    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_TYPE")
+    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_TYPE == "res_clusters", cols_to_keep]
     
-		# Get cluster names
+    # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
     clusters <- n[idx]
@@ -492,9 +492,9 @@
     
     # output colnames
     colNames <- sapply(outputElts, "[[", "var")
-		cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
-		corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
-		colNames <- corr_res_clusters[order(corr_res_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
+    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
+    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
+    colNames <- corr_res_clusters[order(corr_res_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
     
     # Id vars names
     idVarsId <- which(!idx)
