@@ -4,5 +4,3 @@ clusters;NP Cost - Euro;NP Cost;2
 clusters;NODU;NODU;3
 clusters;Profit - Euro;profit;4
 res_clusters;MWh;production;1
-res_clusters;NP Cost - Euro;NP Cost;2
-res_clusters;NODU;NODU;3
