@@ -32,9 +32,17 @@
                         error = function(e) NULL)
   }
   if(!is.null(colname)){
-    colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
-    colname[1:2] <- c(objectName, "timeId")
-    colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+    path_elts <- unlist(strsplit(path, split = "/"))
+    if (startsWith(path_elts[length(path_elts)], "details-")) {
+      # Put a custom separator XXX to be able to split data if necessary
+      colname <- apply(colname[c(1:3),], 2, paste, collapse = "XXX") 
+      colname[1:2] <- c(objectName, "timeId")
+      colname <- gsub("^XXX{1,}|XXXEXP$|XXXvalues$|XXX{1,}$", "", colname)
+    } else {
+      colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
+      colname[1:2] <- c(objectName, "timeId")
+      colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
+    }
   }
   
   colname
@@ -277,6 +285,7 @@
   )
 }
 
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the thermal clusters of one area
@@ -295,25 +304,31 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
+    
+    corr_clusters <- pkgEnv$output_correspondance
+    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_TYPE")
+    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_TYPE == "clusters", cols_to_keep]
+    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
+    clusters <- n[idx]
+    # Split the data with the specific separator defined in .getOutputHeader()
+    specific_separator <- "XXX"
+    outputElts <- lapply(strsplit(clusters, split = specific_separator),
+                           function(y) list("cluster" = y[-length(y)], "var" = y[length(y)])
+                         )
+    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
+		
+    # output colnames
+    colNames <- sapply(outputElts, "[[", "var")
+    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
+    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
+    colNames <- corr_clusters[order(corr_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
-    
-    # Get final value columns
-    if (sum(idx) / length(clusterNames) == 4) {
-      colNames <- c("production", "NP Cost", "NODU", "profit")
-    } else if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
     
     # Loop over clusters
     nclusters <- length(clusterNames)
@@ -457,25 +472,31 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
+  
+    corr_res_clusters <- pkgEnv$output_correspondance
+    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_TYPE")
+    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_TYPE == "res_clusters", cols_to_keep]
+    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
+    clusters <- n[idx]
+    # Split the data with the specific separator defined in .getOutputHeader()
+    specific_separator <- "XXX"
+    outputElts <- lapply(strsplit(clusters, split = specific_separator),
+                           function(y) list("cluster" = y[-length(y)], "var" = y[length(y)])
+                         )
+    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
+    
+    # output colnames
+    colNames <- sapply(outputElts, "[[", "var")
+    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
+    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
+    colNames <- corr_res_clusters[order(corr_res_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
-    
-    # Get final value columns
-    # Get final value columns
-    # colNames <- c("resProduction")
-    if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
     
     # Loop over clusters
     nclusters <- length(clusterNames)
