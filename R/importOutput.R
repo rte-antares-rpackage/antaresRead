@@ -32,21 +32,14 @@
                         error = function(e) NULL)
   }
   if(!is.null(colname)){
-    path_elts <- unlist(strsplit(path, split = "/"))
-    if (startsWith(path_elts[length(path_elts)], "details-")) {
-      # Put a custom separator XXX to be able to split data if necessary
-      colname <- apply(colname[c(1:3),], 2, paste, collapse = "XXX") 
-      colname[1:2] <- c(objectName, "timeId")
-      colname <- gsub("^XXX{1,}|XXXEXP$|XXXvalues$|XXX{1,}$", "", colname)
-    } else {
-      colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
-      colname[1:2] <- c(objectName, "timeId")
-      colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
-    }
+    colname <- apply(colname[c(1,3),], 2, paste, collapse = "_") 
+    colname[1:2] <- c(objectName, "timeId")
+    colname <- gsub("^_|_EXP$|_values$|_$", "", colname)
   }
   
   colname
 }
+
 
 #' .importOutput
 #'
@@ -286,6 +279,54 @@
 }
 
 
+#' .get_value_columns_details_file
+#'
+#' Private function used to get the column names for the details-<timeStep>.txt or details-res-<timestep>.txt.
+#' Used in .importOutputForClusters() and importOutputForResClusters() 
+#'
+#' @return
+#' a vector
+#'
+#' @noRd
+#'
+.get_value_columns_details_file <- function(opts, type) {
+  
+  ## details part
+  if(type == "details") {
+    # Order is important. There is a correspondance between elements.
+    all_thematic_variables <- c("DTG by plant", "NP Cost by plant", "NODU by plant")
+    all_output_colnames <- c("production", "NP Cost", "NODU")
+    if (opts$antaresVersion >= 830){
+      all_thematic_variables <- c(all_thematic_variables, "Profit by plant")
+      all_output_colnames <- c(all_output_colnames, "profit")
+    }
+    colNames <- all_output_colnames
+    if ("variables selection" %in% names(opts$parameters)) {
+      selection_type <- unique(names(opts$parameters$`variables selection`))
+      selected_variables <- unlist(opts$parameters$`variables selection`, use.names = FALSE)
+      # Index of the variables found in the section "variables selection"
+      idx_vars <- which(all_thematic_variables %in% selected_variables)
+      if (length(idx_vars) > 0) {
+        if (selection_type == "select_var -") {
+          # vars to remove
+          colNames <- colNames[-idx_vars]
+        } else if (selection_type == "select_var +") {
+          # vars to keep
+          colNames <- colNames[idx_vars]
+        }
+      }
+    }  
+  }
+  
+  ## details-res part
+  if(type == "details-res") {
+    colNames <- c("production")
+  }  
+  
+  return(colNames)
+}
+
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the thermal clusters of one area
@@ -305,42 +346,28 @@
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
     
-    corr_clusters <- pkgEnv$output_correspondance
-    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_TYPE")
-    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_TYPE == "clusters", cols_to_keep]
-    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusters <- n[idx]
-    # Split the data with the specific separator defined in .getOutputHeader()
-    specific_separator <- "XXX"
-    outputElts <- lapply(strsplit(clusters, split = specific_separator),
-                           function(y) list("cluster" = y[-length(y)], "var" = y[length(y)])
-                         )
-    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
-		
-    # output colnames
-    colNames <- sapply(outputElts, "[[", "var")
-    cols_to_keep <- setdiff(colnames(corr_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
-    corr_clusters <- corr_clusters[corr_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
-    colNames <- corr_clusters[order(corr_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
+    clusterNames <- tolower(unique(n[idx]))
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
     
+    # Column names of the output table
+    colNames <- .get_value_columns_details_file(opts, "details")    
+    
     # Loop over clusters
     nclusters <- length(clusterNames)
-    ncols <- length(colNames)
     
     res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
       setnames(dt, c(colNames, idVarsNames))
       dt[, cluster := as.factor(clusterNames[i])]
       dt
     })
-    
+  
     rbindlist(res)
   }
   
@@ -472,38 +499,24 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
-  
-    corr_res_clusters <- pkgEnv$output_correspondance
-    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_TYPE")
-    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_TYPE == "res_clusters", cols_to_keep]
     
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
-    clusters <- n[idx]
-    # Split the data with the specific separator defined in .getOutputHeader()
-    specific_separator <- "XXX"
-    outputElts <- lapply(strsplit(clusters, split = specific_separator),
-                           function(y) list("cluster" = y[-length(y)], "var" = y[length(y)])
-                         )
-    clusterNames <- tolower(unique(sapply(outputElts, "[[", "cluster")))
-    
-    # output colnames
-    colNames <- sapply(outputElts, "[[", "var")
-    cols_to_keep <- setdiff(colnames(corr_res_clusters), "ANTARES_OUTPUT_FILE_COLUMN_NAME")
-    corr_res_clusters <- corr_res_clusters[corr_res_clusters$ANTARES_OUTPUT_FILE_COLUMN_NAME %in% colNames, cols_to_keep]
-    colNames <- corr_res_clusters[order(corr_res_clusters$ANTARES_OUTPUT_ORDINAL_POSITION), "ANTARES_OUTPUT_R_VARIABLE"]
+    clusterNames <- tolower(unique(n[idx]))
     
     # Id vars names
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
     
+    # Column names of the output table
+    colNames <- .get_value_columns_details_file(opts, "details-res")  
+    
     # Loop over clusters
     nclusters <- length(clusterNames)
-    ncols <- length(colNames)
     
     res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
       setnames(dt, c(colNames, idVarsNames))
       dt[, cluster := as.factor(clusterNames[i])]
       dt
