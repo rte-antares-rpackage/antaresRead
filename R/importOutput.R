@@ -277,6 +277,55 @@
   )
 }
 
+
+#' .get_value_columns_details_file
+#'
+#' Private function used to get the column names for the details-<timeStep>.txt or details-res-<timestep>.txt.
+#' Used in .importOutputForClusters() and importOutputForResClusters() 
+#'
+#' @return
+#' a vector
+#'
+#' @noRd
+#'
+.get_value_columns_details_file <- function(opts, type) {
+  
+  ## details part
+  if(type == "details") {
+    # Order is important. There is a correspondance between elements.
+    all_thematic_variables <- c("DTG by plant", "NP Cost by plant", "NODU by plant")
+    all_output_colnames <- c("production", "NP Cost", "NODU")
+    if (opts$antaresVersion >= 830){
+      all_thematic_variables <- c(all_thematic_variables, "Profit by plant")
+      all_output_colnames <- c(all_output_colnames, "profit")
+    }
+    colNames <- all_output_colnames
+    if ("variables selection" %in% names(opts$parameters)) {
+      selection_type <- unique(names(opts$parameters$`variables selection`))
+      selected_variables <- unlist(opts$parameters$`variables selection`, use.names = FALSE)
+      # Index of the variables found in the section "variables selection"
+      idx_vars <- which(all_thematic_variables %in% selected_variables)
+      if (length(idx_vars) > 0) {
+        if (selection_type == "select_var -") {
+          # vars to remove
+          colNames <- colNames[-idx_vars]
+        } else if (selection_type == "select_var +") {
+          # vars to keep
+          colNames <- colNames[idx_vars]
+        }
+      }
+    }  
+  }
+  
+  ## details-res part
+  if(type == "details-res") {
+    colNames <- c("production")
+  }  
+  
+  return(colNames)
+}
+
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the thermal clusters of one area
@@ -295,6 +344,7 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
+    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
@@ -304,28 +354,19 @@
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
     
-    # Get final value columns
-    if (sum(idx) / length(clusterNames) == 4) {
-      colNames <- c("production", "NP Cost", "NODU", "profit")
-    } else if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
+    # Column names of the output table
+    colNames <- .get_value_columns_details_file(opts, "details")    
     
     # Loop over clusters
     nclusters <- length(clusterNames)
-    ncols <- length(colNames)
     
     res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
       setnames(dt, c(colNames, idVarsNames))
       dt[, cluster := as.factor(clusterNames[i])]
       dt
     })
-    
+  
     rbindlist(res)
   }
   
@@ -436,8 +477,8 @@
     
     res
   }
-  
 }
+
 
 #' .importOutputForResClusters
 #'
@@ -457,6 +498,7 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
+    
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
@@ -466,23 +508,14 @@
     idVarsId <- which(!idx)
     idVarsNames <- n[idVarsId]
     
-    # Get final value columns
-    # Get final value columns
-    # colNames <- c("resProduction")
-    if (sum(idx) / length(clusterNames) == 3) {
-      colNames <- c("production", "NP Cost", "NODU")
-    } else if (sum(idx) / length(clusterNames) == 2) {
-      colNames <- c("production", "NP Cost")
-    } else {
-      colNames <- c("production")
-    }
+    # Column names of the output table
+    colNames <- .get_value_columns_details_file(opts, "details-res")  
     
     # Loop over clusters
     nclusters <- length(clusterNames)
-    ncols <- length(colNames)
     
     res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(ncols - 1) + i, idVarsId), with = FALSE]
+      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
       setnames(dt, c(colNames, idVarsNames))
       dt[, cluster := as.factor(clusterNames[i])]
       dt
@@ -496,9 +529,8 @@
                   mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
                   objectDisplayName = "clustersRe", parallel = parallel)
   )
-  
-  
 }
+
 
 #' .importOutputForBindingConstraints
 #'
