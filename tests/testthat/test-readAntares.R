@@ -28,6 +28,16 @@ sapply(studyPathS, function(studyPath){
     expect_equal(nrow(clusters), 24 * 7 * nweeks * nrow(readClusterDesc()))
   })
   
+  test_that("Clusters importation column names are ok", {
+    clusters <- readAntares(clusters = opts$areasWithClusters,
+                            timeStep = "hourly",
+                            mcYears = "all",
+                            opts = opts,
+                            showProgress = FALSE)
+    expect_is(clusters, "data.table")
+    expect_equal(setdiff(colnames(clusters),pkgEnv$idVars), c("production", "NP Cost", "NODU"))
+  })
+  
   test_that("importation of different objects works", {
     out <- readAntares(areas = opts$areaList, links=opts$linkList,
                        clusters=opts$areasWithClusters, showProgress= FALSE, timeStep = "annual")

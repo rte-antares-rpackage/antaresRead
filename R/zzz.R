@@ -107,6 +107,12 @@ utils::globalVariables(
     "MRG. PRICE", "H. LEV", "V2", "V1")
 )
 
+# Correspondance between output column name and data table column name
+pkgEnv$output_correspondance <- read.table(system.file("format_output/referentiel_output_name_column.csv", 
+                                        package = "antaresRead"),
+                            sep = ";", 
+                            header = TRUE)
+
 #-----------------------------  HDF5 ------------------------------------#
 
 
