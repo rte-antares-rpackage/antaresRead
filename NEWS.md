@@ -5,7 +5,7 @@
 BUGFIXES :  
 
 * `readAntares()` :  
-  - returns the right column names for details-<timeStep>.txt and details-res-<timeStep>.txt 
+  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
 
 
 # antaresRead 2.6.1 (devlopment)
