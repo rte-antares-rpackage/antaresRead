@@ -46,6 +46,7 @@
 #' is determined by the arguments "folder" and "file"
 #' - "areas", "values"  => areas
 #' - "areas", "details" => clusters
+#' - "areas", "details-res" => renewables clusters
 #' - "links", "values"  => links
 #'
 #' @return
@@ -280,7 +281,7 @@
 
 #' .get_value_columns_details_file
 #'
-#' Private function used to get the column names for the details-<timeStep>.txt or details-res-<timestep>.txt.
+#' Private function used to get the column names for the details-timeStep.txt or details-res-timeStep.txt.
 #' Used in .importOutputForClusters() and importOutputForResClusters() 
 #'
 #' @return
@@ -300,21 +301,30 @@
       all_output_colnames <- c(all_output_colnames, "profit")
     }
     colNames <- all_output_colnames
-    if ("variables selection" %in% names(opts$parameters)) {
-      selection_type <- unique(names(opts$parameters$`variables selection`))
-      selected_variables <- unlist(opts$parameters$`variables selection`, use.names = FALSE)
-      # Index of the variables found in the section "variables selection"
-      idx_vars <- which(all_thematic_variables %in% selected_variables)
-      if (length(idx_vars) > 0) {
-        if (selection_type == "select_var -") {
-          # vars to remove
-          colNames <- colNames[-idx_vars]
-        } else if (selection_type == "select_var +") {
-          # vars to keep
-          colNames <- colNames[idx_vars]
+    # With thematic-trimming enabled
+    if (opts$parameters$general$`thematic-trimming`) {
+      if ("variables selection" %in% names(opts$parameters)) {
+        var_selection <- opts$parameters$`variables selection`
+        selection_type <- unique(names(var_selection))
+        allowed_selection_type <- c("select_var -", "select_var +")
+        # Filter the vector to avoid other properties (for example : selected_vars_reset)
+        selection_type <- intersect(selection_type, allowed_selection_type)
+        # List with a repeated name
+        var_selection <- var_selection[which(names(var_selection) == selection_type)]
+        selected_variables <- unlist(var_selection, use.names = FALSE)
+        # Index of the variables found in the section "variables selection"
+        idx_vars <- which(all_thematic_variables %in% selected_variables)
+        if (length(idx_vars) > 0) {
+          if (selection_type == "select_var -") {
+            # vars to remove
+            colNames <- colNames[-idx_vars]
+          } else if (selection_type == "select_var +") {
+            # vars to keep
+            colNames <- colNames[idx_vars]
+          }
         }
       }
-    }  
+    }      
   }
   
   ## details-res part
