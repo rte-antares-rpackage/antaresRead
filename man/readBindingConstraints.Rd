@@ -2,20 +2,13 @@
 % Please edit documentation in R/readBindingConstraints.R
 \name{readBindingConstraints}
 \alias{readBindingConstraints}
-\alias{summary.bindingConstraints}
 \title{Read binding constraints}
 \usage{
 readBindingConstraints(opts = simOptions())
-
-\method{summary}{bindingConstraints}(object, ...)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
-
-\item{object}{Object returned by readBindingConstraints}
-
-\item{...}{Unused}
 }
 \value{
 \code{readBindingConstraints} returns an object of class \code{bindingConstraints}.
@@ -27,8 +20,6 @@ a list with the following elements:
 \item{coefficients}{elements containing the coefficients used by the constraint}
 \item{values}{values used by the constraint. It contains one line per time step
 and three columns "less", "greater" and "equal"}
-
-The \code{summary} method returns a data.frame with one line per constraint.
 }
 \description{
 This function reads the binding constraints of an Antares project.
