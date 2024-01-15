@@ -37,7 +37,8 @@ Imports:
     httr,
     utils,
     memuse,
-    purrr
+    purrr,
+    lifecycle
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,
