@@ -16,4 +16,5 @@ A data.frame with one line per constraint.
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+This function cannot be used for a study \verb{>= 8.7.0}
 }

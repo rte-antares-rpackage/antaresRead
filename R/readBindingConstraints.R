@@ -3,6 +3,9 @@
 #' Read binding constraints
 #' 
 #' @description 
+#' `r antaresRead:::badge_api_ok()`
+#' `r lifecycle::badge("experimental")`  
+#' 
 #' This function reads the binding constraints of an Antares project. 
 #' 
 #' Be aware that binding constraints are read in the input files of a study. So
@@ -11,15 +14,28 @@
 #' @inheritParams readAntares
 #' 
 #' @return 
-#' \code{readBindingConstraints} returns an object of class \code{bindingConstraints}.
-#' It is a named list with one element per read constraint. Each element is itself
-#' a list with the following elements: 
-#' \item{enabled}{is the constraint enabled ?}
-#' \item{timeStep}{time step the constraint applies to}
-#' \item{operator}{type of constraint: equality, inequality on one side or both sides}
-#' \item{coefficients}{elements containing the coefficients used by the constraint}
-#' \item{values}{values used by the constraint. It contains one line per time step
-#'   and three columns "less", "greater" and "equal"}
+#' An object of class \code{bindingConstraints}. This object is also a named 
+#' list with 3 sections per read constraint.
+#' 
+#' @section Warning:
+#' Since `release 2.7.0` the structure of the returned object has evolved for 
+#' all versions of study Antares:  
+#'  - .ini parameters are in section `properties`
+#'  - Coeffcients links or thermal are in section `coefs`  
+#'  - Values are already in section `values`
+#'  
+#' @note 
+#' For an study Antares **version >=8.7.0**. Now contains `data.frame` with 
+#' one line per time step and \eqn{p} colums according to "scenarized RHS".  
+#' 
+#' For "both" case, you will find in section `values` two `data.frame` :  
+#'  - One `data.frame` for `less` 
+#'  - One `data.frame` for `greater`
+#'  
+#' For an study Antares **version <8.7.0**.  
+#' 
+#' Section \code{values} contains one line 
+#' per time step and three columns "less", "greater" and "equal"
 #' 
 #' 
 #' 
@@ -28,6 +44,20 @@
 #' setSimulationPath()
 #'
 #' constraints <- readBindingConstraints()
+#' 
+#' # read properties
+#' constraints$properties
+#' 
+#' # read coefs
+#' constraints$coefs
+#' 
+#' # read values
+#' constraints$values
+#'   # both case ( study Antares >=8.7.0)
+#' constraints$values$less
+#' constraints$values$greater
+#' 
+#' # display equation (only for study Antares <8.7.0)
 #' summary(constraints)
 #' 
 #' }
@@ -287,8 +317,10 @@ readBindingConstraints <- function(opts = simOptions()) {
   return(core_list)
 }
 
-#' `r lifecycle::badge("deprecated")`
 #' @title Display equation of binding constraint
+#' @description 
+#' `r lifecycle::badge("deprecated")`
+#' This function cannot be used for a study `>= 8.7.0`
 #' @param object Object returned by readBindingConstraints
 #' @param ... Unused
 #' 
