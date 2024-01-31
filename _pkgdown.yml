@@ -1,5 +1,4 @@
-destination: docs
-
+url: https://rte-antares-rpackage.github.io/antaresRead/
 template:
-  params:
-    bootswatch: readable
+  bootstrap: 5
+
