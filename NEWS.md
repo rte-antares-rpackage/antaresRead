@@ -5,7 +5,7 @@
 ### Breaking changes (Antares v8.7) : 
 
 * `readBindingConstraints()` read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
-  - returns a new list structure
+  - function returns a new list structure
 
 BUGFIXES :  
 
