@@ -1,0 +1,11 @@
+pandoc: 2.19.2
+pkgdown: 2.0.7
+pkgdown_sha: ~
+articles:
+  antaresH5: antaresH5.html
+  antaresRead: antaresRead.html
+last_built: 2024-01-31T16:37Z
+urls:
+  reference: https://rte-antares-rpackage.github.io/antaresRead/reference
+  article: https://rte-antares-rpackage.github.io/antaresRead/articles
+
