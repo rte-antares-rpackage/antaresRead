@@ -184,24 +184,13 @@ readBindingConstraints <- function(opts = simOptions()) {
     if(both_case){
       check_nrow <- unlist(lapply(tmp_values, nrow))
       if(any(check_nrow %in% 0)){
-        warning("Time series files for binding constraint ", 
-                binding_object$id, 
-                " are empty", 
-                call. = FALSE)
-        
         tmp_values[["less"]] <- default_scenarised_values
         tmp_values[["greater"]] <- default_scenarised_values
       }
     }
     else
-      if(nrow(tmp_values)==0){
-        warning("Time series file for binding constraint ", 
-                binding_object$id, 
-                " is empty", 
-                call. = FALSE)
+      if(nrow(tmp_values)==0)
         tmp_values <- default_scenarised_values
-      }
-    
     # return
     binding_object$values <- tmp_values
     return(binding_object)
