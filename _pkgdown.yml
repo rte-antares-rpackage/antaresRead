@@ -1,4 +1,5 @@
 url: https://rte-antares-rpackage.github.io/antaresRead/
 template:
-  bootstrap: 5
+  params:
+    bootswatch: readable
 
