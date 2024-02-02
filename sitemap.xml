@@ -1,165 +1,159 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/404.html</loc>
+    <loc>/404.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/LICENSE-text.html</loc>
+    <loc>/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/articles/antaresH5.html</loc>
+    <loc>/articles/antaresH5.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/articles/antaresRead.html</loc>
+    <loc>/articles/antaresRead.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/articles/index.html</loc>
+    <loc>/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/authors.html</loc>
+    <loc>/authors.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/index.html</loc>
+    <loc>/index.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/news/index.html</loc>
+    <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/API-methods.html</loc>
+    <loc>/reference/API-methods.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/aggregatate_mc_all.html</loc>
+    <loc>/reference/aggregatate_mc_all.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/aggregatate_mc_all_old.html</loc>
+    <loc>/reference/aggregatate_mc_all_old.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/antaresRead-package.html</loc>
+    <loc>/reference/as.antaresDataList.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/as.antaresDataList.html</loc>
+    <loc>/reference/as.antaresDataTable.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/as.antaresDataTable.html</loc>
+    <loc>/reference/changeTimeStep.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/changeTimeStep.html</loc>
+    <loc>/reference/copyToClipboard.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/copyToClipboard.html</loc>
+    <loc>/reference/dot-getOptionsH5.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/dot-getOptionsH5.html</loc>
+    <loc>/reference/dot-h5ReadAntares.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/dot-h5ReadAntares.html</loc>
+    <loc>/reference/dot-writeAntaresH5Fun.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/dot-writeAntaresH5Fun.html</loc>
+    <loc>/reference/dot-writeIni.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/dot-writeIni.html</loc>
+    <loc>/reference/extractDataList.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/extractDataList.html</loc>
+    <loc>/reference/getAreas.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/getAreas.html</loc>
+    <loc>/reference/getGeographicTrimming.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/getGeographicTrimming.html</loc>
+    <loc>/reference/getIdCols.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/getIdCols.html</loc>
+    <loc>/reference/getLinks.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/getLinks.html</loc>
+    <loc>/reference/hvdcModification.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/hvdcModification.html</loc>
+    <loc>/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/index.html</loc>
+    <loc>/reference/isH5Opts.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/isH5Opts.html</loc>
+    <loc>/reference/mergeDigests.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/mergeDigests.html</loc>
+    <loc>/reference/ponderateMcAggregation.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/ponderateMcAggregation.html</loc>
+    <loc>/reference/read-ini.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/read-ini.html</loc>
+    <loc>/reference/readAntares.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readAntares.html</loc>
+    <loc>/reference/readAntaresAreas.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readAntaresAreas.html</loc>
+    <loc>/reference/readAntaresClusters.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readAntaresClusters.html</loc>
+    <loc>/reference/readBindingConstraints.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readBindingConstraints.html</loc>
+    <loc>/reference/readClusterDesc.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readClusterDesc.html</loc>
+    <loc>/reference/readDigestFile.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readDigestFile.html</loc>
+    <loc>/reference/readInputRES.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readInputRES.html</loc>
+    <loc>/reference/readInputTS.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readInputTS.html</loc>
+    <loc>/reference/readInputThermal.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readInputThermal.html</loc>
+    <loc>/reference/readLayout.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readLayout.html</loc>
+    <loc>/reference/readOptimCriteria.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/readOptimCriteria.html</loc>
+    <loc>/reference/removeVirtualAreas.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/removeVirtualAreas.html</loc>
+    <loc>/reference/setAlias.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/setAlias.html</loc>
+    <loc>/reference/setHvdcAreas.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/setHvdcAreas.html</loc>
+    <loc>/reference/setRam.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/setRam.html</loc>
+    <loc>/reference/setSimulationPath.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/setSimulationPath.html</loc>
+    <loc>/reference/setTimeoutAPI.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/setTimeoutAPI.html</loc>
+    <loc>/reference/simOptions.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/simOptions.html</loc>
+    <loc>/reference/subset.antaresDataList.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/subset.antaresDataList.html</loc>
+    <loc>/reference/viewAntares.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/summary.bindingConstraints.html</loc>
+    <loc>/reference/writeAntaresH5.html</loc>
   </url>
   <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/viewAntares.html</loc>
-  </url>
-  <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/writeAntaresH5.html</loc>
-  </url>
-  <url>
-    <loc>https://rte-antares-rpackage.github.io/antaresRead/reference/writeDigest.html</loc>
+    <loc>/reference/writeDigest.html</loc>
   </url>
 </urlset>
