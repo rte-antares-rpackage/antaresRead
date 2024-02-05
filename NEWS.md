@@ -1,5 +1,13 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.6.2 (devlopment)
+
+BUGFIXES :  
+
+* `readAntares()` :  
+  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
+
+
 # antaresRead 2.6.1 (devlopment)
 
 BUGFIXES :  
