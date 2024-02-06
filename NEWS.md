@@ -1,13 +1,5 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 2.6.2 (devlopment)
-
-BUGFIXES :  
-
-* `readAntares()` :  
-  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
-
-
 # antaresRead 2.6.1 (devlopment)
 
 BUGFIXES :  
@@ -16,7 +8,8 @@ BUGFIXES :
   - returns an API exception if the requested study ID is incorrect 
   - `simulation` the simulation parameter works with negative values within the limit of the number of simulations
 * correction in `readClusterDesc()` calls to add "opts"
-
+* `readAntares()` :  
+  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
 
 # antaresRead 2.6.0
 
