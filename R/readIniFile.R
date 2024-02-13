@@ -69,11 +69,11 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
-
+    
     key <- lapply(pairs, `[`, 1)
     key <- unlist(key)
     key <- trimws(key)
-
+    
     value <- lapply(pairs, `[`, 2)
     value <- as.list(trimws(unlist(value)))
     value <- lapply(value, function(x) {
@@ -83,7 +83,7 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
         utils::type.convert(x, as.is = TRUE)
       }
     })
-
+    
     L[[i]] <- value
     names(L[[i]]) <- key
   }
@@ -110,12 +110,28 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
 }
 
 # reformat list from JSON format 
-.format_list <- function(list_x){
-  # check list to find sub list
-  check_class_list <- lapply(list_x, function(x) 
-    lapply(x, class) %in% "list")
+.format_list <- function(list_x) {
+  check_recursive_class_list <- function(x) {
+    if (!is.list(x)) {
+      return(FALSE)
+    }
+    
+    for (element in x) {
+      if (is.list(element)) {
+        if (check_recursive_class_list(element)) {
+          return(TRUE)
+        }
+      }
+    }
+    
+    return(FALSE)
+  }
   
-  is_true_list <- lapply(check_class_list, function(x) 
+  # check list to find sub list
+  check_class_list <- lapply(list_x, function(x)
+    sapply(x, function(y) is.list(y) || check_recursive_class_list(y)))
+  
+  is_true_list <- lapply(check_class_list, function(x)
     any(x %in% TRUE))
   
   index_true <- which(is_true_list %in% TRUE)
@@ -123,32 +139,30 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
   # reformat sub list
   list_to_reformat <- list_x[index_true]
   
-  list_to_reformat <- lapply(list_to_reformat, function(x){
+  list_to_reformat <- lapply(list_to_reformat, function(x) {
     index_list <- which(
-      lapply(x, class) %in% "list")
+      sapply(x, function(y) is.list(y) || check_recursive_class_list(y)))
     
     # reformat only unnamed list
-    if(is.name(x[index_list]))
-      return(x)
-    else{
+    if (length(index_list) > 0 && is.null(names(x[index_list]))) {
       elements <- unlist(x[index_list], use.names = FALSE)
-      if(class(elements)%in%"character"){
-        elements <- paste("'", elements, "'", sep="", collapse=",")
+      if (all(sapply(elements, is.character))) {
+        elements <- paste("'", elements, "'", sep = "", collapse = ",")
         elements <- paste0("[", elements, "]")
-      }else{
-        elements <- paste0(elements, collapse= ",")
+      } else {
+        elements <- paste0(elements, collapse = ",")
         elements <- paste0("[", elements, "]")
       }
       x[index_list] <- elements
-      x
     }
+    
+    x
   })
   
   # return original list 
-  if(identical(index_true, integer(0)))
+  if (identical(index_true, integer(0)))
     list_x
   else
-    # return list reformated
-    append(list_x[-index_true], 
-           list_to_reformat)
+    # return list reformatted
+    append(list_x[-index_true], list_to_reformat)
 }
