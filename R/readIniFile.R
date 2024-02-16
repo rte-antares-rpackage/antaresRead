@@ -69,11 +69,11 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
-
+    
     key <- lapply(pairs, `[`, 1)
     key <- unlist(key)
     key <- trimws(key)
-
+    
     value <- lapply(pairs, `[`, 2)
     value <- as.list(trimws(unlist(value)))
     value <- lapply(value, function(x) {
@@ -83,7 +83,7 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
         utils::type.convert(x, as.is = TRUE)
       }
     })
-
+    
     L[[i]] <- value
     names(L[[i]]) <- key
   }
@@ -131,15 +131,17 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
     if(is.name(x[index_list]))
       return(x)
     else{
-      elements <- unlist(x[index_list], use.names = FALSE)
-      if(class(elements)%in%"character"){
-        elements <- paste("'", elements, "'", sep="", collapse=",")
-        elements <- paste0("[", elements, "]")
-      }else{
-        elements <- paste0(elements, collapse= ",")
-        elements <- paste0("[", elements, "]")
+      for (sub_list in index_list){
+        elements <- unlist(x[sub_list], use.names = FALSE)
+        if(class(elements)%in%"character"){
+          elements <- paste("'", elements, "'", sep="", collapse=",")
+          elements <- paste0("[", elements, "]")
+        }else{
+          elements <- paste0(elements, collapse= ",")
+          elements <- paste0("[", elements, "]")
+        }
+        x[sub_list] <- elements
       }
-      x[index_list] <- elements
       x
     }
   })

@@ -20,6 +20,10 @@ BUGFIXES :
   - returns an API exception if the requested study ID is incorrect 
   - `simulation` the simulation parameter works with negative values within the limit of the number of simulations
 * correction in `readClusterDesc()` calls to add "opts"
+* `readAntares()` :  
+  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
+* Correction in `.formatlist()`, read N-level list instead of 2.
+
 
 
 # antaresRead 2.6.0
