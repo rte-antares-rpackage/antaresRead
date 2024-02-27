@@ -12,7 +12,9 @@ BUGFIXES :
   - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
 * Correction in `.formatlist()`, read N-level list instead of 2.
 
+BREAKING CHANGES :  
 
+* `api_get()` has a new parameter to control JSON file parsing
 
 # antaresRead 2.6.0
 
