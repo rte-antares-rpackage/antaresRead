@@ -108,25 +108,34 @@ readClusterSTDesc <- function(opts = simOptions()) {
   path <- file.path(opts$inputPath, dir)
   
   if(opts$typeLoad == 'api'){
-    jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
-    res <-  rbindlist(mapply(function(X1, Y1){
-      clusters <- rbindlist(
-        mapply(function(X, Y){
-          out <- as.data.frame(X)
-          if(nrow(out) == 0)return(NULL)
-          out$area = Y
-          out
-        }, X1$list, names(X1$list), SIMPLIFY = FALSE), fill = TRUE)
-      if(is.null(clusters))return(NULL)
-      if(nrow(clusters)==0)return(NULL)
-      clusters$area <- Y1
-      clusters[, .SD, .SDcols = order(names(clusters))]
-    },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
+    columns = c("group","enabled","must_run","unit_count","nominal_capacity",
+                   "min_stable_power","spinning","min_up_time","min_down_time",
+                   "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
+                   "spread_cost","ts_gen","volatility_forced","volatility_planned",
+                   "law_forced","law_planned")
     
-    if(length(res) == 0) 
-      stop("Cannot find cluster description.", call. = FALSE)
+    str_columns = paste(columns, collapse=",")
     
-    res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
+    list_clusters = api_get(
+      opts = opts,
+      endpoint = paste0(opts$study_id, "/tablemode"),
+      query = list(
+        table_type = "cluster",
+        columns = str_columns
+      )
+    )
+    
+    if(length(list_clusters) == 0){
+      warning("No cluster description available.", call. = FALSE)
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
+    }else{
+      
+      clusters <- rbindlist(list_clusters, idcol = "cluster")
+      newcol <- data.table()
+      newcol <- newcol[, c("area", "cluster") := tstrsplit(clusters$cluster, " / ", fixed = TRUE, keep = 1:2)]
+      res <- data.table(newcol,clusters[,-"cluster"]) 
+    }
+    
     
   }else{
     
@@ -144,14 +153,16 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
     })
     
+    if(length(res) == 0){
+      warning("No cluster description available.", call. = FALSE)
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 2)), c("area", "cluster"))
+    }else{
+      res <- as.data.table(res)
+      setnames(res, "name", "cluster")
+      
+      res$cluster <- as.factor(tolower(res$cluster))
+    }
   }
-  
-  if(length(res) == 0) stop("Cannot find cluster description.", call. = FALSE)
-  
-  res <- as.data.table(res)
-  setnames(res, "name", "cluster")
-  
-  res$cluster <- as.factor(tolower(res$cluster))
   
   res
 }

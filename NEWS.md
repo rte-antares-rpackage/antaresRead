@@ -15,6 +15,8 @@ BUGFIXES :
 BREAKING CHANGES :  
 
 * `api_get()` has a new parameter to control JSON file parsing
+* `readClusterDesc()` new format in API mode.
+
 
 # antaresRead 2.6.0
 
