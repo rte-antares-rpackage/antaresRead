@@ -155,7 +155,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
     
     if(length(res) == 0){
       warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = 2)), c("area", "cluster"))
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
     }else{
       res <- as.data.table(res)
       setnames(res, "name", "cluster")
