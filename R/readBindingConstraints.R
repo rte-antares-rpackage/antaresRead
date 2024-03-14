@@ -157,11 +157,14 @@ readBindingConstraints <- function(opts = simOptions()) {
     
     # check path file
     # multiple path for "both" case
-    if(!all(file.exists(path_file_value)))
-      stop("Time series file for binding constraint ", 
-           binding_object$id, 
-           " not exist", 
-           call. = FALSE)
+    if(opts$typeLoad != "api"){
+      if(!all(file.exists(path_file_value)))
+        stop("Time series file for binding constraint ", 
+             binding_object$id, 
+             " not exist", 
+             call. = FALSE)
+    }
+    
     
     # Read files
     # both case 
