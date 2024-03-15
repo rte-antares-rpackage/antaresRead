@@ -85,7 +85,7 @@
                         <h4 data-toc-skip class="author">François
 Guillem</h4>
             
-            <h4 data-toc-skip class="date">2024-02-27</h4>
+            <h4 data-toc-skip class="date">2024-03-15</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/HEAD/vignettes/antaresRead.Rmd" class="external-link"><code>vignettes/antaresRead.Rmd</code></a></small>
       <div class="hidden name"><code>antaresRead.Rmd</code></div>
@@ -217,8 +217,8 @@ will return a table containing columns <code>timeId</code> and
 <code>LOAD</code> for the area names “08_fr”. In the select statement,
 it is also possible to calculate new columns. For instance, one can
 compute the net load like this:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>areas[, .(area, timeId, <span class="at">netLoad =</span> LOAD <span class="sc">-</span> <span class="st">`</span><span class="at">ROW BAL.</span><span class="st">`</span> <span class="sc">-</span> PSP <span class="sc">-</span> MISC. <span class="sc">-</span> NDG <span class="sc">-</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                                    H. ROR <span class="sc">-</span> WIND <span class="sc">-</span> SOLAR)]</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>areas[, .(area, timeId, <span class="at">netLoad =</span> LOAD <span class="sc">-</span> <span class="st">`</span><span class="at">ROW BAL.</span><span class="st">`</span> <span class="sc">-</span> PSP <span class="sc">-</span> MISC. <span class="sc">-</span> NDG <span class="sc">-</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                                    H. ROR <span class="sc">-</span> WIND <span class="sc">-</span> SOLAR)]</span></code></pre></div>
 <p>One can also compute aggregated statistics. For instance, the
 following code will compute the total load of all areas per
 <code>timeId</code>:</p>
