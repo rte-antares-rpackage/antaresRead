@@ -15,6 +15,7 @@ BUGFIXES :
 BREAKING CHANGES :  
 
 * `api_get()` has a new parameter to control JSON file parsing
+* `readClusterDesc()` return empty dataTable and warning if no cluster in Antares study.
 
 # antaresRead 2.6.0
 
