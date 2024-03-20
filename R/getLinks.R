@@ -104,11 +104,25 @@ getLinks <- function(areas = NULL, exclude = NULL, opts = simOptions(),
   if (withTransmission){
     infinite <- ldply(areas, function(f) {
       if (opts$typeLoad %in% "api"){
-        properties <- tryCatch({readIni(file.path("input", "links", f, "properties"))},
-                               error=function(cond){
-                                 message("Area ", f, " has no links.")
-                                 return (NULL)
-                               })
+        columns = c("hurdles_cost","loop_flow","use_phase_shifter","transmission_capacities","asset_type",
+                    "link_style","link_width","display_comments","filter_synthesis",
+                    "filter_year_by_year")
+        
+        str_columns = paste(columns, collapse=",")
+        
+        properties <- tryCatch({api_get(
+          opts = opts,
+          endpoint = paste0(opts$study_id, "/tablemode"),
+          query = list(
+            table_type = "link",
+            columns = str_columns
+          )
+        )},
+        error=function(cond){
+          message("Area ", f, " has no links.")
+          return (NULL)
+        })
+        
       } else {
         if (!dir.exists(file.path(opts$inputPath, "links", f))) return(NULL)
         properties <- readIniFile(file.path(opts$inputPath, "links", f, "properties.ini"))

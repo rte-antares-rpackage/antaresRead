@@ -16,6 +16,7 @@ BREAKING CHANGES :
 
 * `api_get()` has a new parameter to control JSON file parsing
 * `readClusterDesc()` new format in API mode.
+* `getLinks()` use endpoint API.
 
 
 # antaresRead 2.6.0
