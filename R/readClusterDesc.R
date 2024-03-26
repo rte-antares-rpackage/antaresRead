@@ -107,13 +107,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
   
   path <- file.path(opts$inputPath, dir)
   
-  columns = c("group","enabled","must_run","unit_count","nominal_capacity",
-              "min_stable_power","spinning","min_up_time","min_down_time",
-              "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
-              "spread_cost","ts_gen","volatility_forced","volatility_planned",
-              "law_forced","law_planned")
-  
-  if(opts$typeLoad == 'api'){
+  if (opts$typeLoad == 'api') {
     jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
     res <-  rbindlist(mapply(function(X1, Y1){
       clusters <- rbindlist(
@@ -131,12 +125,14 @@ readClusterSTDesc <- function(opts = simOptions()) {
     
     if(length(res) == 0){
       warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 2)), c("area", "name"))
     }
-
-    res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
+    cols_to_keep <- c("area", "name")
+    other_cols <- setdiff(colnames(res), cols_to_keep)
+    cols_to_keep <- union(cols_to_keep, other_cols)
+    res <- res[, .SD, .SDcols = cols_to_keep]
     
-  }else{
+  } else {
     
     areas <- list.files(path)
     
@@ -154,13 +150,15 @@ readClusterSTDesc <- function(opts = simOptions()) {
     
   }
   
-  if(length(res) == 0){
+  if (length(res) == 0) {
     warning("No cluster description available.", call. = FALSE)
-    res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
+    res <- setNames(data.table(matrix(nrow = 0, ncol = 2)), c("area", "name"))
   }
   
   res <- as.data.table(res)
-  setnames(res, "name", "cluster")
+  if ("name" %in% colnames(res)) {
+    setnames(res, "name", "cluster")
+  }
   
   res$cluster <- as.factor(tolower(res$cluster))
   
