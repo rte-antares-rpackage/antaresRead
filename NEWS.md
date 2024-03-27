@@ -2,14 +2,24 @@
 
 # antaresRead 2.7.0
 
-### Breaking changes (Antares v8.7) : 
+### Breaking changes (Antares v8.7.0) : 
 
 * `readBindingConstraints()` read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
   - function returns a new list structure
+* Private function `fread_antares()` no longer returns warnings  
 
 BUGFIXES :  
 
 * `readBindingConstraints()` read well study >= v8.3.2
+
+DATA : 
+
+* A test study in tar.gz format is available in version v8.7.0  
+* An empty test study in version v8.7.0 for marginal cases 
+
+Dependencies :  
+
+* New package `lifecycle` to manage functions status/package status
 
 
 # antaresRead 2.6.1 (devlopment)
