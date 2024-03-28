@@ -89,7 +89,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
 }
 
 
-  
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
@@ -107,13 +106,10 @@ readClusterSTDesc <- function(opts = simOptions()) {
   
   path <- file.path(opts$inputPath, dir)
   
-  columns = c("group","enabled","must_run","unit_count","nominal_capacity",
-              "min_stable_power","spinning","min_up_time","min_down_time",
-              "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
-              "spread_cost","ts_gen","volatility_forced","volatility_planned",
-              "law_forced","law_planned")
+  columns <- .generate_columns_by_type(dir = dir)
   
   if(opts$typeLoad == 'api'){
+    
     jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
     res <-  rbindlist(mapply(function(X1, Y1){
       clusters <- rbindlist(
@@ -131,10 +127,11 @@ readClusterSTDesc <- function(opts = simOptions()) {
     
     if(length(res) == 0){
       warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 2 + length(columns))), c("area", "cluster", columns))
+    }else{
+      res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     }
-
-    res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
+    
     
   }else{
     
@@ -152,17 +149,33 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
     })
     
+    if(length(res) == 0){
+      warning("No cluster description available.", call. = FALSE)
+      res <- setNames(data.table(matrix(nrow = 0, ncol = 2 + length(columns))), c("area", "cluster", columns))
+    }else{
+      res <- as.data.table(res)
+      setnames(res, "name", "cluster")
+      
+      res$cluster <- as.factor(tolower(res$cluster))
+    }
   }
-  
-  if(length(res) == 0){
-    warning("No cluster description available.", call. = FALSE)
-    res <- setNames(data.table(matrix(nrow = 0, ncol = 22)), c("area", "cluster", columns))
-  }
-  
-  res <- as.data.table(res)
-  setnames(res, "name", "cluster")
-  
-  res$cluster <- as.factor(tolower(res$cluster))
   
   res
+}
+
+.generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
+  
+  
+  columns <- switch(
+    dir,
+    "thermal/clusters" = c("group","enabled","must_run","unit_count","nominal_capacity",
+                           "min_stable_power","spinning","min_up_time","min_down_time",
+                           "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
+                           "spread_cost","ts_gen","volatility_forced","volatility_planned",
+                           "law_forced","law_planned"),
+    
+    "renewables/clusters" = c("group","ts_interpretation","enabled","unit_count","nominal_capacity")
+    #"st-storage/clusters" =  #ATTENTE DEV COTé API
+  )
+  return(columns)
 }
