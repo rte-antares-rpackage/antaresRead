@@ -129,11 +129,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
       warning("No cluster description available.", call. = FALSE)
       res <- setNames(data.table(matrix(nrow = 0, ncol = 2 + length(columns))), c("area", "cluster", columns))
     }else{
-      
-      clusters <- rbindlist(list_clusters, idcol = "cluster")
-      newcol <- data.table()
-      newcol <- newcol[, c("area", "cluster") := tstrsplit(clusters$cluster, " / ", fixed = TRUE, keep = 1:2)]
-      res <- data.table(newcol,clusters[,-"cluster"]) 
+      res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     }
     
     
