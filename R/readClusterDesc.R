@@ -107,8 +107,9 @@ readClusterSTDesc <- function(opts = simOptions()) {
   path <- file.path(opts$inputPath, dir)
   
   columns <- .generate_columns_by_type(dir = dir)
+  api_study <- is_api_study(opts)
   
-  if(opts$typeLoad == 'api'){
+  if(api_study){
     
     jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
     res <-  rbindlist(mapply(function(X1, Y1){
@@ -124,13 +125,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters$area <- Y1
       clusters[, .SD, .SDcols = order(names(clusters))]
     },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
-    
-    if(length(res) == 0){
-      warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = 2 + length(columns))), c("area", "cluster", columns))
-    }else{
-      res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
-    }
     
     
   }else{
@@ -149,15 +143,21 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
     })
     
-    if(length(res) == 0){
-      warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = 2 + length(columns))), c("area", "cluster", columns))
-    }else{
-      res <- as.data.table(res)
-      setnames(res, "name", "cluster")
-      
-      res$cluster <- as.factor(tolower(res$cluster))
+  }
+  
+  if(length(res) == 0){
+    mandatory_cols <- c("area","cluster")
+    warning("No cluster description available.", call. = FALSE)
+    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
+  }else{
+    if(api_study){
+      mandatory_cols <- c("area", "name", "group")
+      additional_cols <- setdiff(colnames(res),mandatory_cols)
+      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
     }
+    res <- as.data.table(res)
+    setnames(res, "name", "cluster")
+    res$cluster <- as.factor(tolower(res$cluster))
   }
   
   res
