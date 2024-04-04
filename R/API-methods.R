@@ -5,6 +5,7 @@
 #'  Can be a full URL (by wrapping ìn [I()]), in that case `default_endpoint` is ignored.
 #' @param ... Additional arguments passed to API method.
 #' @param default_endpoint Default endpoint to use.
+#' @param parse_result `character` options for parameter `as` of function [httr::content()]
 #' @param opts Antares simulation options or a `list` with an `host = ` slot.
 #'
 #' @return Response from the API.
@@ -18,13 +19,21 @@
 #' \dontrun{
 #'
 #' # List studies with local API
-#' api_get(
-#'   opts = list(host = "http://0.0.0.0:8080"),
-#'   endpoint = NULL
-#' )
+#' # default result content in R object (auto parsed)
+#' api_get(opts = list(host = "http://0.0.0.0:8080"),
+#'         endpoint = NULL, 
+#'         parse_result = NULL)
+#'
+#' # you can force parse options as text
+#' api_get(opts = list(host = "http://0.0.0.0:8080"),
+#'         endpoint = NULL, 
+#'         parse_result = "text")
 #'
 #' }
-api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
+api_get <- function(opts, 
+                    endpoint, ..., 
+                    default_endpoint = "v1/studies", 
+                    parse_result = NULL) {
   if (inherits(endpoint, "AsIs")) {
     opts$host <- endpoint
     endpoint <- NULL
@@ -65,7 +74,7 @@ api_get <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     stop_for_status(result, task = mess_error)
     }else 
       warn_for_status(result)
-  content(result)
+  content(result, as = parse_result)
 }
 
 #' @export

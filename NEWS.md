@@ -7,6 +7,7 @@
 * `readBindingConstraints()` read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
   - function returns a new list structure
 * Private function `fread_antares()` no longer returns warnings  
+* `api_put()/api_delete()` return a server error message 
 
 BUGFIXES :  
 
@@ -34,7 +35,11 @@ BUGFIXES :
   - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
 * Correction in `.formatlist()`, read N-level list instead of 2.
 
+BREAKING CHANGES :  
 
+* `api_get()` has a new parameter to control JSON file parsing
+* `readClusterDesc()`/ `readClusterRESDesc()` / `readClusterSTDesc()` 
+return empty dataTable and warning if no cluster in Antares study.
 
 # antaresRead 2.6.0
 

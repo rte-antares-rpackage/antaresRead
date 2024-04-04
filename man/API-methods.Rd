@@ -8,7 +8,13 @@
 \alias{api_delete}
 \title{API methods}
 \usage{
-api_get(opts, endpoint, ..., default_endpoint = "v1/studies")
+api_get(
+  opts,
+  endpoint,
+  ...,
+  default_endpoint = "v1/studies",
+  parse_result = NULL
+)
 
 api_post(opts, endpoint, ..., default_endpoint = "v1/studies")
 
@@ -25,6 +31,8 @@ Can be a full URL (by wrapping ìn \code{\link[=I]{I()}}), in that case \code{de
 \item{...}{Additional arguments passed to API method.}
 
 \item{default_endpoint}{Default endpoint to use.}
+
+\item{parse_result}{\code{character} options for parameter \code{as} of function \code{\link[httr:content]{httr::content()}}}
 }
 \value{
 Response from the API.
@@ -36,10 +44,15 @@ API methods
 \dontrun{
 
 # List studies with local API
-api_get(
-  opts = list(host = "http://0.0.0.0:8080"),
-  endpoint = NULL
-)
+# default result content in R object (auto parsed)
+api_get(opts = list(host = "http://0.0.0.0:8080"),
+        endpoint = NULL, 
+        parse_result = NULL)
+
+# you can force parse options as text
+api_get(opts = list(host = "http://0.0.0.0:8080"),
+        endpoint = NULL, 
+        parse_result = "text")
 
 }
 }
