@@ -89,7 +89,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
 }
 
 
-  
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
@@ -107,7 +106,11 @@ readClusterSTDesc <- function(opts = simOptions()) {
   
   path <- file.path(opts$inputPath, dir)
   
-  if(opts$typeLoad == 'api'){
+  columns <- .generate_columns_by_type(dir = dir)
+  api_study <- is_api_study(opts)
+  
+  if(api_study){
+    
     jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
     res <-  rbindlist(mapply(function(X1, Y1){
       clusters <- rbindlist(
@@ -123,10 +126,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
       clusters[, .SD, .SDcols = order(names(clusters))]
     },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
     
-    if(length(res) == 0) 
-      stop("Cannot find cluster description.", call. = FALSE)
-    
-    res <-  res[, .SD, .SDcols = c("area", "name", "group", names(res)[!names(res) %in%c("area", "name", "group")])]
     
   }else{
     
@@ -146,12 +145,37 @@ readClusterSTDesc <- function(opts = simOptions()) {
     
   }
   
-  if(length(res) == 0) stop("Cannot find cluster description.", call. = FALSE)
-  
-  res <- as.data.table(res)
-  setnames(res, "name", "cluster")
-  
-  res$cluster <- as.factor(tolower(res$cluster))
+  if(length(res) == 0){
+    mandatory_cols <- c("area","cluster")
+    warning("No cluster description available.", call. = FALSE)
+    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
+  }else{
+    if(api_study){
+      mandatory_cols <- c("area", "name", "group")
+      additional_cols <- setdiff(colnames(res),mandatory_cols)
+      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
+    }
+    res <- as.data.table(res)
+    setnames(res, "name", "cluster")
+    res$cluster <- as.factor(tolower(res$cluster))
+  }
   
   res
+}
+
+.generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
+  
+  
+  columns <- switch(
+    dir,
+    "thermal/clusters" = c("group","enabled","must_run","unit_count","nominal_capacity",
+                           "min_stable_power","spinning","min_up_time","min_down_time",
+                           "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
+                           "spread_cost","ts_gen","volatility_forced","volatility_planned",
+                           "law_forced","law_planned"),
+    
+    "renewables/clusters" = c("group","ts_interpretation","enabled","unit_count","nominal_capacity")
+    #"st-storage/clusters" =  #ATTENTE DEV COTé API
+  )
+  return(columns)
 }

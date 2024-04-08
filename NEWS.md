@@ -24,6 +24,8 @@ BREAKING CHANGES :
 * `api_get()` has a new parameter to control JSON file parsing
 * `readInputThermal()` default value when no time series in the selected clusters.
 * `readInputRES()` default value when no time series in the selected clusters
+* `readClusterDesc()`/ `readClusterRESDesc()` / `readClusterSTDesc()` 
+return empty dataTable and warning if no cluster in Antares study.
 
 # antaresRead 2.6.0
 
