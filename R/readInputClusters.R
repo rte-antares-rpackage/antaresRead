@@ -7,7 +7,9 @@
 #' project. But contrary to \code{\link{readAntares}}, it only reads time series
 #' stored in the input folder, so it can work in "input" mode. 
 #' 
+#' @param areas vector of areas names for which thermal time series must be read.
 #' @param clusters vector of clusters names for which thermal time series must be read.
+#' @param thermalAvailabilities if TRUE, return thermalAvailabilities data
 #' @param thermalModulation if TRUE, return thermalModulation data
 #' @param thermalData if TRUE, return thermalData from prepro
 #' @inheritParams readAntares
@@ -27,13 +29,24 @@
 #' \code{\link{getAreas}}, \code{\link{getLinks}}
 #' 
 #' @export
-readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermalData = FALSE,
+readInputThermal <- function(areas = "all",
+                             clusters,
+                             thermalAvailabilities = TRUE,
+                             thermalModulation = FALSE,
+                             thermalData = FALSE,
                              opts = simOptions(),
                              timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                             simplify = TRUE, parallel = FALSE,
+                             simplify = TRUE,
+                             parallel = FALSE,
                              showProgress = TRUE) {
   
+  if(!any(thermalAvailabilities, thermalModulation, thermalData)){
+    stop("At least one type of data should be selected")
+  }
+  
   timeStep <- match.arg(timeStep)
+  areas <- tolower(unique(areas))
+  clusters <- tolower(unique(clusters))
   
   # Can the importation be parallelized ?
   if (parallel) {
@@ -42,45 +55,49 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermal
   }
   
   allAreasClusters <- readClusterDesc(opts = opts)[area %in% opts$areasWithClusters, c("area", "cluster")]
-  allClusters <- unique(allAreasClusters$cluster)
-  # Manage special value "all"
-  if(identical(clusters, "all")) clusters <- allClusters
-
-  if (length(setdiff(tolower(clusters), tolower(allClusters))) > 0){
-    cat(c("the following clusters are not available : ",setdiff(tolower(clusters), tolower(allClusters))))
-    stop("Some clusters are not available in the areas specified")
-  }
   
-  ind_cluster <- which(tolower(allClusters) %in% tolower(clusters))
-  clusters <- unique(allClusters[ind_cluster])
+  #Check if areas and clusters input correspond to study
+  lst_areas_clusters <- .check_areas_clusters(allAreasClusters, areas, clusters)
+  
+  #Get areas, clusters and areas/clusters pairs
+  areas <- lst_areas_clusters$areas
+  clusters <- lst_areas_clusters$clusters
+  areas_clusters_table <- lst_areas_clusters$areas_clusters_table
+  
   res <- list() # Object the function will return
   
-  thermalTS <- as.data.table(ldply(clusters, function(cl) {
+  # ThermalAvailabilities processing
+  if (thermalAvailabilities){
+    thermalTS <- as.data.table(ldply(clusters, function(cl) {
+      areas <- areas_clusters_table[cluster == cl]$area
+      resCl <- ldply(areas, function(x){
+        filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", x)
+        mid <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
+                              inputTimeStep = "hourly", type = "matrix")
+        
+        if (is.null(mid)){
+          timeId_value <- 1:8736
+          tsId_value <- replicate(8736,1)
+          ThermalAvailabilities_value <- replicate(8736,0)
+          mid <- data.table("timeId" = timeId_value, "tsId" = tsId_value, "ThermalAvailabilities" = ThermalAvailabilities_value)
+        }
+        mid$area <- x
+        mid$cluster <- cl
+        mid
+      })
+      resCl <- dcast(as.data.table(resCl), area + cluster + timeId ~ tsId, value.var = "ThermalAvailabilities")
+    }))
     
-    area <- unique(allAreasClusters[cluster == cl]$area)
-    if (length(area) > 1) warning(cl," is in more than one area")
-    resCl <- ldply(area, function(x){
-      filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", x)
-      mid <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
-                            inputTimeStep = "hourly", type = "matrix")
-      if (is.null(mid)) return (data.table())
-      mid$area <- x
-      mid$cluster <- cl
-      mid
-    })
+    tsCols <- setdiff(colnames(thermalTS), c("area", "cluster", "timeId"))
+    setnames(thermalTS, tsCols, paste0("ts",tsCols))
+    setcolorder(thermalTS, c("area", "cluster", "timeId", setdiff(names(thermalTS), c("area", "cluster", "timeId"))))
     
-    resCl <- dcast(as.data.table(resCl), area + cluster + timeId ~ tsId, value.var = "ThermalAvailabilities")
-  }))
+    if (nrow(thermalTS) > 0) res$thermalAvailabilities <- thermalTS
+  }
   
-  tsCols <- setdiff(colnames(thermalTS), c("area", "cluster", "timeId"))
-  setnames(thermalTS, tsCols, paste0("ts",tsCols))
-  setcolorder(thermalTS, c("area", "cluster", "timeId", setdiff(names(thermalTS), c("area", "cluster", "timeId"))))
-  
-  if (nrow(thermalTS) > 0) res$thermalAvailabilities <- thermalTS
   
   # thermalModulation processing
   if (thermalModulation){
-    areas <- unique(allAreasClusters[cluster %in% clusters]$area)
     thermalMod <- as.data.table(ldply(areas, .importThermalModulation, opts = opts, timeStep = timeStep))
     thermalMod <- thermalMod[cluster %in% clusters]
     setcolorder(thermalMod, c("area", "cluster", "timeId", setdiff(names(thermalMod), c("area", "cluster", "timeId"))))
@@ -90,14 +107,13 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermal
   
   # thermalData processing
   if (thermalData){
-    areas <- unique(allAreasClusters[cluster %in% clusters]$area)
     thermalDat <- as.data.table(ldply(areas, .importThermalData, opts = opts, timeStep = timeStep))
     thermalDat <- thermalDat[cluster %in% clusters]
     setcolorder(thermalDat, c("area", "cluster", "timeId", setdiff(names(thermalDat), c("area", "cluster", "timeId"))))
     
     if (nrow(thermalDat) > 0) res$thermalData <- thermalDat
   }
-    
+  
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   
   # Class and attributes
@@ -115,6 +131,7 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermal
 #' project. But contrary to \code{\link{readAntares}}, it only reads time series
 #' stored in the input folder, so it can work in "input" mode. 
 #' 
+#' @param areas vector of RES areas names for which renewable time series must be read.
 #' @param clusters vector of RES clusters names for which renewable time series must be read.
 #' @inheritParams readAntares
 #' 
@@ -126,12 +143,17 @@ readInputThermal <- function(clusters = NULL, thermalModulation = FALSE, thermal
 #' \code{\link{getAreas}}, \code{\link{getLinks}}
 #' 
 #' @export
-readInputRES <- function(clusters = NULL, opts = simOptions(),
+readInputRES <- function(areas = "all",
+                         clusters,
+                         opts = simOptions(),
                          timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
-                         simplify = TRUE, parallel = FALSE,
+                         simplify = TRUE,
+                         parallel = FALSE,
                          showProgress = TRUE) {
   
   timeStep <- match.arg(timeStep)
+  areas <- tolower(unique(areas))
+  clusters <- tolower(unique(clusters))
   
   # Can the importation be parallelized ?
   if (parallel) {
@@ -140,28 +162,30 @@ readInputRES <- function(clusters = NULL, opts = simOptions(),
   }
   
   allAreasClusters <- readClusterResDesc(opts = opts)[area %in% opts$areasWithResClusters, c("area", "cluster")]
-  allClusters <- unique(allAreasClusters$cluster)
-  # Manage special value "all"
-  if(identical(clusters, "all")) clusters <- allClusters
   
-  if (length(setdiff(tolower(clusters), tolower(allClusters))) > 0){
-    cat(c("the following clusters are not available : ",setdiff(tolower(clusters), tolower(allClusters))))
-    stop("Some clusters are not available in the areas specified")
-  }
+  #Check if areas and clusters input correspond to study
+  lst_areas_clusters <- .check_areas_clusters(allAreasClusters, areas, clusters)
   
-  ind_cluster <- which(tolower(allClusters) %in% tolower(clusters))
-  clusters <- unique(allClusters[ind_cluster])
+  #Get areas, clusters and areas/clusters pairs
+  areas <- lst_areas_clusters$areas
+  clusters <- lst_areas_clusters$clusters
+  areas_clusters_table <- lst_areas_clusters$areas_clusters_table
+  
   res <- list() # Object the function will return
   
   ResTS <- as.data.table(ldply(clusters, function(cl) {
     
-    area <- unique(allAreasClusters[cluster == cl]$area)
-    if (length(area) > 1) warning(cl," is in more than one area")
-    resCl <- ldply(area, function(x){
+    areas <- areas_clusters_table[cluster == cl]$area
+    resCl <- ldply(areas, function(x){
       filePattern <- sprintf("%s/%s/%%s/series.txt", "renewables/series", x)
       mid <- .importInputTS(cl, timeStep, opts, filePattern, "production",
                             inputTimeStep = "hourly", type = "matrix")
-      if (is.null(mid)) return (data.table())
+      if (is.null(mid)){
+        timeId_value <- 1:8736
+        tsId_value <- replicate(8736,1)
+        production_value <- replicate(8736,0)
+        mid <- data.table("timeId" = timeId_value, "tsId" = tsId_value, "production" = production_value)
+      }
       mid$area <- x
       mid$cluster <- cl
       mid
@@ -181,4 +205,55 @@ readInputRES <- function(clusters = NULL, opts = simOptions(),
   # Class and attributes
   res <- .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
   addDateTimeColumns(res)
+}
+
+
+.check_areas_clusters <- function(allAreasClusters, areas, clusters) {
+  allAreas <- allAreasClusters$area
+  allClusters <- allAreasClusters$cluster
+  
+  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
+  
+  # Check for "all" values
+  is_areas_all <- identical(areas, "all")
+  is_clusters_all <- identical(clusters, "all")
+  
+  # Filter areas and clusters based on selections
+  if (is_areas_all & is_clusters_all) {
+    areas <- allAreas
+    clusters <- allClusters
+  } else if (is_areas_all & !is_clusters_all) {
+    areas <- all_areas_clusters_table[cluster %in% tolower(clusters)]$area
+    
+    # Check for unavailable clusters
+    diff_clusters <- setdiff(clusters, all_areas_clusters_table$cluster)
+    if (length(diff_clusters) > 0) {
+      stop(paste0("the following clusters are not available:", diff_clusters))
+    }
+    clusters <- all_areas_clusters_table[cluster %in% tolower(clusters)]$cluster
+  } else if (!is_areas_all & is_clusters_all) {
+    clusters <- all_areas_clusters_table[area %in% tolower(areas)]$cluster
+    
+    # Check for unavailable areas
+    diff_areas <- setdiff(areas, all_areas_clusters_table$area)
+    if (length(diff_areas) > 0) {
+      stop(paste0("the following areas are not available:", diff_areas))
+    }
+    areas <- all_areas_clusters_table[area %in% tolower(areas)]$area
+  }
+  
+  #Get all areas/clusters pairs
+  areas_clusters_table <- data.table("area" = areas, "cluster" = clusters)
+  
+  # Check for unavailable area/cluster pairs
+  diff_areas_cluster <- fsetdiff(areas_clusters_table, all_areas_clusters_table)
+  if (nrow(diff_areas_cluster) > 0) {
+    pairs_not_available <- sapply(1:nrow(diff_areas_cluster), function(i) {
+      paste(diff_areas_cluster[i, ], collapse = "/")
+    })
+    stop(paste0("the following pairs area/cluster are not available:", pairs_not_available))
+  }
+  
+  # Return filtered areas, clusters, and table
+  return(list(areas = areas, clusters = unique(clusters), areas_clusters_table = areas_clusters_table))
 }

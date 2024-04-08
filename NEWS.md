@@ -2,6 +2,13 @@
 
 # antaresRead 2.6.1 (devlopment)
 
+NEW FEATURES :
+
+* `readInputThermal()` :
+    - new parameter **areas** to get desired clusters from selected areas.
+    - new parameter **thermalAvailabilities** to import time series.
+* `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
+
 BUGFIXES :  
 
 * `setSimulationPathAPI()` :  
@@ -15,6 +22,8 @@ BUGFIXES :
 BREAKING CHANGES :  
 
 * `api_get()` has a new parameter to control JSON file parsing
+* `readInputThermal()` default value when no time series in the selected clusters.
+* `readInputRES()` default value when no time series in the selected clusters
 
 # antaresRead 2.6.0
 
@@ -28,7 +37,7 @@ BREAKING CHANGES (Antares v8.6) :
 * `readInputTS()` is now compatible to read time series with :  
   - "short-term storage"  
   - "mingen" (pmin hydro value)
-* `setSimulationPath()` has new parameter `areasWithSTClusters` (name of area with "st-storage" cluster)
+* `setSimulationPath()` has new parameter **areasWithSTClusters** (name of area with "st-storage" cluster)
 
 
 BUGFIXES : 
