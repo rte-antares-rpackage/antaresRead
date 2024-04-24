@@ -4,12 +4,10 @@
 #'
 #' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
 #' @param nbcl \code{numeric} Number of parralel process
-#' @param verbose \code{numeric} show log in console. Defaut to 1
-#' \itemize{
-#'  \item{0}{ : No log}
-#'  \item{1}{ : Short log}
-#'  \item{2}{ : Long log}
-#'}
+#' @param verbose \code{numeric} show log in console. Defaut to 1  
+#'  - 0 : No log  
+#'  - 1 : Short log  
+#'  - 2 : Long log
 #' @param timestep \code{character} antares timestep
 #' @param writeOutput \code{boolean} write result or not.
 #' @param mcWeights \code{numeric} vector of weigth for mcYears.
@@ -689,12 +687,6 @@ parAggregateMCall <- function(opts,
 }
 
 #' @param opts \code{list} of simulation parameters returned by the function \link{setSimulationPath}
-#' @param verbose \code{numeric} show log in console. Defaut to 1
-#' \itemize{
-#'  \item{0}{ : No log}
-#'  \item{1}{ : Short log}
-#'  \item{2}{ : Long log}
-#'}
 #' @param timestep \code{character} antares timestep
 #' @param writeOutput \code{boolean} write result or not.
 #' @param mcWeights \code{numeric} vector of weigth for mcYears.
@@ -1533,7 +1525,7 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #'
 #' @import data.table
 #' 
-#' @rdname aggregatate_mc_all_old
+#' @noRd
 #' 
 #' @examples
 #' \dontrun{
