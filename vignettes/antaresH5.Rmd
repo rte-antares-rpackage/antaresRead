@@ -35,7 +35,6 @@ BiocManager::install("rhdf5")
 
 An other solution is to install manually these two packages from zip file. They are available here :
 https://bioconductor.org/packages/release/bioc/html/zlibbioc.html
-http://bioconductor.org/packages/release/bioc/html/rhdf5.html
 
 
 ## Avantages of h5 transformation
