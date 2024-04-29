@@ -1,5 +1,19 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.6.2 (development)
+
+NEW FEATURES :
+
+BUGFIXES :
+* `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
+
+BREAKING CHANGES :
+
+DATA :
+
+PERFORMANCE :
+
+
 # antaresRead 2.6.1 
 
 BUGFIXES :  
