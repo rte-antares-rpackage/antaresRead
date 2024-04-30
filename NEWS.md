@@ -23,7 +23,22 @@ Dependencies :
 * New package `lifecycle` to manage functions status/package status
 
 
-# antaresRead 2.6.1 (devlopment)
+
+# antaresRead 2.6.2 (development)
+
+NEW FEATURES :
+* `api_get()` add encoding argument to pass to `httr::content()`
+
+BUGFIXES :  
+
+BREAKING CHANGES :
+
+DATA :
+
+PERFORMANCE :
+
+
+# antaresRead 2.6.1
 
 BUGFIXES :  
 
