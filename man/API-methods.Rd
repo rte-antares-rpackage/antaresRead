@@ -13,7 +13,8 @@ api_get(
   endpoint,
   ...,
   default_endpoint = "v1/studies",
-  parse_result = NULL
+  parse_result = NULL,
+  encoding = NULL
 )
 
 api_post(opts, endpoint, ..., default_endpoint = "v1/studies")
@@ -33,6 +34,8 @@ Can be a full URL (by wrapping ìn \code{\link[=I]{I()}}), in that case \code{de
 \item{default_endpoint}{Default endpoint to use.}
 
 \item{parse_result}{\code{character} options for parameter \code{as} of function \code{\link[httr:content]{httr::content()}}}
+
+\item{encoding}{argument to pass as argument to the function \code{\link[httr:content]{httr::content()}}}
 }
 \value{
 Response from the API.
@@ -49,10 +52,11 @@ api_get(opts = list(host = "http://0.0.0.0:8080"),
         endpoint = NULL, 
         parse_result = NULL)
 
-# you can force parse options as text
+# you can force parse options as text and encoding to UTF-8
 api_get(opts = list(host = "http://0.0.0.0:8080"),
         endpoint = NULL, 
-        parse_result = "text")
+        parse_result = "text",
+        encoding = "UTF-8")
 
 }
 }

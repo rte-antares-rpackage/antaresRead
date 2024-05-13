@@ -2,19 +2,12 @@
 
 # antaresRead 2.6.2 (development)
 
-NEW FEATURES :
-
 BUGFIXES :
 * `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
-
-BREAKING CHANGES :
-
-DATA :
-
-PERFORMANCE :
+* `api_get()` add encoding argument to pass to `httr::content()`
 
 
-# antaresRead 2.6.1 
+# antaresRead 2.6.1
 
 BUGFIXES :  
 
