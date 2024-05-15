@@ -31,5 +31,20 @@ sapply(studyPathS, function(studyPath){
       expect_equal(nrow(input$thermalModulation) %% (24 * 7 * nweeks), 0)
     })
     
+    test_that("Wrong area", {
+      expect_error(readInputThermal(areas = "BAD_AREA", clusters = "peak_must_run_partial"),
+                   regexp = "areas are not available")
+    })
+    
+    test_that("Wrong cluster", {
+      expect_error(readInputThermal(areas = "all", clusters = "BAD_CLUSTER"),
+                   regexp = "clusters are not available")
+    })
+    
+    test_that("No thermal data selected", {
+      expect_error(readInputThermal(clusters = "peak_must_run_partial", thermalAvailabilities = FALSE),
+                   regexp = "one type of data should be selected")
+    })
+    
   }
 })

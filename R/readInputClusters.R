@@ -53,16 +53,41 @@ readInputThermal <- function(areas = "all",
     if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
-  
   allAreasClusters <- readClusterDesc(opts = opts)[area %in% opts$areasWithClusters, c("area", "cluster")]
+  allAreas <- allAreasClusters$area
+  allClusters <- allAreasClusters$cluster
   
-  #Check if areas and clusters input correspond to study
-  lst_areas_clusters <- .check_areas_clusters(allAreasClusters, areas, clusters)
+  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
   
-  #Get areas, clusters and areas/clusters pairs
-  areas <- lst_areas_clusters$areas
-  clusters <- lst_areas_clusters$clusters
-  areas_clusters_table <- lst_areas_clusters$areas_clusters_table
+  # Check for "all" values
+  is_areas_all <- identical(areas, "all")
+  is_clusters_all <- identical(clusters, "all")
+  
+  if (is_areas_all) {
+    areas <- allAreas
+  }else{
+    areas_to_compare <- all_areas_clusters_table$area
+    # Check for unavailable areas
+    diff_areas <- setdiff(areas, areas_to_compare)
+    if (length(diff_areas) > 0) {
+      stop(paste0("the following areas are not available:", diff_areas))
+    }
+  }
+  areas_clusters_table <- all_areas_clusters_table[area %in% tolower(areas)]
+  
+  if (is_clusters_all) {
+    clusters <- allClusters
+  }else{
+    clusters_to_compare <- all_areas_clusters_table$cluster
+    # Check for unavailable clusters
+    diff_clusters <- setdiff(clusters, clusters_to_compare)
+    if (length(diff_clusters) > 0) {
+      stop(paste0("the following clusters are not available:", diff_clusters))
+    }
+  }
+  areas_clusters_table <- areas_clusters_table[cluster %in% tolower(clusters)]
+  
+  clusters <- unique(areas_clusters_table$cluster)
   
   res <- list() # Object the function will return
   
@@ -162,14 +187,40 @@ readInputRES <- function(areas = "all",
   }
   
   allAreasClusters <- readClusterResDesc(opts = opts)[area %in% opts$areasWithResClusters, c("area", "cluster")]
+  allAreas <- allAreasClusters$area
+  allClusters <- allAreasClusters$cluster
   
-  #Check if areas and clusters input correspond to study
-  lst_areas_clusters <- .check_areas_clusters(allAreasClusters, areas, clusters)
+  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
   
-  #Get areas, clusters and areas/clusters pairs
-  areas <- lst_areas_clusters$areas
-  clusters <- lst_areas_clusters$clusters
-  areas_clusters_table <- lst_areas_clusters$areas_clusters_table
+  # Check for "all" values
+  is_areas_all <- identical(areas, "all")
+  is_clusters_all <- identical(clusters, "all")
+  
+  if (is_areas_all) {
+    areas <- allAreas
+  }else{
+    areas_to_compare <- all_areas_clusters_table$area
+    # Check for unavailable areas
+    diff_areas <- setdiff(areas, areas_to_compare)
+    if (length(diff_areas) > 0) {
+      stop(paste0("the following areas are not available:", diff_areas))
+    }
+  }
+  areas_clusters_table <- all_areas_clusters_table[area %in% tolower(areas)]
+  
+  if (is_clusters_all) {
+    clusters <- allClusters
+  }else{
+    clusters_to_compare <- all_areas_clusters_table$cluster
+    # Check for unavailable clusters
+    diff_clusters <- setdiff(clusters, clusters_to_compare)
+    if (length(diff_clusters) > 0) {
+      stop(paste0("the following clusters are not available:", diff_clusters))
+    }
+  }
+  areas_clusters_table <- areas_clusters_table[cluster %in% tolower(clusters)]
+  
+  clusters <- unique(areas_clusters_table$cluster)
   
   res <- list() # Object the function will return
   
@@ -205,55 +256,4 @@ readInputRES <- function(areas = "all",
   # Class and attributes
   res <- .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
   addDateTimeColumns(res)
-}
-
-
-.check_areas_clusters <- function(allAreasClusters, areas, clusters) {
-  allAreas <- allAreasClusters$area
-  allClusters <- allAreasClusters$cluster
-  
-  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
-  
-  # Check for "all" values
-  is_areas_all <- identical(areas, "all")
-  is_clusters_all <- identical(clusters, "all")
-  
-  # Filter areas and clusters based on selections
-  if (is_areas_all & is_clusters_all) {
-    areas <- allAreas
-    clusters <- allClusters
-  } else if (is_areas_all & !is_clusters_all) {
-    areas <- all_areas_clusters_table[cluster %in% tolower(clusters)]$area
-    
-    # Check for unavailable clusters
-    diff_clusters <- setdiff(clusters, all_areas_clusters_table$cluster)
-    if (length(diff_clusters) > 0) {
-      stop(paste0("the following clusters are not available:", diff_clusters))
-    }
-    clusters <- all_areas_clusters_table[cluster %in% tolower(clusters)]$cluster
-  } else if (!is_areas_all & is_clusters_all) {
-    clusters <- all_areas_clusters_table[area %in% tolower(areas)]$cluster
-    
-    # Check for unavailable areas
-    diff_areas <- setdiff(areas, all_areas_clusters_table$area)
-    if (length(diff_areas) > 0) {
-      stop(paste0("the following areas are not available:", diff_areas))
-    }
-    areas <- all_areas_clusters_table[area %in% tolower(areas)]$area
-  }
-  
-  #Get all areas/clusters pairs
-  areas_clusters_table <- data.table("area" = areas, "cluster" = clusters)
-  
-  # Check for unavailable area/cluster pairs
-  diff_areas_cluster <- fsetdiff(areas_clusters_table, all_areas_clusters_table)
-  if (nrow(diff_areas_cluster) > 0) {
-    pairs_not_available <- sapply(1:nrow(diff_areas_cluster), function(i) {
-      paste(diff_areas_cluster[i, ], collapse = "/")
-    })
-    stop(paste0("the following pairs area/cluster are not available:", pairs_not_available))
-  }
-  
-  # Return filtered areas, clusters, and table
-  return(list(areas = areas, clusters = unique(clusters), areas_clusters_table = areas_clusters_table))
 }
