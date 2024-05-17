@@ -53,57 +53,51 @@ readInputThermal <- function(areas = "all",
     if(!requireNamespace("foreach")) stop("Parallelized importation impossible. Please install the 'foreach' package and a parallel backend provider like 'doParallel'.")
     if (!foreach::getDoParRegistered()) stop("Parallelized importation impossible. Please register a parallel backend, for instance with function 'registerDoParallel'")
   }
-  allAreasClusters <- readClusterDesc(opts = opts)[area %in% opts$areasWithClusters, c("area", "cluster")]
-  allAreas <- allAreasClusters$area
-  allClusters <- allAreasClusters$cluster
   
-  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
+  allAreasClusters <- readClusterDesc(opts = opts)[, c("area", "cluster")]
+  allAreasClusters$lower_area <- tolower(allAreasClusters$area)
+  allAreasClusters$lower_cluster <- tolower(allAreasClusters$cluster)
   
-  # Check for "all" values
-  is_areas_all <- identical(areas, "all")
-  is_clusters_all <- identical(clusters, "all")
-  
-  if (is_areas_all) {
-    areas <- allAreas
+  if (identical(areas, "all")) {
+    areas <- allAreasClusters$area
   }else{
-    areas_to_compare <- all_areas_clusters_table$area
     # Check for unavailable areas
-    diff_areas <- setdiff(areas, areas_to_compare)
+    diff_areas <- setdiff(areas, allAreasClusters$lower_area)
     if (length(diff_areas) > 0) {
       stop(paste0("the following areas are not available:", diff_areas))
     }
   }
-  areas_clusters_table <- all_areas_clusters_table[area %in% tolower(areas)]
+  allAreasClusters_filtered_area <- allAreasClusters[area %in% areas]
   
-  if (is_clusters_all) {
-    clusters <- allClusters
+  if (identical(clusters, "all")) {
+    clusters <- allAreasClusters_filtered_area$cluster
   }else{
-    clusters_to_compare <- all_areas_clusters_table$cluster
     # Check for unavailable clusters
-    diff_clusters <- setdiff(clusters, clusters_to_compare)
+    diff_clusters <- setdiff(clusters, allAreasClusters_filtered_area$lower_cluster)
     if (length(diff_clusters) > 0) {
       stop(paste0("the following clusters are not available:", diff_clusters))
     }
   }
-  areas_clusters_table <- areas_clusters_table[cluster %in% tolower(clusters)]
-  
-  clusters <- unique(areas_clusters_table$cluster)
+  allAreasClusters_filtered <- allAreasClusters_filtered_area[cluster %in% clusters]
+  clusters <- unique(allAreasClusters_filtered$cluster)
   
   res <- list() # Object the function will return
   
   # ThermalAvailabilities processing
   if (thermalAvailabilities){
     thermalTS <- as.data.table(ldply(clusters, function(cl) {
-      areas <- areas_clusters_table[cluster == cl]$area
+      areas <- allAreasClusters_filtered[cluster == cl]$area
       resCl <- ldply(areas, function(x){
         filePattern <- sprintf("%s/%s/%%s/series.txt", "thermal/series", x)
         mid <- .importInputTS(cl, timeStep, opts, filePattern, "ThermalAvailabilities",
                               inputTimeStep = "hourly", type = "matrix")
         
         if (is.null(mid)){
-          timeId_value <- 1:8736
-          tsId_value <- replicate(8736,1)
-          ThermalAvailabilities_value <- replicate(8736,0)
+          # seq vs :, stocker dans une variable
+          nb_rows_ts <- 8736 
+          timeId_value <- seq(1,nb_rows_ts)
+          tsId_value <- replicate(nb_rows_ts,1)
+          ThermalAvailabilities_value <- replicate(nb_rows_ts,0)
           mid <- data.table("timeId" = timeId_value, "tsId" = tsId_value, "ThermalAvailabilities" = ThermalAvailabilities_value)
         }
         mid$area <- x
@@ -119,7 +113,6 @@ readInputThermal <- function(areas = "all",
     
     if (nrow(thermalTS) > 0) res$thermalAvailabilities <- thermalTS
   }
-  
   
   # thermalModulation processing
   if (thermalModulation){
@@ -144,6 +137,7 @@ readInputThermal <- function(areas = "all",
   # Class and attributes
   res <- .addClassAndAttributes(res, NULL, timeStep, opts, simplify)
   addDateTimeColumns(res)
+  
 }
 
 
@@ -187,40 +181,31 @@ readInputRES <- function(areas = "all",
   }
   
   allAreasClusters <- readClusterResDesc(opts = opts)[area %in% opts$areasWithResClusters, c("area", "cluster")]
-  allAreas <- allAreasClusters$area
-  allClusters <- allAreasClusters$cluster
+  allAreasClusters$lower_area <- tolower(allAreasClusters$area)
+  allAreasClusters$lower_cluster <- tolower(allAreasClusters$cluster)
   
-  all_areas_clusters_table <- data.table("area" = tolower(allAreas), "cluster" = tolower(allClusters))
-  
-  # Check for "all" values
-  is_areas_all <- identical(areas, "all")
-  is_clusters_all <- identical(clusters, "all")
-  
-  if (is_areas_all) {
-    areas <- allAreas
+  if (identical(areas, "all")) {
+    areas <- allAreasClusters$area
   }else{
-    areas_to_compare <- all_areas_clusters_table$area
     # Check for unavailable areas
-    diff_areas <- setdiff(areas, areas_to_compare)
+    diff_areas <- setdiff(areas, allAreasClusters$lower_area)
     if (length(diff_areas) > 0) {
       stop(paste0("the following areas are not available:", diff_areas))
     }
   }
-  areas_clusters_table <- all_areas_clusters_table[area %in% tolower(areas)]
+  allAreasClusters_filtered_area <- allAreasClusters[area %in% areas]
   
-  if (is_clusters_all) {
-    clusters <- allClusters
+  if (identical(clusters, "all")) {
+    clusters <- allAreasClusters_filtered_area$cluster
   }else{
-    clusters_to_compare <- all_areas_clusters_table$cluster
     # Check for unavailable clusters
-    diff_clusters <- setdiff(clusters, clusters_to_compare)
+    diff_clusters <- setdiff(clusters, allAreasClusters_filtered_area$lower_cluster)
     if (length(diff_clusters) > 0) {
       stop(paste0("the following clusters are not available:", diff_clusters))
     }
   }
-  areas_clusters_table <- areas_clusters_table[cluster %in% tolower(clusters)]
-  
-  clusters <- unique(areas_clusters_table$cluster)
+  allAreasClusters_filtered <- allAreasClusters_filtered_area[cluster %in% clusters]
+  clusters <- unique(allAreasClusters_filtered$cluster)
   
   res <- list() # Object the function will return
   
