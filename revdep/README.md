@@ -1,23 +1,28 @@
 # Platform
 
-|field    |value                        |
-|:--------|:----------------------------|
-|version  |R version 3.6.2 (2019-12-12) |
-|os       |Windows 10 x64               |
-|system   |x86_64, mingw32              |
-|ui       |RStudio                      |
-|language |(EN)                         |
-|collate  |French_France.1252           |
-|ctype    |French_France.1252           |
-|tz       |Europe/Berlin                |
-|date     |2020-03-03                   |
+|field    |value                               |
+|:--------|:-----------------------------------|
+|version  |R version 4.2.2 (2022-10-31 ucrt)   |
+|os       |Windows 10 x64 (build 19045)        |
+|system   |x86_64, mingw32                     |
+|ui       |RStudio                             |
+|language |(EN)                                |
+|collate  |French_France.utf8                  |
+|ctype    |French_France.utf8                  |
+|tz       |Europe/Paris                        |
+|date     |2024-05-27                          |
+|rstudio  |2023.12.0+369 Ocean Storm (desktop) |
+|pandoc   |NA                                  |
 
 # Dependencies
 
-|package     |old   |new   |<U+0394>  |
+|package     |old   |new   |Δ  |
 |:-----------|:-----|:-----|:--|
-|antaresRead |2.2.4 |2.2.5 |*  |
-|rlang       |NA    |0.4.5 |*  |
+|antaresRead |2.6.1 |2.7.0 |*  |
+|cachem      |NA    |1.0.8 |*  |
+|fastmap     |NA    |1.1.1 |*  |
+|openssl     |NA    |2.1.2 |*  |
+|stringi     |NA    |1.8.3 |*  |
 
 # Revdeps
 
