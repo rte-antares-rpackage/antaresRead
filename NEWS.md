@@ -23,7 +23,6 @@ Dependencies :
 * New package `lifecycle` to manage functions status/package status
 
 
-
 # antaresRead 2.6.2 (development)
 
 BUGFIXES :
