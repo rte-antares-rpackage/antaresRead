@@ -144,7 +144,13 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                          "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
 
@@ -178,6 +184,12 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config = config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                          "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
