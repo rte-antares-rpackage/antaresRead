@@ -170,3 +170,28 @@ skip_according_to_options <- function() {
 }
 
 pathAPI <- "http://localhost:8080/studies/antaresStd/"
+
+
+# study empty ----
+  # latest version of study 
+  # empty study to test exceptions
+sourcedir_empty_study <- system.file("test_empty_study", 
+                                     package = "antaresRead")
+
+setup_study_empty <- function(dir_path){
+  studies <- list.files(dir_path, pattern = "\\.tar\\.gz$", 
+                        full.names = TRUE)
+  # choose pattern 
+  studies <- studies[grep(x = studies, 
+                          pattern = "v87")] 
+  # untar etude
+  path_sty <- file.path(tempdir(), 
+                        "study_empty_latest_version")
+  untar(studies[1], exdir = path_sty) # version latest
+  study_temp_path <- file.path(path_sty, "test_case")
+  
+  assign("study_empty_latest_version",
+         file.path(path_sty,
+                   "test_case"),
+         envir = globalenv())
+}

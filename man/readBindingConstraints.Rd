@@ -2,45 +2,72 @@
 % Please edit documentation in R/readBindingConstraints.R
 \name{readBindingConstraints}
 \alias{readBindingConstraints}
-\alias{summary.bindingConstraints}
 \title{Read binding constraints}
 \usage{
 readBindingConstraints(opts = simOptions())
-
-\method{summary}{bindingConstraints}(object, ...)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
-
-\item{object}{Object returned by readBindingConstraints}
-
-\item{...}{Unused}
 }
 \value{
-\code{readBindingConstraints} returns an object of class \code{bindingConstraints}.
-It is a named list with one element per read constraint. Each element is itself
-a list with the following elements:
-\item{enabled}{is the constraint enabled ?}
-\item{timeStep}{time step the constraint applies to}
-\item{operator}{type of constraint: equality, inequality on one side or both sides}
-\item{coefficients}{elements containing the coefficients used by the constraint}
-\item{values}{values used by the constraint. It contains one line per time step
-and three columns "less", "greater" and "equal"}
-
-The \code{summary} method returns a data.frame with one line per constraint.
+An object of class \code{bindingConstraints}. This object is also a named
+list with 3 sections per read constraint.
 }
 \description{
+\ifelse{html}{\figure{badge_api_ok.svg}{options: alt='Antares API OK'}}{Antares API: \strong{OK}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function reads the binding constraints of an Antares project.
 
 Be aware that binding constraints are read in the input files of a study. So
 they may have changed since a simulation has been run.
 }
+\note{
+For an study Antares \strong{version >=8.7.0}. Now contains \code{data.frame} with
+one line per time step and \eqn{p} colums according to "scenarized RHS".
+
+For "both" case, you will find in section \code{values} two \code{data.frame} :
+\itemize{
+\item One \code{data.frame} for \code{less}
+\item One \code{data.frame} for \code{greater}
+}
+
+For an study Antares \strong{version <8.7.0}.
+
+Section \code{values} contains one line
+per time step and three columns "less", "greater" and "equal"
+}
+\section{Warning}{
+
+Since \verb{release 2.7.0} the structure of the returned object has evolved for
+all versions of study Antares:
+\itemize{
+\item .ini parameters are in section \code{properties}
+\item Coeffcients links or thermal are in section \code{coefs}
+\item Values are already in section \code{values}
+}
+}
+
 \examples{
 \dontrun{
 setSimulationPath()
 
 constraints <- readBindingConstraints()
+
+# read properties
+constraints$properties
+
+# read coefs
+constraints$coefs
+
+# read values
+constraints$values
+  # both case ( study Antares >=8.7.0)
+constraints$values$less
+constraints$values$greater
+
+# display equation (only for study Antares <8.7.0)
 summary(constraints)
 
 }

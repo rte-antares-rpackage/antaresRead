@@ -58,14 +58,18 @@ readIni <- function(pathIni, opts = antaresRead::simOptions(), default_ext = ".i
 #' @export
 #' @rdname read-ini
 readIniFile <- function(file, stringsAsFactors = FALSE) {
+  
   X <- readLines(file)
   sections <- grep("^\\[.*\\]$", X)
   starts <- sections + 1
   ends <- c(sections[-1] - 1, length(X))
   L <- vector(mode = "list", length = length(sections))
   names(L) <- gsub("\\[|\\]", "", X[sections])
+  
   for(i in seq(along = sections)) {
+  
     if (starts[i] >= ends[i]) next
+    
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
@@ -76,19 +80,24 @@ readIniFile <- function(file, stringsAsFactors = FALSE) {
     
     value <- lapply(pairs, `[`, 2)
     value <- as.list(trimws(unlist(value)))
-    value <- lapply(value, function(x) {
+    value <- lapply(value, function(x){
       if (tolower(x) %in% c("true", "false")) {
         tolower(x) == "true"
+      } else if(!identical(grep(pattern = "^[0-9]+(e|i)$", x = x), integer(0))) {
+        # Not convert those type of values : 789e or 789i (complex number)
+        as.character(x)
       } else {
         utils::type.convert(x, as.is = TRUE)
       }
-    })
+    }
+  )
     
     L[[i]] <- value
     names(L[[i]]) <- key
   }
   L
 }
+
 
 #' @param study_id Study's identifier.
 #' @param path Path of configuration object to read.

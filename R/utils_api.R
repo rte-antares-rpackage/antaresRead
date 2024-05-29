@@ -7,9 +7,13 @@ fread_antares <- function(opts, file, ...) {
       endpoint = I(file),
       query = list(formatted = FALSE)
     )
-    tryCatch(fread(response, ...), error = function(e) {message(file); message(e)})
+    suppressWarnings(
+      tryCatch(fread(response, ...), error = function(e){
+        message(file); message(e)
+      }))
   } else {
-    fread(file, ...)
+    suppressWarnings(
+      fread(file, ...))
   }
 }
 

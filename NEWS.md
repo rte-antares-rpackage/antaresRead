@@ -1,6 +1,36 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 2.6.1 
+# antaresRead 2.7.0
+
+### Breaking changes (Antares v8.7.0) : 
+
+* `readBindingConstraints()` read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
+  - function returns a new list structure
+* Private function `fread_antares()` no longer returns warnings  
+* `api_put()/api_delete()` return a server error message 
+
+BUGFIXES :  
+
+* `readBindingConstraints()` read well study >= v8.3.2
+
+DATA : 
+
+* A test study in tar.gz format is available in version v8.7.0  
+* An empty test study in version v8.7.0 for marginal cases 
+
+Dependencies :  
+
+* New package `lifecycle` to manage functions status/package status
+
+
+# antaresRead 2.6.2 (development)
+
+BUGFIXES :
+* `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
+* `api_get()` add encoding argument to pass to `httr::content()`
+
+
+# antaresRead 2.6.1
 
 BUGFIXES :  
 

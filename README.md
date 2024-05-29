@@ -7,7 +7,7 @@
 
 <!-- badges: start -->
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/antaresRead)](https://cran.r-project.org/package=antaresRead)
-[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![R-CMD-check](https://github.com/rte-antares-rpackage/antaresRead/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/rte-antares-rpackage/antaresRead/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/rte-antares-rpackage/antaresRead/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rte-antares-rpackage/antaresRead?branch=master)

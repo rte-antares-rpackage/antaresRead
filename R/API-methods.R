@@ -6,6 +6,7 @@
 #' @param ... Additional arguments passed to API method.
 #' @param default_endpoint Default endpoint to use.
 #' @param parse_result `character` options for parameter `as` of function [httr::content()]
+#' @param encoding argument to pass as argument to the function [httr::content()]
 #' @param opts Antares simulation options or a `list` with an `host = ` slot.
 #'
 #' @return Response from the API.
@@ -24,16 +25,18 @@
 #'         endpoint = NULL, 
 #'         parse_result = NULL)
 #'
-#' # you can force parse options as text
+#' # you can force parse options as text and encoding to UTF-8
 #' api_get(opts = list(host = "http://0.0.0.0:8080"),
 #'         endpoint = NULL, 
-#'         parse_result = "text")
+#'         parse_result = "text",
+#'         encoding = "UTF-8")
 #'
 #' }
 api_get <- function(opts, 
                     endpoint, ..., 
                     default_endpoint = "v1/studies", 
-                    parse_result = NULL) {
+                    parse_result = NULL,
+                    encoding = NULL) {
   if (inherits(endpoint, "AsIs")) {
     opts$host <- endpoint
     endpoint <- NULL
@@ -74,7 +77,7 @@ api_get <- function(opts,
     stop_for_status(result, task = mess_error)
     }else 
       warn_for_status(result)
-  content(result, as = parse_result)
+  content(result, as = parse_result, encoding = encoding)
 }
 
 #' @export
@@ -141,7 +144,13 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                          "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
 
@@ -175,6 +184,12 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config = config,
     ...
   )
-  stop_for_status(result)
+  api_content <- content(result)
+  if(!is.null(names(api_content)))
+    api_content <- paste0("\n[Description] : ", api_content$description,
+                          "\n[Exception] : ", api_content$exception)
+  else
+    api_content <- NULL
+  stop_for_status(result, task = api_content)
   content(result)
 }
