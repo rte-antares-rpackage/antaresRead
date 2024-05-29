@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
       </span>
     </div>
 
@@ -60,6 +60,31 @@
       <small>Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.7.0" id="antaresread-270">antaresRead 2.7.0<small>2024-05-28</small><a class="anchor" aria-label="anchor" href="#antaresread-270"></a></h2>
+<div class="section level4">
+<h4 id="breaking-changes-antares-v870--2-7-0">Breaking changes (Antares v8.7.0) :<a class="anchor" aria-label="anchor" href="#breaking-changes-antares-v870--2-7-0"></a></h4>
+<ul><li>
+<code><a href="../reference/readBindingConstraints.html">readBindingConstraints()</a></code> read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
+<ul><li>function returns a new list structure</li>
+</ul></li>
+<li>Private function <code>fread_antares()</code> no longer returns warnings<br></li>
+<li>
+<code>api_put()/api_delete()</code> return a server error message</li>
+</ul><p>BUGFIXES :</p>
+<ul><li>
+<code><a href="../reference/readBindingConstraints.html">readBindingConstraints()</a></code> read well study &gt;= v8.3.2</li>
+</ul><p>DATA :</p>
+<ul><li>A test study in tar.gz format is available in version v8.7.0<br></li>
+<li>An empty test study in version v8.7.0 for marginal cases</li>
+</ul><p>Dependencies :</p>
+<ul><li>New package <code>lifecycle</code> to manage functions status/package status</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.6.2" id="antaresread-262-development">antaresRead 2.6.2 (development)<a class="anchor" aria-label="anchor" href="#antaresread-262-development"></a></h2>
+<p>BUGFIXES : * <code><a href="../reference/read-ini.html">readIniFile()</a></code> : avoid <code><a href="https://rdrr.io/r/utils/type.convert.html" class="external-link">utils::type.convert</a></code> on specific cases (ex : 789e or 123i) * <code><a href="../reference/API-methods.html">api_get()</a></code> add encoding argument to pass to <code><a href="https://httr.r-lib.org/reference/content.html" class="external-link">httr::content()</a></code></p>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.6.1" id="antaresread-261">antaresRead 2.6.1<small>2024-04-22</small><a class="anchor" aria-label="anchor" href="#antaresread-261"></a></h2>
 <p>BUGFIXES :</p>

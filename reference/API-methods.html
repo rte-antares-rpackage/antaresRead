@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.6.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
       </span>
     </div>
 
@@ -71,7 +71,8 @@
 <span>  <span class="va">endpoint</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  default_endpoint <span class="op">=</span> <span class="st">"v1/studies"</span>,</span>
-<span>  parse_result <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  parse_result <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">api_post</span><span class="op">(</span><span class="va">opts</span>, <span class="va">endpoint</span>, <span class="va">...</span>, default_endpoint <span class="op">=</span> <span class="st">"v1/studies"</span><span class="op">)</span></span>
@@ -103,6 +104,10 @@ Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.ht
 <dt>parse_result</dt>
 <dd><p><code>character</code> options for parameter <code>as</code> of function <code><a href="https://httr.r-lib.org/reference/content.html" class="external-link">httr::content()</a></code></p></dd>
 
+
+<dt>encoding</dt>
+<dd><p>argument to pass as argument to the function <code><a href="https://httr.r-lib.org/reference/content.html" class="external-link">httr::content()</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -121,10 +126,11 @@ Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.ht
 <span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
 <span class="r-in"><span>        parse_result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># you can force parse options as text</span></span></span>
+<span class="r-in"><span><span class="co"># you can force parse options as text and encoding to UTF-8</span></span></span>
 <span class="r-in"><span><span class="fu">api_get</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"http://0.0.0.0:8080"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
-<span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span>,</span></span>
+<span class="r-in"><span>        encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>

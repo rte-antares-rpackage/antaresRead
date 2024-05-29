@@ -31,6 +31,9 @@
     <loc>/reference/aggregatate_mc_all.html</loc>
   </url>
   <url>
+    <loc>/reference/antaresRead-package.html</loc>
+  </url>
+  <url>
     <loc>/reference/as.antaresDataList.html</loc>
   </url>
   <url>
@@ -143,6 +146,9 @@
   </url>
   <url>
     <loc>/reference/subset.antaresDataList.html</loc>
+  </url>
+  <url>
+    <loc>/reference/summary.bindingConstraints.html</loc>
   </url>
   <url>
     <loc>/reference/viewAntares.html</loc>
