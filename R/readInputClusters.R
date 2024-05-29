@@ -55,6 +55,8 @@ readInputThermal <- function(areas = "all",
   }
   
   allAreasClusters <- readClusterDesc(opts = opts)[, c("area", "cluster")]
+  
+  #To compare with area and cluster selected
   allAreasClusters$lower_area <- tolower(allAreasClusters$area)
   allAreasClusters$lower_cluster <- tolower(allAreasClusters$cluster)
   
@@ -67,6 +69,7 @@ readInputThermal <- function(areas = "all",
       stop(paste0("the following areas are not available:", diff_areas))
     }
   }
+  # All areas selected with corresponding clusters
   allAreasClusters_filtered_area <- allAreasClusters[area %in% areas]
   
   if (identical(clusters, "all")) {
@@ -78,7 +81,10 @@ readInputThermal <- function(areas = "all",
       stop(paste0("the following clusters are not available:", diff_clusters))
     }
   }
+  # Couple areas/clusters of interest.
   allAreasClusters_filtered <- allAreasClusters_filtered_area[cluster %in% clusters]
+  
+  # To loop
   clusters <- unique(allAreasClusters_filtered$cluster)
   
   res <- list() # Object the function will return
@@ -93,8 +99,7 @@ readInputThermal <- function(areas = "all",
                               inputTimeStep = "hourly", type = "matrix")
         
         if (is.null(mid)){
-          # seq vs :, stocker dans une variable
-          nb_rows_ts <- 8736 
+          nb_rows_ts <- opts$timeIdMax
           timeId_value <- seq(1,nb_rows_ts)
           tsId_value <- replicate(nb_rows_ts,1)
           ThermalAvailabilities_value <- replicate(nb_rows_ts,0)
