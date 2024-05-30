@@ -216,7 +216,7 @@ readInputRES <- function(areas = "all",
   
   ResTS <- as.data.table(ldply(clusters, function(cl) {
     
-    areas <- areas_clusters_table[cluster == cl]$area
+    areas <- allAreasClusters_filtered[cluster == cl]$area
     resCl <- ldply(areas, function(x){
       filePattern <- sprintf("%s/%s/%%s/series.txt", "renewables/series", x)
       mid <- .importInputTS(cl, timeStep, opts, filePattern, "production",
