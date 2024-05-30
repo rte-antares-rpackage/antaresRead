@@ -1,5 +1,20 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.7.1 (development)
+
+NEW FEATURES:
+
+* `readInputThermal()` :
+    - new parameter **areas** to get desired clusters from selected areas.
+    - new parameter **thermalAvailabilities** to import time series.
+* `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
+
+BREAKING CHANGES :
+
+* `readInputThermal()` default value when no time series in the selected clusters.
+* `readInputRES()` default value when no time series in the selected clusters
+
+
 # antaresRead 2.7.0
 
 ### Breaking changes (Antares v8.7.0) : 
@@ -24,7 +39,7 @@ Dependencies :
 
 
 
-# antaresRead 2.6.2 (development)
+# antaresRead 2.6.2 
 
 BUGFIXES :
 * `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
@@ -32,13 +47,6 @@ BUGFIXES :
 
 
 # antaresRead 2.6.1
-
-NEW FEATURES :
-
-* `readInputThermal()` :
-    - new parameter **areas** to get desired clusters from selected areas.
-    - new parameter **thermalAvailabilities** to import time series.
-* `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
 
 BUGFIXES :  
 
