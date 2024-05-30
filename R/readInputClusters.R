@@ -222,9 +222,10 @@ readInputRES <- function(areas = "all",
       mid <- .importInputTS(cl, timeStep, opts, filePattern, "production",
                             inputTimeStep = "hourly", type = "matrix")
       if (is.null(mid)){
-        timeId_value <- 1:8736
-        tsId_value <- replicate(8736,1)
-        production_value <- replicate(8736,0)
+        nb_rows_ts <- opts$timeIdMax
+        timeId_value <- seq(1,nb_rows_ts)
+        tsId_value <- replicate(nb_rows_ts,1)
+        production_value <- replicate(nb_rows_ts,0)
         mid <- data.table("timeId" = timeId_value, "tsId" = tsId_value, "production" = production_value)
       }
       mid$area <- x
