@@ -48,3 +48,57 @@ sapply(studyPathS, function(studyPath){
     
   }
 })
+
+# RES ----
+
+## build mok
+
+mockStudyMetaData <- function(force = FALSE, antares_version = "8.2.0", ...) {
+  if (!is.null(getOption("antares")) & !isTRUE(force)) {
+    stop("A study is already registered, use force = TRUE to overwrite.", 
+         call. = FALSE)
+  }
+  
+  antares_vers <- paste(unlist(as.numeric_version(antares_version)), 
+                        collapse = "")
+  
+  opts <- list(
+    typeLoad = "txt",
+    antaresVersion = antares_vers,
+    ...
+  )
+  
+  class(opts) <- c("list", "simOptions")
+  options(antares = opts)
+  return(invisible(opts))
+}
+
+# dir in package
+moc_dir <- system.file("moc_study", 
+                       package = "antaresRead")
+
+# add necessary info/params
+mockStudyMetaData(force = TRUE, 
+                  inputPath = moc_dir, 
+                  mode = "Input", 
+                  studyName = "mocStudy",
+                  areasWithResClusters = c("at", "fr", "it"),
+                  parameters = list(`other preferences` = list(
+                    `renewable-generation-modelling` = "clusters")))
+
+readInputRES(clusters = "at_res_1")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
