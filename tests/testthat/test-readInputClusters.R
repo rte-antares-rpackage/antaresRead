@@ -9,6 +9,7 @@ sapply(studyPathS, function(studyPath){
   if(!isH5Opts(opts)){
     
     test_that("Thermal availabilities importation works", {
+      # read /series files (default)
       input <- readInputThermal(clusters = "peak_must_run_partial", showProgress = FALSE)
       expect_is(input, "antaresDataTable")
       expect_gt(nrow(input), 0)
@@ -24,7 +25,7 @@ sapply(studyPathS, function(studyPath){
     })
     
     test_that("Thermal data importation works", {
-      input <- readInputThermal(clusters = "peak_must_run_partial", thermalModulation = TRUE, showProgress = FALSE)
+      input <- readInputThermal(clusters = "peak_must_run_partial", thermalData = TRUE, showProgress = FALSE, timeStep = 'daily')
       expect_is(input, "antaresDataList")
       expect_is(input$thermalModulation, "antaresDataTable")
       expect_gt(nrow(input$thermalModulation), 0)
@@ -47,4 +48,18 @@ sapply(studyPathS, function(studyPath){
     })
     
   }
+})
+
+# >= v870 ----
+## RES ----
+test_that("test reading TS RES", {
+ 
+  # read latest version study
+  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  setSimulationPath(path_study_test, simulation = "input")
+  
+ toto=  readInputRES(clusters = "at_res_1")
+ 
+  toto = readInputThermal(clusters = "at_gas")
+  
 })

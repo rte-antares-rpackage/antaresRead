@@ -89,7 +89,7 @@ readInputThermal <- function(areas = "all",
   
   res <- list() # Object the function will return
   
-  # ThermalAvailabilities processing
+  # ThermalAvailabilities processing (/series)
   if (thermalAvailabilities){
     thermalTS <- as.data.table(ldply(clusters, function(cl) {
       areas <- allAreasClusters_filtered[cluster == cl]$area
@@ -119,7 +119,7 @@ readInputThermal <- function(areas = "all",
     if (nrow(thermalTS) > 0) res$thermalAvailabilities <- thermalTS
   }
   
-  # thermalModulation processing
+  # thermalModulation processing (/prepro/.../.../modulation.txt)
   if (thermalModulation){
     thermalMod <- as.data.table(ldply(areas, .importThermalModulation, opts = opts, timeStep = timeStep))
     thermalMod <- thermalMod[cluster %in% clusters]
@@ -128,7 +128,7 @@ readInputThermal <- function(areas = "all",
     if (nrow(thermalMod) > 0) res$thermalModulation <- thermalMod
   }
   
-  # thermalData processing
+  # thermalData processing (/prepro/.../.../data.txt)
   if (thermalData){
     thermalDat <- as.data.table(ldply(areas, .importThermalData, opts = opts, timeStep = timeStep))
     thermalDat <- thermalDat[cluster %in% clusters]
