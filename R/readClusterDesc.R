@@ -105,77 +105,77 @@ readClusterSTDesc <- function(opts = simOptions()) {
   }
   
   path <- file.path(opts$inputPath, dir)
-  
   columns <- .generate_columns_by_type(dir = dir)
   api_study <- is_api_study(opts)
   
   if(api_study){
     
-    jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
-    res <-  rbindlist(mapply(function(X1, Y1){
-      clusters <- rbindlist(
-        mapply(function(X, Y){
-          out <- as.data.frame(X)
-          if(nrow(out) == 0)return(NULL)
-          out$area = Y
-          out
-        }, X1$list, names(X1$list), SIMPLIFY = FALSE), fill = TRUE)
-      if(is.null(clusters))return(NULL)
-      if(nrow(clusters)==0)return(NULL)
-      clusters$area <- Y1
-      clusters[, .SD, .SDcols = order(names(clusters))]
-    },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
+    table_type <- switch(
+      dir,
+      "thermal/clusters" = "thermals",
+      "renewables/clusters" = "renewables",
+      "st-storage/clusters" =  "st-storages"
+    )
     
-    
-  }else{
-    
-    areas <- list.files(path)
-    
-    res <- ldply(areas, function(x) {
-      clusters <- readIniFile(file.path(path, x, "list.ini"))
+    list_clusters = api_get(
+      opts = opts,
+      endpoint = paste0(opts$study_id, "/table-mode/",table_type),
+      query = list(
+        columns = ""
+      )
+    )
+    if(length(list_clusters) == 0){
+      mandatory_cols <- c("area","cluster")
+      warning("No cluster description available.", call. = FALSE)
+      res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
+    }else{
+      clusters <- rbindlist(list_clusters, idcol = "cluster")
+      newcol <- data.table()
+      newcol <- newcol[, c("area", "cluster") := tstrsplit(clusters$cluster, " / ", fixed = TRUE, keep = 1:2)]
+      res <- data.table(newcol,clusters[,-"cluster"]) 
       
-      if (length(clusters) == 0) return(NULL)
-      
-      clusters <- ldply(clusters, as.data.frame)
-      clusters$.id <- NULL
-      clusters$area <- x
-      
-      clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-    })
-    
-  }
-  
-  if(length(res) == 0){
-    mandatory_cols <- c("area","cluster")
-    warning("No cluster description available.", call. = FALSE)
-    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
-  }else{
-    if(api_study){
-      mandatory_cols <- c("area", "name", "group")
-      additional_cols <- setdiff(colnames(res),mandatory_cols)
-      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
+    }else{
+      areas <- list.files(path)
+      res <- ldply(areas, function(x) {
+        clusters <- readIniFile(file.path(path, x, "list.ini"))
+        if (length(clusters) == 0) return(NULL)
+        clusters <- ldply(clusters, as.data.frame)
+        clusters$.id <- NULL
+        clusters$area <- x
+        clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
+      })
     }
-    res <- as.data.table(res)
-    setnames(res, "name", "cluster")
-    res$cluster <- as.factor(tolower(res$cluster))
+    if(length(res) == 0){
+      mandatory_cols <- c("area","cluster")
+      warning("No cluster description available.", call. = FALSE)
+      res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
+    }else{
+      if(api_study){
+        mandatory_cols <- c("area", "name", "group")
+        additional_cols <- setdiff(colnames(res),mandatory_cols)
+        res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
+      }
+      res <- as.data.table(res)
+      setnames(res, "name", "cluster")
+      res$cluster <- as.factor(tolower(res$cluster))
+    }
+    res
   }
-  
-  res
 }
-
 .generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
-  
   
   columns <- switch(
     dir,
-    "thermal/clusters" = c("group","enabled","must_run","unit_count","nominal_capacity",
-                           "min_stable_power","spinning","min_up_time","min_down_time",
-                           "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
-                           "spread_cost","ts_gen","volatility_forced","volatility_planned",
-                           "law_forced","law_planned"),
+    "thermal/clusters" = c("name","group","enabled","mustRun","unitCount","nominalCapacity",
+                           "minStablePower","spinning","minUpTime","minDownTime",
+                           "co2","marginalCost","fixedCost","startupCost","marketBidCost",
+                           "spreadCost","tsGen","volatilityForced","volatilityPlanned",
+                           "lawForced","lawPlanned"),
     
-    "renewables/clusters" = c("group","ts_interpretation","enabled","unit_count","nominal_capacity")
-    #"st-storage/clusters" =  #ATTENTE DEV COTé API
+    "renewables/clusters" = c("name","group","ts-interpretation","enabled","unitCount","nominalCapacity"),
+    
+    "st-storage/clusters" = c("name","group","enabled","injection_nominal_capacity","withdrawal_nominal_capacity",
+                              "reservoir_capacity","efficiency","initial_level","initial_level_optim")
   )
   return(columns)
 }
