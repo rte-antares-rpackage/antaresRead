@@ -125,42 +125,42 @@ readClusterSTDesc <- function(opts = simOptions()) {
       )
     )
     if(length(list_clusters) == 0){
-      mandatory_cols <- c("area","cluster")
+      mandatory_cols <- c("area","name")
       warning("No cluster description available.", call. = FALSE)
       res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
     }else{
-      clusters <- rbindlist(list_clusters, idcol = "cluster")
+      clusters <- rbindlist(list_clusters, idcol = "name")
       newcol <- data.table()
-      newcol <- newcol[, c("area", "cluster") := tstrsplit(clusters$cluster, " / ", fixed = TRUE, keep = 1:2)]
-      res <- data.table(newcol,clusters[,-"cluster"]) 
+      newcol <- newcol[, c("area", "name") := tstrsplit(clusters$name, " / ", fixed = TRUE, keep = 1:2)]
+      res <- data.table(newcol,clusters[,-"name"]) 
       
     }
-    }else{
-      areas <- list.files(path)
-      res <- ldply(areas, function(x) {
-        clusters <- readIniFile(file.path(path, x, "list.ini"))
-        if (length(clusters) == 0) return(NULL)
-        clusters <- ldply(clusters, as.data.frame)
-        clusters$.id <- NULL
-        clusters$area <- x
-        clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-      })
+  }else{
+    areas <- list.files(path)
+    res <- ldply(areas, function(x) {
+      clusters <- readIniFile(file.path(path, x, "list.ini"))
+      if (length(clusters) == 0) return(NULL)
+      clusters <- ldply(clusters, as.data.frame)
+      clusters$.id <- NULL
+      clusters$area <- x
+      clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
+    })
+  }
+  if(length(res) == 0){
+    mandatory_cols <- c("area","name")
+    warning("No cluster description available.", call. = FALSE)
+    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
+  }else{
+    if(api_study){
+      mandatory_cols <- c("area", "name", "group")
+      additional_cols <- setdiff(colnames(res),mandatory_cols)
+      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
     }
-    if(length(res) == 0){
-      mandatory_cols <- c("area","cluster")
-      warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
-    }else{
-      if(api_study){
-        mandatory_cols <- c("area", "name", "group")
-        additional_cols <- setdiff(colnames(res),mandatory_cols)
-        res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
-      }
-      res <- as.data.table(res)
-      setnames(res, "name", "cluster")
-      res$cluster <- as.factor(tolower(res$cluster))
-    }
-    res
+  }
+  res <- as.data.table(res)
+  setnames(res, "name", "cluster")
+  res$cluster <- as.factor(tolower(res$cluster))
+  res
 }
 .generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
   
