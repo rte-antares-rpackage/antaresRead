@@ -134,6 +134,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
       newcol <- newcol[, c("area", "cluster") := tstrsplit(clusters$cluster, " / ", fixed = TRUE, keep = 1:2)]
       res <- data.table(newcol,clusters[,-"cluster"]) 
       
+    }
     }else{
       areas <- list.files(path)
       res <- ldply(areas, function(x) {
@@ -160,7 +161,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
       res$cluster <- as.factor(tolower(res$cluster))
     }
     res
-  }
 }
 .generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
   
