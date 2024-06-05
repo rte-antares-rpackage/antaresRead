@@ -6,13 +6,16 @@ NEW FEATURES:
 
 * `readInputThermal()` :
     - new parameter **areas** to get desired clusters from selected areas.
-    - new parameter **thermalAvailabilities** to import time series.
+    - new parameter **thermalAvailabilities** to import time series.  
 * `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
 
 BREAKING CHANGES :
 
-* `readInputThermal()` default value when no time series in the selected clusters.
-* `readInputRES()` default value when no time series in the selected clusters
+* `readInputThermal()` / `readInputRES()` default value when no time series in the selected clusters.
+
+BUGFIXES :  
+
+* `readInputThermal()` return data from file data.txt with `thermalData` parameter
 
 
 # antaresRead 2.7.0
