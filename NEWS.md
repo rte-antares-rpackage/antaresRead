@@ -1,5 +1,23 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.7.1 (development)
+
+NEW FEATURES:
+
+* `readInputThermal()` :
+    - new parameter **areas** to get desired clusters from selected areas.
+    - new parameter **thermalAvailabilities** to import time series.  
+* `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
+
+BREAKING CHANGES :
+
+* `readInputThermal()` / `readInputRES()` default value when no time series in the selected clusters.
+
+BUGFIXES :  
+
+* `readInputThermal()` return data from file data.txt with `thermalData` parameter
+
+
 # antaresRead 2.7.0
 
 ### Breaking changes (Antares v8.7.0) : 
@@ -24,7 +42,7 @@ Dependencies :
 
 
 
-# antaresRead 2.6.2 (development)
+# antaresRead 2.6.2 
 
 BUGFIXES :
 * `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
@@ -46,6 +64,8 @@ BUGFIXES :
 BREAKING CHANGES :  
 
 * `api_get()` has a new parameter to control JSON file parsing
+* `readInputThermal()` default value when no time series in the selected clusters.
+* `readInputRES()` default value when no time series in the selected clusters
 * `readClusterDesc()`/ `readClusterRESDesc()` / `readClusterSTDesc()` 
 return empty dataTable and warning if no cluster in Antares study.
 
@@ -61,7 +81,7 @@ BREAKING CHANGES (Antares v8.6) :
 * `readInputTS()` is now compatible to read time series with :  
   - "short-term storage"  
   - "mingen" (pmin hydro value)
-* `setSimulationPath()` has new parameter `areasWithSTClusters` (name of area with "st-storage" cluster)
+* `setSimulationPath()` has new parameter **areasWithSTClusters** (name of area with "st-storage" cluster)
 
 
 BUGFIXES : 
