@@ -178,7 +178,7 @@
 #'
 #' @rdname setSimulationPath
 setSimulationPath <- function(path, simulation = NULL) {
-  
+ 
   if (missing(path)) {
     if (exists("choose.dir", getNamespace("utils"))) {
       # choose.dir is defined only on Windows
@@ -219,6 +219,8 @@ setSimulationPath <- function(path, simulation = NULL) {
   # the simulation folder.
   if (is.null(res$simPath)) {
     res <- append(res, .getInputOptions(res))
+    if(res$antaresVersion>=870)
+      res <- append(res, .getDimBCGroups(res))
   } else {
     res <- append(res, .getSimOptions(res))
   }
@@ -626,5 +628,60 @@ setSimulationPath <- function(path, simulation = NULL) {
              to = to)
   }else{
     data.table(link = character(), from = character(), to = character())
+  }
+}
+
+.getDimBCGroups <- function(list_options){
+  # list files
+  bc_path <- file.path(list_options$inputPath, "bindingconstraints")
+  bc_all_files <- list.files(bc_path, full.names = TRUE)
+  vector_size <- file.size(bc_all_files)
+  
+  # return NULL if no BC
+  if(sum(vector_size)==0)
+    return(NULL)
+  else{
+    # return NULL if no .txt files (no values)
+    search_values <- grepl(x = bc_all_files, pattern = ".txt")
+    if(!any(search_values))
+      return(NULL)
+    
+    # keep only values size >0
+    bc_name_values_files <- gsub('(.*)_.*',
+                                 '\\1',
+                                 grep(x = list.files(bc_path), 
+                                      pattern = ".txt", 
+                                      value = TRUE))
+    
+    df_info_files <- data.table(path = bc_all_files[search_values], 
+                                size = vector_size[search_values], 
+                                bc_name = bc_name_values_files)
+    df_info_files <- df_info_files[size>0,]
+    
+    # extract name + group from .ini properties
+    properties_group <- readIniFile(file = bc_all_files[!search_values])
+    bc_name <- sapply(properties_group, `[[`, "id")
+    groups_list <- lapply(properties_group, `[[`, "group")
+    names(groups_list) <- bc_name
+    
+    # merge information
+    df_groups <- data.table(bc_name =  names(groups_list), 
+                     name_group = sapply(groups_list, `[[`, 1))
+    
+    df_groups <- merge(df_info_files, df_groups)
+    
+    # read + dim values files
+    res <- sapply(df_groups$path, function(x){
+      file <- data.table::fread(file = x)
+      dim(file)[2]
+    })
+    
+    df_groups$dim <- res
+    
+    # filter df with only one group with dim > 1
+    df_groups <- unique(df_groups[, c("name_group", "dim")])
+    df_groups <- df_groups[dim>1]
+    
+    return(list(binding = df_groups))
   }
 }

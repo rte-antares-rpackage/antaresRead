@@ -2,6 +2,7 @@
 
 context("Setup functions")
 
+# v710----
 sapply(studyPathS, function(studyPath){
   
 suppressPackageStartupMessages(require(lubridate))
@@ -176,4 +177,19 @@ test_that("Folder 'maps' is not interpreted as a study (#49)", {
 })
 
 }
+
+test_that("No meta info binding study < 870", {
+  opts <- setSimulationPath(studyPath, "input")
+  expect_null(opts$binding)
+})
+
+})
+
+# v870----
+test_that("New meta data for group dimension of binding constraints", {
+  # read latest version study
+  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
+  
+  expect_is(opts_study_test$binding, "data.table")
 })
