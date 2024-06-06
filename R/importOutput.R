@@ -304,6 +304,10 @@
     # Order is important. There is a correspondance between elements.
     all_thematic_variables <- c("RES generation by plant")
     colNames <- c("production")
+  } else if(type == "details-STstorage") {
+    # Order is important. There is a correspondance between elements.
+    all_thematic_variables <- c("STS inj by plant","STS lvl by plant","STS withdrawal by plant")
+    colNames <- c("injection","level","withdrawal")
   }
   # With thematic-trimming enabled
   if (opts$parameters$general$`thematic-trimming`) {
@@ -506,7 +510,7 @@
   # To improve greatly the performance we use our knowledge of the position of 
   # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
-    
+
     # Get cluster names
     n <- names(x)
     idx <- ! n %in% pkgEnv$idVars
@@ -539,6 +543,57 @@
   )
 }
 
+
+#' .importOutputForSTClusters
+#'
+#' Private function used to import the output for the short-term clusters of one area
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForSTClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                        showProgress, opts, parallel) {
+  
+  # In output files, there is one file per area with the follwing form:
+  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
+  # the following function reshapes the result to have variable cluster in column.
+  # To improve greatly the performance we use our knowledge of the position of 
+  # the columns instead of using more general functions like dcast.
+  reshapeFun <- function(x) {
+    
+    # Get cluster names
+    n <- names(x)
+    idx <- ! n %in% pkgEnv$idVars
+    clusterNames <- tolower(unique(n[idx]))
+    
+    # Id vars names
+    idVarsId <- which(!idx)
+    idVarsNames <- n[idVarsId]
+    
+    # Column names of the output table
+    colNames <- .get_value_columns_details_file(opts, "details-STstorage")  
+    
+    # Loop over clusters
+    nclusters <- length(clusterNames)
+    
+    res <- llply(1:nclusters, function(i) {
+      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
+      setnames(dt, c(colNames, idVarsNames))
+      dt[, cluster := as.factor(clusterNames[i])]
+      dt
+    })
+    
+    rbindlist(res)
+  }
+  
+  suppressWarnings(
+    .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
+                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                  objectDisplayName = "clustersRe", parallel = parallel)
+  )
+}
 
 #' .importOutputForBindingConstraints
 #'
