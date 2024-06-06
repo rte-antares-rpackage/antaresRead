@@ -660,14 +660,16 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     # extract name + group from .ini properties
     properties_group <- readIniFile(file = bc_all_files[!search_values])
-    bc_name <- sapply(properties_group, `[[`, "id")
-    groups_list <- lapply(properties_group, `[[`, "group")
-    names(groups_list) <- bc_name
+    
+    df_groups=do.call("rbind",
+               lapply(properties_group, function(x){
+                 data.table(x$id,
+                            x$group)
+               })
+    )
+    names(df_groups)<-c("bc_name", "name_group")
     
     # merge information
-    df_groups <- data.table(bc_name =  names(groups_list), 
-                     name_group = sapply(groups_list, `[[`, 1))
-    
     df_groups <- merge(df_info_files, df_groups)
     
     # read + dim values files
