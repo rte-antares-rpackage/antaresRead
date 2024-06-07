@@ -350,36 +350,8 @@
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                      showProgress, opts, mustRun = FALSE, parallel) {
   
-  # In output files, there is one file per area with the follwing form:
-  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
-  # the following function reshapes the result to have variable cluster in column.
-  # To improve greatly the performance we use our knowledge of the position of 
-  # the columns instead of using more general functions like dcast.
-  reshapeFun <- function(x) {
-    
-    # Get cluster names
-    n <- names(x)
-    idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
-    
-    # Id vars names
-    idVarsId <- which(!idx)
-    idVarsNames <- n[idVarsId]
-    
-    # Column names of the output table
-    colNames <- .get_value_columns_details_file(opts, "details")    
-    
-    # Loop over clusters
-    nclusters <- length(clusterNames)
-    
-    res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
-      setnames(dt, c(colNames, idVarsNames))
-      dt[, cluster := as.factor(clusterNames[i])]
-      dt
-    })
-  
-    rbindlist(res)
+  reshapeFun <- function(x){
+    .reshape_details_file(x,"details",opts)
   }
   
   if (!mustRun) {
@@ -492,6 +464,47 @@
 }
 
 
+#' .reshape_details_file
+#' 
+#' In output files, there is one file per area with the follwing form:
+#' cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
+#' the following function reshapes the result to have variable cluster in column.
+#' To improve greatly the performance we use our knowledge of the position of 
+#' the columns instead of using more general functions like dcast.
+#' 
+#' @return 
+#' a data.table
+#' 
+#' @noRd
+#' 
+.reshape_details_file <- function(x,file_type,opts) {
+  
+  # Get cluster names
+  n <- names(x)
+  idx <- ! n %in% pkgEnv$idVars
+  clusterNames <- tolower(unique(n[idx]))
+  
+  # Id vars names
+  idVarsId <- which(!idx)
+  idVarsNames <- n[idVarsId]
+  
+  # Column names of the output table
+  colNames <- .get_value_columns_details_file(opts,file_type)  
+  
+  # Loop over clusters
+  nclusters <- length(clusterNames)
+  
+  res <- llply(1:nclusters, function(i) {
+    dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
+    setnames(dt, c(colNames, idVarsNames))
+    dt[, cluster := as.factor(clusterNames[i])]
+    dt
+  })
+  
+  rbindlist(res)
+}
+
+
 #' .importOutputForResClusters
 #'
 #' Private function used to import the output for the renewable clusters of one area
@@ -504,38 +517,11 @@
 .importOutputForResClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-  # In output files, there is one file per area with the follwing form:
-  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
-  # the following function reshapes the result to have variable cluster in column.
-  # To improve greatly the performance we use our knowledge of the position of 
-  # the columns instead of using more general functions like dcast.
-  reshapeFun <- function(x) {
 
-    # Get cluster names
-    n <- names(x)
-    idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
-    
-    # Id vars names
-    idVarsId <- which(!idx)
-    idVarsNames <- n[idVarsId]
-    
-    # Column names of the output table
-    colNames <- .get_value_columns_details_file(opts, "details-res")  
-    
-    # Loop over clusters
-    nclusters <- length(clusterNames)
-    
-    res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
-      setnames(dt, c(colNames, idVarsNames))
-      dt[, cluster := as.factor(clusterNames[i])]
-      dt
-    })
-    
-    rbindlist(res)
+  reshapeFun <- function(x) {
+    .reshape_details_file(x,"details-res",opts)
   }
-  
+    
   suppressWarnings(
     .importOutput("areas", "details-res", "area", areas, timeStep, NULL, 
                   mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
@@ -556,36 +542,8 @@
 .importOutputForSTClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-  # In output files, there is one file per area with the follwing form:
-  # cluster1-var1 | cluster2-var1 | cluster1-var2 | cluster2-var2
-  # the following function reshapes the result to have variable cluster in column.
-  # To improve greatly the performance we use our knowledge of the position of 
-  # the columns instead of using more general functions like dcast.
   reshapeFun <- function(x) {
-    
-    # Get cluster names
-    n <- names(x)
-    idx <- ! n %in% pkgEnv$idVars
-    clusterNames <- tolower(unique(n[idx]))
-    
-    # Id vars names
-    idVarsId <- which(!idx)
-    idVarsNames <- n[idVarsId]
-    
-    # Column names of the output table
-    colNames <- .get_value_columns_details_file(opts, "details-STstorage")  
-    
-    # Loop over clusters
-    nclusters <- length(clusterNames)
-    
-    res <- llply(1:nclusters, function(i) {
-      dt <- x[, c(nclusters * 0:(length(colNames) - 1) + i, idVarsId), with = FALSE]
-      setnames(dt, c(colNames, idVarsNames))
-      dt[, cluster := as.factor(clusterNames[i])]
-      dt
-    })
-    
-    rbindlist(res)
+    .reshape_details_file(x,"details-STstorage",opts)
   }
   
   suppressWarnings(
