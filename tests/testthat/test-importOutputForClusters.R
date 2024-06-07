@@ -8,7 +8,7 @@ opts <- setSimulationPath(path_study_test,simulation="20240105-0934eco")
     
 test_that(".importOutputForSTClusters is ok", {
     
-    OutputForRESClusters <- .importOutputForSTClusters(
+    OutputForSTClusters <- .importOutputForSTClusters(
         areas="fr",
         timeStep="annual",
         showProgress=FALSE, 
@@ -16,6 +16,6 @@ test_that(".importOutputForSTClusters is ok", {
         opts=opts
     )
     
-    expect_true(all(c("injection","level","withdrawal") %in% colnames(OutputForRESClusters)))
-    expect_equal(nrow(OutputForRESClusters),1)
+    expect_true(all(c("injection","level","withdrawal") %in% colnames(OutputForSTClusters)))
+    expect_equal(nrow(OutputForSTClusters),1)
 })

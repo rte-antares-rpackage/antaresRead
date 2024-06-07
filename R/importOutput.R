@@ -591,7 +591,7 @@
   suppressWarnings(
     .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
                   mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "clustersRe", parallel = parallel)
+                  objectDisplayName = "clustersST", parallel = parallel)
   )
 }
 
