@@ -104,7 +104,7 @@ utils::globalVariables(
     "NODU", "min.stable.power", "thermalPmin", "name", "value",
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
-    "MRG. PRICE", "H. LEV", "V2", "V1")
+    "MRG. PRICE", "H. LEV", "V2", "V1", "ORDINAL_POSITION_BY_TOPIC", "TOPIC", "ANTARES_DISPLAYED_NAME")
 )
 
 #-----------------------------  HDF5 ------------------------------------#

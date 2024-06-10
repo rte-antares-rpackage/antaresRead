@@ -287,28 +287,38 @@
 #'
 #' @return
 #' a vector
+#' 
+#' @importFrom assertthat assert_that
 #'
 #' @noRd
 #'
 .get_value_columns_details_file <- function(opts, type) {
   
-  if(type == "details") {
-    # Order is important. There is a correspondance between elements.
-    all_thematic_variables <- c("DTG by plant", "NP Cost by plant", "NODU by plant")
-    colNames <- c("production", "NP Cost", "NODU")
-    if (opts$antaresVersion >= 830){
-      all_thematic_variables <- c(all_thematic_variables, "Profit by plant")
-      colNames <- c(colNames, "profit")
-    }
-  } else if(type == "details-res") {
-    # Order is important. There is a correspondance between elements.
-    all_thematic_variables <- c("RES generation by plant")
-    colNames <- c("production")
-  } else if(type == "details-STstorage") {
-    # Order is important. There is a correspondance between elements.
-    all_thematic_variables <- c("STS inj by plant","STS lvl by plant","STS withdrawal by plant")
-    colNames <- c("injection","level","withdrawal")
-  }
+  assert_that(type %in% c("details","details-res","details-STstorage"))
+  
+  simulation_variables_names_by_support <- data.table(read.table(system.file(
+    "simulation_variables_names_by_support.csv",package="antaresRead"
+  )))
+  
+  # Order is important. There is a correspondance between elements
+  simulation_variables_names_by_support <- simulation_variables_names_by_support[
+    order(ORDINAL_POSITION_BY_TOPIC),
+  ]
+  
+  filtering_topic <- switch(
+    type,
+    "details"="Generation / Thermal",
+    "details-res"="Generation / Renewables",
+    "details-STstorage"="Generation / Short-Term Storages"
+  )
+
+  filtered_variables_names <- subset(simulation_variables_names_by_support,TOPIC==filtering_topic)
+  if (type=="details" && opts$antaresVersion < 830)
+    filtered_variables_names <- subset(filtered_variables_names,ANTARES_DISPLAYED_NAME!="Profit by plant")
+ 
+  all_thematic_variables <- filtered_variables_names$ANTARES_DISPLAYED_NAME
+  colNames <- filtered_variables_names$RPACKAGE_DISPLAYED_NAME
+  
   # With thematic-trimming enabled
   if (opts$parameters$general$`thematic-trimming`) {
     if ("variables selection" %in% names(opts$parameters)) {
@@ -490,7 +500,7 @@
   
   # Column names of the output table
   colNames <- .get_value_columns_details_file(opts,file_type)  
-  
+
   # Loop over clusters
   nclusters <- length(clusterNames)
   

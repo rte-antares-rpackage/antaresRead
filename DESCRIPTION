@@ -40,7 +40,8 @@ Imports:
     utils,
     memuse,
     purrr,
-    lifecycle
+    lifecycle,
+    assertthat
 Suggests:
     rhdf5 (>= 2.24.0),
     testthat,
