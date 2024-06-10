@@ -62,8 +62,11 @@ each Monte-Carlo simulation.}
 \item{districtList}{Vector of the available districts.}
 \item{linkList}{Vector of the available links.}
 \item{areasWithClusters}{Vector of areas containing clusters.}
+\item{areasWithResClusters}{Vector of areas containing clusters renewable.}
+\item{areasWithSTClusters}{Vector of areas containing clusters storage (>=v8.6.0).}
 \item{variables}{Available variables for areas, districts and links.}
 \item{parameters}{Other parameters of the simulation.}
+\item{binding}{Table of time series dimensions for each group (>=v8.7.0).}
 \item{timeIdMin}{
 Minimum time id of the simulation. It is generally equal to one but can
 be higher if working on a subperiod.

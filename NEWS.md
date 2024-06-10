@@ -8,6 +8,8 @@ NEW FEATURES:
     - new parameter **areas** to get desired clusters from selected areas.
     - new parameter **thermalAvailabilities** to import time series.  
 * `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
+* `setSimulationPath()` return a new parameter `binding` (for studies >= v8.7.0). 
+It contains a table with group dimensions of time series for binding constraints.
 
 BREAKING CHANGES :
 
