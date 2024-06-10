@@ -634,6 +634,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   }
 }
 
+# >= v8.7.0 to have dimension of TS for binding constraints
 .getDimBCGroups <- function(list_options){
   # list files
   bc_path <- file.path(list_options$inputPath, "bindingconstraints")
@@ -664,12 +665,11 @@ setSimulationPath <- function(path, simulation = NULL) {
     # extract name + group from .ini properties
     properties_group <- readIniFile(file = bc_all_files[!search_values])
     
-    df_groups=do.call("rbind",
-               lapply(properties_group, function(x){
-                 data.table(x$id,
-                            x$group)
-               })
-    )
+    df_groups <- do.call("rbind",
+                         lapply(properties_group, function(x){
+                           data.table(x$id,
+                                      x$group)
+                           }))
     names(df_groups)<-c("bc_name", "name_group")
     
     # merge information
