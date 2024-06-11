@@ -297,7 +297,7 @@
   assert_that(type %in% c("details","details-res","details-STstorage"))
   
   simulation_variables_names_by_support <- data.table(read.table(system.file(
-    "simulation_variables_names_by_support.csv",package="antaresRead"
+    "format_output","simulation_variables_names_by_support.csv",package="antaresRead"
   )))
   
   # Order is important. There is a correspondance between elements
@@ -305,14 +305,7 @@
     order(ORDINAL_POSITION_BY_TOPIC),
   ]
   
-  filtering_topic <- switch(
-    type,
-    "details"="Generation / Thermal",
-    "details-res"="Generation / Renewables",
-    "details-STstorage"="Generation / Short-Term Storages"
-  )
-
-  filtered_variables_names <- subset(simulation_variables_names_by_support,TOPIC==filtering_topic)
+  filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type)
   if (type=="details" && opts$antaresVersion < 830)
     filtered_variables_names <- subset(filtered_variables_names,ANTARES_DISPLAYED_NAME!="Profit by plant")
  
