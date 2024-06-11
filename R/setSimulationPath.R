@@ -483,10 +483,10 @@ setSimulationPath <- function(path, simulation = NULL) {
                                      areaList_mc_ind[hasResClusters_mc_ind]))
   
   
-  # Areas containing renewable clusters
+  # Areas containing short-term clusters
   hasSTClusters_mc_all <- laply(file.path(dataPath_mc_all, "areas", areaList_mc_all), function(x) {
     f <- list.files(x)
-    any(grepl("details-res-", f))
+    any(grepl("details-STstorage-", f))
   })
   hasSTClusters_mc_ind <- laply(file.path(dataPath_mc_ind, "areas", areaList_mc_ind), function(x) {
     f <- list.files(x)
