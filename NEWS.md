@@ -10,6 +10,7 @@ NEW FEATURES:
 * `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
 * `setSimulationPath()` return a new parameter `binding` (for studies >= v8.7.0). 
 It contains a table with group dimensions of time series for binding constraints.
+* `readAntares()` new parameter **clustersST** to read short-term clusters
 
 BREAKING CHANGES :
 
@@ -18,6 +19,7 @@ BREAKING CHANGES :
 BUGFIXES :  
 
 * `readInputThermal()` return data from file data.txt with `thermalData` parameter
+* `setSimulationPath()` has also the parameter **areasWithSTClusters** in 'output' mode
 
 
 # antaresRead 2.7.0
