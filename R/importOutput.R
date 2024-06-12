@@ -47,6 +47,7 @@
 #' - "areas", "values"  => areas
 #' - "areas", "details" => clusters
 #' - "areas", "details-res" => renewables clusters
+#' - "areas", "details-STstorage" => short-term clusters
 #' - "links", "values"  => links
 #'
 #' @return
@@ -298,7 +299,7 @@
   
   simulation_variables_names_by_support <- read.table(system.file(
     "format_output","simulation_variables_names_by_support.csv",package="antaresRead"
-  ))
+  ),sep=";",fileEncoding="UTF-8",header = TRUE)
   
   filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type)
   if (type=="details" && opts$antaresVersion < 830)
@@ -354,7 +355,7 @@
                                      showProgress, opts, mustRun = FALSE, parallel) {
   
   reshapeFun <- function(x){
-    .reshape_details_file(x,"details",opts)
+    .reshape_details_file(x,file_type="details",opts=opts)
   }
   
   if (!mustRun) {
@@ -492,7 +493,7 @@
   idVarsNames <- n[idVarsId]
   
   # Column names of the output table
-  colNames <- .get_value_columns_details_file(opts,file_type)  
+  colNames <- .get_value_columns_details_file(opts=opts,type=file_type)  
 
   # Loop over clusters
   nclusters <- length(clusterNames)
@@ -522,7 +523,7 @@
   
 
   reshapeFun <- function(x) {
-    .reshape_details_file(x,"details-res",opts)
+    .reshape_details_file(x,file_type="details-res",opts=opts)
   }
     
   suppressWarnings(
@@ -546,7 +547,7 @@
                                         showProgress, opts, parallel) {
   
   reshapeFun <- function(x) {
-    .reshape_details_file(x,"details-STstorage",opts)
+    .reshape_details_file(x,file_type="details-STstorage",opts=opts)
   }
   
   suppressWarnings(
