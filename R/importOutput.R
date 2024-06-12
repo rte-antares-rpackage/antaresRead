@@ -296,21 +296,21 @@
   
   assert_that(type %in% c("details","details-res","details-STstorage"))
   
-  simulation_variables_names_by_support <- data.table(read.table(system.file(
+  simulation_variables_names_by_support <- read.table(system.file(
     "format_output","simulation_variables_names_by_support.csv",package="antaresRead"
-  )))
-  
-  # Order is important. There is a correspondance between elements
-  simulation_variables_names_by_support <- simulation_variables_names_by_support[
-    order(ORDINAL_POSITION_BY_TOPIC),
-  ]
+  ))
   
   filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type)
   if (type=="details" && opts$antaresVersion < 830)
     filtered_variables_names <- subset(filtered_variables_names,ANTARES_DISPLAYED_NAME!="Profit by plant")
  
-  all_thematic_variables <- filtered_variables_names$ANTARES_DISPLAYED_NAME
-  colNames <- filtered_variables_names$RPACKAGE_DISPLAYED_NAME
+  # Order is important. There is a correspondance between elements
+  ordered_filtered_variables_names <- filtered_variables_names[
+    order(filtered_variables_names$ORDINAL_POSITION_BY_TOPIC),
+  ]
+  
+  all_thematic_variables <- ordered_filtered_variables_names$ANTARES_DISPLAYED_NAME
+  colNames <- ordered_filtered_variables_names$RPACKAGE_DISPLAYED_NAME
   
   # With thematic-trimming enabled
   if (opts$parameters$general$`thematic-trimming`) {
