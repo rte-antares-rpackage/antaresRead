@@ -281,8 +281,8 @@
 
 #' .get_value_columns_details_file
 #'
-#' Private function used to get the column names for the details-timeStep.txt or details-res-timeStep.txt.
-#' Used in .importOutputForClusters() and .importOutputForResClusters()
+#' Private function used to get the column names for the details-timeStep.txt, details-res-timeStep.txt, or details-STstorage-timeStep.txt.
+#' Used in .importOutputForClusters(), .importOutputForResClusters(), and .importOutputForSTClusters()
 #' From the opts, we detect which outputs the user decides to take 
 #'
 #' @return

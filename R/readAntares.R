@@ -14,6 +14,8 @@
 #' Read the data of an Antares simulation
 #'
 #' @description
+#' `r antaresRead:::badge_api_ok()`
+#' 
 #' \code{readAntares} is a swiss-army-knife function used to read almost every
 #' possible time series of an antares Project at any desired time resolution
 #' (hourly, daily, weekly, monthly or annual).

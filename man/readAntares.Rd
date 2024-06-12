@@ -137,6 +137,8 @@ data.tables, each element representing one type of element (areas, links,
 clusters)
 }
 \description{
+\ifelse{html}{\figure{badge_api_ok.svg}{options: alt='Antares API OK'}}{Antares API: \strong{OK}}
+
 \code{readAntares} is a swiss-army-knife function used to read almost every
 possible time series of an antares Project at any desired time resolution
 (hourly, daily, weekly, monthly or annual).
