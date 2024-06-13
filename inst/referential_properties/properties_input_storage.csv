@@ -1,0 +1,11 @@
+Topic;INI Name;Tech Name;Type;Default;Version;Category
+General;name;name;str;;8.6;storage
+General;group;group;str;;8.6;storage
+General;enabled;enabled;bool;True;8.8;storage
+General;injectionnominalcapacity;injection_nominal_capacity;float;0.0;8.6;storage
+General;withdrawalnominalcapacity;withdrawal_nominal_capacity;float;0.0;8.6;storage
+General;reservoircapacity;reservoir_capacity;float;0.0;8.6;storage
+General;efficiency;efficiency;float;0.0;8.6;storage
+General;initiallevel;initial_level;float;0.5;8.8;storage
+General;initiallevel;initial_level;float;0;8.6;storage
+General;initialleveloptim;initial_level_optim;bool;False;8.6;storage

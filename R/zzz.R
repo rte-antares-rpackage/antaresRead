@@ -11,11 +11,14 @@
 #' @importFrom utils untar
 #' @importFrom stringr str_match str_replace
 
+
+# private variables ----
 # Private variables accessible only by functions from the package
 
 pkgEnv <- new.env()
 
 
+## output variables ----
 pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package = "antaresRead"),
                                 sep = ";", header = TRUE)
 
@@ -86,6 +89,7 @@ setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
            "FLOW QUAD.", "CONG. FEE (ALG.)", "CONG. FEE (ABS.)", "MARG. COST",
            "CONG. PROB +", "CONG. PROB -", "HURDLE COST"))
 
+## global vars package ----
 # The goal of the following lines is only to remove many useless warnings in
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
 # They come from the use of the data.table syntax.
@@ -107,51 +111,29 @@ utils::globalVariables(
     "MRG. PRICE", "H. LEV", "V2", "V1")
 )
 
+## INPUT Properties REF ----
+ref_input_properties_path <- file.path(system.file(package = "antaresRead"),
+                                       "referential_properties")
+
+all_ref_properties_path <- list.files(ref_input_properties_path,
+                                      full.names = TRUE)
+names_files <- gsub(pattern = ".csv",
+                    replacement = "",
+                    x = list.files(ref_input_properties_path))
+
+list_files_ref <- lapply(all_ref_properties_path,
+                         data.table::fread, 
+                         encoding="UTF-8", 
+                         strip.white=FALSE)
+
+names(list_files_ref) <- names_files
+
+df_files_ref <- do.call("rbind", list_files_ref)
+pkgEnv$inputProperties <- df_files_ref
+
 #-----------------------------  HDF5 ------------------------------------#
 
-
-is.installed <- function(mypkg) is.element(mypkg, utils::installed.packages()[,1])
-
-rhdf5_version <- "2.24.0"
-rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
-         This is a bioconductor package. You can install it with :
-         source('https://bioconductor.org/biocLite.R')
-         biocLite('rhdf5')"
-
-# !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
-.requireRhdf5_Antares <- function(stopP = TRUE){
-  if(.check_rhdf5(stopP = stopP)){
-    if(.check_rhdf5_version(stopP = stopP)){
-      return(TRUE)
-    }
-  }
-  return(FALSE)
-}
-
-.stop_rhdf5_version <- function(stopP = TRUE) {
-  if(stopP){
-    stop(rhdf5_message)
-  }else{
-    return(FALSE)
-  }
-}
-
-.check_rhdf5 <- function(stopP = TRUE){
-  if(requireNamespace("rhdf5", quietly = TRUE)){
-    return(TRUE)
-  }else{
-    .stop_rhdf5_version(stopP)
-  }
-}
-
-.check_rhdf5_version <- function(stopP = TRUE){
-  if(utils::packageVersion("rhdf5") >= rhdf5_version){
-    return(TRUE)
-  }else{
-    .stop_rhdf5_version(stopP)
-  }
-}
-
+# HDF5 ----
 # .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
 
 pkgEnvAntareasH5 <- new.env()
@@ -257,7 +239,50 @@ integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$forma
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
                                 function(X){paste0(X, collapse = "")}))
 
+# rhfd5 functions ----
+is.installed <- function(mypkg) is.element(mypkg, utils::installed.packages()[,1])
 
+rhdf5_version <- "2.24.0"
+rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
+         This is a bioconductor package. You can install it with :
+         source('https://bioconductor.org/biocLite.R')
+         biocLite('rhdf5')"
+
+# !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
+.requireRhdf5_Antares <- function(stopP = TRUE){
+  if(.check_rhdf5(stopP = stopP)){
+    if(.check_rhdf5_version(stopP = stopP)){
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+}
+
+.stop_rhdf5_version <- function(stopP = TRUE) {
+  if(stopP){
+    stop(rhdf5_message)
+  }else{
+    return(FALSE)
+  }
+}
+
+.check_rhdf5 <- function(stopP = TRUE){
+  if(requireNamespace("rhdf5", quietly = TRUE)){
+    return(TRUE)
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
+}
+
+.check_rhdf5_version <- function(stopP = TRUE){
+  if(utils::packageVersion("rhdf5") >= rhdf5_version){
+    return(TRUE)
+  }else{
+    .stop_rhdf5_version(stopP)
+  }
+}
+
+# some tools functions ----
 .tidymess <- function(..., prefix = " ", initial = ""){
   as.character(strwrap(..., prefix = prefix, initial = initial))
 }
@@ -286,3 +311,4 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
   bydistrict <- c("district", .get_by(x))
   return(bydistrict)
 }
+

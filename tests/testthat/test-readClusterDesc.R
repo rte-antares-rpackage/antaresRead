@@ -54,3 +54,11 @@ test_that("test read cluster st-storage v860", {
   testthat::expect_true(all(mandatory_cols %in% colnames(input_st)))
   testthat::expect_true(nrow(input_st) == length(input_st$cluster))
 })
+
+# read empty study ----
+path_empty_study <- setup_study_empty(sourcedir_empty_study)
+opts_study_test <- setSimulationPath(path_empty_study, simulation = "input")
+
+test_that("test when study has no cluster (empty)", {
+  readClusterDesc()
+})
