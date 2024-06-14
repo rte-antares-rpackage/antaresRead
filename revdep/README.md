@@ -10,7 +10,7 @@
 |collate  |French_France.utf8                  |
 |ctype    |French_France.utf8                  |
 |tz       |Europe/Paris                        |
-|date     |2024-06-13                          |
+|date     |2024-06-14                          |
 |rstudio  |2023.12.0+369 Ocean Storm (desktop) |
 |pandoc   |NA                                  |
 
