@@ -192,29 +192,8 @@ setSimulationPath <- function(path, simulation = NULL) {
     }
   }
   
-  # Get study, simulation and input paths
-  # .h5 ?
-  if(grepl(".h5$", path)){
-    if(file.exists(path)){
-      if(.requireRhdf5_Antares(stopP = FALSE)){
-        return(setSimulationPathH5(path))
-      } else {
-        stop(rhdf5_message)
-      }
-    } else {
-      stop("Invalid path argument. File .h5 not found")
-    }
-  }
-
-  # else local file system
+  # # Get study, simulation and input paths
   res <- .getPaths(path, simulation)
-  if(res[1] == "H5"){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(setSimulationPathH5(path, simulation))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
   
   res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
   

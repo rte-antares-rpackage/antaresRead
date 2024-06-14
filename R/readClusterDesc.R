@@ -92,18 +92,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
-  if(isH5Opts(opts)){
-    if(dir %in% "thermal/clusters"){
-      if(.requireRhdf5_Antares(stopP = FALSE)){
-        return(h5ReadClusterDesc(opts))
-      } else {
-        stop(rhdf5_message, call. = FALSE)
-      }
-    } else {
-      stop("Read cluster Description from '", dir, "' not available using .h5", call. = FALSE)
-    }
-  }
-  
   path <- file.path(opts$inputPath, dir)
   
   columns <- .generate_columns_by_type(dir = dir)
