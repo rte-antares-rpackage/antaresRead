@@ -1,6 +1,6 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 2.7.1 (development)
+# antaresRead 2.7.1 
 
 NEW FEATURES:
 
@@ -20,6 +20,7 @@ BUGFIXES :
 
 * `readInputThermal()` return data from file data.txt with `thermalData` parameter
 * `setSimulationPath()` has also the parameter **areasWithSTClusters** in 'output' mode
+
 
 
 # antaresRead 2.7.0
