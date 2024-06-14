@@ -10,7 +10,7 @@ NEW FEATURES:
 * `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
 * `setSimulationPath()` return a new parameter `binding` (for studies >= v8.7.0). 
 It contains a table with group dimensions of time series for binding constraints.
-* `readAntares()` new parameter **clustersST** to read short-term clusters
+* `readAntares()` new parameter **clustersST** to read (output simulation) short-term clusters
 
 BREAKING CHANGES :
 
