@@ -10,7 +10,7 @@
 |collate  |French_France.utf8                  |
 |ctype    |French_France.utf8                  |
 |tz       |Europe/Paris                        |
-|date     |2024-05-27                          |
+|date     |2024-06-13                          |
 |rstudio  |2023.12.0+369 Ocean Storm (desktop) |
 |pandoc   |NA                                  |
 
@@ -18,10 +18,11 @@
 
 |package     |old   |new   |Δ  |
 |:-----------|:-----|:-----|:--|
-|antaresRead |2.6.1 |2.7.0 |*  |
+|antaresRead |2.7.0 |2.7.1 |*  |
 |cachem      |NA    |1.0.8 |*  |
 |fastmap     |NA    |1.1.1 |*  |
 |openssl     |NA    |2.1.2 |*  |
+|rlang       |NA    |1.1.3 |*  |
 |stringi     |NA    |1.8.3 |*  |
 
 # Revdeps

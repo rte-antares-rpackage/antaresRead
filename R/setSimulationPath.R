@@ -482,6 +482,20 @@ setSimulationPath <- function(path, simulation = NULL) {
   areasWithResClusters <- sort(union(areaList_mc_all[hasResClusters_mc_all], 
                                      areaList_mc_ind[hasResClusters_mc_ind]))
   
+  
+  # Areas containing short-term clusters
+  hasSTClusters_mc_all <- laply(file.path(dataPath_mc_all, "areas", areaList_mc_all), function(x) {
+    f <- list.files(x)
+    any(grepl("details-STstorage-", f))
+  })
+  hasSTClusters_mc_ind <- laply(file.path(dataPath_mc_ind, "areas", areaList_mc_ind), function(x) {
+    f <- list.files(x)
+    any(grepl("details-STstorage-", f))
+  })
+  
+  areasWithSTClusters <- sort(union(areaList_mc_all[hasSTClusters_mc_all], 
+                                     areaList_mc_ind[hasSTClusters_mc_ind]))
+  
   # Available variables
   variables <- list()
   
@@ -523,6 +537,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linksDef = linksDef,
     areasWithClusters = areasWithClusters,
     areasWithResClusters = areasWithResClusters,
+    areasWithSTClusters = areasWithSTClusters,
     variables = variables,
     parameters = params
   )

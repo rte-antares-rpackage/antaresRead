@@ -178,12 +178,27 @@ test_that("Folder 'maps' is not interpreted as a study (#49)", {
 
 }
 
+test_that("No meta info areas with a ST cluster < 860", {
+  opts <- setSimulationPath(studyPath, "input")
+  expect_true(length(opts$areasWithSTClusters)==0)
+})
+
 test_that("No meta info binding study < 870", {
   opts <- setSimulationPath(studyPath, "input")
   expect_null(opts$binding)
 })
 
 })
+
+# v860----
+test_that("New meta data for areas with a ST cluster", {
+  # read latest version study
+  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  opts_study_test <- setSimulationPath(path_study_test, simulation = "20240105-0934eco")
+  
+  expect_false(is.null(opts_study_test$areasWithSTClusters))
+})
+
 
 # v870----
 test_that("New meta data for group dimension of binding constraints", {
