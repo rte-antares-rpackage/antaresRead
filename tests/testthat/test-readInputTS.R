@@ -7,9 +7,6 @@ sapply(studyPathS, function(studyPath){
   
 opts <- setSimulationPath(studyPath)
 
-
-if(!isH5Opts(opts)){
-
 test_that("Load importation works", {
   input <- readInputTS(load = "all", showProgress = FALSE)
   expect_is(input, "antaresDataTable")
@@ -122,7 +119,6 @@ test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax"
   
 })
 
-}
 })
 
 # read latest version study
