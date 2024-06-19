@@ -92,18 +92,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
-  if(isH5Opts(opts)){
-    if(dir %in% "thermal/clusters"){
-      if(.requireRhdf5_Antares(stopP = FALSE)){
-        return(h5ReadClusterDesc(opts))
-      } else {
-        stop(rhdf5_message, call. = FALSE)
-      }
-    } else {
-      stop("Read cluster Description from '", dir, "' not available using .h5", call. = FALSE)
-    }
-  }
-  
   path <- file.path(opts$inputPath, dir)
   columns <- .generate_columns_by_type(dir = dir)
   api_study <- is_api_study(opts)
@@ -117,55 +105,46 @@ readClusterSTDesc <- function(opts = simOptions()) {
       "st-storage/clusters" =  "st-storages"
     )
     
+    # api request with all columns
     list_clusters = api_get(
       opts = opts,
-      endpoint = paste0(opts$study_id, "/table-mode/",table_type),
+      endpoint = paste0(opts$study_id, "/table-mode/", table_type),
       query = list(
         columns = ""
       )
     )
-    if(length(list_clusters) == 0){
-      mandatory_cols <- c("area","name")
-      warning("No cluster description available.", call. = FALSE)
-      res <- setNames(data.table(matrix(nrow = 0, 
-                                        ncol = length(mandatory_cols) + length(columns))), 
-                      c(mandatory_cols, columns))
-    }else{
-      clusters <- rbindlist(list_clusters, idcol = "name")
-      newcol <- data.table()
-      newcol <- newcol[, c("area", "name") := tstrsplit(clusters$name, " / ", 
-                                                        fixed = TRUE, 
-                                                        keep = 1:2)]
-      res <- data.table(newcol,clusters[,-"name"]) 
+    
+    return(list_clusters)
+  }
       
-    }
-  }else{
-    areas <- list.files(path)
-    res <- ldply(areas, function(x) {
-      clusters <- readIniFile(file.path(path, x, "list.ini"))
-      if (length(clusters) == 0) return(NULL)
-      clusters <- ldply(clusters, as.data.frame)
-      clusters$.id <- NULL
-      clusters$area <- x
-      clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-    })
-  }
+  # "text" mode
+  areas <- list.files(path)
+  
+  # read properties for each area
+  res <- llply(areas, function(x) {
+    clusters <- readIniFile(file.path(path, x, "list.ini"))
+    if (length(clusters) == 0) 
+      return(NULL)
+    clusters <- ldply(clusters, data.frame) # check.names = FALSE (too many side effects)
+    clusters$.id <- NULL
+    clusters$area <- x
+    clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
+  })
+  
+  res <- rbindlist(l = res, fill = TRUE)
+  
   if(length(res) == 0){
-    mandatory_cols <- c("area","name")
-    warning("No cluster description available.", call. = FALSE)
-    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
-  }else{
-    if(api_study){
-      mandatory_cols <- c("area", "name", "group")
-      additional_cols <- setdiff(colnames(res),mandatory_cols)
-      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
-    }
-  }
+    warning("No properties found", 
+            call. = FALSE)
+    return(NULL)
+  } 
+    
   res <- as.data.table(res)
   setnames(res, "name", "cluster")
   res$cluster <- as.factor(tolower(res$cluster))
   res
 }
+
 .generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
   
   columns <- switch(
