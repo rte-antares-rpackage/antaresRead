@@ -112,24 +112,25 @@ utils::globalVariables(
 )
 
 ## INPUT Properties REF ----
-ref_input_properties_path <- file.path(system.file(package = "antaresRead"),
-                                       "referential_properties")
+res_prop_ref <- data.table::fread(system.file("referential_properties/properties_input_renewable.csv", 
+                                              package = "antaresRead"),
+                                  sep = ";", 
+                                  header = TRUE)
 
-all_ref_properties_path <- list.files(ref_input_properties_path,
-                                      full.names = TRUE)
-names_files <- gsub(pattern = ".csv",
-                    replacement = "",
-                    x = list.files(ref_input_properties_path))
+res_prop_therm <- data.table::fread(system.file("referential_properties/properties_input_thermal.csv", 
+                                                package = "antaresRead"),
+                                    sep = ";", 
+                                    header = TRUE)
 
-list_files_ref <- lapply(all_ref_properties_path,
-                         data.table::fread, 
-                         encoding="UTF-8", 
-                         strip.white=FALSE)
+res_prop_st <- data.table::fread(system.file("referential_properties/properties_input_storage.csv", 
+                                             package = "antaresRead"),
+                                 sep = ";",
+                                 header = TRUE)
 
-names(list_files_ref) <- names_files
-
-df_files_ref <- do.call("rbind", list_files_ref)
+df_files_ref <- do.call("rbind", 
+                        list(res_prop_ref, res_prop_therm, res_prop_st))
 pkgEnv$inputProperties <- df_files_ref
+
 
 #-----------------------------  HDF5 ------------------------------------#
 
