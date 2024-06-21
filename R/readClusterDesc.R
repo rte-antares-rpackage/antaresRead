@@ -96,14 +96,14 @@ readClusterSTDesc <- function(opts = simOptions()) {
   columns <- .generate_columns_by_type(dir = dir)
   api_study <- is_api_study(opts)
   
+  table_type <- switch(
+    dir,
+    "thermal/clusters" = "thermals",
+    "renewables/clusters" = "renewables",
+    "st-storage/clusters" =  "st-storages"
+  )
+  
   if(api_study){
-    
-    table_type <- switch(
-      dir,
-      "thermal/clusters" = "thermals",
-      "renewables/clusters" = "renewables",
-      "st-storage/clusters" =  "st-storages"
-    )
     
     # api request with all columns
     list_clusters = api_get(
@@ -121,26 +121,66 @@ readClusterSTDesc <- function(opts = simOptions()) {
   areas <- list.files(path)
   
   # read properties for each area
-  res <- llply(areas, function(x) {
+  res <- plyr::llply(areas, function(x) {
     clusters <- readIniFile(file.path(path, x, "list.ini"))
     if (length(clusters) == 0) 
       return(NULL)
-    clusters <- ldply(clusters, data.frame) # check.names = FALSE (too many side effects)
+    clusters <- plyr::ldply(clusters, 
+                            data.frame, 
+                            check.names = FALSE) # check.names = FALSE (too many side effects)
     clusters$.id <- NULL
     clusters$area <- x
     clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
   })
   
-  res <- rbindlist(l = res, fill = TRUE)
+  res <- data.table::rbindlist(l = res, fill = TRUE)
   
+  # NO PROPERTIES CLUSTER FOUND
   if(length(res) == 0){
     warning("No properties found", 
             call. = FALSE)
     return(NULL)
   } 
+  
+  # merge with referential cluster properties
+  full_ref_properties <- pkgEnv[["inputProperties"]]
+  
+  category_ref_cluster <- switch(
+    table_type,
+    "thermals" = "thermal",
+    "renewables" = "renewable",
+    "st-storages" = "storage"
+  )
+  
+  # filter by category
+  ref_filter_by_cat <- full_ref_properties[`Category` %in%
+                                             category_ref_cluster]
+  # filter by study version
+  ref_filter_by_vers <- ref_filter_by_cat[`Version Antares` <= 
+                                            opts$antaresVersion | 
+                                            `Version Antares` %in% NA]
+  
+  # select key colums and put wide format
+  ref_filter_by_vers <- ref_filter_by_vers[ , 
+                                            .SD, 
+                                            .SDcols = c("INI Name", "Default", "Type")]
+  
+  wide_ref <- data.table::dcast(data = ref_filter_by_vers, 
+                                formula = .~`INI Name`,
+                                value.var = "Default")[
+                                  , 
+                                  .SD,
+                                  .SDcols = -c(".", "name")]
+  
+  wide_ref <- wide_ref[, .SD, .SDcols = -intersect(names(res), names(wide_ref))]
+  
+  # merge(wide_ref, res, allow.cartesian = TRUE, no.dups = FALSE, all = TRUE)
+  
+  restable <- cbind(res, wide_ref)
     
-  res <- as.data.table(res)
-  setnames(res, "name", "cluster")
+  # output format conversion
+  res <- data.table::as.data.table(res)
+  data.table::setnames(res, "name", "cluster")
   res$cluster <- as.factor(tolower(res$cluster))
   res
 }
