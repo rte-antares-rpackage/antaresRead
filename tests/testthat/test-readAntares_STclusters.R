@@ -8,9 +8,9 @@ opts <- setSimulationPath(path_study_test,simulation="20240105-0934eco")
 
 test_that("ST clusters importation is ok", {
   
-  clustersST <- readAntares(clustersST="all",timeStep="annual",opts = opts)$clustersST
+  clustersST <- readAntares(clustersST="all",timeStep="annual",opts = opts)
   expect_true(all(opts$areasWithSTClusters %in% clustersST$area))
   
-  clustersST_fr <- readAntares(clustersST="fr",timeStep="annual",opts = opts)$clustersST
+  clustersST_fr <- readAntares(clustersST="fr",timeStep="annual",opts = opts)
   expect_true("fr"==unique(clustersST_fr$area))
 })

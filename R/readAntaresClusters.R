@@ -37,3 +37,43 @@ readAntaresClusters <- function(clusters, selected = c("production", "NP Cost", 
   subset(res, cluster %in% clusters, select = c(setdiff(colnames(res),c("production", "NP Cost", "NODU", "profit")),
                                                 intersect(colnames(res),selected))) #support for up to v8.4
 }
+
+
+#' Read output for a list of short-term storage clusters
+#'
+#' @param clustersST vector of short-term storage clusters to be imported
+#' @param selected vector of thematic trimming
+#' @inheritParams readAntares
+#'
+#' @return data.table of results for thermal clusters
+#'
+#' @export
+readAntaresSTClusters <- function(clustersST, selected = c("P.injection", "levels", "P.withdrawal"),
+                                  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                                  opts = simOptions(), parallel = FALSE, showProgress = TRUE) {
+  
+  if (missing(clustersST)) 
+    stop("The function 'readAntaresSTClusters' expects a vector of short-term storage clusters names as argument.")
+  if ("Input" %in% opts$mode)
+    stop("Cannot use 'readAntaresSTClusters' in 'Input' mode.")
+  
+  ##Add check control for all
+  allClusters <- readClusterSTDesc(opts = opts)[, c("area","cluster")]
+  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clustersST), 
+                                                                   tolower(unique(allClusters$cluster)), 
+                                                                   "short-term storage clusters %s do not exist in the simulation."))
+  clustersST <- allClusters$cluster[ind_cluster]
+  
+  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clustersST), 
+                                                                   tolower(unique(allClusters[area %in% opts$areasWithSTClusters]$cluster)), 
+                                                                   "short-term storage clusters %s have no output."))
+  clustersST <- unique(allClusters$cluster[ind_cluster])
+  
+  areas <- unique(allClusters[cluster %in% clustersST]$area)
+  
+  res <- readAntares(clustersST = areas, timeStep = timeStep, opts = opts, 
+                     parallel = parallel, showProgress = showProgress)
+  
+  subset(res, cluster %in% clustersST, select = c(setdiff(colnames(res),c("P.injection", "levels", "P.withdrawal")),
+                                                intersect(colnames(res),selected))) #support for up to v8.4
+}
