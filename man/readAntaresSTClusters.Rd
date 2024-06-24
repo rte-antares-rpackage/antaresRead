@@ -30,7 +30,7 @@ weekly, monthly or annual.}
 importation.}
 }
 \value{
-data.table of results for thermal clusters
+data.table of results for short-term storage clusters
 }
 \description{
 Read output for a list of short-term storage clusters

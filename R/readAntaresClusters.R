@@ -45,35 +45,47 @@ readAntaresClusters <- function(clusters, selected = c("production", "NP Cost", 
 #' @param selected vector of thematic trimming
 #' @inheritParams readAntares
 #'
-#' @return data.table of results for thermal clusters
+#' @return data.table of results for short-term storage clusters
 #'
 #' @export
 readAntaresSTClusters <- function(clustersST, selected = c("P.injection", "levels", "P.withdrawal"),
                                   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                                   opts = simOptions(), parallel = FALSE, showProgress = TRUE) {
   
-  if (missing(clustersST)) 
+  if (missing(clustersST)) { 
     stop("The function 'readAntaresSTClusters' expects a vector of short-term storage clusters names as argument.")
-  if ("Input" %in% opts$mode)
+  }
+  if ("Input" %in% opts$mode) {
     stop("Cannot use 'readAntaresSTClusters' in 'Input' mode.")
+  }
+  if (opts$antaresVersion < 860) {
+    stop("Cannot use 'readAntaresSTClusters' for a study version < 860.")
+  }
   
   ##Add check control for all
-  allClusters <- readClusterSTDesc(opts = opts)[, c("area","cluster")]
-  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clustersST), 
-                                                                   tolower(unique(allClusters$cluster)), 
-                                                                   "short-term storage clusters %s do not exist in the simulation."))
-  clustersST <- allClusters$cluster[ind_cluster]
+  allSTClusters <- readClusterSTDesc(opts = opts)[, c("area","cluster")]
+  allSTClusters$lower_cluster <- tolower(allSTClusters$cluster)
+  ind_cluster <- which(allSTClusters$lower_cluster %in% .checkArg(tolower(clustersST), 
+                                                                  tolower(unique(allSTClusters$cluster)), 
+                                                                  "short-term storage clusters %s do not exist in the simulation."))
+  clustersST <- allSTClusters$cluster[ind_cluster]
   
-  ind_cluster <- which(tolower(allClusters$cluster) %in% .checkArg(tolower(clustersST), 
-                                                                   tolower(unique(allClusters[area %in% opts$areasWithSTClusters]$cluster)), 
-                                                                   "short-term storage clusters %s have no output."))
-  clustersST <- unique(allClusters$cluster[ind_cluster])
+  ind_cluster <- which(allSTClusters$lower_cluster %in% .checkArg(tolower(clustersST), 
+                                                                  tolower(unique(allSTClusters[area %in% opts$areasWithSTClusters]$cluster)), 
+                                                                  "short-term storage clusters %s have no output."))
+  clustersST <- unique(allSTClusters$cluster[ind_cluster])
   
-  areas <- unique(allClusters[cluster %in% clustersST]$area)
+  output_st_clusters <- data.table()
+  if (length(clustersST) > 0) {  
+    areas <- unique(allSTClusters[cluster %in% clustersST]$area)
   
-  res <- readAntares(clustersST = areas, timeStep = timeStep, opts = opts, 
-                     parallel = parallel, showProgress = showProgress)
+    res <- readAntares(clustersST = areas, timeStep = timeStep, opts = opts, 
+                       parallel = parallel, showProgress = showProgress)  
+
+    output_st_clusters <- subset(res, cluster %in% clustersST, select = c(setdiff(colnames(res),c("P.injection", "levels", "P.withdrawal")),
+                                                                    intersect(colnames(res),selected))
+                                                                    )
+  }
   
-  subset(res, cluster %in% clustersST, select = c(setdiff(colnames(res),c("P.injection", "levels", "P.withdrawal")),
-                                                intersect(colnames(res),selected))) #support for up to v8.4
+  return(output_st_clusters)
 }
