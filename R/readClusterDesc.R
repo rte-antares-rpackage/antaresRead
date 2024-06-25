@@ -88,7 +88,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
   .readClusterDesc(opts = opts, dir = "st-storage/clusters")
 }
 
-
+#' @importFrom stats setNames
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   

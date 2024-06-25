@@ -283,31 +283,31 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  if(isH5Opts(opts)){
-    
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(.h5ReadAntares(path = opts$h5path, 
-                            areas = areas,
-                            links = links,
-                            clusters = clusters,
-                            districts = districts,
-                            misc = misc,
-                            thermalAvailabilities = thermalAvailabilities,
-                            hydroStorage = hydroStorage,
-                            hydroStorageMaxPower = hydroStorageMaxPower,
-                            reserve = reserve,
-                            linkCapacity = linkCapacity,
-                            mustRun = mustRun,
-                            thermalModulation = thermalModulation,
-                            select = select,
-                            mcYears = mcYears,
-                            timeStep = timeStep[1],
-                            showProgress = showProgress,
-                            simplify = simplify))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
+  # if(isH5Opts(opts)){
+  #   
+  #   if(.requireRhdf5_Antares(stopP = FALSE)){
+  #     return(.h5ReadAntares(path = opts$h5path, 
+  #                           areas = areas,
+  #                           links = links,
+  #                           clusters = clusters,
+  #                           districts = districts,
+  #                           misc = misc,
+  #                           thermalAvailabilities = thermalAvailabilities,
+  #                           hydroStorage = hydroStorage,
+  #                           hydroStorageMaxPower = hydroStorageMaxPower,
+  #                           reserve = reserve,
+  #                           linkCapacity = linkCapacity,
+  #                           mustRun = mustRun,
+  #                           thermalModulation = thermalModulation,
+  #                           select = select,
+  #                           mcYears = mcYears,
+  #                           timeStep = timeStep[1],
+  #                           showProgress = showProgress,
+  #                           simplify = simplify))
+  #   } else {
+  #     stop(rhdf5_message)
+  #   }
+  # }
   
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
   

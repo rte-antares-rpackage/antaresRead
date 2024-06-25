@@ -10,20 +10,29 @@
 |collate  |French_France.utf8                  |
 |ctype    |French_France.utf8                  |
 |tz       |Europe/Paris                        |
-|date     |2024-06-14                          |
+|date     |2024-06-25                          |
 |rstudio  |2023.12.0+369 Ocean Storm (desktop) |
 |pandoc   |NA                                  |
 
 # Dependencies
 
-|package     |old   |new   |Δ  |
-|:-----------|:-----|:-----|:--|
-|antaresRead |2.7.0 |2.7.1 |*  |
-|cachem      |NA    |1.0.8 |*  |
-|fastmap     |NA    |1.1.1 |*  |
-|openssl     |NA    |2.1.2 |*  |
-|rlang       |NA    |1.1.3 |*  |
-|stringi     |NA    |1.8.3 |*  |
+|package     |old   |new    |Δ  |
+|:-----------|:-----|:------|:--|
+|antaresRead |2.7.0 |2.7.1  |*  |
+|cachem      |NA    |1.1.0  |*  |
+|cli         |NA    |3.6.3  |*  |
+|crayon      |NA    |1.5.3  |*  |
+|digest      |NA    |0.6.36 |*  |
+|fastmap     |NA    |1.2.0  |*  |
+|openssl     |NA    |2.2.0  |*  |
+|rlang       |NA    |1.1.4  |*  |
+|stringi     |NA    |1.8.4  |*  |
 
 # Revdeps
+
+## Failed to check (1)
+
+|package    |version |error  |warning |note |
+|:----------|:-------|:------|:-------|:----|
+|[antaresViz](failures.md#antaresviz)|0.18.0  |__+1__ |        |     |
 
