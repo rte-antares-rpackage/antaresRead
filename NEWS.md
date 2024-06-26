@@ -11,6 +11,8 @@ NEW FEATURES:
 * `setSimulationPath()` return a new parameter `binding` (for studies >= v8.7.0). 
 It contains a table with group dimensions of time series for binding constraints.
 * `readAntares()` new parameter **clustersST** to read (output simulation) short-term clusters
+* New function `readAntaresSTClusters()`
+
 
 BREAKING CHANGES :
 
