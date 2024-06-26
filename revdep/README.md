@@ -10,7 +10,7 @@
 |collate  |French_France.utf8                  |
 |ctype    |French_France.utf8                  |
 |tz       |Europe/Paris                        |
-|date     |2024-06-25                          |
+|date     |2024-06-26                          |
 |rstudio  |2023.12.0+369 Ocean Storm (desktop) |
 |pandoc   |NA                                  |
 
@@ -29,10 +29,4 @@
 |stringi     |NA    |1.8.4  |*  |
 
 # Revdeps
-
-## Failed to check (1)
-
-|package    |version |error  |warning |note |
-|:----------|:-------|:------|:-------|:----|
-|[antaresViz](failures.md#antaresviz)|0.18.0  |__+1__ |        |     |
 

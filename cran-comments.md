@@ -11,9 +11,9 @@
 
 ## rev dep check OK
 
-We checked 3 reverse dependencies, comparing R CMD check results across CRAN and dev versions of this package.
-
- * We saw 0 new problems
- * We failed to check 0 packages
+── CHECK ─────── 3 packages ──
+✔ antaresEditObject 0.7.0                ── E: 0     | W: 0     | N: 0                                                                   
+✔ antaresProcessing 0.18.2               ── E: 0     | W: 0     | N: 0                                                                   
+✔ antaresViz 0.18.1   
 
 
