@@ -93,7 +93,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
                              dir = "thermal/clusters") {
   
   path <- file.path(opts$inputPath, dir)
-  columns <- .generate_columns_by_type(dir = dir)
   api_study <- is_api_study(opts)
   
   table_type <- switch(
@@ -120,29 +119,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
   # "text" mode
   areas <- list.files(path)
   
-  # read properties for each area
-  res <- plyr::llply(areas, function(x) {
-    clusters <- readIniFile(file.path(path, x, "list.ini"))
-    if (length(clusters) == 0) 
-      return(NULL)
-    clusters <- plyr::ldply(clusters, 
-                            data.frame, 
-                            check.names = FALSE) # check.names = FALSE (too many side effects)
-    clusters$.id <- NULL
-    clusters$area <- x
-    clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-  })
-  
-  res <- data.table::rbindlist(l = res, fill = TRUE)
-  
-  # NO PROPERTIES CLUSTER FOUND
-  if(length(res) == 0){
-    warning("No properties found", 
-            call. = FALSE)
-    return(NULL)
-  } 
-  
-  # merge with referential cluster properties
+  # READ cluster properties
   full_ref_properties <- pkgEnv[["inputProperties"]]
   
   category_ref_cluster <- switch(
@@ -163,7 +140,12 @@ readClusterSTDesc <- function(opts = simOptions()) {
   # select key colums and put wide format
   ref_filter_by_vers <- ref_filter_by_vers[ , 
                                             .SD, 
-                                            .SDcols = c("INI Name", "Default", "Type")]
+                                            .SDcols = c("INI Name", 
+                                                        "Default", 
+                                                        "Type")]
+  
+  # select names columns to convert to logical
+  logical_col_names <- ref_filter_by_vers[Type%in%"bool"][["INI Name"]]
   
   wide_ref <- data.table::dcast(data = ref_filter_by_vers, 
                                 formula = .~`INI Name`,
@@ -171,34 +153,42 @@ readClusterSTDesc <- function(opts = simOptions()) {
                                   , 
                                   .SD,
                                   .SDcols = -c(".", "name")]
+  # /!\ column type conversion on 
+  wide_ref[, 
+           (logical_col_names):= lapply(.SD, as.logical), 
+           .SDcols = logical_col_names]
   
-  wide_ref <- wide_ref[, .SD, .SDcols = -intersect(names(res), names(wide_ref))]
+  # read properties for each area
+  res <- plyr::llply(areas, function(x) {
+    clusters <- readIniFile(file.path(path, x, "list.ini"))
+    if (length(clusters) == 0) 
+      return(NULL)
+    # conversion list to data.frame
+    clusters <- plyr::ldply(clusters, function(x){
+      df_clust <- data.frame(x, check.names = FALSE) 
+      colnames_to_add <- setdiff(names(wide_ref), names(df_clust))
+      if(!identical(colnames_to_add, character(0)))
+        df_clust <- cbind(df_clust, wide_ref[, .SD, .SDcols = colnames_to_add])
+      df_clust
+      }) # check.names = FALSE (too many side effects)
+    clusters$.id <- NULL
+    clusters$area <- x
+    # re order columns
+    clusters[, c("area", setdiff(colnames(clusters), "area"))]
+  })
   
-  # merge(wide_ref, res, allow.cartesian = TRUE, no.dups = FALSE, all = TRUE)
+  res <- data.table::rbindlist(l = res, fill = TRUE)
   
-  restable <- cbind(res, wide_ref)
-    
+  # NO PROPERTIES CLUSTER FOUND
+  if(length(res) == 0){
+    warning("No properties found", 
+            call. = FALSE)
+    return(NULL)
+  } 
+  
   # output format conversion
   res <- data.table::as.data.table(res)
   data.table::setnames(res, "name", "cluster")
   res$cluster <- as.factor(tolower(res$cluster))
   res
-}
-
-.generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
-  
-  columns <- switch(
-    dir,
-    "thermal/clusters" = c("name","group","enabled","mustRun","unitCount","nominalCapacity",
-                           "minStablePower","spinning","minUpTime","minDownTime",
-                           "co2","marginalCost","fixedCost","startupCost","marketBidCost",
-                           "spreadCost","tsGen","volatilityForced","volatilityPlanned",
-                           "lawForced","lawPlanned"),
-    
-    "renewables/clusters" = c("name","group","ts-interpretation","enabled","unitCount","nominalCapacity"),
-    
-    "st-storage/clusters" = c("name","group","enabled","injection_nominal_capacity","withdrawal_nominal_capacity",
-                              "reservoir_capacity","efficiency","initial_level","initial_level_optim")
-  )
-  return(columns)
 }
