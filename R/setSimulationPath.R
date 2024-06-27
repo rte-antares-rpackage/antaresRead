@@ -277,15 +277,15 @@ setSimulationPath <- function(path, simulation = NULL) {
     # - 3. asks the user to interactively choose one simulation
     
     if (!file.exists(file.path(path, "study.antares"))){
-      allFiles <- list.files(path)
-      avaliableFile <- allFiles[grep(".h5$", allFiles)]
-      if(length(avaliableFile) == 0)
-      {
+      # allFiles <- list.files(path)
+      # avaliableFile <- allFiles[grep(".h5$", allFiles)]
+      # if(length(avaliableFile) == 0)
+      # {
       stop("Directory is not an Antares study.")
-      }else{
-        ##H5 mode
-        return("H5")
-      }
+      # }else{
+      #   ##H5 mode
+      #   return("H5")
+      # }
     }
       
     
