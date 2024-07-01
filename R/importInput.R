@@ -369,8 +369,13 @@
     
     data$area <- area
     data$cluster <- cl
-    data <- data[opts$timeIdMin:opts$timeIdMax]
-    data$timeId <- opts$timeIdMin:opts$timeIdMax
+    
+    # index blocks
+    a <- opts$parameters$general$simulation.start
+    b <- opts$parameters$general$simulation.end
+    
+    data <- data[a:b]
+    data$timeId <- a:b
     
     changeTimeStep(data, timeStep, "daily", fun = "mean")
   })

@@ -37,6 +37,7 @@ Other contributors:
   \item Clement Berthet [contributor]
   \item Kamel Kemiha [contributor]
   \item Abdallah Mahoudi [contributor]
+  \item Nicolas Boitard [contributor]
   \item RTE [copyright holder]
 }
 

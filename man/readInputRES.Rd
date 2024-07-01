@@ -5,7 +5,8 @@
 \title{Read Input RES time series}
 \usage{
 readInputRES(
-  clusters = NULL,
+  areas = "all",
+  clusters,
   opts = simOptions(),
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
   simplify = TRUE,
@@ -14,6 +15,8 @@ readInputRES(
 )
 }
 \arguments{
+\item{areas}{vector of RES areas names for which renewable time series must be read.}
+
 \item{clusters}{vector of RES clusters names for which renewable time series must be read.}
 
 \item{opts}{list of simulation parameters returned by the function

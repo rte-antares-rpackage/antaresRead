@@ -5,7 +5,9 @@
 \title{Read Input thermal time series}
 \usage{
 readInputThermal(
-  clusters = NULL,
+  areas = "all",
+  clusters,
+  thermalAvailabilities = TRUE,
   thermalModulation = FALSE,
   thermalData = FALSE,
   opts = simOptions(),
@@ -16,7 +18,11 @@ readInputThermal(
 )
 }
 \arguments{
+\item{areas}{vector of areas names for which thermal time series must be read.}
+
 \item{clusters}{vector of clusters names for which thermal time series must be read.}
+
+\item{thermalAvailabilities}{if TRUE, return thermalAvailabilities data}
 
 \item{thermalModulation}{if TRUE, return thermalModulation data}
 
