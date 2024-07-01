@@ -122,7 +122,7 @@ test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax"
 })
 
 # read latest version study
-path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
 # >= v860----

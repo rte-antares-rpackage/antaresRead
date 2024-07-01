@@ -183,7 +183,7 @@ setup_study_empty <- function(dir_path){
                         full.names = TRUE)
   # choose pattern 
   studies <- studies[grep(x = studies, 
-                          pattern = "v87")] 
+                          pattern = "empty_study_v870")] 
   # untar etude
   path_sty <- file.path(tempdir(), 
                         "study_empty_latest_version")

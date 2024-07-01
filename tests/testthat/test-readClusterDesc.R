@@ -1,6 +1,6 @@
 # read study ----
   # latest version
-path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
 # all version ----

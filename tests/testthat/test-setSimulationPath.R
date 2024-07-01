@@ -188,7 +188,7 @@ test_that("No meta info binding study < 870", {
 # v860----
 test_that("New meta data for areas with a ST cluster", {
   # read latest version study
-  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
   opts_study_test <- setSimulationPath(path_study_test, simulation = "20240105-0934eco")
   
   expect_false(is.null(opts_study_test$areasWithSTClusters))
@@ -198,7 +198,7 @@ test_that("New meta data for areas with a ST cluster", {
 # v870----
 test_that("New meta data for group dimension of binding constraints", {
   # read latest version study
-  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
   opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
   
   expect_is(opts_study_test$binding, "data.table")
