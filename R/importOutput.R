@@ -265,6 +265,36 @@
   )
 }
 
+
+.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
+    
+  endpoint_root <- paste0(opts$study_id, "/areas/aggregate/", opts$simOutputName, "?format=csv")
+  
+  # area
+  areas_url <- paste0("&areas_ids=", paste0(areas, collapse = ","))
+
+  # frequency
+  frequency_url <- paste0("&frequency=", timeStep)
+  
+  # columns
+  columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
+  
+  # query file
+  query_file_url <- paste0("&query_file=", query_file)
+  
+  # MC years file
+  mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+  
+  endpoint <- paste0(endpoint_root, query_file_url, frequency_url, columns_url, areas_url, mc_years_url)
+  res <- api_get(opts = opts,
+            endpoint = endpoint,
+            default_endpoint = "v1/studies")
+  
+  # First column is the id of the row
+  return(as.data.table(res)[,.SD,.SDcols=seq(2,ncol(res))])
+}
+
+
 .importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL, 
                                       showProgress, opts, parallel) {
   if (is.null(districts)) return(NULL)

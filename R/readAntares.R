@@ -707,6 +707,55 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 }
 
 
+readAntaresAPI <- function(areas = NULL,
+                           select,
+                           mcYears = NULL,
+                           query_file,
+                           timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                           opts = simOptions()
+                        ) {
+  
+  if (!isTRUE(opts$typeLoad == "api")) {
+    stop("The study is not an API study", call. = FALSE)
+  }
+  
+  assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"))
+  assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"))
+  
+  # area
+  if (!is.null(areas)) {
+    areas <- intersect(areas, opts$areaList)
+  }
+  if (is.null(areas)) {
+    areas <- opts$areaList
+  }
+  if (length(areas) == 0) {
+    warning("You have no area to execute the query.")
+    return()
+  }
+  
+  # mcYear
+  if (!is.null(mcYears)) {
+    mcYears <- intersect(mcYears, opts$mcYears)
+  }
+  if (is.null(mcYears)) {
+    mcYears <- opts$mcYears
+  }
+  if (length(mcYears) == 0) {
+    warning("You have no Monte-Carlo year to execute the query.")
+    return()
+  }
+  
+  res <- .api_get_aggregate_areas(areas = areas,
+                                  timeStep = timeStep,
+                                  query_file = query_file,
+                                  select = select,
+                                  mcYears = mcYears,
+                                  opts = opts
+                                  )
+  return(res)
+}
+
 
 #' Function for preprocessing arguments areas, links, clusters and districts
 #' of readAntares.
