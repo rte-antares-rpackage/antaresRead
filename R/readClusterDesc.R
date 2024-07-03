@@ -144,8 +144,9 @@ readClusterSTDesc <- function(opts = simOptions()) {
                                                         "Default", 
                                                         "Type")]
   
-  # select names columns to convert to logical
+  # select names columns to convert to logical + numerical
   logical_col_names <- ref_filter_by_vers[Type%in%"bool"][["INI Name"]]
+  numerical_col_names <- ref_filter_by_vers[Type%in%c("int", "float")][["INI Name"]]
   
   wide_ref <- data.table::dcast(data = ref_filter_by_vers, 
                                 formula = .~`INI Name`,
@@ -156,7 +157,11 @@ readClusterSTDesc <- function(opts = simOptions()) {
   # /!\ column type conversion on 
   wide_ref[, 
            (logical_col_names):= lapply(.SD, as.logical), 
-           .SDcols = logical_col_names]
+           .SDcols = logical_col_names][
+             ,
+             (numerical_col_names):= lapply(.SD, as.numeric), 
+             .SDcols = numerical_col_names
+           ]
   
   # read properties for each area
   res <- plyr::llply(areas, function(x) {
