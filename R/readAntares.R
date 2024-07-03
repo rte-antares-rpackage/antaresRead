@@ -116,7 +116,7 @@
 #'   similar to mustRunTotal except it also takes into account the production
 #'   induced by the minimum stable power of the units of a cluster. More
 #'   precisely, for a given cluster and a given time step, it is equal to 
-#'   \code{min(NODU x min.stable.power, mustRunTotal)}.
+#'   \code{min(NODU x min-stable-power, mustRunTotal)}.
 #' @param select
 #'   Character vector containing the name of the columns to import. If this 
 #'   argument is \code{NULL}, all variables are imported. Special names 
