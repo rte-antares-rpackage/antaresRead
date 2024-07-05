@@ -291,7 +291,15 @@
             default_endpoint = "v1/studies")
   
   # First column is the id of the row
-  return(as.data.table(res)[,.SD,.SDcols=seq(2,ncol(res))])
+  res <- as.data.table(res)
+  nb_cols <- ncol(res)
+  if (nb_cols > 1) {
+    idx_cols_to_keep <- seq(2,nb_cols)
+  } else {
+    idx_cols_to_keep <- 1
+  }
+  
+  return(res[,.SD,.SDcols = idx_cols_to_keep])
 }
 
 
@@ -761,6 +769,41 @@
                   mcYears, showProgress, opts, parallel = parallel)
   )
 }
+
+
+.api_get_aggregate_links <- function(links, timeStep, select, mcYears, opts) {
+    
+  endpoint_root <- paste0(opts$study_id, "/links/aggregate/", opts$simOutputName, "?format=csv&query_file=values")
+  
+  # link
+  links_url <- paste0("&links_ids=", paste0(links, collapse = ","))
+
+  # frequency
+  frequency_url <- paste0("&frequency=", timeStep)
+  
+  # columns
+  columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
+  
+  # MC years file
+  mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+  
+  endpoint <- paste0(endpoint_root, frequency_url, columns_url, links_url, mc_years_url)
+  res <- api_get(opts = opts,
+            endpoint = endpoint,
+            default_endpoint = "v1/studies")
+  
+  # First column is the id of the row
+  res <- as.data.table(res)
+  nb_cols <- ncol(res)
+  if (nb_cols > 1) {
+    idx_cols_to_keep <- seq(2,nb_cols)
+  } else {
+    idx_cols_to_keep <- 1
+  }
+  
+  return(res[,.SD,.SDcols = idx_cols_to_keep])
+}
+
 
 # The two following functions read input time series that are eventually
 # stored in output and rebuild the actual time series used in each Monte-Carlo

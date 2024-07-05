@@ -706,53 +706,121 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   res
 }
 
-
+#' Retrieve aggregated areas or links raw data from study output
+#'
+#' @param areas
+#'   Vector containing the names of the areas to import. If
+#'   \code{NULL} all areas are imported.
+#' @param links
+#'   Vector containing the name of links to import. If \code{NULL} all
+#'   links are imported.
+#' @param select
+#'   Names of the columns to be selected.
+#' @param mcYears
+#'   Index of the Monte-Carlo years to import. If \code{NULL} all
+#'   Monte-Carlo years are imported.
+#' @param query_file
+#'   Type of the data to import between
+#'   values, details, details-res, details-STstorage
+#' @param timeStep
+#'   Resolution of the data to import between hourly, daily,
+#'   weekly, monthly or annual.
+#' @template opts
+#'
+#' @export
 readAntaresAPI <- function(areas = NULL,
+                           links = NULL,
                            select,
                            mcYears = NULL,
                            query_file,
-                           timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+                           timeStep,
                            opts = simOptions()
                         ) {
+  assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"), msg = "Bad timeStep provided.")
+  assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"), msg = "Bad query_file provided.")
   
-  if (!isTRUE(opts$typeLoad == "api")) {
+  if (!isTRUE(opts[["typeLoad"]] == "api")) {
     stop("The study is not an API study", call. = FALSE)
   }
-  
-  assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"))
-  assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"))
-  
-  # area
-  if (!is.null(areas)) {
-    areas <- intersect(areas, opts$areaList)
+  if (!isTRUE(opts[["mode"]] == "Economy")) {
+    stop("The study is not in Economy mode", call. = FALSE)
   }
-  if (is.null(areas)) {
-    areas <- opts$areaList
-  }
-  if (length(areas) == 0) {
-    warning("You have no area to execute the query.")
+  
+  null_areas <- is.null(areas)
+  null_links <- is.null(links)
+  
+  if (null_areas & null_links) {
     return()
+  }
+  if (!null_areas & !null_links) {
+    stop("You must choose between areas and links.")
+  }
+  if (query_file != "values" & !null_links) {
+    warning("Not used argument query_file for links. You will have only values in the table.")
+  }
+  # area
+  if (!null_areas) {
+    type <- "areas" 
+    areas <- intersect(areas, opts[["areaList"]])
+
+    specific_areas <- switch(query_file,
+                             "details" = opts[["areasWithClusters"]],
+                             "details-res" = opts[["areasWithResClusters"]],
+                             "details-STstorage" = opts[["areasWithSTClusters"]],
+                             character(0)
+                             )
+    if (!identical(specific_areas, character(0))) {
+      areas <- intersect(areas, specific_areas)
+    }
+    if (length(areas) == 0) {
+      warning("You have no area to execute the query.")
+      return()
+    }
+  }
+  
+  # links
+  if (!null_links) {
+    type <- "links" 
+    links <- intersect(links, opts[["linkList"]])
+    if (length(links) == 0) {
+      warning("You have no link to execute the query.")
+      return()
+    }
   }
   
   # mcYear
   if (!is.null(mcYears)) {
-    mcYears <- intersect(mcYears, opts$mcYears)
+    mcYears <- intersect(mcYears, opts[["mcYears"]])
   }
   if (is.null(mcYears)) {
-    mcYears <- opts$mcYears
+    mcYears <- opts[["mcYears"]]
   }
   if (length(mcYears) == 0) {
     warning("You have no Monte-Carlo year to execute the query.")
     return()
   }
   
-  res <- .api_get_aggregate_areas(areas = areas,
-                                  timeStep = timeStep,
-                                  query_file = query_file,
-                                  select = select,
-                                  mcYears = mcYears,
-                                  opts = opts
-                                  )
+  if (!null_areas) {
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = query_file,
+                                    select = select,
+                                    mcYears = mcYears,
+                                    opts = opts
+                                    )
+  }
+  
+  if (!null_links) {
+    res <- .api_get_aggregate_links(links = links,
+                                    timeStep = timeStep,
+                                    select = select,
+                                    mcYears = mcYears,
+                                    opts = opts
+                                    )
+  }
+  
+  res <- .addClassAndAttributes(x = res, synthesis = FALSE, timeStep = timeStep, opts = opts, simplify = TRUE, type = type)
+  
   return(res)
 }
 
