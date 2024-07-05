@@ -730,12 +730,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #' @export
 readAntaresAPI <- function(areas = NULL,
                            links = NULL,
-                           select,
+                           select = NULL,
                            mcYears = NULL,
                            query_file,
                            timeStep,
                            opts = simOptions()
                         ) {
+  
   assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"), msg = "Bad timeStep provided.")
   assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"), msg = "Bad query_file provided.")
   
@@ -797,6 +798,18 @@ readAntaresAPI <- function(areas = NULL,
   }
   if (length(mcYears) == 0) {
     warning("You have no Monte-Carlo year to execute the query.")
+    return()
+  }
+  
+  # select
+  if (!is.null(select)) {
+    select <- intersect(select, opts[["variables"]][[type]])
+  }
+  if (is.null(select)) {
+    select <- opts[["variables"]][[type]]
+  }
+  if (length(select) == 0) {
+    warning("You have no columns in your output.")
     return()
   }
   

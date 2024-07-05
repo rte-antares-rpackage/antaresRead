@@ -7,7 +7,7 @@
 readAntaresAPI(
   areas = NULL,
   links = NULL,
-  select,
+  select = NULL,
   mcYears = NULL,
   query_file,
   timeStep,
