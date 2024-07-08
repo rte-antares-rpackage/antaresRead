@@ -740,7 +740,7 @@ readAntaresAPI <- function(areas = NULL,
   assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"), msg = "Bad timeStep provided.")
   assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"), msg = "Bad query_file provided.")
   
-  if (!isTRUE(opts[["typeLoad"]] == "api")) {
+  if (!is_api_study(opts = opts)) {
     stop("The study is not an API study", call. = FALSE)
   }
   if (!isTRUE(opts[["mode"]] == "Economy")) {
