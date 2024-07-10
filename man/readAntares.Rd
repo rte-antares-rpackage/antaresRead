@@ -10,6 +10,7 @@ readAntares(
   clusters = NULL,
   districts = NULL,
   clustersRes = NULL,
+  clustersST = NULL,
   bindingConstraints = FALSE,
   misc = FALSE,
   thermalAvailabilities = FALSE,
@@ -51,6 +52,11 @@ districts.}
 \item{clustersRes}{Vector containing the name of the areas for which you want to
 import results at renewable cluster level. If \code{NULL} no cluster is imported. The
 special value \code{"all"} tells the function to import renewable clusters from all
+areas.}
+
+\item{clustersST}{Vector containing the name of the areas for which you want to
+import results at short-term cluster level. If \code{NULL} no cluster is imported. The
+special value \code{"all"} tells the function to import short-term clusters from all
 areas.}
 
 \item{bindingConstraints}{Should binding constraints be imported (v8.4+)?}
@@ -131,6 +137,8 @@ data.tables, each element representing one type of element (areas, links,
 clusters)
 }
 \description{
+\ifelse{html}{\figure{badge_api_ok.svg}{options: alt='Antares API OK'}}{Antares API: \strong{OK}}
+
 \code{readAntares} is a swiss-army-knife function used to read almost every
 possible time series of an antares Project at any desired time resolution
 (hourly, daily, weekly, monthly or annual).
