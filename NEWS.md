@@ -17,6 +17,8 @@ It contains a table with group dimensions of time series for binding constraints
 BREAKING CHANGES :
 
 * `readInputThermal()` / `readInputRES()` default value when no time series in the selected clusters.
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` are updated with new endpoint "table mode".  
+  - In "text" mode, functions return all properties (with default properties) according to study version.
 
 BUGFIXES :  
 
