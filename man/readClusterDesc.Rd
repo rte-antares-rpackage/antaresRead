@@ -39,6 +39,8 @@ study. You can use the argument \code{opts} to specify another study.
 \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 
 \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
+
+If you have no clusters properties, \verb{Null data.table (0 rows and 0 cols)} is returned.
 }
 \description{
 This function reads in the input files of an antares study the

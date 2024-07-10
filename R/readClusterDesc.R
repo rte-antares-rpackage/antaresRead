@@ -34,6 +34,8 @@
 #' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 #' 
 #' \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
+#' 
+#' If you have no clusters properties, `Null data.table (0 rows and 0 cols)` is returned.
 #'
 #' @examples
 #' 
@@ -185,11 +187,8 @@ readClusterSTDesc <- function(opts = simOptions()) {
   res <- data.table::rbindlist(l = res, fill = TRUE)
   
   # NO PROPERTIES CLUSTER FOUND
-  if(length(res) == 0){
-    warning("No properties found", 
-            call. = FALSE)
-    return(NULL)
-  } 
+  if(length(res) == 0)
+    return(data.table())
   
   # output format conversion
   res <- data.table::as.data.table(res)
