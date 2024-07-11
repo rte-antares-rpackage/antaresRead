@@ -122,6 +122,46 @@ readClusterSTDesc <- function(opts = simOptions()) {
   areas <- list.files(path)
   
   # READ cluster properties
+  properties <- get_input_cluster_properties(table_type = table_type, 
+                                             opts = opts)
+  
+  # read properties for each area
+  res <- plyr::llply(areas, function(x, prop_ref=properties) {
+    clusters <- readIniFile(file.path(path, x, "list.ini"))
+    if (length(clusters) == 0) 
+      return(NULL)
+    # conversion list to data.frame
+    clusters <- plyr::ldply(clusters, function(x){
+      df_clust <- data.frame(x, check.names = FALSE) 
+      colnames_to_add <- setdiff(names(prop_ref), names(df_clust))
+      if(!identical(colnames_to_add, character(0)))
+        df_clust <- cbind(df_clust, prop_ref[, .SD, .SDcols = colnames_to_add])
+      df_clust
+      }) # check.names = FALSE (too many side effects)
+    clusters$.id <- NULL
+    clusters$area <- x
+    # re order columns
+    clusters[, c("area", setdiff(colnames(clusters), "area"))]
+  })
+  
+  res <- data.table::rbindlist(l = res, fill = TRUE)
+  
+  # NO PROPERTIES CLUSTER FOUND
+  if(length(res) == 0)
+    return(data.table())
+  
+  # output format conversion
+  res <- data.table::as.data.table(res)
+  data.table::setnames(res, "name", "cluster")
+  res$cluster <- as.factor(tolower(res$cluster))
+  res
+}
+
+
+# read and manage referential properties 
+  # return referential according to type and study version
+get_input_cluster_properties <- function(table_type, opts){
+  # READ cluster properties
   full_ref_properties <- pkgEnv[["inputProperties"]]
   
   category_ref_cluster <- switch(
@@ -138,6 +178,24 @@ readClusterSTDesc <- function(opts = simOptions()) {
   ref_filter_by_vers <- ref_filter_by_cat[`Version Antares` <= 
                                             opts$antaresVersion | 
                                             `Version Antares` %in% NA]
+  
+  # detect evolution on parameter ? (new value according to study version) 
+  # filter on value according to study version 
+  df_multi_params <- ref_filter_by_vers[, 
+                                        count := .N, 
+                                        by = c("INI Name"), 
+                                        keyby = TRUE][
+                                          count>1][, 
+                                                   .SD[which.max(`Version Antares`)], 
+                                                   by="INI Name"]
+  
+  df_unique_params <- ref_filter_by_vers[, 
+                                         count := .N, 
+                                         by = c("INI Name"), 
+                                         keyby = TRUE][
+                                           count==1]
+  
+  ref_filter_by_vers <- rbind(df_unique_params, df_multi_params)
   
   # select key colums and put wide format
   ref_filter_by_vers <- ref_filter_by_vers[ , 
@@ -165,34 +223,5 @@ readClusterSTDesc <- function(opts = simOptions()) {
              .SDcols = numerical_col_names
            ]
   
-  # read properties for each area
-  res <- plyr::llply(areas, function(x) {
-    clusters <- readIniFile(file.path(path, x, "list.ini"))
-    if (length(clusters) == 0) 
-      return(NULL)
-    # conversion list to data.frame
-    clusters <- plyr::ldply(clusters, function(x){
-      df_clust <- data.frame(x, check.names = FALSE) 
-      colnames_to_add <- setdiff(names(wide_ref), names(df_clust))
-      if(!identical(colnames_to_add, character(0)))
-        df_clust <- cbind(df_clust, wide_ref[, .SD, .SDcols = colnames_to_add])
-      df_clust
-      }) # check.names = FALSE (too many side effects)
-    clusters$.id <- NULL
-    clusters$area <- x
-    # re order columns
-    clusters[, c("area", setdiff(colnames(clusters), "area"))]
-  })
-  
-  res <- data.table::rbindlist(l = res, fill = TRUE)
-  
-  # NO PROPERTIES CLUSTER FOUND
-  if(length(res) == 0)
-    return(data.table())
-  
-  # output format conversion
-  res <- data.table::as.data.table(res)
-  data.table::setnames(res, "name", "cluster")
-  res$cluster <- as.factor(tolower(res$cluster))
-  res
+  return(wide_ref)
 }
