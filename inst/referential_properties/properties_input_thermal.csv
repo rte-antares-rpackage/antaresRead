@@ -1,0 +1,37 @@
+Topic;INI Name;Tech Name;Type;Default;Version;Category;Version Antares
+Pollutant emission rates;nh3;nh3;float;0.0;8.6;thermal;860
+Pollutant emission rates;so2;so2;float;0.0;8.6;thermal;860
+Pollutant emission rates;nox;nox;float;0.0;8.6;thermal;860
+Pollutant emission rates;pm2_5;pm25;float;0.0;8.6;thermal;860
+Pollutant emission rates;pm5;pm5;float;0.0;8.6;thermal;860
+Pollutant emission rates;pm10;pm10;float;0.0;8.6;thermal;860
+Pollutant emission rates;nmvoc;nmvoc;float;0.0;8.6;thermal;860
+Pollutant emission rates;op1;op1;float;0.0;8.6;thermal;860
+Pollutant emission rates;op2;op2;float;0.0;8.6;thermal;860
+Pollutant emission rates;op3;op3;float;0.0;8.6;thermal;860
+Pollutant emission rates;op4;op4;float;0.0;8.6;thermal;860
+Pollutant emission rates;op5;op5;float;0.0;8.6;thermal;860
+Operating costs;costgeneration;costGeneration;str;SetManually;8.7;thermal;870
+Operating costs;efficiency;efficiency;float;100.0;8.7;thermal;870
+Operating costs;variableomcost;variableOMCost;float;0.0;8.7;thermal;870
+General;name;name;str;;;thermal;
+General;group;group;str;Other 1;;thermal;
+Operating parameters;unitcount;unitCount;int;1;;thermal;
+Operating parameters;enabled;enabled;bool;True;;thermal;
+Operating parameters;nominalcapacity;nominalCapacity;float;0.0;;thermal;
+Operating parameters;min-stable-power;minStablePower;float;0.0;;thermal;
+Operating parameters;min-up-time;minUpTime;int;1;;thermal;
+Operating parameters;min-down-time;minDownTime;int;1;;thermal;
+Operating parameters;must-run;mustRun;bool;False;;thermal;
+Operating parameters;spinning;spinning;float;0.0;;thermal;
+Operating costs;marginal-cost;marginalCost;float;0.0;;thermal;
+Operating costs;spread-cost;spreadCost;float;0.0;;thermal;
+Operating costs;fixed-cost;fixedCost;float;0.0;;thermal;
+Operating costs;startup-cost;startupCost;float;0.0;;thermal;
+Operating costs;market-bid-cost;marketBidCost;float;0.0;;thermal;
+Pollutant emission rates;co2;co2;float;0.0;;thermal;
+Timeseries generation;gen-ts;genTs;str;Use Global;;thermal;
+Timeseries generation;volatility.forced;volatilityForced;float;0.0;;thermal;
+Timeseries generation;volatility.planned;volatilityPlanned;float;0.0;;thermal;
+Timeseries generation;law.forced;lawForced;str;Uniform;;thermal;
+Timeseries generation;law.planned;lawPlanned;str;Uniform;;thermal;
