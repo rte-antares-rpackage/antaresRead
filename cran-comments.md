@@ -2,7 +2,8 @@
 # Release 2.7.1 
 
  - To fix problem with cran check (see log "M1mac").  
- - Add some bug fix (see news.md)
+ - Add some bug fix (see news.md)  
+ - Fix multiple "path" bug in `setSimulationPath()`
 
 
 ## R CMD check results OK

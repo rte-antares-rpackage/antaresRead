@@ -138,6 +138,11 @@ test_that("select simulation with negative index", {
 #   )
 # })
 
+test_that("Bad multiple path", {
+  expect_error(setSimulationPath(studyPathSV8, simulation = "input"), 
+               regexp = "Only one path is required")
+})
+
 # Remove fake study
 unlink(file.path(studyPath, "output/30000101-0000fake"), TRUE, TRUE)
 

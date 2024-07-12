@@ -258,6 +258,11 @@ setSimulationPath <- function(path, simulation = NULL) {
 # Private function that extracts study, simulation and input paths from the
 # path specified by the user.
 .getPaths <- function(path, simulation) {
+  # check path must be length 1
+  if(length(path)!=1)
+    stop("Only one path is required", 
+         call. = FALSE)
+  
   path <- gsub("[/\\]$", "", path)
   path <- normalizePath(path, winslash = "/")
   
@@ -276,19 +281,9 @@ setSimulationPath <- function(path, simulation = NULL) {
     # - 2. there is only one study in the output. Select it
     # - 3. asks the user to interactively choose one simulation
     
-    if (!file.exists(file.path(path, "study.antares"))){
-      # allFiles <- list.files(path)
-      # avaliableFile <- allFiles[grep(".h5$", allFiles)]
-      # if(length(avaliableFile) == 0)
-      # {
+    if (!file.exists(file.path(path, "study.antares")))
       stop("Directory is not an Antares study.")
-      # }else{
-      #   ##H5 mode
-      #   return("H5")
-      # }
-    }
       
-    
     outputPath <- file.path(path, "output")
     
     outputContent <- list.dirs(outputPath, recursive = FALSE)
