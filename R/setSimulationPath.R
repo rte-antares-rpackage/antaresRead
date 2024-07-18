@@ -398,7 +398,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   res <- list(
     mode = "Input",
-    antaresVersion = antaresVersion,
+    antaresVersion = transform_antares_version(antaresVersion)[["r"]],
     areaList = areaList,
     districtList = districtList,
     linkList = as.character(linksDef$link),
@@ -530,7 +530,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     yearByYear = yearByYear,
     scenarios = scenarios,
     mcYears = mcYears,
-    antaresVersion = info$version,
+    antaresVersion = transform_antares_version(info$version)[["r"]],
     areaList = areaList,
     districtList = gsub("^@ ?", "", districtList),
     linkList = linkList,
@@ -704,4 +704,57 @@ setSimulationPath <- function(path, simulation = NULL) {
     
     return(list(binding = df_groups))
   }
+}
+
+
+
+#' @title Convert the Antares number version
+#'
+#' @param antares_version Antares number version.
+#'
+#' @importFrom stringr str_count
+#'
+#' @export
+transform_antares_version <- function(antares_version) {
+  
+  antares_version <- as.character(antares_version)
+  
+  if (str_count(antares_version, "\\.") == 0){
+    to_write <- as.numeric(antares_version)
+    to_read <- to_write
+  } else {
+    antares_version_splitted <- strsplit(antares_version, split = "\\.")
+    antares_version_splitted <- as.numeric(unlist(antares_version_splitted))
+    
+    nb_parts <- length(antares_version_splitted)
+    
+    if(nb_parts <= 1 | nb_parts >= 4) {
+      stop("Bad antares_version")
+    }
+    
+    # From version 9.0, format antares version is x.y in study.antares
+    is_900 <- antares_version_splitted[1] >= 9
+    
+    if(nb_parts == 3) {
+      if(is_900) {
+        to_write <- paste0(antares_version_splitted[seq(nb_parts-1)], collapse = ".")
+        to_read <- as.numeric(paste0(antares_version_splitted[seq(nb_parts)], collapse = ""))
+      } else {
+        to_write <- as.numeric(paste0(antares_version_splitted[seq(nb_parts)], collapse = ""))
+        to_read <- to_write
+      }
+    }
+    
+    if(nb_parts == 2) {
+      if(is_900) {
+        to_write <- paste0(antares_version_splitted, collapse = ".")
+        to_read <- as.numeric(paste0(antares_version_splitted, collapse = "")) * 10
+      } else {
+        to_write <- as.numeric(paste0(antares_version_splitted, collapse = "")) * 10
+        to_read <- to_write
+      }
+    }
+  }
+  
+  return(list("w" = to_write, "r" = to_read))
 }
