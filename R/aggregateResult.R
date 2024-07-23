@@ -22,6 +22,9 @@
 #' @importFrom stringr str_split
 #' @importFrom stringi stri_replace_last_fixed
 #' @importFrom memuse Sys.meminfo
+#' 
+#' @return Object `list` of data.tables, each element representing one type 
+#' of element (areas, links, clusters)
 #'
 #' @export
 #' 
@@ -1417,9 +1420,9 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 
 
 # From antaresFlowbased duplicated necessary
-#' Write ini file from list obtain by antaresRead:::readIniFile and modify by user
+#' Write ini file from list obtain by antaresRead::readIniFile and modify by user
 #'
-#' @param listData \code{list}, modified list obtained by antaresRead:::readIniFile.
+#' @param listData \code{list}, modified list obtained by antaresRead::readIniFile.
 #' @param pathIni \code{Character}, Path to ini file.
 #' @param overwrite logical, should file be overwritten if already exist?
 #'
@@ -1427,11 +1430,12 @@ pmax.fast <- function(k,x) (x+k + abs(x-k))/2
 #'
 #' \dontrun{
 #' pathIni <- "D:/exemple_test/settings/generaldata.ini"
-#' generalSetting <- antaresRead:::readIniFile(pathIni)
+#' generalSetting <- antaresRead::readIniFile(pathIni)
 #' generalSetting$output$synthesis <- FALSE
 #' writeIni(generalSetting, pathIni)
 #' }
 #'
+#' @keywords internal
 #'
 .writeIni <- function(listData, pathIni, overwrite = FALSE) {
   if (file.exists(pathIni)) {
@@ -2159,8 +2163,7 @@ aggregateResult_old <- function(opts, verbose = 1,
 #' @importFrom pbapply pblapply pboptions
 #' @importFrom doParallel registerDoParallel
 #'
-#' 
-#' @rdname aggregatate_mc_all_old
+#' @noRd
 #' 
 parAggregateMCall_old <- function(opts,
                                   nbcl = 8,

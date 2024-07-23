@@ -8,6 +8,9 @@
 #' @param removeHvdcAreas \code{boolean} remove HVDC areas.
 #' @param reafectLinks \code{boolean} .
 #' 
+#' @return  Object of class "antaresDataList" is returned. 
+#' It is a list of data.tables, each element representing one type of element (areas, links, clusters)
+#' 
 #' @examples 
 #' \dontrun{
 #' 

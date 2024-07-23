@@ -4,6 +4,9 @@
 #' @param fun \code{function} function to use
 #' @param ... \code{args} others args pass to fun
 #' 
+#' @return 
+#' Object of class "antaresDataTable". 
+#' 
 #' @examples
 #' \dontrun{
 #'   data <- readAntares(areas = 'all', mcYears = 'all')

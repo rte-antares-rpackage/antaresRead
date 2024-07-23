@@ -12,7 +12,8 @@ setHvdcAreas(data, areas)
 \item{areas}{\code{character} hvdc areas list.}
 }
 \value{
-A list with three elements:
+Object of class "antaresDataList" is returned.
+It is a list of data.tables, each element representing one type of element (areas, links, clusters)
 }
 \description{
 This function add hvdc attribute

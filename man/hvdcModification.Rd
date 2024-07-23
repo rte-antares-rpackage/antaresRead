@@ -13,6 +13,10 @@ hvdcModification(data, removeHvdcAreas = TRUE, reafectLinks = FALSE)
 
 \item{reafectLinks}{\code{boolean} .}
 }
+\value{
+Object of class "antaresDataList" is returned.
+It is a list of data.tables, each element representing one type of element (areas, links, clusters)
+}
 \description{
 usage for hvdc
 }
