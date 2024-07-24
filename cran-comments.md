@@ -3,7 +3,12 @@
 
  - To fix problem with cran check (see log "M1mac").  
  - Add some bug fix (see news.md)  
- - Fix multiple "path" bug in `setSimulationPath()`
+ - Fix multiple "path" bug in `setSimulationPath()`  
+ - Manage package :  
+    - Add `\value` section in documentation  
+    - Using foo::f instead of foo:::f to access exported objects  
+    - Replace `options(warn=-1)` by `suppressWarnings()`
+ 
 
 
 ## R CMD check results OK
