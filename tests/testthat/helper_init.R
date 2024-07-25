@@ -4,10 +4,8 @@
 
 path0 <- tempdir()
 
-#sourcedir <- system.file("inst/testdata", package = "antaresRead")
 sourcedir <- system.file("testdata", package = "antaresRead")
 
-#if(sourcedir == ""){ }
 
 ## force tests to be executed if in dev release which we define as
 ## having a sub-release, eg 0.9.15.5 is one whereas 0.9.16 is not
@@ -58,16 +56,13 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, studies[s]), exdir = file.path(path0, studies_names[s]))
   }
   
-  assign(
-    x = "studyPathS",
-    value = file.path(path0, studies_names, "test_case"),
-    envir = globalenv()
-  )
+  studyPathS <- file.path(path0, studies_names, "test_case")
   
-  assign("nweeks", 2, envir = globalenv())
-  assign("nmonths", 2, envir = globalenv())
-  assign("firstDay", 113, envir = globalenv())
-  assign("lastDay", 126, envir = globalenv())
+  nweeks <- 2
+  nmonths <- 2 
+  firstDay <- 113
+  lastDay <- 126
+  
 }
 
 
@@ -92,11 +87,8 @@ if(sourcedir_V8 != ""){
     dir.create(file.path(path0, studies_names[s]))
     untar(file.path(sourcedir_V8, studies[s]), exdir = file.path(path0, studies_names[s]))
   }
-  assign(
-    x = "studyPathSV8",
-    value = file.path(path0, studies_names, "test_case"),
-    envir = globalenv()
-  )
+  
+  studyPathSV8 <- file.path(path0, studies_names, "test_case")
 }
 
 
@@ -132,8 +124,7 @@ setup_study_empty <- function(dir_path){
   untar(studies[1], exdir = path_sty) # version latest
   study_temp_path <- file.path(path_sty, "test_case")
   
-  assign("study_empty_latest_version",
-         file.path(path_sty,
-                   "test_case"),
-         envir = globalenv())
-}
+  study_empty_latest_version <- file.path(path_sty,
+                                          "test_case")
+  return(study_empty_latest_version)
+  }
