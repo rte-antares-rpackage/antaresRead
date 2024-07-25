@@ -346,7 +346,22 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if(length(reqInfos$computeAdd)>0)
   {
     for (v in reqInfos$computeAdd) {
-      assign(v, TRUE)
+      if(v%in%"misc")
+        misc <- TRUE
+      if(v%in%"thermalAvailabilities")
+        thermalAvailabilities <- TRUE
+      if(v%in%"hydroStorage")
+        hydroStorage <- TRUE
+      if(v%in%"hydroStorageMaxPower")
+        hydroStorageMaxPower <- TRUE
+      if(v%in%"reserve")
+        reserve <- TRUE
+      if(v%in%"linkCapacity")
+        linkCapacity <- TRUE
+      if(v%in%"mustRun")
+        mustRun <- TRUE
+      if(v%in%"thermalModulation")
+        thermalModulation <- TRUE
     }
   }
   
