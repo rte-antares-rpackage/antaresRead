@@ -24,6 +24,7 @@ BUGFIXES :
 
 * `readInputThermal()` return data from file data.txt with `thermalData` parameter
 * `setSimulationPath()` has also the parameter **areasWithSTClusters** in 'output' mode
+* `setSimulationPathAPI()`: control the existence of the output folder **links** or **areas** before reading the data
 
 
 # antaresRead 2.7.0
