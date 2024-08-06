@@ -63,13 +63,15 @@
 
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
-
+  
+  mc_ind_path <- file.path(simDataPath, "mc-ind&depth=1")
+  
   synthesis <- .getSuccess(file.path(simDataPath, "mc-all&depth=1"), ...)
-  yearByYear <-  .getSuccess(file.path(simDataPath, "mc-ind&depth=1"), ...)
+  yearByYear <- .getSuccess(mc_ind_path, ...)
   scenarios <- .getSuccess(file.path(simPath, "ts-numbers&depth=1"), ...)
   
-  if(yearByYear) {
-    year_no_filter <- names(read_secure_json(file.path(simDataPath, "mc-ind&depth=1"), ...))
+  if (yearByYear) {
+    year_no_filter <- names(read_secure_json(mc_ind_path, ...))
     mcYears <- as.numeric(year_no_filter[grep("^\\d{5}$", year_no_filter)])
   } else {
     mcYears <- numeric()
@@ -83,12 +85,13 @@
   if (synthesis) {
     dataPath <- file.path(simDataPath, "mc-all")
   } else {
-    dataPath <- file.path(simDataPath, "mc-ind",sprintf("%05d", mcYears[1]))
+    dataPath <- file.path(simDataPath, "mc-ind", sprintf("%05d", mcYears[1]))
   }
 
-  areaList <- gsub("\r$", "", tolower(strsplit(
-    read_secure_json(file.path(simPath, "about-the-study", "areas"), ...), "\n")[[1]]
-  ))
+  areaList <- gsub("\r$", "", tolower(
+    strsplit(read_secure_json(file.path(simPath, "about-the-study", "areas"), ...), "\n")[[1]]
+  )
+  )
   districtList <- grep("^@", areaList, value = TRUE)
   areaList <- areaList[!areaList %in% districtList]
   
@@ -98,15 +101,7 @@
   
   linkList <- character(0)
   if (links_success) {
-    linkList <- read_secure_json(links_path, ...)
-    linkList <- unlist(mapply(function(X, Y){
-      if (length(Y) >= 1) {
-        paste(X, names(Y), sep = " - ")
-      } else {
-        NULL
-      }
-    }, names(linkList), linkList))
-    names(linkList) <- NULL
+    linkList <- .scan_output_links_folder(links_path, ...)
   }
   
   # areasWithClusters areasWithResClusters areasWithSTClusters
@@ -117,9 +112,15 @@
   areasWithResClusters <- character(0)
   areasWithSTClusters <- character(0)
   if (areas_success) {
-    areasWithClusters <- .detect_areas_with_clusters(areas_path = areas_path, type = "thermal", ...)
-    areasWithResClusters <- .detect_areas_with_clusters(areas_path = areas_path, type = "renewables", ...)
-    areasWithSTClusters <- .detect_areas_with_clusters(areas_path = areas_path, type = "st-storage", ...)
+    areasWithClusters <- .detect_areas_with_clusters(path = areas_path,
+                                                     type = "thermal",
+                                                     ...)
+    areasWithResClusters <- .detect_areas_with_clusters(path = areas_path,
+                                                        type = "renewables",
+                                                        ...)
+    areasWithSTClusters <- .detect_areas_with_clusters(path = areas_path,
+                                                       type = "st-storage",
+                                                       ...)
   }
   
   # variables
@@ -127,10 +128,18 @@
   areas_variables <- character(0)
   links_variables <- character(0)
   if (areas_success) {
-    areas_variables <- .get_available_variables_by_type(dataPath = dataPath, type = "areas", linkList = linkList, areaList = areaList, ...) 
+    areas_variables <- .get_available_output_variables(path = dataPath,
+                                                       type = "areas",
+                                                       linkList = linkList,
+                                                       areaList = areaList,
+                                                       ...)
   }
   if (links_success) {  
-    links_variables <- .get_available_variables_by_type(dataPath = dataPath, type = "links", linkList = linkList, areaList = areaList, ...) 
+    links_variables <- .get_available_output_variables(path = dataPath,
+                                                       type = "links",
+                                                       linkList = linkList,
+                                                       areaList = areaList,
+                                                       ...)
   }
   
   if (length(areas_variables) > 0) {
@@ -426,7 +435,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
 
 # Detect if there is at least one output by type of cluster
-.detect_areas_with_clusters <- function(areas_path, type, ...) {
+.detect_areas_with_clusters <- function(path, type, ...) {
   
   assertthat::assert_that(type %in% c("thermal", "renewables", "st-storage"))
   
@@ -438,7 +447,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   
   hasClusters <- unlist(
     lapply(
-      read_secure_json(areas_path, ...),
+      read_secure_json(path, ...),
       function(x) any(grepl(pattern = pattern_type, x = names(x)))
     )
   )
@@ -447,7 +456,26 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 }
 
 
-.get_available_variables_by_type <- function(dataPath, type, linkList, areaList, ...) {
+# Build the link list by scanning the output folder links
+.scan_output_links_folder <- function(path, ...) {
+  
+  linkList <- read_secure_json(path, ...)
+  linkList <- mapply(function(X, Y){
+    if (length(Y) >= 1) {
+      paste(X, names(Y), sep = " - ")
+      } else {
+        NULL
+      }
+    }, names(linkList), linkList
+  )
+  linkList <- unlist(linkList)
+  names(linkList) <- NULL
+  
+  return(linkList)
+}
+
+
+.get_available_output_variables <- function(path, type, linkList, areaList, ...) {
   
   variables <- character(0)
   
@@ -466,9 +494,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   if (has_items) {
     path_element <- target_list[1]
     if (type == "links") {
-      path_element <- gsub(" - ", "/", path_element)
+      path_element <- gsub(pattern = " - ", replacement = "/", x = path_element)
     }
-    d <- file.path(dataPath, type, path_element)
+    d <- file.path(path, type, path_element)
     f <- names(read_secure_json(paste0(d, "&depth=1"), ...))
     f <- f[grep("values", f)]
     if (length(f) > 0) {
