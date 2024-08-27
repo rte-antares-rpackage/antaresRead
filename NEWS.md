@@ -12,7 +12,7 @@ NEW FEATURES:
 It contains a table with group dimensions of time series for binding constraints.
 * `readAntares()` new parameter **clustersST** to read (output simulation) short-term clusters
 * New function `readAntaresSTClusters()`
-
+* `fread_antares()` shiny compatible with a conditional processing of the error messages
 
 BREAKING CHANGES :
 
