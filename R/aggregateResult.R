@@ -605,13 +605,13 @@ parAggregateMCall <- function(opts,
             }
           }
           LOLD_data[, isLOLD_cum := 100 * isLOLD_cum/sum(mcWeights)]
-          assign("LOLD_data", LOLD_data, envir = parent.env(environment()))
         } 
       })
       
-      #browser()
+      # browser()
       .addMessage(verbose, paste0("------- End Mc-all : ", type, " -------"))
-      .formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct)
+      outputlist <- .formatOutput( lapply(value, function(X)(Reduce(cbind, X))), struct) 
+      list(outputlist, LOLD_data)
     }, verbose = verbose, simplify = FALSE)
     
     
@@ -621,7 +621,7 @@ parAggregateMCall <- function(opts,
         # Create grid folder####
         .gridFolderCreation(opts, verbose)
         # Create digest####
-        suppressWarnings(.writeDigestFile(opts, output, tmstp, linkTable, verbose, LOLD_data))
+        suppressWarnings(.writeDigestFile(opts, output[[1]], tmstp, linkTable, verbose, LOLD_data = output[[1]][[2]]))
       }
       
       mc_all <- file.path(opts$simDataPath, "mc-all")
@@ -1044,7 +1044,6 @@ aggregateResult <- function(opts,
 .formatOutput <- function(out, struct){
   
   # out <- lapply(value, function(X)(Reduce(cbind, X)))
-  # browser()
   for(i in names(struct)){
     if(is.null(nrow(struct[[i]]))){
       struct[[i]] <- NULL
