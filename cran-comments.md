@@ -7,7 +7,8 @@
  - Manage package :  
     - Add `\value` section in documentation  
     - Using foo::f instead of foo:::f to access exported objects  
-    - Replace `options(warn=-1)` by `suppressWarnings()`
+    - Replace `options(warn=-1)` by `suppressWarnings()`  
+    - Delete references to .GlobalEnv (`assign()`)
  
 
 
