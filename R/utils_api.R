@@ -1,4 +1,5 @@
 #' @importFrom utils URLencode
+#' @importFrom shiny isRunning
 fread_antares <- function(opts, file, ...) {
   if (identical(opts$typeLoad, "api")) {
     file <- gsub("\\.txt$", "", file)
@@ -9,7 +10,10 @@ fread_antares <- function(opts, file, ...) {
     )
     suppressWarnings(
       tryCatch(fread(response, ...), error = function(e){
-        message(file); message(e)
+        if(isRunning())
+          e <- as.character(e)
+        message(file) 
+        message(e)
       }))
   } else {
     suppressWarnings(
