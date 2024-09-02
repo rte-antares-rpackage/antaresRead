@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.1</span>
       </span>
     </div>
 
@@ -28,36 +28,26 @@
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/antaresH5.html">Use h5 file format with 'antaresRead'</a>
-    </li>
-  </ul></li>
 <li>
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/rte-antares-rpackage/antaresRead/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>API methods</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/HEAD/R/API-methods.R" class="external-link"><code>R/API-methods.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/master/R/API-methods.R" class="external-link"><code>R/API-methods.R</code></a></small>
     <div class="hidden name"><code>API-methods.Rd</code></div>
     </div>
 
@@ -84,41 +74,41 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>opts</dt>
+
+
+<dl><dt id="arg-opts">opts<a class="anchor" aria-label="anchor" href="#arg-opts"></a></dt>
 <dd><p>Antares simulation options or a <code>list</code> with an <code>host = </code> slot.</p></dd>
 
 
-<dt>endpoint</dt>
+<dt id="arg-endpoint">endpoint<a class="anchor" aria-label="anchor" href="#arg-endpoint"></a></dt>
 <dd><p>API endpoint to interrogate, it will be added after <code>default_endpoint</code>.
 Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I()</a></code>), in that case <code>default_endpoint</code> is ignored.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Additional arguments passed to API method.</p></dd>
 
 
-<dt>default_endpoint</dt>
+<dt id="arg-default-endpoint">default_endpoint<a class="anchor" aria-label="anchor" href="#arg-default-endpoint"></a></dt>
 <dd><p>Default endpoint to use.</p></dd>
 
 
-<dt>parse_result</dt>
+<dt id="arg-parse-result">parse_result<a class="anchor" aria-label="anchor" href="#arg-parse-result"></a></dt>
 <dd><p><code>character</code> options for parameter <code>as</code> of function <code><a href="https://httr.r-lib.org/reference/content.html" class="external-link">httr::content()</a></code></p></dd>
 
 
-<dt>encoding</dt>
+<dt id="arg-encoding">encoding<a class="anchor" aria-label="anchor" href="#arg-encoding"></a></dt>
 <dd><p>argument to pass as argument to the function <code><a href="https://httr.r-lib.org/reference/content.html" class="external-link">httr::content()</a></code></p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p>Response from the API.</p>
+    <p>Response from the API.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># List studies with local API</span></span></span>
 <span class="r-in"><span><span class="co"># default result content in R object (auto parsed)</span></span></span>
@@ -132,7 +122,7 @@ Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.ht
 <span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span>,</span></span>
 <span class="r-in"><span>        encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -147,15 +137,15 @@ Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.ht
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
