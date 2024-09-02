@@ -162,6 +162,15 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
   )
 
   areasWithResClusters <- names(hasResClusters)[hasResClusters]
+  
+  hasSTClusters <- unlist(
+    lapply(
+      read_secure_json(file.path(dataPath, "areas&depth=2"), ...),
+      function(x) any(grepl("details-STstorage-", names(x)))
+    )
+  )
+  
+  areasWithSTClusters <- names(hasSTClusters)[hasSTClusters]
   # Available variables
   variables <- list()
 
@@ -212,6 +221,7 @@ read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
       linksDef = linksDef,
       areasWithClusters = intersect(areasWithClusters, areaList),
       areasWithResClusters = intersect(areasWithResClusters, areaList),
+      areasWithSTClusters = intersect(areasWithSTClusters, areaList),
       variables = variables,
       parameters = params
     )
@@ -461,6 +471,10 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 #'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPathAPI}}
 #' @param timeout \code{numeric} API timeout (seconds). Default to 60.
+#' 
+#' @return
+#' Object of class `simOptions`, list of options used to read the data contained in the last
+#' simulation read by \code{\link{setTimeoutAPI}}.
 #'
 #' @export
 #'

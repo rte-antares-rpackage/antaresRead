@@ -14,6 +14,8 @@
 #' Read the data of an Antares simulation
 #'
 #' @description
+#' `r antaresRead:::badge_api_ok()`
+#' 
 #' \code{readAntares} is a swiss-army-knife function used to read almost every
 #' possible time series of an antares Project at any desired time resolution
 #' (hourly, daily, weekly, monthly or annual).
@@ -84,6 +86,11 @@
 #'   Vector containing the name of the areas for which you want to
 #'   import results at renewable cluster level. If \code{NULL} no cluster is imported. The
 #'   special value \code{"all"} tells the function to import renewable clusters from all
+#'   areas.
+#' @param clustersST
+#'   Vector containing the name of the areas for which you want to
+#'   import results at short-term cluster level. If \code{NULL} no cluster is imported. The
+#'   special value \code{"all"} tells the function to import short-term clusters from all
 #'   areas.
 #' @param bindingConstraints
 #'   Should binding constraints be imported (v8.4+)?
@@ -210,8 +217,8 @@
 #' @export
 #'
 readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
-                        districts = NULL, clustersRes = NULL, bindingConstraints = FALSE,
-                        misc = FALSE, thermalAvailabilities = FALSE,
+                        districts = NULL, clustersRes = NULL, clustersST = NULL,
+                        bindingConstraints = FALSE, misc = FALSE, thermalAvailabilities = FALSE,
                         hydroStorage = FALSE, hydroStorageMaxPower = FALSE,
                         reserve = FALSE, linkCapacity = FALSE, mustRun = FALSE,
                         thermalModulation = FALSE,
@@ -221,7 +228,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         mcWeights = NULL,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
-  
+
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
@@ -276,31 +283,31 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  if(isH5Opts(opts)){
-    
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(.h5ReadAntares(path = opts$h5path, 
-                            areas = areas,
-                            links = links,
-                            clusters = clusters,
-                            districts = districts,
-                            misc = misc,
-                            thermalAvailabilities = thermalAvailabilities,
-                            hydroStorage = hydroStorage,
-                            hydroStorageMaxPower = hydroStorageMaxPower,
-                            reserve = reserve,
-                            linkCapacity = linkCapacity,
-                            mustRun = mustRun,
-                            thermalModulation = thermalModulation,
-                            select = select,
-                            mcYears = mcYears,
-                            timeStep = timeStep[1],
-                            showProgress = showProgress,
-                            simplify = simplify))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
+  # if(isH5Opts(opts)){
+  #   
+  #   if(.requireRhdf5_Antares(stopP = FALSE)){
+  #     return(.h5ReadAntares(path = opts$h5path, 
+  #                           areas = areas,
+  #                           links = links,
+  #                           clusters = clusters,
+  #                           districts = districts,
+  #                           misc = misc,
+  #                           thermalAvailabilities = thermalAvailabilities,
+  #                           hydroStorage = hydroStorage,
+  #                           hydroStorageMaxPower = hydroStorageMaxPower,
+  #                           reserve = reserve,
+  #                           linkCapacity = linkCapacity,
+  #                           mustRun = mustRun,
+  #                           thermalModulation = thermalModulation,
+  #                           select = select,
+  #                           mcYears = mcYears,
+  #                           timeStep = timeStep[1],
+  #                           showProgress = showProgress,
+  #                           simplify = simplify))
+  #   } else {
+  #     stop(rhdf5_message)
+  #   }
+  # }
   
   if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
   
@@ -309,6 +316,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                links = links,
                                clusters = clusters,
                                clustersRes = clustersRes,
+                               clustersST = clustersST,
                                districts = districts,
                                mcYears = mcYears)
   
@@ -317,6 +325,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   links <- reqInfos$links
   clusters <- reqInfos$clusters
   clustersRes <- reqInfos$clustersRes
+  clustersST <- reqInfos$clustersST
   districts <- reqInfos$districts
   mcYears <- reqInfos$mcYears
   synthesis <- reqInfos$synthesis
@@ -328,7 +337,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     return(aggregateResult(opts = opts,
                            verbose = showProgress,
                            filtering = TRUE,
-                           selected = list(areas = areas, links = links, clusters = clusters, clustersRes = clustersRes),
+                           selected = list(areas = areas, links = links, clusters = clusters, clustersRes = clustersRes, clustersST = clustersST),
                            timestep = timeStep,
                            writeOutput = FALSE,
                            mcWeights = mcWeights, mcYears = mcYears))
@@ -337,12 +346,27 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if(length(reqInfos$computeAdd)>0)
   {
     for (v in reqInfos$computeAdd) {
-      assign(v, TRUE)
+      if(v%in%"misc")
+        misc <- TRUE
+      if(v%in%"thermalAvailabilities")
+        thermalAvailabilities <- TRUE
+      if(v%in%"hydroStorage")
+        hydroStorage <- TRUE
+      if(v%in%"hydroStorageMaxPower")
+        hydroStorageMaxPower <- TRUE
+      if(v%in%"reserve")
+        reserve <- TRUE
+      if(v%in%"linkCapacity")
+        linkCapacity <- TRUE
+      if(v%in%"mustRun")
+        mustRun <- TRUE
+      if(v%in%"thermalModulation")
+        thermalModulation <- TRUE
     }
   }
   
   # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(clustersRes) & is.null(districts)) {
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(clustersRes) & is.null(clustersST) & is.null(districts)) {
     areas <- "all"
   }
   
@@ -353,6 +377,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any thermal cluster.")
   clustersRes <- .checkArg(clustersRes, opts$areasWithResClusters, "Areas %s do not exist in the simulation or do not have any renewable cluster.")
+  clustersST <- .checkArg(clustersST, opts$areasWithSTClusters, "Areas %s do not exist in the simulation or do not have any short-term cluster.")
   districts <- .checkArg(districts, opts$districtList, "Districts %s do not exist in the simulation.")
   mcYears <- .checkArg(mcYears, opts$mcYears, "Monte-Carlo years %s have not been exported.", allowDup = TRUE)
   
@@ -475,6 +500,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                                  mcYears, showProgress, 
                                                  opts, parallel = parallel)
   if(!is.null(res$clustersRes) && nrow(res$clustersRes) == 0) res$clustersRes <- NULL
+  
+  # Import short-term clusters
+  res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, NULL, 
+                                                 mcYears, showProgress, 
+                                                 opts, parallel = parallel)
+  if(!is.null(res$clustersST) && nrow(res$clustersST) == 0) res$clustersST <- NULL
   
   # Import thermal clusters and eventually must run
   if (!mustRun) {
@@ -820,6 +851,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
                              links,
                              clusters,
                              clustersRes,
+                             clustersST,
                              districts,
                              mcYears){
   
@@ -873,6 +905,10 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
     if (!is.null(areas)) clustersRes <- areas
     else clustersRes <- "all"
   }
+  if ("clustersST" %in% unlist(select) & is.null(clustersST)) {
+    if (!is.null(areas)) clustersST <- areas
+    else clustersST <- "all"
+  }
   if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
   
   # If all arguments are NULL, import all areas
@@ -888,6 +924,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
               links = links,
               clusters = clusters,
               clustersRes = clustersRes,
+              clustersST = clustersST,
               districts = districts,
               mcYears = mcYears,
               synthesis = synthesis,

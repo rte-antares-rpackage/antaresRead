@@ -75,9 +75,9 @@ showAliases <- function(names = NULL) {
 #' 
 #' @export
 setAlias <- function(name, desc, select) {
-  if (!exists("varAliases", envir = pkgEnv)) {
-    assign("pkgEnv", list(), envir = pkgEnv)
-  }
+  if (!exists("varAliases", envir = pkgEnv)) 
+    message("varAliases is not defined and will be created")
+  
   pkgEnv$varAliases[[name]] <- list(desc = desc, select = select)
   
   invisible(TRUE)

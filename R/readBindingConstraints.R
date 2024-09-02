@@ -64,13 +64,6 @@
 #' 
 #' @export
 readBindingConstraints <- function(opts = simOptions()) {
-  if(isH5Opts(opts)){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(h5ReadBindingConstraints(opts))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
   
   ##
   # API BLOC

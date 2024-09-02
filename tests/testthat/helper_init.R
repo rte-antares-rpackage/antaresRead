@@ -1,19 +1,11 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
-options("antaresRead.skip_h5_on_cran" = TRUE)
-options("antaresRead.skip_h5" = TRUE)
-options("antaresRead.skip_h5_on_travis" = TRUE)
-options("antaresRead.skip_h5_on_appveyor" = TRUE)
-
-
 # Copy the test study in a temporary folder
 
 path0 <- tempdir()
 
-#sourcedir <- system.file("inst/testdata", package = "antaresRead")
 sourcedir <- system.file("testdata", package = "antaresRead")
-testH5 <- TRUE
-#if(sourcedir == ""){ }
+
 
 ## force tests to be executed if in dev release which we define as
 ## having a sub-release, eg 0.9.15.5 is one whereas 0.9.16 is not
@@ -21,7 +13,6 @@ testH5 <- TRUE
 if (length(strsplit(packageDescription("antaresRead")$Version, "\\.")[[1]]) > 3) { 
   Sys.setenv("RunAllAntaresReadTests"="yes")
 }
-.runH5Test <- FALSE #Sys.getenv("RunAllAntaresReadTests") == "yes"
 
 compareValue <- function(A, B, res = NULL){
   if(class(A)[3] == "list"){
@@ -65,65 +56,13 @@ if (sourcedir != "") {
     untar(file.path(sourcedir, studies[s]), exdir = file.path(path0, studies_names[s]))
   }
   
-  if(.requireRhdf5_Antares(stopP = FALSE) & .runH5Test){
-    
-    path_v6 <- file.path(path0, "antares-test-study-v6")
-    opts <- setSimulationPath(file.path(path_v6, "/test_case"))
-    suppressMessages({
-      suppressWarnings({
-        
-        #On cran we have only 2 threads so nbCore <- 1  
-        if(.runH5Test){
-          nbCoresTestHelper <- 4
-        }else{
-          nbCoresTestHelper <- 1
-        }
-        writeAntaresH5(path = path_v6, 
-                       misc = TRUE, thermalAvailabilities = TRUE,
-                       hydroStorage = TRUE, hydroStorageMaxPower = TRUE, reserve = TRUE,
-                       linkCapacity = TRUE,mustRun = TRUE, thermalModulation = TRUE,
-                       overwrite=TRUE, nbCores = nbCoresTestHelper)
-      })
-    })
-    
-    #if you change the tar file then you must also change this file
-    # h5file <- "20190321-2217eco-test.h5"
-    h5file <- "20180423-1734eco-test.h5"
-    
-    deprintize<-function(f){
-      return(function(...) {capture.output(w<-f(...));return(w);});
-    }
-    
-    silentf <- deprintize(showAliases)
-    
-    alias <- silentf()$name
-    alias <- as.character(alias)
-    
-    
-    
-    timeStep <-  c("hourly", "daily", "weekly", "monthly", "annual")
-    
-    assign("silentf", silentf, envir = globalenv())
-    assign("tpDir", path_v6, envir = globalenv())
-    assign("pathF", file.path(path_v6, "/", h5file), envir = globalenv())
-    assign("h5file", h5file, envir = globalenv())
-    assign("alias", alias, envir = globalenv())
-    assign("compareValue", compareValue, envir = globalenv())
-    assign("timeStep", timeStep, envir = globalenv())
-    assign("optsG", opts, envir = globalenv())
-    
-  } 
+  studyPathS <- file.path(path0, studies_names, "test_case")
   
-  assign(
-    x = "studyPathS",
-    value = file.path(path0, studies_names, "test_case"),
-    envir = globalenv()
-  )
+  nweeks <- 2
+  nmonths <- 2 
+  firstDay <- 113
+  lastDay <- 126
   
-  assign("nweeks", 2, envir = globalenv())
-  assign("nmonths", 2, envir = globalenv())
-  assign("firstDay", 113, envir = globalenv())
-  assign("lastDay", 126, envir = globalenv())
 }
 
 
@@ -148,26 +87,21 @@ if(sourcedir_V8 != ""){
     dir.create(file.path(path0, studies_names[s]))
     untar(file.path(sourcedir_V8, studies[s]), exdir = file.path(path0, studies_names[s]))
   }
-  assign(
-    x = "studyPathSV8",
-    value = file.path(path0, studies_names, "test_case"),
-    envir = globalenv()
-  )
+  
+  studyPathSV8 <- file.path(path0, studies_names, "test_case")
 }
 
 
-
-
-skip_according_to_options <- function() {
-  if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
-    skip_on_cran()
-  if (isTRUE(getOption("antaresRead.skip_h5")))
-    skip("h5 test skipped")
-  if (isTRUE(getOption("antaresRead.skip_h5_on_travis")))
-    skip_on_travis()
-  if (isTRUE(getOption("antaresRead.skip_h5_on_appveyor")))
-    skip_on_appveyor()
-}
+# skip_according_to_options <- function() {
+#   if (isTRUE(getOption("antaresRead.skip_h5_on_cran")))
+#     skip_on_cran()
+#   if (isTRUE(getOption("antaresRead.skip_h5")))
+#     skip("h5 test skipped")
+#   if (isTRUE(getOption("antaresRead.skip_h5_on_travis")))
+#     skip_on_travis()
+#   if (isTRUE(getOption("antaresRead.skip_h5_on_appveyor")))
+#     skip_on_appveyor()
+# }
 
 pathAPI <- "http://localhost:8080/studies/antaresStd/"
 
@@ -183,15 +117,14 @@ setup_study_empty <- function(dir_path){
                         full.names = TRUE)
   # choose pattern 
   studies <- studies[grep(x = studies, 
-                          pattern = "v87")] 
+                          pattern = "empty_study_v870")] 
   # untar etude
   path_sty <- file.path(tempdir(), 
                         "study_empty_latest_version")
   untar(studies[1], exdir = path_sty) # version latest
   study_temp_path <- file.path(path_sty, "test_case")
   
-  assign("study_empty_latest_version",
-         file.path(path_sty,
-                   "test_case"),
-         envir = globalenv())
-}
+  study_empty_latest_version <- file.path(path_sty,
+                                          "test_case")
+  return(study_empty_latest_version)
+  }

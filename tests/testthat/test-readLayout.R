@@ -18,8 +18,6 @@ describe("readLayout", {
     
   })
   
-  if(!isH5Opts(opts))
-  {
   districtDefFile <- file.path(opts$inputPath, "areas/sets.ini")
   
   it("still works when there is no district (#50)", {
@@ -38,7 +36,6 @@ describe("readLayout", {
   
   file.remove(districtDefFile)
   file.rename(paste0(districtDefFile, ".back"), districtDefFile)
-  }
   
 })
 

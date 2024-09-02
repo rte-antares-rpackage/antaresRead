@@ -49,12 +49,12 @@ test_that("test if exist data value file", {
 # >= v870 ----
 
 # read latest version of empty study
-setup_study_empty(sourcedir_empty_study)
+study_empty_latest_version <- setup_study_empty(sourcedir_empty_study)
 opts_test_empty <- antaresRead::setSimulationPath(study_empty_latest_version,
                                             "input")
 
 # read latest version study
-path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
 ## empty study test ----

@@ -1,5 +1,5 @@
 context(".timeIdToDate")
-suppressWarnings(suppressPackageStartupMessages(require(lubridate)))
+# suppressWarnings(suppressPackageStartupMessages(require(lubridate)))
 
 describe(".timeIdToDate", {
   
