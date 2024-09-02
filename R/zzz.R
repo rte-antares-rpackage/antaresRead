@@ -11,11 +11,14 @@
 #' @importFrom utils untar
 #' @importFrom stringr str_match str_replace
 
+
+# private variables ----
 # Private variables accessible only by functions from the package
 
 pkgEnv <- new.env()
 
 
+## output variables ----
 pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package = "antaresRead"),
                                 sep = ";", header = TRUE)
 
@@ -86,6 +89,7 @@ setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
            "FLOW QUAD.", "CONG. FEE (ALG.)", "CONG. FEE (ABS.)", "MARG. COST",
            "CONG. PROB +", "CONG. PROB -", "HURDLE COST"))
 
+## global vars package ----
 # The goal of the following lines is only to remove many useless warnings in
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
 # They come from the use of the data.table syntax.
@@ -93,7 +97,7 @@ utils::globalVariables(
   c("timeId", "tsId", "area", "hydroStorage", "thermalAvailability",
     "cluster", "FLOW LIN.", "FLOW QUAD.", "direction", "flow",
     "BALANCE", "totalFlow", "prop", "to", "link", "change",
-    "district", "must.run", ".txt", "detailsLength",
+    "district", "must-run", ".txt", "detailsLength",
     "linkLength", "connectedToVirtualArea", "from", "correction",
     "nominalcapacity", "unitcount", "capacity", "minGenModulation",
     "production", "mustRunPartial", "mustRunTotal", "mcYear",
@@ -101,18 +105,39 @@ utils::globalVariables(
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea",
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
-    "NODU", "min.stable.power", "thermalPmin", "name", "value",
+    "NODU", "min-stable-power", 'Category', 'Version Antares', 'Type',
+    "thermalPmin", "name", "value",
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
     "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC", 
     "DETAILS_FILES_TYPE","ANTARES_DISPLAYED_NAME")
 )
 
+## INPUT Properties REF ----
+res_prop_ref <- data.table::fread(system.file("referential_properties/properties_input_renewable.csv", 
+                                              package = "antaresRead"),
+                                  sep = ";", 
+                                  header = TRUE)
+
+res_prop_therm <- data.table::fread(system.file("referential_properties/properties_input_thermal.csv", 
+                                                package = "antaresRead"),
+                                    sep = ";", 
+                                    header = TRUE)
+
+res_prop_st <- data.table::fread(system.file("referential_properties/properties_input_storage.csv", 
+                                             package = "antaresRead"),
+                                 sep = ";",
+                                 header = TRUE)
+
+df_files_ref <- do.call("rbind", 
+                        list(res_prop_ref, res_prop_therm, res_prop_st))
+pkgEnv$inputProperties <- df_files_ref
+
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
                                 function(X){paste0(X, collapse = "")}))
 
-
+# some tools functions ----
 .tidymess <- function(..., prefix = " ", initial = ""){
   as.character(strwrap(..., prefix = prefix, initial = initial))
 }
@@ -141,3 +166,4 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
   bydistrict <- c("district", .get_by(x))
   return(bydistrict)
 }
+

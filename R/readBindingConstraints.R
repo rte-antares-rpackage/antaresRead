@@ -64,7 +64,7 @@
 #' 
 #' @export
 readBindingConstraints <- function(opts = simOptions()) {
-  
+
   ##
   # API BLOC
   ##

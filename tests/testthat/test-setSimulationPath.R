@@ -177,7 +177,6 @@ test_that("Folder 'maps' is not interpreted as a study (#49)", {
   expect_silent(opts <- setSimulationPath(studyPath, -1))
 })
 
-
 test_that("No meta info areas with a ST cluster < 860", {
   opts <- setSimulationPath(studyPath, "input")
   expect_true(length(opts$areasWithSTClusters)==0)
