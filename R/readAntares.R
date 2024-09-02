@@ -123,7 +123,7 @@
 #'   similar to mustRunTotal except it also takes into account the production
 #'   induced by the minimum stable power of the units of a cluster. More
 #'   precisely, for a given cluster and a given time step, it is equal to 
-#'   \code{min(NODU x min.stable.power, mustRunTotal)}.
+#'   \code{min(NODU x min-stable-power, mustRunTotal)}.
 #' @param select
 #'   Character vector containing the name of the columns to import. If this 
 #'   argument is \code{NULL}, all variables are imported. Special names 
@@ -912,7 +912,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
   if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
   
   # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)) {
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersST)) {
     areas <- "all"
   }
   

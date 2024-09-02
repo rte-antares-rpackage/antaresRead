@@ -1,5 +1,6 @@
+development:
+  mode: auto
 destination: docs
-
 template:
   params:
     bootswatch: readable

@@ -86,4 +86,36 @@ test_that("test reading TS RES", {
   })
   
   
+
+})
+
+# >= v870 ----
+## RES ----
+test_that("test reading TS RES", {
+ 
+  # read latest version study
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
+  setSimulationPath(path_study_test, simulation = "input")
+  
+  res_clust_properties <- readClusterResDesc()
+  
+  test_that("read one cluster", {
+    # read /series files (default)
+    input <- readInputRES(areas = "all", 
+                          clusters = unique(res_clust_properties$cluster)[1])
+    expect_is(input, "antaresDataTable")
+    expect_gt(nrow(input), 0)
+    expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
+  })
+ 
+  test_that("read various clusters", {
+    nb_cluster <- length(unique(res_clust_properties$cluster))
+    # read /series files (default)
+    input <- readInputRES(areas = "all", 
+                          clusters = unique(res_clust_properties$cluster))
+    expect_is(input, "antaresDataTable")
+    expect_gt(nrow(input), 0)
+    expect_equal(nrow(input) %% (24 * 7 * nweeks), 0)
+  })
+  
 })

@@ -1,5 +1,23 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.7.2.9000
+
+NEW FEATURES:
+
+* New function `readAntaresSTClusters()`
+* `fread_antares()` shiny compatible with a conditional processing of the error messages
+
+BREAKING CHANGES :
+
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` are updated with new endpoint "table mode".  
+  - In "text" mode, functions return all properties (with default properties) according to study version.
+
+BUGFIXES :  
+
+* `setSimulationPathAPI()`: control the existence of the output folder **links** or **areas** before reading the data (upgrade Antares Web)
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` return a data.table in API mode
+
+
 # antaresRead 2.7.1 
 
 NEW FEATURES:
@@ -20,7 +38,6 @@ BUGFIXES :
 
 * `readInputThermal()` return data from file data.txt with `thermalData` parameter
 * `setSimulationPath()` has also the parameter **areasWithSTClusters** in 'output' mode
-
 
 
 # antaresRead 2.7.0

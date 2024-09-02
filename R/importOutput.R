@@ -377,14 +377,16 @@
     
     # Get cluster capacity and must run mode
     clusterDesc <- readClusterDesc(opts)
-    if(is.null(clusterDesc$must.run)) clusterDesc$must.run <- FALSE
-    clusterDesc[is.na(must.run), must.run := FALSE]
-    if (is.null(clusterDesc$min.stable.power)) clusterDesc$min.stable.power <- 0
-    clusterDesc[is.na(min.stable.power), min.stable.power := 0]
+    if(is.null(clusterDesc[["must-run"]]))
+      clusterDesc[["must-run"]] <- FALSE
+    clusterDesc[is.na(`must-run`), `must-run` := FALSE]
+    if (is.null(clusterDesc[["min-stable-power"]])) 
+      clusterDesc[["min-stable-power"]] <- 0
+    clusterDesc[is.na(`min-stable-power`), `min-stable-power` := 0]
     clusterDesc <- clusterDesc[, .(area, cluster,
                                    capacity = nominalcapacity * unitcount,
-                                   min.stable.power,
-                                   must.run)]
+                                   `min-stable-power`,
+                                   `must-run`)]
     
     # Are clusters in partial must run mode ?
     mod <- llply(areas, .importThermalModulation, opts = opts, timeStep = "hourly")
@@ -449,16 +451,16 @@
       
     }
     
-    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run, min.stable.power)])
+    .mergeByRef(res, clusterDesc[,.(area, cluster, `must-run`, `min-stable-power`)])
     
     if (is.null(res$NODU)) res[, thermalPmin := 0]
-    else res[, thermalPmin := min.stable.power * NODU]
+    else res[, thermalPmin := `min-stable-power` * NODU]
     
     res[, `:=`(
-      mustRun = production * must.run,
-      mustRunTotal = production * must.run + mustRunPartial,
-      must.run = NULL,
-      min.stable.power = NULL
+      mustRun = production * `must-run`,
+      mustRunTotal = production * `must-run` + mustRunPartial,
+      `must-run` = NULL,
+      `min-stable-power` = NULL
     )]
     
     res[, thermalPmin := pmax(thermalPmin, mustRunTotal)]

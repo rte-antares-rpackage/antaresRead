@@ -34,6 +34,8 @@
 #' \code{readClusterResDesc} : read renewable clusters (Antares >= V8.1)
 #' 
 #' \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
+#' 
+#' If you have no clusters properties, `Null data.table (0 rows and 0 cols)` is returned.
 #'
 #' @examples
 #' 
@@ -93,77 +95,158 @@ readClusterSTDesc <- function(opts = simOptions()) {
                              dir = "thermal/clusters") {
   
   path <- file.path(opts$inputPath, dir)
-  
-  columns <- .generate_columns_by_type(dir = dir)
   api_study <- is_api_study(opts)
+
+  table_type <- switch(
+    dir,
+    "thermal/clusters" = "thermals",
+    "renewables/clusters" = "renewables",
+    "st-storage/clusters" =  "st-storages"
+  )
   
-  if(api_study){
+  if (api_study) {
+    # api request with all columns
+    list_clusters <- api_get(
+      opts = opts,
+      endpoint = paste0(opts$study_id, "/table-mode/", table_type),
+      query = list(columns = "")
+    )
     
-    jsoncld <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
-    res <-  rbindlist(mapply(function(X1, Y1){
-      clusters <- rbindlist(
-        mapply(function(X, Y){
-          out <- as.data.frame(X)
-          if(nrow(out) == 0)return(NULL)
-          out$area = Y
-          out
-        }, X1$list, names(X1$list), SIMPLIFY = FALSE), fill = TRUE)
-      if(is.null(clusters))return(NULL)
-      if(nrow(clusters)==0)return(NULL)
-      clusters$area <- Y1
-      clusters[, .SD, .SDcols = order(names(clusters))]
-    },jsoncld, names(jsoncld), SIMPLIFY = FALSE), fill = TRUE)
-    
-    
-  }else{
-    
-    areas <- list.files(path)
-    
-    res <- ldply(areas, function(x) {
-      clusters <- readIniFile(file.path(path, x, "list.ini"))
-      
-      if (length(clusters) == 0) return(NULL)
-      
-      clusters <- ldply(clusters, as.data.frame)
-      clusters$.id <- NULL
-      clusters$area <- x
-      
-      clusters[, c(ncol(clusters), 1:(ncol(clusters) - 1))]
-    })
-    
+    dt_clusters <- .convert_list_clusterDesc_to_datatable(list_clusters)
+  
+    return(dt_clusters)
   }
+      
+  # "text" mode
+  areas <- list.files(path)
   
-  if(length(res) == 0){
-    mandatory_cols <- c("area","cluster")
-    warning("No cluster description available.", call. = FALSE)
-    res <- setNames(data.table(matrix(nrow = 0, ncol = length(mandatory_cols) + length(columns))), c(mandatory_cols, columns))
-  }else{
-    if(api_study){
-      mandatory_cols <- c("area", "name", "group")
-      additional_cols <- setdiff(colnames(res),mandatory_cols)
-      res <- res[, .SD, .SDcols = c(mandatory_cols, additional_cols)]
-    }
-    res <- as.data.table(res)
-    setnames(res, "name", "cluster")
-    res$cluster <- as.factor(tolower(res$cluster))
-  }
+  # READ cluster properties
+  properties <- get_input_cluster_properties(table_type = table_type, 
+                                             opts = opts)
+   
+  # read properties for each area
+  res <- plyr::llply(areas, function(x, prop_ref=properties) {
+    clusters <- readIniFile(file.path(path, x, "list.ini"))
+    if (length(clusters) == 0) 
+      return(NULL)
+    # conversion list to data.frame
+    clusters <- plyr::ldply(clusters, function(x){
+      df_clust <- data.frame(x, check.names = FALSE) 
+      colnames_to_add <- setdiff(names(prop_ref), names(df_clust))
+      if(!identical(colnames_to_add, character(0)))
+        df_clust <- cbind(df_clust, prop_ref[, .SD, .SDcols = colnames_to_add])
+      df_clust
+      }) # check.names = FALSE (too many side effects)
+    clusters$.id <- NULL
+    clusters$area <- x
+    # re order columns
+    clusters[, c("area", setdiff(colnames(clusters), "area"))]
+  })
   
+  res <- data.table::rbindlist(l = res, fill = TRUE)
+  
+  # NO PROPERTIES CLUSTER FOUND
+  if(length(res) == 0)
+    return(data.table())
+  
+  # output format conversion
+  res <- data.table::as.data.table(res)
+  data.table::setnames(res, "name", "cluster")
+  res$cluster <- as.factor(tolower(res$cluster))
   res
 }
 
-.generate_columns_by_type <- function(dir = c("thermal/clusters", "renewables/clusters", "st-storage/clusters")) {
+
+# read and manage referential properties 
+  # return referential according to type and study version
+get_input_cluster_properties <- function(table_type, opts){
+  # READ cluster properties
+  full_ref_properties <- pkgEnv[["inputProperties"]]
   
-  
-  columns <- switch(
-    dir,
-    "thermal/clusters" = c("group","enabled","must_run","unit_count","nominal_capacity",
-                           "min_stable_power","spinning","min_up_time","min_down_time",
-                           "co2","marginal_cost","fixed_cost","startup_cost","market_bid_cost",
-                           "spread_cost","ts_gen","volatility_forced","volatility_planned",
-                           "law_forced","law_planned"),
-    
-    "renewables/clusters" = c("group","ts_interpretation","enabled","unit_count","nominal_capacity")
-    #"st-storage/clusters" =  #ATTENTE DEV COTé API
+  category_ref_cluster <- switch(
+    table_type,
+    "thermals" = "thermal",
+    "renewables" = "renewable",
+    "st-storages" = "storage"
   )
-  return(columns)
+  
+  # filter by category
+  ref_filter_by_cat <- full_ref_properties[`Category` %in%
+                                             category_ref_cluster]
+  # filter by study version
+  ref_filter_by_vers <- ref_filter_by_cat[`Version Antares` <= 
+                                            opts$antaresVersion | 
+                                            `Version Antares` %in% NA]
+  
+  # detect evolution on parameter ? (new value according to study version) 
+  # filter on value according to study version 
+  df_multi_params <- ref_filter_by_vers[, 
+                                        count := .N, 
+                                        by = c("INI Name"), 
+                                        keyby = TRUE][
+                                          count>1][, 
+                                                   .SD[which.max(`Version Antares`)], 
+                                                   by="INI Name"]
+  
+  df_unique_params <- ref_filter_by_vers[, 
+                                         count := .N, 
+                                         by = c("INI Name"), 
+                                         keyby = TRUE][
+                                           count==1]
+  
+  ref_filter_by_vers <- rbind(df_unique_params, df_multi_params)
+  
+  # select key colums and put wide format
+  ref_filter_by_vers <- ref_filter_by_vers[ , 
+                                            .SD, 
+                                            .SDcols = c("INI Name", 
+                                                        "Default", 
+                                                        "Type")]
+  
+  # select names columns to convert to logical + numerical
+  logical_col_names <- ref_filter_by_vers[Type%in%"bool"][["INI Name"]]
+  numerical_col_names <- ref_filter_by_vers[Type%in%c("int", "float")][["INI Name"]]
+  
+  wide_ref <- data.table::dcast(data = ref_filter_by_vers, 
+                                formula = .~`INI Name`,
+                                value.var = "Default")[
+                                  , 
+                                  .SD,
+                                  .SDcols = -c(".", "name")]
+  # /!\ column type conversion on 
+  wide_ref[, 
+           (logical_col_names):= lapply(.SD, as.logical), 
+           .SDcols = logical_col_names][
+             ,
+             (numerical_col_names):= lapply(.SD, as.numeric), 
+             .SDcols = numerical_col_names
+           ]
+  
+  return(wide_ref)
+}
+
+
+.convert_list_clusterDesc_to_datatable <- function(list_clusters) {
+  
+  if (length(list_clusters) == 0) {
+    return(data.table())
+  } 
+    
+  rows_cluster <- lapply(names(list_clusters), FUN = function(cl_name) {
+      
+      row_cluster <- as.data.frame(list_clusters[[cl_name]])
+      row_cluster[,c("area", "cluster")] <- unlist(strsplit(cl_name, split = " / "))
+      
+      return(row_cluster)
+    }
+  )
+
+  df_clusters <- do.call("rbind", rows_cluster)
+  id_cols <- intersect(c("area", "cluster", "group"), colnames(df_clusters))
+  additional_cols <- setdiff(colnames(df_clusters), id_cols)  
+  df_clusters <- df_clusters[,c(id_cols, additional_cols)]
+  df_clusters$cluster <- as.factor(tolower(df_clusters$cluster))
+  colnames(df_clusters) <- tolower(colnames(df_clusters))
+  
+  return(as.data.table(df_clusters))
 }

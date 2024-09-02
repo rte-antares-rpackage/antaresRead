@@ -152,8 +152,6 @@ tar(
 setwd(saveWd)
 ```
 
-You must also change the h5 file [here](https://github.com/rte-antares-rpackage/antaresRead/blob/master/tests/testthat/helper_init.R#L35).
-
 ## ANTARES :
  Antares is a powerful software developed by RTE to simulate and study electric power systems (more information about Antares here : <https://antares-simulator.org/>).
  
