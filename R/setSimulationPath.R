@@ -185,36 +185,15 @@ setSimulationPath <- function(path, simulation = NULL) {
   if (missing(path)) {
     if (exists("choose.dir", getNamespace("utils"))) {
       # choose.dir is defined only on Windows
-      path <- utils::choose.dir(getwd(), "Select an Antares simulation directory")
+      path <- utils::choose.dir("./", "Select an Antares simulation directory")
       if (is.na(path)) stop("You have canceled the execution.")
     } else {
       stop("Please specify a path to an Antares simulation")
     }
   }
   
-  # Get study, simulation and input paths
-  # .h5 ?
-  if(grepl(".h5$", path)){
-    if(file.exists(path)){
-      if(.requireRhdf5_Antares(stopP = FALSE)){
-        return(setSimulationPathH5(path))
-      } else {
-        stop(rhdf5_message)
-      }
-    } else {
-      stop("Invalid path argument. File .h5 not found")
-    }
-  }
-
-  # else local file system
+  # # Get study, simulation and input paths
   res <- .getPaths(path, simulation)
-  if(res[1] == "H5"){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(setSimulationPathH5(path, simulation))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
   
   res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
   
@@ -279,6 +258,11 @@ setSimulationPath <- function(path, simulation = NULL) {
 # Private function that extracts study, simulation and input paths from the
 # path specified by the user.
 .getPaths <- function(path, simulation) {
+  # check path must be length 1
+  if(length(path)!=1)
+    stop("Only one path is required", 
+         call. = FALSE)
+  
   path <- gsub("[/\\]$", "", path)
   path <- normalizePath(path, winslash = "/")
   
@@ -297,19 +281,9 @@ setSimulationPath <- function(path, simulation = NULL) {
     # - 2. there is only one study in the output. Select it
     # - 3. asks the user to interactively choose one simulation
     
-    if (!file.exists(file.path(path, "study.antares"))){
-      allFiles <- list.files(path)
-      avaliableFile <- allFiles[grep(".h5$", allFiles)]
-      if(length(avaliableFile) == 0)
-      {
+    if (!file.exists(file.path(path, "study.antares")))
       stop("Directory is not an Antares study.")
-      }else{
-        ##H5 mode
-        return("H5")
-      }
-    }
       
-    
     outputPath <- file.path(path, "output")
     
     outputContent <- list.dirs(outputPath, recursive = FALSE)

@@ -56,6 +56,10 @@ aggregateResult(
 
 \item{legacy}{\code{boolean} run old version of the function}
 }
+\value{
+Object \code{list} of data.tables, each element representing one type
+of element (areas, links, clusters)
+}
 \description{
 Creation of Mc_all new (only antares > V6)
 }

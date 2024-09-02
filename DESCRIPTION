@@ -44,7 +44,6 @@ Imports:
     lifecycle,
     assertthat
 Suggests:
-    rhdf5 (>= 2.24.0),
     testthat,
     covr,
     knitr,

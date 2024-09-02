@@ -9,6 +9,9 @@ setRam(x)
 \arguments{
 \item{x}{\code{numeric} RAM limit in Go}
 }
+\value{
+\code{list} (returned by \code{\link[=options]{options()}})
+}
 \description{
 This function specify RAM limit (in Go) of the value returned by \link[antaresRead]{readAntares}.
 }

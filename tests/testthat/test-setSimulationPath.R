@@ -5,8 +5,8 @@ context("Setup functions")
 # v710----
 sapply(studyPathS, function(studyPath){
   
-suppressPackageStartupMessages(require(lubridate))
-suppressWarnings(suppressPackageStartupMessages(require(data.table)))
+# suppressPackageStartupMessages(require(lubridate))
+# suppressWarnings(suppressPackageStartupMessages(require(data.table)))
 
 # Reading of study options #####################################################
 
@@ -46,21 +46,17 @@ test_that("R option 'antares' is set", {
   opts <- setSimulationPath(studyPath)
   expect_identical(opts, getOption("antares"))
 })
-opts <- setSimulationPath(studyPath)
-if(!isH5Opts(opts))
-{
+
 test_that("setSimulationPath fails if path is not an antares Ouput directory", {
   expect_error(setSimulationPath(file.path(studyPath, "../..")))
 })
-}
 
 opts <- setSimulationPath(studyPath)
-if(!isH5Opts(opts))
-{
+
 test_that("setSimulationPath can read info in input", {
   opts <- setSimulationPath(studyPath, "input")
   for (v in c("studyName", "areaList", "districtList", "linkList",
-              "areasWithClusters", "timeIdMin", "timeIdMax", "start", 
+              "areasWithClusters", "timeIdMin", "timeIdMax", "start",
               "firstWeekday")) {
     expect_equal(opts[[v]], trueOpts[[v]])
   }
@@ -68,20 +64,20 @@ test_that("setSimulationPath can read info in input", {
 
 test_that("setSimulationPath works if synthesis and some MC years are not saved (#31)", {
   opts <- setSimulationPath(studyPath)
-  
-  file.rename(file.path(opts$simDataPath, "mc-all"), 
+
+  file.rename(file.path(opts$simDataPath, "mc-all"),
               file.path(opts$simDataPath, "mc-all_back"))
-  file.rename(file.path(opts$simDataPath, "mc-ind/00001"), 
+  file.rename(file.path(opts$simDataPath, "mc-ind/00001"),
               file.path(opts$simDataPath, "mc-ind/00001_back"))
-  
+
   opts <- setSimulationPath(studyPath)
   trueOpts$synthesis <- FALSE
   trueOpts$mcYears <- 2
   expect_equal(opts[names(trueOpts)], trueOpts)
-  
-  file.rename(file.path(opts$simDataPath, "mc-all_back"), 
+
+  file.rename(file.path(opts$simDataPath, "mc-all_back"),
               file.path(opts$simDataPath, "mc-all"))
-  file.rename(file.path(opts$simDataPath, "mc-ind/00001_back"), 
+  file.rename(file.path(opts$simDataPath, "mc-ind/00001_back"),
               file.path(opts$simDataPath, "mc-ind/00001"))
 })
 
@@ -121,7 +117,7 @@ test_that("select simulation with negative index", {
   opts <- setSimulationPath(studyPath, -2)
   expect_equal(opts[names(trueOpts)], trueOpts)
 })
-# 
+#
 # test_that("select simulation interactively (number)", {
 #   with_mock(
 #     `base::scan` = function(...) {"1"},
@@ -131,7 +127,7 @@ test_that("select simulation with negative index", {
 #     }
 #   )
 # })
-# 
+#
 # test_that("select simulation interactively (name)", {
 #   with_mock(
 #     scan = function(...) {"eco-test"},
@@ -141,6 +137,11 @@ test_that("select simulation with negative index", {
 #     }
 #   )
 # })
+
+test_that("Bad multiple path", {
+  expect_error(setSimulationPath(studyPathSV8, simulation = "input"), 
+               regexp = "Only one path is required")
+})
 
 # Remove fake study
 unlink(file.path(studyPath, "output/30000101-0000fake"), TRUE, TRUE)
@@ -156,12 +157,12 @@ describe("No simulation", {
   it("Error if the user tries to read simulation results", {
     expect_error(setSimulationPath(studyPath, 1))
   })
-  
+
   it("User can read input data", {
     expect_silent(opts <- setSimulationPath(studyPath, 0))
     expect_equal(opts$mode, "Input")
   })
-  
+
   it("Read input data by default", {
     expect_silent(opts <- setSimulationPath(studyPath))
     expect_equal(opts$mode, "Input")
@@ -175,8 +176,6 @@ file.rename(file.path(studyPath, "outputBack"), file.path(studyPath, "output"))
 test_that("Folder 'maps' is not interpreted as a study (#49)", {
   expect_silent(opts <- setSimulationPath(studyPath, -1))
 })
-
-}
 
 test_that("No meta info areas with a ST cluster < 860", {
   opts <- setSimulationPath(studyPath, "input")
@@ -193,7 +192,7 @@ test_that("No meta info binding study < 870", {
 # v860----
 test_that("New meta data for areas with a ST cluster", {
   # read latest version study
-  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
   opts_study_test <- setSimulationPath(path_study_test, simulation = "20240105-0934eco")
   
   expect_false(is.null(opts_study_test$areasWithSTClusters))
@@ -203,7 +202,7 @@ test_that("New meta data for areas with a ST cluster", {
 # v870----
 test_that("New meta data for group dimension of binding constraints", {
   # read latest version study
-  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
   opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
   
   expect_is(opts_study_test$binding, "data.table")

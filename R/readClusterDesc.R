@@ -90,13 +90,14 @@ readClusterSTDesc <- function(opts = simOptions()) {
   .readClusterDesc(opts = opts, dir = "st-storage/clusters")
 }
 
-
+#' @importFrom stats setNames
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters") {
   
   path <- file.path(opts$inputPath, dir)
   api_study <- is_api_study(opts)
   
+
   table_type <- switch(
     dir,
     "thermal/clusters" = "thermals",

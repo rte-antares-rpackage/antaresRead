@@ -8,6 +8,8 @@
 #' 
 #' @param x \code{numeric} RAM limit in Go
 #' 
+#' @return `list` (returned by [options()])
+#' 
 #' @examples
 #' \dontrun{
 #' #Set maximum ram to used to 50 Go
