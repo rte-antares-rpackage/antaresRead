@@ -96,7 +96,6 @@ readClusterSTDesc <- function(opts = simOptions()) {
   
   path <- file.path(opts$inputPath, dir)
   api_study <- is_api_study(opts)
-  
 
   table_type <- switch(
     dir,
