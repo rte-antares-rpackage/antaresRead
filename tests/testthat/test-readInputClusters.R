@@ -94,7 +94,7 @@ test_that("test reading TS RES", {
 test_that("test reading TS RES", {
  
   # read latest version study
-  path_study_test <- grep(pattern = "87", x = studyPathSV8, value = TRUE)
+  path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
   setSimulationPath(path_study_test, simulation = "input")
   
   res_clust_properties <- readClusterResDesc()
