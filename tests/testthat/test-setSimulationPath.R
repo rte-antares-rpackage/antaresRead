@@ -198,7 +198,7 @@ test_that("New meta data for areas with a ST cluster", {
   expect_false(is.null(opts_study_test$areasWithSTClusters))
 })
 
-
+library(stringr)
 # v870----
 test_that("New meta data for group dimension of binding constraints", {
   # read latest version study
@@ -206,4 +206,34 @@ test_that("New meta data for group dimension of binding constraints", {
   opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
   
   expect_is(opts_study_test$binding, "data.table")
+})
+
+test_that("valid versions are transformed correctly", {
+  expect_equal(transform_antares_version("9.0")$r, 900)
+  expect_equal(transform_antares_version("9.45")$r, 945)
+  expect_equal(transform_antares_version("10.10")$r, 1010)
+  expect_equal(transform_antares_version("10.45")$r, 1045)
+  expect_equal(transform_antares_version("12.12")$r, 1212)
+})
+
+test_that("invalid minor versions with more than 2 digits raise an error", {
+  expect_error(transform_antares_version("10.113400000"), "Minor version exceeds 2 digits limit.")
+  expect_error(transform_antares_version("9.1234"), "Minor version exceeds 2 digits limit.")
+})
+
+test_that("invalid major versions less than 9 raise an error", {
+  expect_error(transform_antares_version("8.99"), "Major version must be 9 or higher.")
+  expect_error(transform_antares_version("7.10"), "Major version must be 9 or higher.")
+})
+
+test_that("single numeric versions work correctly", {
+  expect_equal(transform_antares_version("860")$r, 860)
+  expect_equal(transform_antares_version("890")$r, 890)
+})
+
+test_that("correct output for to_write field", {
+  expect_equal(transform_antares_version("9.0")$w, "9.0")
+  expect_equal(transform_antares_version("9.45")$w, "9.45")
+  expect_equal(transform_antares_version("10.10")$w, "10.10")
+  expect_equal(transform_antares_version("12.12")$w, "12.12")
 })
