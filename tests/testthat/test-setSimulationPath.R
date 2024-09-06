@@ -198,7 +198,7 @@ test_that("New meta data for areas with a ST cluster", {
   expect_false(is.null(opts_study_test$areasWithSTClusters))
 })
 
-library(stringr)
+
 # v870----
 test_that("New meta data for group dimension of binding constraints", {
   # read latest version study
@@ -208,6 +208,7 @@ test_that("New meta data for group dimension of binding constraints", {
   expect_is(opts_study_test$binding, "data.table")
 })
 
+library(stringr)
 test_that("valid versions are transformed correctly", {
   expect_equal(transform_antares_version("9.0")$r, 900)
   expect_equal(transform_antares_version("9.45")$r, 945)
