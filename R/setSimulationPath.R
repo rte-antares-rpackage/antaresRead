@@ -684,7 +684,7 @@ setSimulationPath <- function(path, simulation = NULL) {
 #'
 #' @param antares_version Antares number version.
 #'
-#' @importFrom stringr str_count
+#' @importFrom stringr str_count str_detect
 #'
 #' @export
 transform_antares_version <- function(antares_version) {
