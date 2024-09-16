@@ -27,7 +27,7 @@ readLayout, readBindingConstraints)'><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.7.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.2</span>
       </span>
     </div>
 
@@ -57,7 +57,7 @@ readLayout, readBindingConstraints)'><!-- mathjax --><script src="https://cdnjs.
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Read the data of an Antares simulation</h1>
-    <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/v2.7.1/R/readAntares.R" class="external-link"><code>R/readAntares.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/master/R/readAntares.R" class="external-link"><code>R/readAntares.R</code></a></small>
     <div class="hidden name"><code>readAntares.Rd</code></div>
     </div>
 
@@ -188,7 +188,7 @@ is the sum of the two previous columns. Finally <code>thermalPmin</code> is
 similar to mustRunTotal except it also takes into account the production
 induced by the minimum stable power of the units of a cluster. More
 precisely, for a given cluster and a given time step, it is equal to
-<code>min(NODU x min.stable.power, mustRunTotal)</code>.</p></dd>
+<code>min(NODU x min-stable-power, mustRunTotal)</code>.</p></dd>
 
 
 <dt id="arg-thermalmodulation">thermalModulation<a class="anchor" aria-label="anchor" href="#arg-thermalmodulation"></a></dt>
