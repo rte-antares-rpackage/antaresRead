@@ -784,7 +784,7 @@ readAntaresAPI <- function(areas = NULL,
                              "details" = opts[["areasWithClusters"]],
                              "details-res" = opts[["areasWithResClusters"]],
                              "details-STstorage" = opts[["areasWithSTClusters"]],
-														 "values" = opts[["areaList"]],
+                             "values" = opts[["areaList"]],
                              character(0)
                              )
     if (!identical(specific_areas, character(0))) {
@@ -811,11 +811,7 @@ readAntaresAPI <- function(areas = NULL,
     mcYears <- intersect(mcYears, opts[["mcYears"]])
   }
   if (is.null(mcYears)) {
-    mcYears <- opts[["mcYears"]]
-  }
-  if (length(mcYears) == 0) {
-    warning("You have no Monte-Carlo year to execute the query.")
-    return()
+    mcYears <- ""
   }
   
   # select
@@ -823,11 +819,7 @@ readAntaresAPI <- function(areas = NULL,
     select <- intersect(select, opts[["variables"]][[type]])
   }
   if (is.null(select)) {
-    select <- opts[["variables"]][[type]]
-  }
-  if (length(select) == 0) {
-    warning("You have no columns in your output.")
-    return()
+    select <- ""
   }
   
   if (!null_areas) {
