@@ -767,7 +767,7 @@ readAntaresAPI <- function(areas = NULL,
   null_links <- is.null(links)
   
   if (null_areas & null_links) {
-    return()
+    stop("You must provide areas xor links.")
   }
   if (!null_areas & !null_links) {
     stop("You must choose between areas and links.")
@@ -779,20 +779,19 @@ readAntaresAPI <- function(areas = NULL,
   if (!null_areas) {
     type <- "areas" 
     areas <- intersect(areas, opts[["areaList"]])
-
-    specific_areas <- switch(query_file,
-                             "details" = opts[["areasWithClusters"]],
-                             "details-res" = opts[["areasWithResClusters"]],
-                             "details-STstorage" = opts[["areasWithSTClusters"]],
-                             "values" = opts[["areaList"]],
-                             character(0)
-                             )
-    if (!identical(specific_areas, character(0))) {
-      areas <- intersect(areas, specific_areas)
-    }
-    if (length(areas) == 0) {
-      warning("You have no area to execute the query.")
-      return()
+    if (identical(sort(areas), sort(opts[["areaList"]]))) {
+      areas <- ""
+    } else {
+      specific_areas <- switch(query_file,
+                               "details" = opts[["areasWithClusters"]],
+                               "details-res" = opts[["areasWithResClusters"]],
+                               "details-STstorage" = opts[["areasWithSTClusters"]],
+                               "values" = opts[["areaList"]],
+                               character(0)
+                               )
+      if (!identical(specific_areas, character(0))) {
+        areas <- intersect(areas, specific_areas)
+      }
     }
   }
   
@@ -800,15 +799,17 @@ readAntaresAPI <- function(areas = NULL,
   if (!null_links) {
     type <- "links" 
     links <- intersect(links, opts[["linkList"]])
-    if (length(links) == 0) {
-      warning("You have no link to execute the query.")
-      return()
+    if (identical(sort(links), sort(opts[["linkList"]]))) {
+      links <- ""
     }
   }
   
   # mcYear
   if (!is.null(mcYears)) {
     mcYears <- intersect(mcYears, opts[["mcYears"]])
+    if (identical(sort(mcYears), sort(opts[["mcYears"]]))) {
+      mcYears <- ""
+    }
   }
   if (is.null(mcYears)) {
     mcYears <- ""
@@ -817,6 +818,9 @@ readAntaresAPI <- function(areas = NULL,
   # select
   if (!is.null(select)) {
     select <- intersect(select, opts[["variables"]][[type]])
+    if (identical(sort(select), sort(opts[["variables"]][[type]]))) {
+      select <- ""
+    }
   }
   if (is.null(select)) {
     select <- ""
