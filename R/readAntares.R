@@ -807,7 +807,7 @@ readAntaresAPI <- function(areas = NULL,
   # mcYear
   if (!is.null(mcYears)) {
     mcYears <- intersect(mcYears, opts[["mcYears"]])
-    if (identical(sort(mcYears), sort(opts[["mcYears"]]))) {
+    if (identical(sort(mcYears), sort(opts[["mcYears"]])) | length(mcYears) == 0) {
       mcYears <- ""
     }
   }
@@ -818,7 +818,7 @@ readAntaresAPI <- function(areas = NULL,
   # select
   if (!is.null(select)) {
     select <- intersect(select, opts[["variables"]][[type]])
-    if (identical(sort(select), sort(opts[["variables"]][[type]]))) {
+    if (identical(sort(select), sort(opts[["variables"]][[type]])) | length(select) == 0) {
       select <- ""
     }
   }
