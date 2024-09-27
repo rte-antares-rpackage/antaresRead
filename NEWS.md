@@ -16,6 +16,7 @@ BUGFIXES :
 
 * `setSimulationPathAPI()`: control the existence of the output folder **links** or **areas** before reading the data (upgrade Antares Web)
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` return a data.table in API mode
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
 
 
 # antaresRead 2.7.1 
