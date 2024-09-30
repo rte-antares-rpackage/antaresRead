@@ -1,5 +1,11 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.7.3
+
+BUGFIXES :
+
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+
 # antaresRead 2.7.2
 
 NEW FEATURES:
