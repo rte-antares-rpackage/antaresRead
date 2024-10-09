@@ -208,6 +208,7 @@ test_that("New meta data for group dimension of binding constraints", {
   expect_is(opts_study_test$binding, "data.table")
 })
 
+# v900---
 test_that("valid versions are transformed correctly", {
   expect_equal(transform_antares_version("9.0")$r, 900)
   expect_equal(transform_antares_version("9.45")$r, 945)

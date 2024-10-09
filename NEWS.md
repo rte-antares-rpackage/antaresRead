@@ -1,5 +1,10 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.8.0.9000 
+(cf. Antares v9 changelog)
+
+
+
 # antaresRead 2.7.2
 
 NEW FEATURES:

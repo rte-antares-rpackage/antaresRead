@@ -350,6 +350,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
   
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  # TODO gestion des version >= 9.0
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
   # Areas with thermal clusters
