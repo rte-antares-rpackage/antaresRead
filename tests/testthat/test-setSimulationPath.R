@@ -208,33 +208,59 @@ test_that("New meta data for group dimension of binding constraints", {
   expect_is(opts_study_test$binding, "data.table")
 })
 
-# v900---
-test_that("valid versions are transformed correctly", {
-  expect_equal(transform_antares_version("9.0")$r, 900)
-  expect_equal(transform_antares_version("9.45")$r, 945)
-  expect_equal(transform_antares_version("10.10")$r, 1010)
-  expect_equal(transform_antares_version("10.45")$r, 1045)
-  expect_equal(transform_antares_version("12.12")$r, 1212)
+# v900----
+## test private ----
+test_that("read new format version from .antares file", {
+  test_path_files <- system.file("test_files", package = "antaresRead")
+  
+  # "readIniFile" conversion problem (9.0 => 9)
+  antares_file <- file.path(test_path_files, 
+                               "antares_version_files", 
+                               "antares_version_float.antares")
+  
+  file_to_read <- readIniFile(file = antares_file, stringsAsFactors = TRUE)
+  
+  version_value <- file_to_read$antares$version
+  
+  # test right conversion for package
+  expect_equal(.transform_antares_version(version_value), 900)
+  
+  # exception max digit minor 
+  expect_error(.transform_antares_version(9.01), 
+               regexp = "Invalid antares_version format")
+  
+  # read right format file 
+  antares_file <- file.path(test_path_files, 
+                               "antares_version_files", 
+                               "antares_version_float_2digit.antares")
+  
+  file_to_read <- readIniFile(file = antares_file, stringsAsFactors = TRUE)
+  
+  version_value <- file_to_read$antares$version
+  
+  # test right conversion for package
+  expect_equal(.transform_antares_version(version_value), 990)
 })
 
-test_that("invalid minor versions with more than 2 digits raise an error", {
-  expect_error(transform_antares_version("10.113400000"), "Minor version exceeds 2 digits limit.")
-  expect_error(transform_antares_version("9.1234"), "Minor version exceeds 2 digits limit.")
-})
-
-test_that("invalid major versions less than 9 raise an error", {
-  expect_error(transform_antares_version("8.99"), "Major version must be 9 or higher.")
-  expect_error(transform_antares_version("7.10"), "Major version must be 9 or higher.")
-})
-
-test_that("single numeric versions work correctly", {
-  expect_equal(transform_antares_version("860")$r, 860)
-  expect_equal(transform_antares_version("890")$r, 890)
-})
-
-test_that("correct output for to_write field", {
-  expect_equal(transform_antares_version("9.0")$w, "9.0")
-  expect_equal(transform_antares_version("9.45")$w, "9.45")
-  expect_equal(transform_antares_version("10.10")$w, "10.10")
-  expect_equal(transform_antares_version("12.12")$w, "12.12")
+## study ----
+test_that("read new format version from study", {
+  path <- setup_study_empty(dir_path = sourcedir_empty_study)
+  opts_study_test <- setSimulationPath(path)
+  
+  # "hack" study and paste test file with version "9.0"
+  test_path_files <- system.file("test_files", package = "antaresRead")
+  antares_file <- file.path(test_path_files, 
+                            "antares_version_files", 
+                            "antares_version_float.antares")
+  
+  # delete "study.antares"
+  file_to_remove <- file.path(opts_study_test$studyPath, "study.antares") 
+  file.remove(file_to_remove)
+  file.copy(from = antares_file, to = file_to_remove)
+  
+  # read study 
+  study <- setSimulationPath(path)
+  
+  # test right conversion for package
+  expect_equal(study$antaresVersion, 900)
 })

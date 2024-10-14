@@ -350,7 +350,10 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
   
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
-  # TODO gestion des version >= 9.0
+  # Convert the Antares number version (from 9.0) 
+  if(antaresVersion<600 & antaresVersion>=9)
+    antaresVersion <- .transform_antares_version(antares_version = antaresVersion)
+  
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
   # Areas with thermal clusters
@@ -682,53 +685,31 @@ setSimulationPath <- function(path, simulation = NULL) {
 }
 
 #' @title Convert the Antares number version
+#' @description From V9.0, system version is 9.0 (1 digit for minor) instead of 900
+#' 
+#' @param antares_version ``numeric` Antares number version.
 #'
-#' @param antares_version Antares number version.
-#'
-#' @importFrom stringr str_count str_detect
-#'
-#' @export
-transform_antares_version <- function(antares_version) {
-  antares_version <- as.character(antares_version)
+#' @return `numeric` value according to study version
+#' 
+#' @keywords internal
+.transform_antares_version <- function(antares_version) {
+  antares_version <- format(antares_version, nsmall = 1)
   
-  # Handle single numeric version (e.g., "860", "890")
-  if (str_count(antares_version, "\\.") == 0) {
-    to_write <- antares_version
-    to_read <- as.numeric(antares_version)  # Keep it numeric if no decimal
-  } else {
-    # Split major and minor parts
-    antares_version_splitted <- strsplit(antares_version, split = "\\.")[[1]]
-    
-    # Ensure valid version format
-    if (length(antares_version_splitted) != 2 || any(!str_detect(antares_version_splitted, "^\\d+$"))) {
-      stop("Invalid antares_version format")
-    }
-    
-    # Extract major and minor parts as numbers
-    major_version <- as.numeric(antares_version_splitted[1])
-    minor_version_str <- antares_version_splitted[2]  # Keep minor version as string
-    
-    # Check if minor version exceeds 2 digits
-    if (nchar(minor_version_str) > 2) {
-      stop("Minor version exceeds 2 digits limit.")
-    }
-    
-    # Convert minor version to numeric for calculation
-    minor_version <- as.numeric(minor_version_str)
-    
-    # Convert major version starting from 9.0 to 900, 10.0 to 1000, etc.
-    if (major_version >= 9) {
-      major_version_converted <- major_version * 100
-    } else {
-      stop("Major version must be 9 or higher.")
-    }
-    
-    # Create a numeric value for comparison by treating the version as major.minor
-    to_write <- paste(major_version, minor_version_str, sep = ".")
-    to_read <- major_version_converted + minor_version  # Major * 100, add minor
-  }
+  # Split major and minor parts
+  antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
   
-  return(list("w" = to_write, "r" = to_read))
+  major <- antares_version_splitted[1]
+  minor <- antares_version_splitted[2]  
+  
+  # max 1 digit for minor
+  if (nchar(minor) > 1) 
+    stop("Invalid antares_version format, good format is like '9.0'", 
+         call. = FALSE)
+  
+  # convert to numeric for package understanding
+  num_version <- as.numeric(antares_version)*100
+  
+  return(num_version)
 }
 
 
