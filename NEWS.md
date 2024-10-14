@@ -1,8 +1,14 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+
 # antaresRead 2.8.0.9000 
 (cf. Antares v9 changelog)
 
+BUGFIXES :
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+
+BREAKING CHANGES :  
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
 
 
 # antaresRead 2.7.2
@@ -21,6 +27,7 @@ BUGFIXES :
 
 * `setSimulationPathAPI()`: control the existence of the output folder **links** or **areas** before reading the data (upgrade Antares Web)
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` return a data.table in API mode
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
 
 
 # antaresRead 2.7.1 
