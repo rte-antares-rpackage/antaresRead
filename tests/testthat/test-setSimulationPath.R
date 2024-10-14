@@ -226,10 +226,10 @@ test_that("read new format version from .antares file", {
   expect_equal(.transform_antares_version(version_value), 900)
   
   # exception max digit minor 
-  expect_error(.transform_antares_version(9.01), 
+  expect_error(.transform_antares_version(9.111), 
                regexp = "Invalid antares_version format")
   
-  # read right format file 
+  # read right format file (9.99)
   antares_file <- file.path(test_path_files, 
                                "antares_version_files", 
                                "antares_version_float_2digit.antares")
@@ -239,7 +239,7 @@ test_that("read new format version from .antares file", {
   version_value <- file_to_read$antares$version
   
   # test right conversion for package
-  expect_equal(.transform_antares_version(version_value), 990)
+  expect_equal(.transform_antares_version(version_value), 999)
 })
 
 ## study ----

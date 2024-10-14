@@ -13,6 +13,6 @@
 \code{numeric} value according to study version
 }
 \description{
-From V9.0, system version is 9.0 (1 digit for minor) instead of 900
+From V9.0, system version is 9.0 (2 digit for minor) instead of 900
 }
 \keyword{internal}

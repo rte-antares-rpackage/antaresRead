@@ -685,7 +685,7 @@ setSimulationPath <- function(path, simulation = NULL) {
 }
 
 #' @title Convert the Antares number version
-#' @description From V9.0, system version is 9.0 (1 digit for minor) instead of 900
+#' @description From V9.0, system version is 9.0 (2 digit for minor) instead of 900
 #' 
 #' @param antares_version ``numeric` Antares number version.
 #'
@@ -693,7 +693,7 @@ setSimulationPath <- function(path, simulation = NULL) {
 #' 
 #' @keywords internal
 .transform_antares_version <- function(antares_version) {
-  antares_version <- format(antares_version, nsmall = 1)
+  antares_version <- format(antares_version, nsmall = 2)
   
   # Split major and minor parts
   antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
@@ -702,8 +702,8 @@ setSimulationPath <- function(path, simulation = NULL) {
   minor <- antares_version_splitted[2]  
   
   # max 1 digit for minor
-  if (nchar(minor) > 1) 
-    stop("Invalid antares_version format, good format is like '9.0'", 
+  if (nchar(minor) > 2) 
+    stop("Invalid antares_version format, good format is like '9.99'", 
          call. = FALSE)
   
   # convert to numeric for package understanding
