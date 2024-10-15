@@ -496,7 +496,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
     if (type == "links") {
       path_element <- gsub(pattern = " - ", replacement = "/", x = path_element)
     }
+    path_element <- URLencode(path_element, reserved = TRUE)
     d <- file.path(path, type, path_element)
+    d <- URLencode(d)
     f <- names(read_secure_json(paste0(d, "&depth=1"), ...))
     f <- f[grep("values", f)]
     if (length(f) > 0) {
