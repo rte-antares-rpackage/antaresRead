@@ -741,6 +741,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
 #' @param timeStep
 #'   Resolution of the data to import between hourly, daily,
 #'   weekly, monthly or annual.
+#' @param synthesis
+#'   Shoudl the query use mc-all or mc-ind.
 #' @template opts
 #'
 #' @export
@@ -750,11 +752,13 @@ readAntaresAPI <- function(areas = NULL,
                            mcYears = NULL,
                            query_file,
                            timeStep,
+                           synthesis = TRUE,
                            opts = simOptions()
                         ) {
   
   assert_that(timeStep %in% c("hourly", "daily", "weekly", "monthly", "annual"), msg = "Bad timeStep provided.")
   assert_that(query_file %in% c("values", "details", "details-res", "details-STstorage"), msg = "Bad query_file provided.")
+  assert_that(inherits(x = synthesis, what = "logical"), msg = "Argument synthesis should be logical.")
   
   if (!is_api_study(opts = opts)) {
     stop("The study is not an API study", call. = FALSE)
@@ -832,6 +836,7 @@ readAntaresAPI <- function(areas = NULL,
                                     query_file = query_file,
                                     select = select,
                                     mcYears = mcYears,
+                                    synthesis = synthesis,
                                     opts = opts
                                     )
   }
@@ -841,6 +846,7 @@ readAntaresAPI <- function(areas = NULL,
                                     timeStep = timeStep,
                                     select = select,
                                     mcYears = mcYears,
+                                    synthesis = synthesis,
                                     opts = opts
                                     )
   }

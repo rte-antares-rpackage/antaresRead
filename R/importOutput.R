@@ -266,9 +266,14 @@
 }
 
 
-.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
-    
-  endpoint_root <- paste0(opts$study_id, "/areas/aggregate/mc-ind/", opts$simOutputName, "?format=csv")
+.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, synthesis, opts) {
+  
+  if (synthesis) {
+    pattern_endpoint <- "mc-all"
+  } else {
+    pattern_endpoint <- "mc-ind"
+  }  
+  endpoint_root <- paste0(opts$study_id, "/areas/aggregate/", pattern_endpoint, "/", opts$simOutputName, "?format=csv")
   areas_url <- ""
   columns_url <- ""
   mc_years_url <- ""  
@@ -772,9 +777,14 @@
 }
 
 
-.api_get_aggregate_links <- function(links, timeStep, select, mcYears, opts) {
-    
-  endpoint_root <- paste0(opts$study_id, "/links/aggregate/mc-ind/", opts$simOutputName, "?format=csv&query_file=values")
+.api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
+  
+  if (synthesis) {
+    pattern_endpoint <- "mc-all"
+  } else {
+    pattern_endpoint <- "mc-ind"
+  }  
+  endpoint_root <- paste0(opts$study_id, "/links/aggregate/", pattern_endpoint, "/", opts$simOutputName, "?format=csv&query_file=values")
   links_url <- ""
   columns_url <- ""
   mc_years_url <- ""  

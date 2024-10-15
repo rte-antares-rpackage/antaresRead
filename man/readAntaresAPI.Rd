@@ -11,6 +11,7 @@ readAntaresAPI(
   mcYears = NULL,
   query_file,
   timeStep,
+  synthesis = TRUE,
   opts = simOptions()
 )
 }
@@ -31,6 +32,8 @@ values, details, details-res, details-STstorage}
 
 \item{timeStep}{Resolution of the data to import between hourly, daily,
 weekly, monthly or annual.}
+
+\item{synthesis}{Shoudl the query use mc-all or mc-ind.}
 
 \item{opts}{List of simulation parameters returned by the function
 \code{\link[=setSimulationPath]{setSimulationPath()}}}
