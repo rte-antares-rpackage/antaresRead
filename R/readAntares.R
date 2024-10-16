@@ -851,7 +851,7 @@ readAntaresAPI <- function(areas = NULL,
                                     )
   }
   
-  res <- .addClassAndAttributes(x = res, synthesis = FALSE, timeStep = timeStep, opts = opts, simplify = TRUE, type = type)
+  res <- .addClassAndAttributes(x = res, synthesis = synthesis, timeStep = timeStep, opts = opts, simplify = TRUE, type = type)
   
   return(res)
 }
