@@ -350,6 +350,10 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
   
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  # Convert the Antares number version (from 9.0) 
+  if(antaresVersion<600 & antaresVersion>=9)
+    antaresVersion <- .transform_antares_version(antares_version = antaresVersion)
+  
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
   # Areas with thermal clusters
@@ -679,3 +683,35 @@ setSimulationPath <- function(path, simulation = NULL) {
     return(list(binding = df_groups))
   }
 }
+
+#' @title Convert the Antares number version
+#' @description From V9.0, system version is 9.0 (2 digit for minor) instead of 900
+#' 
+#' @param antares_version ``numeric` Antares number version.
+#'
+#' @return `numeric` value according to study version
+#' 
+#' @keywords internal
+.transform_antares_version <- function(antares_version) {
+  antares_version <- format(antares_version, nsmall = 2)
+  
+  # Split major and minor parts
+  antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
+  
+  major <- antares_version_splitted[1]
+  minor <- antares_version_splitted[2]  
+  
+  # max 1 digit for minor
+  if (nchar(minor) > 2) 
+    stop("Invalid antares_version format, good format is like '9.99'", 
+         call. = FALSE)
+  
+  # convert to numeric for package understanding
+  num_version <- as.numeric(antares_version)*100
+  
+  return(num_version)
+}
+
+
+
+

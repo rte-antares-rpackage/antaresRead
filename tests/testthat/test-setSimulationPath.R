@@ -207,3 +207,60 @@ test_that("New meta data for group dimension of binding constraints", {
   
   expect_is(opts_study_test$binding, "data.table")
 })
+
+# v900----
+## test private ----
+test_that("read new format version from .antares file", {
+  test_path_files <- system.file("test_files", package = "antaresRead")
+  
+  # "readIniFile" conversion problem (9.0 => 9)
+  antares_file <- file.path(test_path_files, 
+                               "antares_version_files", 
+                               "antares_version_float.antares")
+  
+  file_to_read <- readIniFile(file = antares_file, stringsAsFactors = TRUE)
+  
+  version_value <- file_to_read$antares$version
+  
+  # test right conversion for package
+  expect_equal(.transform_antares_version(version_value), 900)
+  
+  # exception max digit minor 
+  expect_error(.transform_antares_version(9.111), 
+               regexp = "Invalid antares_version format")
+  
+  # read right format file (9.99)
+  antares_file <- file.path(test_path_files, 
+                               "antares_version_files", 
+                               "antares_version_float_2digit.antares")
+  
+  file_to_read <- readIniFile(file = antares_file, stringsAsFactors = TRUE)
+  
+  version_value <- file_to_read$antares$version
+  
+  # test right conversion for package
+  expect_equal(.transform_antares_version(version_value), 999)
+})
+
+## study ----
+test_that("read new format version from study", {
+  path <- setup_study_empty(dir_path = sourcedir_empty_study)
+  opts_study_test <- setSimulationPath(path)
+  
+  # "hack" study and paste test file with version "9.0"
+  test_path_files <- system.file("test_files", package = "antaresRead")
+  antares_file <- file.path(test_path_files, 
+                            "antares_version_files", 
+                            "antares_version_float.antares")
+  
+  # delete "study.antares"
+  file_to_remove <- file.path(opts_study_test$studyPath, "study.antares") 
+  file.remove(file_to_remove)
+  file.copy(from = antares_file, to = file_to_remove)
+  
+  # read study 
+  study <- setSimulationPath(path)
+  
+  # test right conversion for package
+  expect_equal(study$antaresVersion, 900)
+})
