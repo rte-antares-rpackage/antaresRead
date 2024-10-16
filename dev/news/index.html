@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.7.2.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.8.0.9000</span>
       </span>
     </div>
 
@@ -51,7 +51,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.7.2.9000" id="antaresread-2729000">antaresRead 2.7.2.9000<a class="anchor" aria-label="anchor" href="#antaresread-2729000"></a></h2>
+<h2 class="page-header" data-toc-text="2.8.0.9000" id="antaresread-2809000">antaresRead 2.8.0.9000<a class="anchor" aria-label="anchor" href="#antaresread-2809000"></a></h2>
+<p>(cf. Antares v9 changelog)</p>
+<p>BUGFIXES : * <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : encode URL before reading the data in simulation mode</p>
+<p>BREAKING CHANGES :<br>
+* <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : reads and returns the new converted study version format (ex : 9.0 =&gt; 900)</p>
+</div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.7.2" id="antaresread-272">antaresRead 2.7.2<small>2024-09-12</small><a class="anchor" aria-label="anchor" href="#antaresread-272"></a></h2>
 <p>NEW FEATURES:</p>
 <ul><li>New function <code><a href="../reference/readAntaresSTClusters.html">readAntaresSTClusters()</a></code>
 </li>
@@ -67,6 +74,8 @@
 <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code>: control the existence of the output folder <strong>links</strong> or <strong>areas</strong> before reading the data (upgrade Antares Web)</li>
 <li>
 <code><a href="../reference/readClusterDesc.html">readClusterDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterResDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterSTDesc()</a></code> return a data.table in API mode</li>
+<li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : encode URL before reading the data in simulation mode</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="2.7.1" id="antaresread-271">antaresRead 2.7.1<small>2024-08-30</small><a class="anchor" aria-label="anchor" href="#antaresread-271"></a></h2>
@@ -560,7 +569,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
