@@ -811,7 +811,7 @@ readAntaresAPI <- function(areas = NULL,
   # mcYear
   if (!is.null(mcYears)) {
     mcYears <- intersect(mcYears, opts[["mcYears"]])
-    if (identical(sort(mcYears), sort(opts[["mcYears"]])) | length(mcYears) == 0) {
+    if (identical(sort(mcYears), sort(opts[["mcYears"]])) | length(mcYears) == 0 | synthesis) {
       mcYears <- ""
     }
   }
