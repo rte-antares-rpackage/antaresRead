@@ -53,7 +53,7 @@ test_that(".importOutputForSTClusters is ok", {
         opts=opts
     )
     
-    required_order_simulation_variables <- c("P.injection","levels","P.withdrawal")
+    required_order_simulation_variables <- c("P.injection","P.withdrawal","levels")
     
     order_simulation_variables <- colnames(OutputForSTClusters)[colnames(OutputForSTClusters) %in% required_order_simulation_variables] 
     
