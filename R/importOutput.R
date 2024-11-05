@@ -770,12 +770,22 @@
 #'
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
-  suppressWarnings(
-    .importOutput("links", "values", "link", links, timeStep, select, 
-                  mcYears, showProgress, opts, parallel = parallel)
-  )
+  
+  if (is_api_study(opts)) {
+    .api_get_aggregate_links(links = links,
+                             timeStep = timeStep,
+                             select = select,
+                             mcYears = mcYears,
+                             synthesis = FALSE,
+                             opts = opts
+                             )
+  } else {
+    suppressWarnings(
+      .importOutput("links", "values", "link", links, timeStep, select, 
+                    mcYears, showProgress, opts, parallel = parallel)
+    )
+  }
 }
-
 
 .api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
   
