@@ -259,10 +259,22 @@
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
-  suppressWarnings(
-    .importOutput("areas", "values", "area", areas, timeStep, select, 
-                  mcYears, showProgress, opts, parallel = parallel)
-  )
+  
+  if (is_api_study(opts)) {
+    .api_get_aggregate_areas(areas = areas,
+                             timeStep = timeStep,
+                             query_file = "values",
+                             select = select,
+                             mcYears = mcYears,
+                             synthesis = FALSE,
+                             opts = opts
+                             )
+  } else {
+    suppressWarnings(
+      .importOutput("areas", "values", "area", areas, timeStep, select, 
+                    mcYears, showProgress, opts, parallel = parallel)
+    )
+  }
 }
 
 
@@ -565,16 +577,26 @@
 .importOutputForResClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-
-  reshapeFun <- function(x) {
-    .reshape_details_file(x,file_type="details-res",opts=opts)
+  if (is_api_study(opts)) {
+    .api_get_aggregate_areas(areas = areas,
+                             timeStep = timeStep,
+                             query_file = "details-res",
+                             select = select,
+                             mcYears = mcYears,
+                             synthesis = FALSE,
+                             opts = opts
+                             )
+  } else {
+    reshapeFun <- function(x) {
+      .reshape_details_file(x,file_type="details-res",opts=opts)
+    }
+      
+    suppressWarnings(
+      .importOutput("areas", "details-res", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "clustersRe", parallel = parallel)
+    )
   }
-    
-  suppressWarnings(
-    .importOutput("areas", "details-res", "area", areas, timeStep, NULL, 
-                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "clustersRe", parallel = parallel)
-  )
 }
 
 
@@ -590,15 +612,26 @@
 .importOutputForSTClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-  reshapeFun <- function(x) {
-    .reshape_details_file(x,file_type="details-STstorage",opts=opts)
+  if (is_api_study(opts)) {
+    .api_get_aggregate_areas(areas = areas,
+                             timeStep = timeStep,
+                             query_file = "details-STstorage",
+                             select = select,
+                             mcYears = mcYears,
+                             synthesis = FALSE,
+                             opts = opts
+                             )
+  } else {
+    reshapeFun <- function(x) {
+      .reshape_details_file(x,file_type="details-STstorage",opts=opts)
+    }
+    
+    suppressWarnings(
+      .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "clustersST", parallel = parallel)
+    )
   }
-  
-  suppressWarnings(
-    .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
-                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "clustersST", parallel = parallel)
-  )
 }
 
 #' .importOutputForBindingConstraints
