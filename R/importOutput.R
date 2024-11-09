@@ -281,6 +281,8 @@
 
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, synthesis, opts) {
   
+  if (is.null(areas)) return(NULL)
+  
   if (synthesis) {
     pattern_endpoint <- "mc-all"
   } else {
@@ -321,6 +323,8 @@
 
 
 .format_api_aggregate_result <- function(res) {
+  
+  if (is.null(res)) return(NULL)
   
   res_cols <- colnames(res)
   #To remove when endpoint will not send time anymore
