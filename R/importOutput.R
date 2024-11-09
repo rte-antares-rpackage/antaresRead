@@ -261,14 +261,15 @@
                                   showProgress, opts, parallel) {
   
   if (is_api_study(opts)) {
-    .api_get_aggregate_areas(areas = areas,
-                             timeStep = timeStep,
-                             query_file = "values",
-                             select = select,
-                             mcYears = mcYears,
-                             synthesis = FALSE,
-                             opts = opts
-                             )
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "values",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    .format_api_aggregate_result(res)
   } else {
     suppressWarnings(
       .importOutput("areas", "values", "area", areas, timeStep, select, 
@@ -316,6 +317,26 @@
             default_endpoint = "v1/studies")
 
   return(as.data.table(res))
+}
+
+
+.format_api_aggregate_result <- function(res) {
+  
+  res_cols <- colnames(res)
+  #To remove when endpoint will not send time anymore
+  if ("time" %in% res_cols) {
+    res[,time:=NULL]
+  }
+  
+  cols_to_factor <- c("area", "cluster")
+  cols_to_factor <- intersect(cols_to_factor, res_cols)
+  res[,(cols_to_factor):=lapply(.SD, as.factor), .SDcols=cols_to_factor]
+
+  cols_to_integer <- c("timeId")
+  cols_to_integer <- intersect(cols_to_integer, res_cols)
+  res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
+  
+  return(res)
 }
 
 
@@ -578,14 +599,15 @@
                                         showProgress, opts, parallel) {
   
   if (is_api_study(opts)) {
-    .api_get_aggregate_areas(areas = areas,
-                             timeStep = timeStep,
-                             query_file = "details-res",
-                             select = select,
-                             mcYears = mcYears,
-                             synthesis = FALSE,
-                             opts = opts
-                             )
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details-res",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
   } else {
     reshapeFun <- function(x) {
       .reshape_details_file(x,file_type="details-res",opts=opts)
@@ -613,14 +635,15 @@
                                         showProgress, opts, parallel) {
   
   if (is_api_study(opts)) {
-    .api_get_aggregate_areas(areas = areas,
-                             timeStep = timeStep,
-                             query_file = "details-STstorage",
-                             select = select,
-                             mcYears = mcYears,
-                             synthesis = FALSE,
-                             opts = opts
-                             )
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details-STstorage",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
   } else {
     reshapeFun <- function(x) {
       .reshape_details_file(x,file_type="details-STstorage",opts=opts)
