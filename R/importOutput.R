@@ -332,15 +332,14 @@
     res[,time:=NULL]
   }
   
-  cols_to_factor <- c("area", "link", "cluster")
-  cols_to_factor <- intersect(cols_to_factor, res_cols)
-  res[,(cols_to_factor):=lapply(.SD, as.factor), .SDcols=cols_to_factor]
+  cols_to_factor_lower <- c("area", "link", "cluster")
+  cols_to_factor_lower <- intersect(cols_to_factor_lower, res_cols)
+  res[,(cols_to_factor_lower):=lapply(.SD, as.factor), .SDcols=cols_to_factor_lower]
+  res[,(cols_to_factor_lower):=lapply(.SD, tolower), .SDcols=cols_to_factor_lower]
 
   cols_to_integer <- c("timeId")
   cols_to_integer <- intersect(cols_to_integer, res_cols)
   res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
-  
-  res[,(cols_to_factor):=lapply(.SD, tolower), .SDcols=cols_to_factor]
   
   return(res)
 }
@@ -540,12 +539,14 @@
     res[, mustRunPartial := pmin(production, mustRunPartial)]
     res <- changeTimeStep(res, timeStep, "hourly", fun = "sum", opts = opts)
   } else {
+    
     processFun <- function(x) {
       x <- reshapeFun(x)
       mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
       x[, mustRunPartial := pmin(production, mustRunPartial)]
       changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
     }
+    
     res <- suppressWarnings(
       .importOutput("areas", "details", "area", areas, "hourly", NULL, 
                     mcYears, showProgress, opts, processFun, 
@@ -553,7 +554,6 @@
                     parallel = parallel)
       
     )
-    
   }
   
   return(res)
