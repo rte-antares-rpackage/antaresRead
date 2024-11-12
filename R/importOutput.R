@@ -885,7 +885,7 @@
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
   
-  if (!is_api_study(opts)) {
+  if (is_api_study(opts)) {
     res <- .api_get_aggregate_links(links = links,
                                     timeStep = timeStep,
                                     select = select,
