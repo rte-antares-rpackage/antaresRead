@@ -281,7 +281,7 @@
 
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, synthesis, opts) {
   
-  if (is.null(areas)) return(NULL)
+  if (is.null(areas) | is.null(mcYears) | synthesis) return(NULL)
   
   if (synthesis) {
     pattern_endpoint <- "mc-all"
@@ -332,7 +332,7 @@
     res[,time:=NULL]
   }
   
-  cols_to_factor <- c("area", "cluster")
+  cols_to_factor <- c("area", "link", "cluster")
   cols_to_factor <- intersect(cols_to_factor, res_cols)
   res[,(cols_to_factor):=lapply(.SD, as.factor), .SDcols=cols_to_factor]
 
@@ -885,14 +885,15 @@
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
   
-  if (is_api_study(opts)) {
-    .api_get_aggregate_links(links = links,
-                             timeStep = timeStep,
-                             select = select,
-                             mcYears = mcYears,
-                             synthesis = FALSE,
-                             opts = opts
-                             )
+  if (!is_api_study(opts)) {
+    res <- .api_get_aggregate_links(links = links,
+                                    timeStep = timeStep,
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
   } else {
     suppressWarnings(
       .importOutput("links", "values", "link", links, timeStep, select, 
@@ -902,6 +903,8 @@
 }
 
 .api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
+  
+  if (is.null(links) | is.null(mcYears) | synthesis) return(NULL)
   
   if (synthesis) {
     pattern_endpoint <- "mc-all"
