@@ -340,6 +340,8 @@
   cols_to_integer <- intersect(cols_to_integer, res_cols)
   res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
   
+  res[,(cols_to_factor):=lapply(.SD, tolower), .SDcols=cols_to_factor]
+  
   return(res)
 }
 
@@ -421,6 +423,13 @@
 }
 
 
+#' Read output data for clusters if mustRun is disabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
 .importOutputForClusters_wo_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                      showProgress, opts, parallel){
   if (is_api_study(opts)) {
@@ -446,10 +455,120 @@
 }
 
 
+#' Read output data for clusters if modulation is computed as inactive
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_wo_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                                   showProgress, opts, reshapeFun, parallel) {
+
+  # We should not \o/
+  if (is_api_study(opts)) {
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    res <- .format_api_aggregate_result(res)
+  } else {
+    res <- suppressWarnings(
+      suppressWarnings(
+        .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                      mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                      objectDisplayName = "cluster", parallel = parallel)
+      )
+    )
+  }
+  
+  res[, mustRunPartial := 0L]
+}
+
+
+#' Read output data for clusters if modulation is computed as active
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_w_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                                   showProgress, opts, reshapeFun, parallel, mod, clusterDesc) {
+  
+  if(timeStep!="hourly"){
+    warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
+    
+    #copy of warning in ChangeTimeStep
+    warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
+    
+    messageWarningMcYears<-paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
+    
+    if( is.null(mcYears) ){
+      warning(messageWarningMcYears, call. = FALSE)
+    }else if (is.character(mcYears)){
+      if (mcYears=="all"){
+        warning(messageWarningMcYears, call. = FALSE)
+      }
+    }else if (length(mcYears) > 1){
+      warning(messageWarningMcYears, call. = FALSE)
+    }
+  }
+  
+  mod[is.na(minGenModulation), minGenModulation := 0]
+    
+  .mergeByRef(mod, clusterDesc)
+  mod[, mustRunPartial := minGenModulation * capacity]
+  
+  setkey(mod, area, cluster, timeId)
+  
+  if (is_api_study(opts)) {
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = "hourly",
+                                    query_file = "details",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    res <- .format_api_aggregate_result(res)
+    mustRunPartial <- mod[J(res$area, res$cluster, res$timeId), mustRunPartial]
+    res[, mustRunPartial := pmin(production, mustRunPartial)]
+    res <- changeTimeStep(res, timeStep, "hourly", fun = "sum", opts = opts)
+  } else {
+    processFun <- function(x) {
+      x <- reshapeFun(x)
+      mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
+      x[, mustRunPartial := pmin(production, mustRunPartial)]
+      changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
+    }
+    res <- suppressWarnings(
+      .importOutput("areas", "details", "area", areas, "hourly", NULL, 
+                    mcYears, showProgress, opts, processFun, 
+                    sameNames = FALSE, objectDisplayName = "cluster", 
+                    parallel = parallel)
+      
+    )
+    
+  }
+  
+  return(res)
+}
+
+
+#' Read output data for clusters if mustRun is enabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
 .importOutputForClusters_w_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                      showProgress, opts, parallel) {
-  
-  is_api <- is_api_study(opts)
   
   reshapeFun <- function(x){
     .reshape_details_file(x,file_type="details",opts=opts)
@@ -486,81 +605,10 @@
   # Should we compute the partial must run ?
   if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
     # We should not \o/
-    if (is_api) {
-      res <- .api_get_aggregate_areas(areas = areas,
-                                      timeStep = timeStep,
-                                      query_file = "details",
-                                      select = select,
-                                      mcYears = mcYears,
-                                      synthesis = FALSE,
-                                      opts = opts
-                                      )
-      res <- .format_api_aggregate_result(res)
-    } else {
-      res <- suppressWarnings(
-        suppressWarnings(
-          .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                        mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                        objectDisplayName = "cluster", parallel = parallel)
-        )
-      )
-    }  
-    res[, mustRunPartial := 0L]   
+    res <- .importOutputForClusters_wo_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel)
   } else {
-    
     # Worst case ! We have to !
-    #
-    if(timeStep!="hourly"){
-      warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
-      
-      #copy of warning in ChangeTimeStep
-      warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
-      
-      messageWarningMcYears<-paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
-      
-      if( is.null(mcYears) ){
-        warning(messageWarningMcYears, call. = FALSE)
-      }else if (is.character(mcYears)){
-        if (mcYears=="all"){
-          warning(messageWarningMcYears, call. = FALSE)
-        }
-      }else if (length(mcYears) > 1){
-        warning(messageWarningMcYears, call. = FALSE)
-      }
-    }
-    
-    mod[is.na(minGenModulation), minGenModulation := 0]
-      
-    .mergeByRef(mod, clusterDesc)
-    mod[, mustRunPartial := minGenModulation * capacity]
-    
-    setkey(mod, area, cluster, timeId)
-    
-    if (is_api) {
-      res <- .api_get_aggregate_areas(areas = areas,
-                                      timeStep = "hourly",
-                                      query_file = "details",
-                                      select = select,
-                                      mcYears = mcYears,
-                                      synthesis = FALSE,
-                                      opts = opts
-                                      )
-      res <- .format_api_aggregate_result(res)
-    } else {
-      processFun <- function(x) {
-        x <- reshapeFun(x)
-        mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
-        x[, mustRunPartial := pmin(production, mustRunPartial)]
-        changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
-      }
-      res <- suppressWarnings(
-        .importOutput("areas", "details", "area", areas, "hourly", NULL, 
-                      mcYears, showProgress, opts, processFun, 
-                      sameNames = FALSE, objectDisplayName = "cluster", 
-                      parallel = parallel)
-      )
-    }
-    
+    res <- .importOutputForClusters_w_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel, mod, clusterDesc)
   }
   
   .mergeByRef(res, clusterDesc[,.(area, cluster, `must-run`, `min-stable-power`)])
