@@ -335,8 +335,10 @@
   cols_to_factor_lower <- c("area", "link", "cluster")
   cols_to_factor_lower <- intersect(cols_to_factor_lower, res_cols)
   res[,(cols_to_factor_lower):=lapply(.SD, as.factor), .SDcols=cols_to_factor_lower]
+  
+  #To remove when endpoint will not send uppercase anymore
   res[,(cols_to_factor_lower):=lapply(.SD, tolower), .SDcols=cols_to_factor_lower]
-
+  
   cols_to_integer <- c("timeId")
   cols_to_integer <- intersect(cols_to_integer, res_cols)
   res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
