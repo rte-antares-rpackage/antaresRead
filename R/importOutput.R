@@ -314,10 +314,11 @@
   }
   
   endpoint <- paste0(endpoint_root, query_file_url, frequency_url, columns_url, areas_url, mc_years_url)
-  res <- api_get(opts = opts,
-            endpoint = endpoint,
-            default_endpoint = "v1/studies")
-
+  res <- api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies")
+  
+  attr(res, "spec") <- NULL
+  attr(res, "problems") <- NULL
+  
   return(as.data.table(res))
 }
 
