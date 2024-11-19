@@ -228,7 +228,10 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         mcWeights = NULL,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
+  browser()
 
+  # [copy]
+  # check for 'renewable-generation-modelling'
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
@@ -240,7 +243,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   timeStep <- match.arg(timeStep)
   
-  
+  # [copy]
   ##Controle size of data load
   size <- .giveSize(opts = opts, areas = areas, links = links, 
                     clusters = clusters, districts = districts, select = select,
@@ -269,12 +272,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
          if you want you can modify antaresRead rules of RAM control with setRam()")
   }
   
-  
+  # [copy]
   ##Control mcWeights
   if(!is.null(mcWeights) & is.null(mcYears)){
     stop("You cant used mcWeights for mc-all loaded")
   }
   
+  # [copy]
   if(!is.null(select)){
     if(!is.list(select)){
       if("all" %in% select){
@@ -283,34 +287,11 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  # if(isH5Opts(opts)){
-  #   
-  #   if(.requireRhdf5_Antares(stopP = FALSE)){
-  #     return(.h5ReadAntares(path = opts$h5path, 
-  #                           areas = areas,
-  #                           links = links,
-  #                           clusters = clusters,
-  #                           districts = districts,
-  #                           misc = misc,
-  #                           thermalAvailabilities = thermalAvailabilities,
-  #                           hydroStorage = hydroStorage,
-  #                           hydroStorageMaxPower = hydroStorageMaxPower,
-  #                           reserve = reserve,
-  #                           linkCapacity = linkCapacity,
-  #                           mustRun = mustRun,
-  #                           thermalModulation = thermalModulation,
-  #                           select = select,
-  #                           mcYears = mcYears,
-  #                           timeStep = timeStep[1],
-  #                           showProgress = showProgress,
-  #                           simplify = simplify))
-  #   } else {
-  #     stop(rhdf5_message)
-  #   }
-  # }
+  # [copy]
+  if (opts$mode == "Input") 
+    stop("Cannot use 'readAntares' in 'Input' mode.")
   
-  if (opts$mode == "Input") stop("Cannot use 'readAntares' in 'Input' mode.")
-  
+  # transform argument with management rules 
   reqInfos <- .giveInfoRequest(select = select,
                                areas = areas,
                                links = links,
@@ -331,6 +312,9 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   synthesis <- reqInfos$synthesis
   unselect <- reqInfos$unselect
   
+  ##
+  # aggregateResult ----
+  ##
   
   if(!is.null(mcWeights)){
     if(showProgress == TRUE)cat("Aggregate mcYears with mcWeights \n")
@@ -365,7 +349,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
-  # If all arguments are NULL, import all areas
+  # duplicate with rules in .giveInfoRequest()
+    # If all arguments are NULL, import all areas
   if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(clustersRes) & is.null(clustersST) & is.null(districts)) {
     areas <- "all"
   }
@@ -373,6 +358,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Check arguments validity. The function .checkArgs is defined below
   synthesis <- is.null(mcYears)
   
+  # [copy]
   areas <- .checkArg(areas, opts$areaList, "Areas %s do not exist in the simulation.")
   links <- .checkArg(links, opts$linkList, "Links %s do not exist in the simulation.")
   clusters <- .checkArg(clusters, opts$areasWithClusters, "Areas %s do not exist in the simulation or do not have any thermal cluster.")
@@ -854,7 +840,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
                              clustersST,
                              districts,
                              mcYears){
-  
+  browser()
   if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
   
   
@@ -930,4 +916,105 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
               synthesis = synthesis,
               computeAdd = computeAdd,
               unselect = unselect))
+}
+
+
+.check_parameters <- function(...){
+  
+  ##
+  # Unit parameter test (stop the program sequence)
+  ##
+  
+    # check study mode 
+  if (opts$mode == "Input") 
+    stop("Cannot use 'readAntares' in 'Input' mode.")
+  
+    #Control mcWeights
+  if(!is.null(mcWeights) & is.null(mcYears)){
+    stop("You cant used mcWeights for mc-all loaded")
+  }
+  
+  ##
+  # Unit parameter management 
+  ##
+  
+  # deletion of a non-existent value 
+  areas <- .checkArg(areas, 
+                     opts$areaList, 
+                     "Areas %s do not exist in the simulation.")
+  links <- .checkArg(links, 
+                     opts$linkList, 
+                     "Links %s do not exist in the simulation.")
+  clusters <- .checkArg(clusters, 
+                        opts$areasWithClusters, 
+                        "Areas %s do not exist in the simulation or do not have any thermal cluster.")
+  clustersRes <- .checkArg(clustersRes, 
+                           opts$areasWithResClusters, 
+                           "Areas %s do not exist in the simulation or do not have any renewable cluster.")
+  clustersST <- .checkArg(clustersST, 
+                          opts$areasWithSTClusters, 
+                          "Areas %s do not exist in the simulation or do not have any short-term cluster.")
+  districts <- .checkArg(districts,
+                         opts$districtList, 
+                         "Districts %s do not exist in the simulation.")
+  mcYears <- .checkArg(mcYears, 
+                       opts$mcYears, 
+                       "Monte-Carlo years %s have not been exported.", 
+                       allowDup = TRUE)
+  
+    ##Control select
+  if(!is.null(select)){
+    if(!is.list(select)){
+      if("all" %in% select){
+        select <- c("all", select[!"all" == select])
+      }
+    }
+  }
+  
+  
+  ##
+  # check opts study parameters
+  ##
+    # check for 'renewable-generation-modelling'
+  if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
+      !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
+     is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
+    if(!is.null(clustersRes)){
+      warning("Results at renewable cluster level (clustersRes) can only be imported on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
+    }
+    clustersRes <- NULL
+  }
+  
+  timeStep <- match.arg(timeStep)
+  
+  ##
+  # Controle size of data load
+  ##
+  size <- .giveSize(opts = opts, areas = areas, links = links, 
+                    clusters = clusters, districts = districts, select = select,
+                    mcYears = mcYears ,timeStep = timeStep, misc = misc, thermalAvailabilities = thermalAvailabilities,
+                    hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower, reserve = reserve,
+                    linkCapacity = linkCapacity, mustRun = mustRun, thermalModulation = thermalModulation)/1024
+  
+  
+  if(is.null(getOption("maxSizeLoadOnComp"))){
+    options(maxSizeLoadOnComp = utils::memory.limit()*0.7/1000)
+    
+  }
+  
+  if(is.null(getOption("maxSizeLoad"))){
+    options(maxSizeLoad = 10)
+  }
+  if(getOption("maxSizeLoad")<size)
+  {
+    stop("You want to load more than 10Go of data,
+         if you want you can modify antaresRead rules of RAM control with setRam()")
+  }
+  
+  if(getOption("maxSizeLoadOnComp")<size)
+  {
+    stop("You want to load more than 70% of your computer capacity,
+         if you want you can modify antaresRead rules of RAM control with setRam()")
+  }
+  
 }

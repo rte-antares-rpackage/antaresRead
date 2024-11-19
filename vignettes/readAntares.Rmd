@@ -1,0 +1,55 @@
+---
+title: "using readAntares"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{using readAntares}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(antaresRead)
+library(DependenciesGraphs)
+```
+
+# Dependecies analyse
+
+```{r}
+dep <- funDependencies("package:antaresRead","readAntares")
+plot(dep, height = "500px", width = "100%")
+```
+
+
+  
+
+## Part 1 - Check function parameter and management  
+
+See in function :
+
+ - minor checks (renewables)  
+ - `.giveSize()` private function to check size  
+   - If size is too big (10GB or 70% RAM size)  
+ - `.giveInfoRequest` : transform inputs arguments to be passable to reading function  
+ - `aggregateResult()` is called if parameter `mcWeights` is not null  
+ 
+ 
+## Part 2 - Add data from study output 
+
+Several calls to private functions to output data :  
+
+  - `.importOutputForAreas()`  
+  - `.importOutputForLinks()`  
+  - ...  
+  - 
+  
+Or private functions to input data :  
+
+ - `.addOutputToRes("misc", areas, .importMisc)` (`.addOutputToRes()` is launcher)
+
