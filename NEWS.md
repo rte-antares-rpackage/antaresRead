@@ -6,6 +6,7 @@
 
 BUGFIXES :
 * `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+* `api_get()` : add warn_for_status in importFrom section
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 
 BREAKING CHANGES :  
