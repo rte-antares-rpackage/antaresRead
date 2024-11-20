@@ -14,7 +14,7 @@
 #'
 #' @name API-methods
 #'
-#' @importFrom httr GET accept_json stop_for_status content add_headers timeout
+#' @importFrom httr GET accept_json stop_for_status warn_for_status content add_headers timeout
 #'
 #' @examples
 #' \dontrun{

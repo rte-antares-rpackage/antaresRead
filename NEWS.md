@@ -6,6 +6,7 @@
 
 BUGFIXES :
 * `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+* `api_get()` : add warn_for_status in importFrom section
 
 BREAKING CHANGES :  
 * `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
