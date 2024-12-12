@@ -328,10 +328,6 @@
   if (is.null(res)) return(NULL)
   
   res_cols <- colnames(res)
-  #To remove when endpoint will not send time anymore
-  if ("time" %in% res_cols) {
-    res[,time:=NULL]
-  }
   
   cols_to_factor_lower <- c("area", "link", "cluster")
   cols_to_factor_lower <- intersect(cols_to_factor_lower, res_cols)
