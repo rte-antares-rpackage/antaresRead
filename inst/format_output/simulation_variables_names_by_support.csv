@@ -5,5 +5,6 @@
 "Generation / Thermal";"details";"Profit by plant";4;"Net Profit by Thermal Cluster (€)";"profitByPlant";830;"Profit - Euro";"profit"
 "Generation / Renewables";"details-res";"RES generation by plant";1;"Renewable Energy Generation by Power Plant Cluster (MWh)";"resGenerationByPlant";810;"MWh";"production"
 "Generation / Short-Term Storages";"details-STstorage";"STS inj by plant";1;"Short-Term Storage Injection by Power Plant (MWh)";"stsInjByPlant";860;"P-injection - MW";"P.injection"
-"Generation / Short-Term Storages";"details-STstorage";"STS lvl by plant";2;"Short-Term Storage Level by Power Plant (MWh)";"stsLvlByPlant";860;"Levels - MWh";"levels"
-"Generation / Short-Term Storages";"details-STstorage";"STS withdrawal by plant";3;"Short-Term Storage Withdrawal by Power Plant (MWh)";"stsWithdrawalByPlant";860;"P-withdrawal - MW";"P.withdrawal"
+"Generation / Short-Term Storages";"details-STstorage";"STS withdrawal by plant";2;"Short-Term Storage Withdrawal by Power Plant (MWh)";"stsWithdrawalByPlant";860;"P-withdrawal - MW";"P.withdrawal"
+"Generation / Short-Term Storages";"details-STstorage";"STS lvl by plant";3;"Short-Term Storage Level by Power Plant (MWh)";"stsLvlByPlant";860;"Levels - MWh";"levels"
+"Generation / Short-Term Storages";"details-STstorage";"STS Cashflow By Cluster";4;"Storage Cashflow by Thermal Cluster (€)";"stsCashflowByCluster";880;"CashFlow - Euro";"Cashflow"
