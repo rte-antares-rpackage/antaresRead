@@ -4,13 +4,20 @@
 # antaresRead 2.8.0.9000 
 (cf. Antares v9 changelog)
 
-BUGFIXES :
+BUGFIXES :  
+
 * `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
 * `api_get()` : add warn_for_status in importFrom section
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 
 BREAKING CHANGES :  
+
 * `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
+
+GITHUB ACTIONS :  
+
+* Actions artifacts v3 is closing down, update to v4
+
 
 
 # antaresRead 2.7.2
