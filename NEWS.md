@@ -16,7 +16,8 @@ BREAKING CHANGES :
 
 GITHUB ACTIONS :  
 
-* Actions artifacts v3 is closing down, update to v4
+* Actions artifacts v3 is closing down, update to v4  
+* test-coverage.yaml updated 
 
 
 
