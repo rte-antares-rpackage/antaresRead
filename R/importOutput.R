@@ -40,6 +40,32 @@
   colname
 }
 
+
+#' .check_output_files_existence
+#'
+#' @param opts
+#'   list of simulation parameters returned by the function
+#'   \code{\link{setSimulationPath}}
+#' @param args
+#' (data frame) contains the arguments to read the outputs
+#'
+#' @return
+#' Logical vector containing the existence of the output file.
+#'
+#' @noRd
+#'
+.check_output_files_existence <- function(opts, args){
+  
+  if(is_api_study(opts)){
+    outputMissing <- !sapply(gsub(pattern = ".txt$", replacement = "", args$path), FUN = .getSuccess, token = opts$token)
+  }else{
+    outputMissing <- !file.exists(args$path)
+  }
+  
+  return(outputMissing)
+}
+
+
 #' .importOutput
 #'
 #' Private function used to import the results of a simulation. The type of result
@@ -93,14 +119,8 @@
     args$id <- args$link
   }
   
-  if(opts$typeLoad == "api"){
-    # args$path <- sapply(args$path, .changeName, opts = opts)
-    # outputMissing <- unlist(sapply(args$path, function(X)httr::HEAD(X)$status_code!=200))
-    # print(outputMissing)
-    outputMissing <- rep(FALSE, nrow(args))
-  }else{
-    outputMissing <- !file.exists(args$path)
-  }
+  outputMissing <- .check_output_files_existence(opts = opts, args = args)
+  
   if (all(outputMissing)) {
     message("No data corresponding to your query.")
     return(NULL)
@@ -966,5 +986,3 @@
 #   out <- sub(pattern = "studies", "file", paste0(opts$studyPath , "/output/", opts$simOutputName,"/", path_rev))
 #   out <- gsub(" ", "%20", out)
 # }
-
-
