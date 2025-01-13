@@ -6,11 +6,11 @@
 \alias{readClusterSTDesc}
 \title{Import clusters description}
 \usage{
-readClusterDesc(opts = simOptions())
+readClusterDesc(opts = simOptions(), antares_format = TRUE)
 
-readClusterResDesc(opts = simOptions())
+readClusterResDesc(opts = simOptions(), antares_format = TRUE)
 
-readClusterSTDesc(opts = simOptions())
+readClusterSTDesc(opts = simOptions(), antares_format = TRUE)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function

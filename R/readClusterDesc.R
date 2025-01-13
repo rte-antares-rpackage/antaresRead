@@ -63,37 +63,43 @@
 #' @export
 #' 
 #' @rdname readClusterDesc
-readClusterDesc <- function(opts = simOptions()) {
-  .readClusterDesc(opts = opts, dir = "thermal/clusters")
+readClusterDesc <- function(opts = simOptions(), antares_format = TRUE) {
+  .readClusterDesc(opts = opts, 
+                   dir = "thermal/clusters",
+                   antares_format = antares_format)
 }
 
 #' @export
 #'
 #' @rdname readClusterDesc
-readClusterResDesc <- function(opts = simOptions()) {
+readClusterResDesc <- function(opts = simOptions(), antares_format = TRUE) {
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
     stop("readClusterDesc is available only on studies with 'renewable-generation-modelling' = 'clusters' (and Antares >= 8.1)", call. = FALSE)
   }
-  .readClusterDesc(opts = opts, dir = "renewables/clusters")
+  .readClusterDesc(opts = opts, 
+                   dir = "renewables/clusters",
+                   antares_format = antares_format)
 }
 
 
 #' @export
 #'
 #' @rdname readClusterDesc
-readClusterSTDesc <- function(opts = simOptions()) {
+readClusterSTDesc <- function(opts = simOptions(), antares_format = TRUE) {
   if (opts$antaresVersion < 860) {
     stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
   }
-  .readClusterDesc(opts = opts, dir = "st-storage/clusters")
+  .readClusterDesc(opts = opts, 
+                   dir = "st-storage/clusters",
+                   antares_format = antares_format)
 }
 
 #' @importFrom stats setNames
 .readClusterDesc <- function(opts = simOptions(), 
-                             dir = "thermal/clusters") {
-  
+                             dir = "thermal/clusters",
+                             antares_format = TRUE) {
   path <- file.path(opts$inputPath, dir)
   api_study <- is_api_study(opts)
 
@@ -122,7 +128,8 @@ readClusterSTDesc <- function(opts = simOptions()) {
   
   # READ cluster properties
   properties <- get_input_cluster_properties(table_type = table_type, 
-                                             opts = opts)
+                                             opts = opts, 
+                                             antares_format = antares_format)
    
   # read properties for each area
   res <- plyr::llply(areas, function(x, prop_ref=properties) {
@@ -131,12 +138,12 @@ readClusterSTDesc <- function(opts = simOptions()) {
       return(NULL)
     # conversion list to data.frame
     clusters <- plyr::ldply(clusters, function(x){
-      df_clust <- data.frame(x, check.names = FALSE) 
+      df_clust <- data.frame(x, check.names = antares_format) 
       colnames_to_add <- setdiff(names(prop_ref), names(df_clust))
       if(!identical(colnames_to_add, character(0)))
         df_clust <- cbind(df_clust, prop_ref[, .SD, .SDcols = colnames_to_add])
       df_clust
-      }) # check.names = FALSE (too many side effects)
+      }) # check.names = FALSE (no automatic conversion)
     clusters$.id <- NULL
     clusters$area <- x
     # re order columns
@@ -159,7 +166,7 @@ readClusterSTDesc <- function(opts = simOptions()) {
 
 # read and manage referential properties 
   # return referential according to type and study version
-get_input_cluster_properties <- function(table_type, opts){
+get_input_cluster_properties <- function(table_type, opts, antares_format = TRUE){
   # READ cluster properties
   full_ref_properties <- pkgEnv[["inputProperties"]]
   
@@ -174,23 +181,25 @@ get_input_cluster_properties <- function(table_type, opts){
   ref_filter_by_cat <- full_ref_properties[`Category` %in%
                                              category_ref_cluster]
   # filter by study version
-  ref_filter_by_vers <- ref_filter_by_cat[`Version Antares` <= 
+  ref_filter_by_vers <- ref_filter_by_cat[Version.Antares <= 
                                             opts$antaresVersion | 
-                                            `Version Antares` %in% NA]
+                                            Version.Antares %in% NA]
   
   # detect evolution on parameter ? (new value according to study version) 
-  # filter on value according to study version 
+    # filter on value according to study version 
+    # select column according to format
+  select_col <- ifelse(antares_format, "operating_format", "INI.Name")
   df_multi_params <- ref_filter_by_vers[, 
                                         count := .N, 
-                                        by = c("INI Name"), 
+                                        by = select_col, 
                                         keyby = TRUE][
                                           count>1][, 
-                                                   .SD[which.max(`Version Antares`)], 
-                                                   by="INI Name"]
+                                                   .SD[which.max(Version.Antares)], 
+                                                   by=select_col]
   
   df_unique_params <- ref_filter_by_vers[, 
                                          count := .N, 
-                                         by = c("INI Name"), 
+                                         by = select_col, 
                                          keyby = TRUE][
                                            count==1]
   
@@ -199,16 +208,16 @@ get_input_cluster_properties <- function(table_type, opts){
   # select key colums and put wide format
   ref_filter_by_vers <- ref_filter_by_vers[ , 
                                             .SD, 
-                                            .SDcols = c("INI Name", 
+                                            .SDcols = c(select_col, 
                                                         "Default", 
                                                         "Type")]
   
   # select names columns to convert to logical + numerical
-  logical_col_names <- ref_filter_by_vers[Type%in%"bool"][["INI Name"]]
-  numerical_col_names <- ref_filter_by_vers[Type%in%c("int", "float")][["INI Name"]]
+  logical_col_names <- ref_filter_by_vers[Type%in%"bool"][[select_col]]
+  numerical_col_names <- ref_filter_by_vers[Type%in%c("int", "float")][[select_col]]
   
   wide_ref <- data.table::dcast(data = ref_filter_by_vers, 
-                                formula = .~`INI Name`,
+                                formula = as.formula(paste0(".~", select_col)),
                                 value.var = "Default")[
                                   , 
                                   .SD,
