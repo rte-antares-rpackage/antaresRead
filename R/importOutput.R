@@ -54,7 +54,7 @@
 #'
 #' @noRd
 #'
-.check_output_files_existence <- function(opts, args){
+.check_missing_output_files <- function(opts, args){
   
   if(is_api_study(opts)){
     outputMissing <- !sapply(gsub(pattern = ".txt$", replacement = "", args$path), FUN = .getSuccess, token = opts$token)
@@ -119,7 +119,7 @@
     args$id <- args$link
   }
   
-  outputMissing <- .check_output_files_existence(opts = opts, args = args)
+  outputMissing <- .check_missing_output_files(opts = opts, args = args)
   
   if (all(outputMissing)) {
     message("No data corresponding to your query.")
