@@ -6,6 +6,20 @@ path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, valu
 
 opts <- setSimulationPath(path_study_test,simulation="20240105-0934eco")
 
+
+test_that(".check_missing_output_files is ok", {
+  
+  links <- c("at - fr", "fr - it", "at - it")  
+  args <- data.frame("link" = links,
+                     "path" = file.path(opts$simPath, "economy", "mc-ind", "00001", "links", links, "values-annual.txt")
+                     )
+  output_missing_expected <- c(FALSE,FALSE,TRUE)  
+  output_missing <- .check_missing_output_files(opts = opts, args = args)
+  
+  expect_equal(output_missing,output_missing_expected)
+})
+
+
 test_that(".importOutputForClusters is ok", {
     
     OutputForClusters <- .importOutputForClusters(
