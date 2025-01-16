@@ -6,15 +6,17 @@
 \alias{readClusterSTDesc}
 \title{Import clusters description}
 \usage{
-readClusterDesc(opts = simOptions(), antares_format = TRUE)
+readClusterDesc(opts = simOptions(), dot_format = TRUE)
 
-readClusterResDesc(opts = simOptions(), antares_format = TRUE)
+readClusterResDesc(opts = simOptions(), dot_format = TRUE)
 
-readClusterSTDesc(opts = simOptions(), antares_format = TRUE)
+readClusterSTDesc(opts = simOptions(), dot_format = TRUE)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
+
+\item{dot_format}{\code{logical} default TRUE to return \code{character} with "valid" format (see \code{\link[=make.names]{make.names()}})}
 }
 \value{
 A data.table with one line per cluster. The columns of the data.table may

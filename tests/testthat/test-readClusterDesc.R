@@ -38,7 +38,7 @@ test_that("test read cluster", {
   
   test_that("Antares format", {
     # read clusters informations
-    input <- readClusterDesc(antares_format = FALSE)
+    input <- readClusterDesc(dot_format = FALSE)
     
     # test character "-" exists
     testthat::expect_true(
@@ -73,7 +73,7 @@ test_that("test read cluster", {
   test_that("Test properties read from .ini", {
     # read clusters informations
       # need .ini format 
-    input <- readClusterDesc(antares_format = FALSE)
+    input <- readClusterDesc(dot_format = FALSE)
     
     area_test <- getAreas()[1]
     cluster_target <- "BASE"
@@ -103,6 +103,7 @@ test_that("test read cluster", {
   testthat::expect_equal(nrow(input), nrow(unique(input)))
 })
 
+# v830 ----
 ## Renewables ----
    # NOTE : only tests on renewable part 
 test_that("test read cluster renewables", {
@@ -142,7 +143,7 @@ test_that("test read cluster renewables", {
   
   test_that("Antares format", {
     # read clusters informations
-    input <- readClusterResDesc(antares_format = FALSE)
+    input <- readClusterResDesc(dot_format = FALSE)
     
     # test character "-" exists
     testthat::expect_true(
@@ -177,7 +178,7 @@ test_that("test read cluster renewables", {
   test_that("Test properties read from .ini", {
     # read clusters informations
     # need .ini format 
-    input <- readClusterResDesc(antares_format = FALSE)
+    input <- readClusterResDesc(dot_format = FALSE)
     
     area_test <- areas_res[1]
     cluster_target <- "at_res_1"
@@ -245,7 +246,7 @@ test_that("test read cluster st-storage v860", {
   
   test_that("Antares format", {
     # read clusters informations
-    input <- readClusterSTDesc(antares_format = FALSE)
+    input <- readClusterSTDesc(dot_format = FALSE)
     
     # test character "-" exists (actualy not in st-storages)
     testthat::expect_false(
@@ -280,7 +281,7 @@ test_that("test read cluster st-storage v860", {
   test_that("Test properties read from .ini", {
     # read clusters informations
     # need .ini format 
-    input <- readClusterSTDesc(antares_format = FALSE)
+    input <- readClusterSTDesc(dot_format = FALSE)
     
     area_test <- areas_st[1]
     cluster_target <- "at_st_batt"

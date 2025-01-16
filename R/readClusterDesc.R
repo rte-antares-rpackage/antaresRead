@@ -10,6 +10,7 @@
 #' in the input files so they may have changed since a simulation has been run.
 #'
 #' @inheritParams readAntares
+#' @param dot_format `logical` default TRUE to return `character` with "valid" format (see [make.names()]) 
 #'
 #' @return
 #' A data.table with one line per cluster. The columns of the data.table may
@@ -63,16 +64,16 @@
 #' @export
 #' 
 #' @rdname readClusterDesc
-readClusterDesc <- function(opts = simOptions(), antares_format = TRUE) {
+readClusterDesc <- function(opts = simOptions(), dot_format = TRUE) {
   .readClusterDesc(opts = opts, 
                    dir = "thermal/clusters",
-                   antares_format = antares_format)
+                   dot_format = dot_format)
 }
 
 #' @export
 #'
 #' @rdname readClusterDesc
-readClusterResDesc <- function(opts = simOptions(), antares_format = TRUE) {
+readClusterResDesc <- function(opts = simOptions(), dot_format = TRUE) {
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
       !opts$parameters$`other preferences`$`renewable-generation-modelling` %in% "clusters") || 
      is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`)){
@@ -80,26 +81,26 @@ readClusterResDesc <- function(opts = simOptions(), antares_format = TRUE) {
   }
   .readClusterDesc(opts = opts, 
                    dir = "renewables/clusters",
-                   antares_format = antares_format)
+                   dot_format = dot_format)
 }
 
 
 #' @export
 #'
 #' @rdname readClusterDesc
-readClusterSTDesc <- function(opts = simOptions(), antares_format = TRUE) {
+readClusterSTDesc <- function(opts = simOptions(), dot_format = TRUE) {
   if (opts$antaresVersion < 860) {
     stop("readClusterSTDesc is available only on Antares >= 8.6)", call. = FALSE)
   }
   .readClusterDesc(opts = opts, 
                    dir = "st-storage/clusters",
-                   antares_format = antares_format)
+                   dot_format = dot_format)
 }
 
 #' @importFrom stats setNames
 .readClusterDesc <- function(opts = simOptions(), 
                              dir = "thermal/clusters",
-                             antares_format = TRUE) {
+                             dot_format = TRUE) {
   path <- file.path(opts$inputPath, dir)
   api_study <- is_api_study(opts)
 
@@ -129,7 +130,7 @@ readClusterSTDesc <- function(opts = simOptions(), antares_format = TRUE) {
   # READ cluster properties
   properties <- get_input_cluster_properties(table_type = table_type, 
                                              opts = opts, 
-                                             antares_format = antares_format)
+                                             dot_format = dot_format)
    
   # read properties for each area
   res <- plyr::llply(areas, function(x, prop_ref=properties) {
@@ -138,7 +139,7 @@ readClusterSTDesc <- function(opts = simOptions(), antares_format = TRUE) {
       return(NULL)
     # conversion list to data.frame
     clusters <- plyr::ldply(clusters, function(x){
-      df_clust <- data.frame(x, check.names = antares_format) 
+      df_clust <- data.frame(x, check.names = dot_format) 
       colnames_to_add <- setdiff(names(prop_ref), names(df_clust))
       if(!identical(colnames_to_add, character(0)))
         df_clust <- cbind(df_clust, prop_ref[, .SD, .SDcols = colnames_to_add])
@@ -166,7 +167,7 @@ readClusterSTDesc <- function(opts = simOptions(), antares_format = TRUE) {
 
 # read and manage referential properties 
   # return referential according to type and study version
-get_input_cluster_properties <- function(table_type, opts, antares_format = TRUE){
+get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
   # READ cluster properties
   full_ref_properties <- pkgEnv[["inputProperties"]]
   
@@ -188,7 +189,7 @@ get_input_cluster_properties <- function(table_type, opts, antares_format = TRUE
   # detect evolution on parameter ? (new value according to study version) 
     # filter on value according to study version 
     # select column according to format
-  select_col <- ifelse(antares_format, "operating_format", "INI.Name")
+  select_col <- ifelse(dot_format, "operating_format", "INI.Name")
   df_multi_params <- ref_filter_by_vers[, 
                                         count := .N, 
                                         by = select_col, 
