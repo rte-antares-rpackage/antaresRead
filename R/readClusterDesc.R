@@ -119,7 +119,8 @@ readClusterSTDesc <- function(opts = simOptions(), dot_format = TRUE) {
       query = list(columns = "")
     )
     
-    dt_clusters <- .convert_list_clusterDesc_to_datatable(list_clusters)
+    dt_clusters <- .convert_list_clusterDesc_to_datatable(list_clusters, 
+                                                          type = table_type)
   
     return(dt_clusters)
   }
@@ -236,7 +237,19 @@ get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
 }
 
 
-.convert_list_clusterDesc_to_datatable <- function(list_clusters) {
+.convert_list_clusterDesc_to_datatable <- function(list_clusters, type) {
+  
+  # to convert camel case to operating format
+  category_ref_cluster <- switch(
+    type,
+    "thermals" = "thermal",
+    "renewables" = "renewable",
+    "st-storages" = "storage"
+  )
+  
+  # Tech.Name is what is return by API
+  params_categ <- pkgEnv$inputProperties[Category%in%category_ref_cluster, 
+                                         Tech.Name]
   if (length(list_clusters) == 0) 
     return(data.table())
     
@@ -252,15 +265,26 @@ get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
   # hamburger
   df_clusters <- do.call("rbind", rows_cluster)
   
+  # matching
+  col_names <- setdiff(names(df_clusters), 
+                       c("area", "cluster")) 
+  index <- match(col_names, params_categ)
+  new_names <- pkgEnv$inputProperties[Category%in%category_ref_cluster,
+                                      "operating_format"][index]
+  new_names <- append(new_names$operating_format,  c("area", "cluster"))
+  
+  # rename cols
+  names(df_clusters) <- new_names
+  
   # to order cols
   id_cols <- intersect(c("area", "cluster", "group"), colnames(df_clusters))
   additional_cols <- setdiff(colnames(df_clusters), id_cols)  
   df_clusters <- df_clusters[,c(id_cols, additional_cols)]
   
-  # no camel case on colnames + tolower
-  names(df_clusters) <- tolower(
-    gsub("(?<=[A-Za-z])(?=[A-Z])", ".", names(df_clusters), perl = TRUE)
-  )
+  # # no camel case on colnames + tolower
+  # names(df_clusters) <- tolower(
+  #   gsub("(?<=[A-Za-z])(?=[A-Z])", ".", names(df_clusters), perl = TRUE)
+  # )
   
   # convention ? (return class object like disk mode)
   df_clusters$cluster <- as.factor(tolower(df_clusters$cluster))
