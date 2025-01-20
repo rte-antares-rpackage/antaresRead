@@ -106,7 +106,7 @@ utils::globalVariables(
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
     "NODU", "min.stable.power", 'Category', 'Version.Antares', 'Type',
-    "thermalPmin", "name", "value", "Tech.Name",
+    "thermalPmin", "name", "value", "Tech.Name", '..format_field',
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
     "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC", 

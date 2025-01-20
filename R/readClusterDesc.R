@@ -120,7 +120,8 @@ readClusterSTDesc <- function(opts = simOptions(), dot_format = TRUE) {
     )
     
     dt_clusters <- .convert_list_clusterDesc_to_datatable(list_clusters, 
-                                                          type = table_type)
+                                                          type = table_type,
+                                                          dot_format = dot_format)
   
     return(dt_clusters)
   }
@@ -237,7 +238,12 @@ get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
 }
 
 
-.convert_list_clusterDesc_to_datatable <- function(list_clusters, type) {
+.convert_list_clusterDesc_to_datatable <- function(list_clusters, 
+                                                   type, 
+                                                   dot_format) {
+  # return like disk mode 
+  if (length(list_clusters) == 0) 
+    return(data.table())
   
   # to convert camel case to operating format
   category_ref_cluster <- switch(
@@ -247,17 +253,19 @@ get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
     "st-storages" = "storage"
   )
   
-  # Tech.Name is what is return by API
+  # format output according to parameter
+  format_field <- ifelse(dot_format, "operating_format", "INI.Name")
+  
+  # Tech.Name is the field corresponding to what the API returns
   params_categ <- pkgEnv$inputProperties[Category%in%category_ref_cluster, 
                                          Tech.Name]
-  if (length(list_clusters) == 0) 
-    return(data.table())
     
   rows_cluster <- lapply(
     names(list_clusters), 
     function(cl_name) {
       row_cluster <- as.data.frame(list_clusters[[cl_name]])
-      row_cluster[,c("area", "cluster")] <- unlist(strsplit(cl_name, split = " / "))
+      row_cluster[,c("area", "cluster")] <- unlist(strsplit(cl_name, 
+                                                            split = " / "))
       return(row_cluster)
     }
   )
@@ -265,13 +273,13 @@ get_input_cluster_properties <- function(table_type, opts, dot_format = TRUE){
   # hamburger
   df_clusters <- do.call("rbind", rows_cluster)
   
-  # matching
+  # matching columns in internal referential
   col_names <- setdiff(names(df_clusters), 
                        c("area", "cluster")) 
   index <- match(col_names, params_categ)
   new_names <- pkgEnv$inputProperties[Category%in%category_ref_cluster,
-                                      "operating_format"][index]
-  new_names <- append(new_names$operating_format,  c("area", "cluster"))
+                                      ..format_field][index]
+  new_names <- append(new_names[[format_field]],  c("area", "cluster"))
   
   # rename cols
   names(df_clusters) <- new_names
