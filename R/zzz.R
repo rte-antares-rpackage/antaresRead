@@ -110,7 +110,7 @@ utils::globalVariables(
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
     "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC", 
-    "DETAILS_FILES_TYPE","ANTARES_DISPLAYED_NAME")
+    "DETAILS_FILES_TYPE","ANTARES_DISPLAYED_NAME", "time")
 )
 
 ## INPUT Properties REF ----
