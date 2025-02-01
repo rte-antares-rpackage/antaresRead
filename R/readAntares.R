@@ -243,7 +243,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   ##Controle size of data load
   size <- .giveSize(opts = opts, areas = areas, links = links, 
-                    clusters = clusters, districts = districts, select = select,
+                    clusters = clusters, clustersST = clustersST, districts = districts, select = select,
                     mcYears = mcYears ,timeStep = timeStep, misc = misc, thermalAvailabilities = thermalAvailabilities,
                     hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower, reserve = reserve,
                     linkCapacity = linkCapacity, mustRun = mustRun, thermalModulation = thermalModulation)/1024
