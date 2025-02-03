@@ -1,7 +1,5 @@
-# v710----
 
-## Thermal ----
-test_that("Size is positive", {
+test_that("Check the size of the object to get", {
   opts <- list(
     "inputPath"=tempdir(),
     "typeLoad"='not_api',
