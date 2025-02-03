@@ -204,6 +204,6 @@ setRam <- function(x){
   nbRowClusters <- nbTid * nbMc * nrow(clusWithData) * ( nbColcl + nbIdCols)
   clSize <- sizeObjectCl * nbRowClusters / 1024 ^2
   
-  linksSize + areasSize + disSize + clSize
+  linksSize + areasSize + disSize + clSize + 0
 }
 
