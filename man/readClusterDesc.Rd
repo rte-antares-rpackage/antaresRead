@@ -51,9 +51,20 @@ characteristics of each cluster.
 Be aware that clusters descriptions are read
 in the input files so they may have changed since a simulation has been run.
 }
+\section{Warning}{
+
+You have now two format output to display input properties.
+Default is format uses by operating team, eg \code{min.down.time}.
+Other format is according to antares simulator, eg \code{min-down-time}.
+
+All properties are returned with default values according to Antares Study version.
+}
+
 \examples{
 
 \dontrun{
+
+# Default format with "dot separator"
 
 # thermal
 readClusterDesc()
@@ -63,6 +74,18 @@ readClusterResDesc()
 
 # st-storage
 readClusterSTDesc()
+
+# Antares Simulator format 
+
+#' # thermal
+readClusterDesc(dot_format = FALSE)
+
+# renewable
+readClusterResDesc(dot_format = FALSE)
+
+# st-storage
+readClusterSTDesc(dot_format = FALSE)
+
 
 # By default, the function reads cluster descriptions for the default study,
 # but it is possible to specify another study with parameter "opts"

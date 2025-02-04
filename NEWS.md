@@ -12,7 +12,8 @@ BUGFIXES :
 
 BREAKING CHANGES :  
 
-* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)  
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 
 GITHUB ACTIONS :  
 
