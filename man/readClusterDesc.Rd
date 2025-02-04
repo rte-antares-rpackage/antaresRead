@@ -6,15 +6,17 @@
 \alias{readClusterSTDesc}
 \title{Import clusters description}
 \usage{
-readClusterDesc(opts = simOptions())
+readClusterDesc(opts = simOptions(), dot_format = TRUE)
 
-readClusterResDesc(opts = simOptions())
+readClusterResDesc(opts = simOptions(), dot_format = TRUE)
 
-readClusterSTDesc(opts = simOptions())
+readClusterSTDesc(opts = simOptions(), dot_format = TRUE)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
+
+\item{dot_format}{\code{logical} default TRUE to return \code{character} with "valid" format (see \code{\link[=make.names]{make.names()}})}
 }
 \value{
 A data.table with one line per cluster. The columns of the data.table may
@@ -49,9 +51,20 @@ characteristics of each cluster.
 Be aware that clusters descriptions are read
 in the input files so they may have changed since a simulation has been run.
 }
+\section{Warning}{
+
+You have now two format output to display input properties.
+Default is format uses by operating team, eg \code{min.down.time}.
+Other format is according to antares simulator, eg \code{min-down-time}.
+
+All properties are returned with default values according to Antares Study version.
+}
+
 \examples{
 
 \dontrun{
+
+# Default format with "dot separator"
 
 # thermal
 readClusterDesc()
@@ -61,6 +74,18 @@ readClusterResDesc()
 
 # st-storage
 readClusterSTDesc()
+
+# Antares Simulator format 
+
+#' # thermal
+readClusterDesc(dot_format = FALSE)
+
+# renewable
+readClusterResDesc(dot_format = FALSE)
+
+# st-storage
+readClusterSTDesc(dot_format = FALSE)
+
 
 # By default, the function reads cluster descriptions for the default study,
 # but it is possible to specify another study with parameter "opts"

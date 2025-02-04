@@ -97,7 +97,7 @@ utils::globalVariables(
   c("timeId", "tsId", "area", "hydroStorage", "thermalAvailability",
     "cluster", "FLOW LIN.", "FLOW QUAD.", "direction", "flow",
     "BALANCE", "totalFlow", "prop", "to", "link", "change",
-    "district", "must-run", ".txt", "detailsLength",
+    "district", "must.run", ".txt", "detailsLength",
     "linkLength", "connectedToVirtualArea", "from", "correction",
     "nominalcapacity", "unitcount", "capacity", "minGenModulation",
     "production", "mustRunPartial", "mustRunTotal", "mcYear",
@@ -105,8 +105,8 @@ utils::globalVariables(
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea",
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
-    "NODU", "min-stable-power", 'Category', 'Version Antares', 'Type',
-    "thermalPmin", "name", "value",
+    "NODU", "min.stable.power", 'Category', 'Version.Antares', 'Type',
+    "thermalPmin", "name", "value", "Tech.Name", '..format_field',
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
     "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC", 
@@ -131,6 +131,15 @@ res_prop_st <- data.table::fread(system.file("referential_properties/properties_
 
 df_files_ref <- do.call("rbind", 
                         list(res_prop_ref, res_prop_therm, res_prop_st))
+# create new column "operating_format" to return "Valid Names" (separator variable with ".") 
+  # legacy format
+new_col_format <- make.names(df_files_ref[["INI Name"]])
+df_files_ref[, operating_format := new_col_format]
+
+# format col names too
+names(df_files_ref) <-  make.names(names(df_files_ref))
+
+# append
 pkgEnv$inputProperties <- df_files_ref
 
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
