@@ -390,6 +390,9 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   
   # timer for api commande execute
   res$sleep <- 0.5
+  
+  # param "verbose" similar to disk mode
+  res$verbose <- FALSE
 
   class(res) <- c("simOptions")
 

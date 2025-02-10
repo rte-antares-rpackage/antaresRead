@@ -79,6 +79,7 @@ to timeId = 1.
 \item{firstWeekday}{First day of the week.}
 \item{districtsDef}{data.table containing the specification of the districts.}
 \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
+\item{verbose}{\code{logical} default to FALSE, put to TRUE to manage diagnostic messages}
 
 \item{sleep}{timer for api commande execute}
 }

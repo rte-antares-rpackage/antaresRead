@@ -73,6 +73,7 @@
 #'   \item{firstWeekday}{First day of the week.}
 #'   \item{districtsDef}{data.table containing the specification of the districts.}
 #'   \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
+#'   \item{verbose}{`logical` default to FALSE, put to TRUE to manage diagnostic messages}
 #' 
 #' @seealso 
 #'   \code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
@@ -221,6 +222,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   res$districtsDef <- .readDistrictsDef(res$inputPath, res$areaList)
   res$energyCosts <- .readEnergyCosts(res$inputPath)
   res$typeLoad <- "txt"
+  res$verbose <- FALSE
   class(res) <- c("simOptions")
 
   options(antares=res)
