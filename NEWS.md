@@ -2,7 +2,11 @@
 
 
 # antaresRead 2.8.0.9000 
-(cf. Antares v9 changelog)
+(cf. Antares v9 changelog)  
+
+NEW FEATURES:  
+
+* `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
 
 BUGFIXES :  
 

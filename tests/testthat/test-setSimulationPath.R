@@ -34,7 +34,8 @@ trueOpts <- list(
                "b - psp in", "b - psp out", "c - hub", "hub - psp in-2", 
                "hub - psp out-2"),
   areasWithClusters = c("a", "b", "c", "psp in", "psp in-2", "psp out", "psp out-2"),
-  districtsDef = data.table(district = as.factor("a and b"), area = as.factor(c("a", "b")))
+  districtsDef = data.table(district = as.factor("a and b"), area = as.factor(c("a", "b"))),
+  verbose = FALSE
 )
 
 test_that("setSimulationPath reads correct values", {
