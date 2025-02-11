@@ -1,4 +1,22 @@
 
+# Relase 2.9.0  
+  -  Many fixes 
+## R CMD check results OK
+
+0 errors  | 0 warnings | 0 notes 
+
+## rev dep check OK
+
+── CHECK 3 packages ──
+✔ antaresEditObject 0.7.1                ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresProcessing 0.18.3               ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3                      ── E: 0     | W: 0     | N: 0          
+
+
+
+
+
+
 # Release 2.7.1 
 
  - To fix problem with cran check (see log "M1mac").  
