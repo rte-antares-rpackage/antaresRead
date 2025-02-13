@@ -20,7 +20,7 @@ in the input files so they may have changed since a simulation has been run."><!
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.7.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.9.0</span>
       </span>
     </div>
 
@@ -62,11 +62,11 @@ in the input files so they may have changed since a simulation has been run.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readClusterDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readClusterDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, dot_format <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">readClusterResDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu">readClusterResDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, dot_format <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">readClusterSTDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">readClusterSTDesc</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, dot_format <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -76,6 +76,10 @@ in the input files so they may have changed since a simulation has been run.</p>
 <dl><dt id="arg-opts">opts<a class="anchor" aria-label="anchor" href="#arg-opts"></a></dt>
 <dd><p>list of simulation parameters returned by the function
 <code><a href="setSimulationPath.html">setSimulationPath</a></code></p></dd>
+
+
+<dt id="arg-dot-format">dot_format<a class="anchor" aria-label="anchor" href="#arg-dot-format"></a></dt>
+<dd><p><code>logical</code> default TRUE to return <code>character</code> with "valid" format (see <code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names()</a></code>)</p></dd>
 
 </dl></div>
     <div id="value">
@@ -109,11 +113,22 @@ study. You can use the argument <code>opts</code> to specify another study.</p>
 <p><code>readClusterSTDesc</code> : read st-storage clusters (Antares &gt;= V8.6)</p>
 <p>If you have no clusters properties, <code>Null data.table (0 rows and 0 cols)</code> is returned.</p>
     </div>
+    <div id="warning">
+    <h2>Warning</h2>
+
+
+<p>You have now two format output to display input properties.
+Default is format uses by operating team, eg <code>min.down.time</code>.
+Other format is according to antares simulator, eg <code>min-down-time</code>.</p>
+<p>All properties are returned with default values according to Antares Study version.</p>
+    </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Default format with "dot separator"</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># thermal</span></span></span>
 <span class="r-in"><span><span class="fu">readClusterDesc</span><span class="op">(</span><span class="op">)</span></span></span>
@@ -123,6 +138,18 @@ study. You can use the argument <code>opts</code> to specify another study.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># st-storage</span></span></span>
 <span class="r-in"><span><span class="fu">readClusterSTDesc</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Antares Simulator format </span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#' # thermal</span></span></span>
+<span class="r-in"><span><span class="fu">readClusterDesc</span><span class="op">(</span>dot_format <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># renewable</span></span></span>
+<span class="r-in"><span><span class="fu">readClusterResDesc</span><span class="op">(</span>dot_format <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># st-storage</span></span></span>
+<span class="r-in"><span><span class="fu">readClusterSTDesc</span><span class="op">(</span>dot_format <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># By default, the function reads cluster descriptions for the default study,</span></span></span>
 <span class="r-in"><span><span class="co"># but it is possible to specify another study with parameter "opts"</span></span></span>
