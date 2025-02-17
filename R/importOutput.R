@@ -303,7 +303,7 @@
     if (is.null(areas)) {
       return (NULL)
     }
-  
+    
     args <- .generate_output_data_to_read(folder = "areas", fileName = "values", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
     outputMissing <- .check_missing_output_files(opts = opts, args = args)
   
@@ -319,7 +319,6 @@
                                     query_file = "values",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                     )
     .format_api_aggregate_result(res)
@@ -332,11 +331,13 @@
 }
 
 
-.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, synthesis, opts) {
+.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
   
-  if (is.null(areas) | is.null(mcYears) | synthesis) return(NULL)
+  if (is.null(areas)) {
+    return(NULL)
+  }
   
-  if (synthesis) {
+  if (is.null(mcYears)) {
     pattern_endpoint <- "mc-all"
   } else {
     pattern_endpoint <- "mc-ind"
@@ -504,7 +505,6 @@
                                     query_file = "details",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                     )
     .format_api_aggregate_result(res)
@@ -552,7 +552,6 @@
                                     query_file = "details",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                     )
     res <- .format_api_aggregate_result(res)
@@ -626,7 +625,6 @@
                                     query_file = "details",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                     )
     res <- .format_api_aggregate_result(res)
@@ -825,7 +823,6 @@
                                     query_file = "details-res",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                    )
     .format_api_aggregate_result(res)
@@ -876,7 +873,6 @@
                                     query_file = "details-STstorage",
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                    )
     .format_api_aggregate_result(res)
@@ -1099,9 +1095,11 @@
 
 .api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
   
-  if (is.null(links) | is.null(mcYears) | synthesis) return(NULL)
+  if (is.null(links)) {
+    return(NULL)
+  }
   
-  if (synthesis) {
+  if (is.null(mcYears)) {
     pattern_endpoint <- "mc-all"
   } else {
     pattern_endpoint <- "mc-ind"
