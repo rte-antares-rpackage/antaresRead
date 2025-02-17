@@ -321,6 +321,7 @@
 }
 
 
+# Retrieve aggregated areas raw data from study economy outputs
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
   
   if (is.null(areas)) {
@@ -1031,6 +1032,7 @@
 }
 
 
+# Retrieve aggregated links raw data from study economy outputs
 .api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
   
   if (is.null(links)) {
