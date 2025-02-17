@@ -304,16 +304,6 @@
       return (NULL)
     }
     
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "values", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
-    }
-    
     res <- .api_get_aggregate_areas(areas = areas,
                                     timeStep = timeStep,
                                     query_file = "values",
@@ -489,16 +479,6 @@
     if (is.null(areas)) {
       return (NULL)
     }
-  
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
-    }
     
     res <- .api_get_aggregate_areas(areas = areas,
                                     timeStep = timeStep,
@@ -535,16 +515,6 @@
     
     if (is.null(areas)) {
       return (NULL)
-    }
-  
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
     }
     
     res <- .api_get_aggregate_areas(areas = areas,
@@ -608,16 +578,6 @@
     
     if (is.null(areas)) {
       return (NULL)
-    }
-  
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
     }
     
     res <- .api_get_aggregate_areas(areas = areas,
@@ -807,16 +767,6 @@
     if (is.null(areas)) {
       return (NULL)
     }
-  
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "details-res", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
-    }
     
     res <- .api_get_aggregate_areas(areas = areas,
                                     timeStep = timeStep,
@@ -856,16 +806,6 @@
     
     if (is.null(areas)) {
       return (NULL)
-    }
-  
-    args <- .generate_output_data_to_read(folder = "areas", fileName = "details-STstorage", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
     }
     
     res <- .api_get_aggregate_areas(areas = areas,
@@ -1066,16 +1006,7 @@
     if (is.null(links)) {
       return (NULL)
     }
-  
-    args <- .generate_output_data_to_read(folder = "links", fileName = "values", ids = links, timeStep = timeStep, mcYears = mcYears, opts = opts)
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-  
-    if (all(outputMissing)) {
-      message("No data corresponding to your query.")
-      return (NULL)
-    } else if (any(outputMissing)) {
-      message("Some requested output files are missing.")
-    }
+    
     res <- .api_get_aggregate_links(links = links,
                                     timeStep = timeStep,
                                     select = select,
