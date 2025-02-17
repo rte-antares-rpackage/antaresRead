@@ -13,7 +13,7 @@ BUGFIXES :
 * `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
 * `api_get()` : add warn_for_status in importFrom section
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
-* `.importOutput()` : check if output file exists in API mode (`.check_output_files_existence()`)
+* `.importOutput()` : check if output file exists in API mode (`.check_missing_output_files()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
 
 BREAKING CHANGES :  
