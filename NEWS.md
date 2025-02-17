@@ -20,6 +20,8 @@ BREAKING CHANGES :
 
 * `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)  
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
+* `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
+* `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
 
 GITHUB ACTIONS :  
 
