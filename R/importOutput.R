@@ -547,7 +547,7 @@
 #' @noRd
 #'
 .importOutputForClusters_w_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL, 
-                                                   showProgress, opts, reshapeFun, parallel, mod, clusterDesc) {
+                                                  showProgress, opts, reshapeFun, parallel, mod, clusterDesc) {
   if (timeStep != "hourly") {
     warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
     
@@ -564,6 +564,13 @@
       }
     } else if (length(mcYears) > 1) {
       warning(messageWarningMcYears, call. = FALSE)
+    }
+    
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = "hourly", mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+    
+    if (any(outputMissing)) {
+      stop("Some hourly data is not available for some areas.")
     }
   }
   
