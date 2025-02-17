@@ -41,7 +41,7 @@
 }
 
 
-#' .check_output_files_existence
+#' .check_missing_output_files
 #'
 #' @param opts
 #'   list of simulation parameters returned by the function
@@ -63,6 +63,51 @@
   }
   
   return(outputMissing)
+}
+
+
+#' .generate_output_data_to_read
+#'
+#' @return
+#' Data frame containing the file to read in column path
+#'
+#' @noRd
+#'
+.generate_output_data_to_read <- function(folder, fileName, ids, timeStep, mcYears, opts){
+  
+  api_study <- is_api_study(opts = opts)
+  w_links_folder <- folder %in% "links"
+  no_mcYears <- is.null(mcYears)
+  
+  if (no_mcYears) {
+    if(w_links_folder && api_study){
+      args <- merge(expand.grid(link = ids), opts$linksDef)
+      args$id <- paste0(args$from, "/", args$to)
+    } else {
+      args <- expand.grid(id = ids)
+    }
+  } else {
+    if(w_links_folder && api_study){
+      args <- merge(expand.grid(link = ids, mcYear = mcYears), opts$linksDef)
+      args$id <- paste0(args$from, "/", args$to)
+    } else {
+      args <- expand.grid(id = ids, mcYear = mcYears)
+    }
+  }
+  
+  if (no_mcYears) {
+    args$path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt", 
+                         opts[["simDataPath"]], folder, args$id, fileName, timeStep)
+  } else {
+    args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s/%s-%s.txt",
+                         opts[["simDataPath"]], args$mcYear, folder, args$id, fileName, timeStep)
+  }
+  
+  if (w_links_folder && api_study) {
+    args$id <- args$link
+  }
+  
+  return(args)
 }
 
 
@@ -90,35 +135,7 @@
   
   if (showProgress) cat("Importing ", objectDisplayName, "s\n", sep = "")
   
-  
-  if (is.null(mcYears)) {
-    if(folder %in% "links" && opts$typeLoad %in% "api"){
-      args <- merge(expand.grid(link = ids), opts$linksDef)
-      args$id <- paste0(args$from, "/", args$to)
-    } else {
-      args <- expand.grid(id = ids)
-    }
-  } else {
-    if(folder %in% "links" && opts$typeLoad %in% "api"){
-      args <- merge(expand.grid(link = ids, mcYear = mcYears), opts$linksDef)
-      args$id <- paste0(args$from, "/", args$to)
-    } else {
-      args <- expand.grid(id = ids, mcYear = mcYears)
-    }
-  }
-  
-  if (is.null(mcYears)) {
-    args$path <- sprintf("%s/mc-all/%s/%s/%s-%s.txt", 
-                         opts$simDataPath, folder, args$id, fileName, timeStep)
-  } else {
-    args$path <- sprintf("%s/mc-ind/%05.0f/%s/%s/%s-%s.txt",
-                         opts$simDataPath, args$mcYear, folder, args$id, fileName, timeStep)
-  }
-  
-  if(folder %in% "links" && opts$typeLoad %in% "api"){
-    args$id <- args$link
-  }
-  
+  args <- .generate_output_data_to_read(folder = folder, fileName = fileName, ids = ids, timeStep = timeStep, mcYears = mcYears, opts = opts)
   outputMissing <- .check_missing_output_files(opts = opts, args = args)
   
   if (all(outputMissing)) {
@@ -268,7 +285,8 @@
   rbindlist(res)
 }
 
-#' .importOutputForArea
+
+#' .importOutputForAreas
 #'
 #' Private function used to import the output for one area.
 #'
@@ -279,11 +297,104 @@
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
-  suppressWarnings(
-    .importOutput("areas", "values", "area", areas, timeStep, select, 
-                  mcYears, showProgress, opts, parallel = parallel)
-  )
+  
+  if (is_api_study(opts)) {
+    
+    if (is.null(areas)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "values", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "values",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    .format_api_aggregate_result(res)
+  } else {
+    suppressWarnings(
+      .importOutput("areas", "values", "area", areas, timeStep, select, 
+                    mcYears, showProgress, opts, parallel = parallel)
+    )
+  }
 }
+
+
+.api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, synthesis, opts) {
+  
+  if (is.null(areas) | is.null(mcYears) | synthesis) return(NULL)
+  
+  if (synthesis) {
+    pattern_endpoint <- "mc-all"
+  } else {
+    pattern_endpoint <- "mc-ind"
+  }  
+  endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
+  areas_url <- ""
+  columns_url <- ""
+  mc_years_url <- ""  
+  
+  # area
+  if (!identical(areas, "")) {
+    areas_url <- paste0("&areas_ids=", paste0(areas, collapse = ","))
+  }
+  # frequency
+  frequency_url <- paste0("&frequency=", timeStep)
+  
+  # columns
+  if (!identical(select, "")) {
+    columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
+  }
+  
+  # query file
+  query_file_url <- paste0("&query_file=", query_file)
+  
+  # MC years file
+  if (!identical(mcYears, "")) {
+    mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+  }
+  
+  endpoint <- paste0(endpoint_root, query_file_url, frequency_url, columns_url, areas_url, mc_years_url)
+  res <- api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies")
+  
+  attr(res, "spec") <- NULL
+  attr(res, "problems") <- NULL
+  
+  return(as.data.table(res))
+}
+
+
+.format_api_aggregate_result <- function(res) {
+  
+  if (is.null(res)) return(NULL)
+  
+  res_cols <- colnames(res)
+  
+  cols_to_factor_lower <- c("area", "link", "cluster")
+  cols_to_factor_lower <- intersect(cols_to_factor_lower, res_cols)
+  #To remove when endpoint will not send uppercase anymore
+  res[,(cols_to_factor_lower):=lapply(.SD, tolower), .SDcols=cols_to_factor_lower]
+  res[,(cols_to_factor_lower):=lapply(.SD, as.factor), .SDcols=cols_to_factor_lower]
+  
+  cols_to_integer <- c("timeId")
+  cols_to_integer <- intersect(cols_to_integer, res_cols)
+  res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
+  
+  return(res)
+}
+
 
 .importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL, 
                                       showProgress, opts, parallel) {
@@ -362,6 +473,262 @@
 }
 
 
+#' Read output data for clusters if mustRun is disabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_wo_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                     showProgress, opts, parallel){
+  
+  if (is_api_study(opts)) {
+    
+    if (is.null(areas)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    .format_api_aggregate_result(res)
+  } else {
+    reshapeFun <- function(x){
+      .reshape_details_file(x,file_type="details",opts=opts)
+    }
+    suppressWarnings(
+      .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "cluster", parallel = parallel)
+    )
+  }
+}
+
+
+#' Read output data for clusters if modulation is not enabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_wo_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                                   showProgress, opts, reshapeFun, parallel) {
+  
+  if (is_api_study(opts)) {
+    
+    if (is.null(areas)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    res <- .format_api_aggregate_result(res)
+  } else {
+    res <- suppressWarnings(
+      suppressWarnings(
+        .importOutput("areas", "details", "area", areas, timeStep, NULL, 
+                      mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                      objectDisplayName = "cluster", parallel = parallel)
+      )
+    )
+  }
+  
+  res[, mustRunPartial := 0L]
+}
+
+
+#' Read output data for clusters if modulation is enabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_w_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                                   showProgress, opts, reshapeFun, parallel, mod, clusterDesc) {
+  if (timeStep != "hourly") {
+    warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
+    
+    #copy of warning in ChangeTimeStep
+    warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
+    
+    messageWarningMcYears <- paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
+    
+    if (is.null(mcYears)) {
+      warning(messageWarningMcYears, call. = FALSE)
+    } else if (is.character(mcYears)) {
+      if (mcYears == "all") {
+        warning(messageWarningMcYears, call. = FALSE)
+      }
+    } else if (length(mcYears) > 1) {
+      warning(messageWarningMcYears, call. = FALSE)
+    }
+  }
+  
+  mod[is.na(minGenModulation), minGenModulation := 0]
+  
+  .mergeByRef(mod, clusterDesc)
+  mod[, mustRunPartial := minGenModulation * capacity]
+  
+  setkey(mod, area, cluster, timeId)
+  
+  if (is_api_study(opts)) {
+    
+    if (is.null(areas)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = "hourly",
+                                    query_file = "details",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                    )
+    res <- .format_api_aggregate_result(res)
+    mustRunPartial <- mod[J(res$area, res$cluster, res$timeId), mustRunPartial]
+    res[, mustRunPartial := pmin(production, mustRunPartial)]
+    res <- changeTimeStep(res, timeStep, "hourly", fun = "sum", opts = opts)
+  } else {
+    
+    processFun <- function(x) {
+      x <- reshapeFun(x)
+      mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
+      x[, mustRunPartial := pmin(production, mustRunPartial)]
+      changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
+    }
+    
+    res <- suppressWarnings(
+      .importOutput("areas", "details", "area", areas, "hourly", NULL, 
+                    mcYears, showProgress, opts, processFun, 
+                    sameNames = FALSE, objectDisplayName = "cluster", 
+                    parallel = parallel)
+    )
+  }
+  
+  return(res)
+}
+
+
+#' Read output data for clusters if mustRun is enabled
+#'
+#' @return
+#' a data.table
+#'
+#' @noRd
+#'
+.importOutputForClusters_w_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL, 
+                                               showProgress, opts, parallel) {
+  
+  reshapeFun <- function(x){
+    .reshape_details_file(x,file_type="details",opts=opts)
+  }
+  
+  # The partial must run for a cluster is defined as:
+  # sum_t(min(production_t, capacity * minGenModulation_t))
+  # This formula is non-linear, so if we need to get hourly data to compute
+  # it. 
+  # To avoid importing large amount of data, we first check if minGenModulation
+  # is non null for at least one cluster.
+  # If we have to use hourly data, we aggregate it directly at the desired
+  # timestep to limit the amount of RAM required.
+  
+  # Get cluster capacity and must run mode
+  clusterDesc <- readClusterDesc(opts)
+  
+  if (is.null(clusterDesc[["must.run"]])) {
+    clusterDesc[["must.run"]] <- FALSE
+  }
+  clusterDesc[is.na(must.run), must.run := FALSE]
+  
+  if (is.null(clusterDesc[["min.stable.power"]])) {
+    clusterDesc[["min.stable.power"]] <- 0
+  }
+  clusterDesc[is.na(min.stable.power), min.stable.power := 0]
+  
+  clusterDesc <- clusterDesc[, .(area, cluster,
+                                 capacity = nominalcapacity * unitcount,
+                                 min.stable.power,
+                                 `must.run`)]
+  
+  # Are clusters in partial must run mode ?
+  mod <- llply(areas, .importThermalModulation, opts = opts, timeStep = "hourly")
+  mod <- rbindlist(mod)
+  
+  # Should we compute the partial must run ?
+  if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
+    # We should not \o/
+    res <- .importOutputForClusters_wo_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel)
+  } else {
+    # Worst case ! We have to !
+    res <- .importOutputForClusters_w_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel, mod, clusterDesc)
+  }
+  
+  .mergeByRef(res, clusterDesc[,.(area, cluster, must.run, min.stable.power)])
+  
+  if (is.null(res$NODU)) {
+    res[, thermalPmin := 0]
+  } else {
+    res[, thermalPmin := min.stable.power * NODU]
+  }
+  
+  res[, `:=`(
+    mustRun = production * must.run,
+    mustRunTotal = production * must.run + mustRunPartial,
+    must.run = NULL,
+    min.stable.power = NULL
+  )]
+  
+  res[, thermalPmin := pmax(thermalPmin, mustRunTotal)]
+  
+  return(res)                                   
+}
+
+
 #' .importOutputForClusters
 #'
 #' Private function used to import the output for the thermal clusters of one area
@@ -374,118 +741,12 @@
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                      showProgress, opts, mustRun = FALSE, parallel) {
   
-  reshapeFun <- function(x){
-    .reshape_details_file(x,file_type="details",opts=opts)
-  }
-  
   if (!mustRun) {
-    suppressWarnings(
-      .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                    objectDisplayName = "cluster", parallel = parallel)
-    )
-    
+    .importOutputForClusters_wo_mustrun(areas = areas, timeStep = timeStep, select = select, mcYears = mcYears, 
+                                       showProgress = showProgress, opts = opts, parallel = parallel)
   } else {
-    # The partial must run for a cluster is defined as:
-    # sum_t(min(production_t, capacity * minGenModulation_t))
-    # This formula is non-linear, so if we need to get hourly data to compute
-    # it. 
-    # To avoid importing large amount of data, we first check if minGenModulation
-    # is non null for at least one cluster.
-    # If we have to use hourly data, we aggregate it directly at the desired
-    # timestep to limit the amount of RAM required.
-    
-    # Get cluster capacity and must run mode
-    clusterDesc <- readClusterDesc(opts)
-    if(is.null(clusterDesc[["must.run"]]))
-      clusterDesc[["must.run"]] <- FALSE
-    clusterDesc[is.na(must.run), must.run := FALSE]
-    if (is.null(clusterDesc[["min.stable.power"]])) 
-      clusterDesc[["min.stable.power"]] <- 0
-    clusterDesc[is.na(min.stable.power), min.stable.power := 0]
-    clusterDesc <- clusterDesc[, .(area, cluster,
-                                   capacity = nominalcapacity * unitcount,
-                                   min.stable.power,
-                                   `must.run`)]
-    
-    # Are clusters in partial must run mode ?
-    mod <- llply(areas, .importThermalModulation, opts = opts, timeStep = "hourly")
-    mod <- rbindlist(mod)
-    
-    # Should we compute the partial must run ?
-    if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
-      
-      # We should not \o/
-      res <- suppressWarnings(
-        suppressWarnings(
-          .importOutput("areas", "details", "area", areas, timeStep, NULL, 
-                        mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                        objectDisplayName = "cluster", parallel = parallel)
-        )
-      )
-      res[, mustRunPartial := 0L]
-      
-    } else {
-      
-      # Worst case ! We have to !
-      #
-      if(timeStep!="hourly"){
-        warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
-        
-        #copy of warning in ChangeTimeStep
-        warning('Aggregation will be perform approximatively because optimization variables in ANTARES are doubles but ANTARES write only integers in TXT files, with this transformation we lose precision. If you want accurate data then you must import the corresponding data with `readAntares`')
-        
-        messageWarningMcYears<-paste0("When mcYears is set to all or NULL : ", mcYears, " and timeStep is set to : " ,timeStep , " result for mustRun are not accurate. Hourly `synthetic` or `details` results will be aggregated at the desired `timeStep`.  " )
-        
-        if( is.null(mcYears) ){
-          warning(messageWarningMcYears, call. = FALSE)
-        }else if (is.character(mcYears)){
-          if (mcYears=="all"){
-            warning(messageWarningMcYears, call. = FALSE)
-          }
-        }else if (length(mcYears) > 1){
-          warning(messageWarningMcYears, call. = FALSE)
-        }
-      }
-      
-      mod[is.na(minGenModulation), minGenModulation := 0]
-      
-      .mergeByRef(mod, clusterDesc)
-      mod[, mustRunPartial := minGenModulation * capacity]
-      
-      setkey(mod, area, cluster, timeId)
-      
-      processFun <- function(x) {
-        x <- reshapeFun(x)
-        mustRunPartial <- mod[J(x$area, x$cluster, x$timeId), mustRunPartial]
-        x[, mustRunPartial := pmin(production, mustRunPartial)]
-        changeTimeStep(x, timeStep, "hourly", fun = "sum", opts = opts)
-      }
-      
-      res <- suppressWarnings(
-        .importOutput("areas", "details", "area", areas, "hourly", NULL, 
-                      mcYears, showProgress, opts, processFun, 
-                      sameNames = FALSE, objectDisplayName = "cluster", 
-                      parallel = parallel)
-      )
-      
-    }
-    
-    .mergeByRef(res, clusterDesc[,.(area, cluster, must.run, min.stable.power)])
-    
-    if (is.null(res$NODU)) res[, thermalPmin := 0]
-    else res[, thermalPmin := min.stable.power * NODU]
-    
-    res[, `:=`(
-      mustRun = production * must.run,
-      mustRunTotal = production * must.run + mustRunPartial,
-      must.run = NULL,
-      min.stable.power = NULL
-    )]
-    
-    res[, thermalPmin := pmax(thermalPmin, mustRunTotal)]
-    
-    res
+    .importOutputForClusters_w_mustrun(areas = areas, timeStep = timeStep, select = select, mcYears = mcYears, 
+                                       showProgress = showProgress, opts = opts, parallel = parallel)
   }
 }
 
@@ -543,16 +804,42 @@
 .importOutputForResClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-
-  reshapeFun <- function(x) {
-    .reshape_details_file(x,file_type="details-res",opts=opts)
-  }
+  if (is_api_study(opts)) {
     
-  suppressWarnings(
-    .importOutput("areas", "details-res", "area", areas, timeStep, NULL, 
-                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "clustersRe", parallel = parallel)
-  )
+    if (is.null(areas)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details-res", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details-res",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
+  } else {
+    reshapeFun <- function(x) {
+      .reshape_details_file(x,file_type="details-res",opts=opts)
+    }
+      
+    suppressWarnings(
+      .importOutput("areas", "details-res", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "clustersRe", parallel = parallel)
+    )
+  }
 }
 
 
@@ -568,16 +855,44 @@
 .importOutputForSTClusters <- function(areas, timeStep, select = NULL, mcYears = NULL, 
                                         showProgress, opts, parallel) {
   
-  reshapeFun <- function(x) {
-    .reshape_details_file(x,file_type="details-STstorage",opts=opts)
-  }
+  if (is_api_study(opts)) {
+    
+    if (is.null(areas)) {
+      return (NULL)
+    }
   
-  suppressWarnings(
-    .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
-                  mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
-                  objectDisplayName = "clustersST", parallel = parallel)
-  )
+    args <- .generate_output_data_to_read(folder = "areas", fileName = "details-STstorage", ids = areas, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    
+    res <- .api_get_aggregate_areas(areas = areas,
+                                    timeStep = timeStep,
+                                    query_file = "details-STstorage",
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
+  } else {
+    reshapeFun <- function(x) {
+      .reshape_details_file(x,file_type="details-STstorage",opts=opts)
+    }
+    
+    suppressWarnings(
+      .importOutput("areas", "details-STstorage", "area", areas, timeStep, NULL, 
+                    mcYears, showProgress, opts, reshapeFun, sameNames = FALSE,
+                    objectDisplayName = "clustersST", parallel = parallel)
+    )
+  }
 }
+
 
 #' .importOutputForBindingConstraints
 #'
@@ -737,7 +1052,8 @@
   rbindlist(res)
 }
 
-#' .importOutputForLink
+
+#' .importOutputForLinks
 #'
 #' Private function used to import the output of one link.
 #'
@@ -748,11 +1064,80 @@
 #'
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL, 
                                   showProgress, opts, parallel) {
-  suppressWarnings(
-    .importOutput("links", "values", "link", links, timeStep, select, 
-                  mcYears, showProgress, opts, parallel = parallel)
-  )
+  
+  if (is_api_study(opts)) {
+    
+    if (is.null(links)) {
+      return (NULL)
+    }
+  
+    args <- .generate_output_data_to_read(folder = "links", fileName = "values", ids = links, timeStep = timeStep, mcYears = mcYears, opts = opts)
+    outputMissing <- .check_missing_output_files(opts = opts, args = args)
+  
+    if (all(outputMissing)) {
+      message("No data corresponding to your query.")
+      return (NULL)
+    } else if (any(outputMissing)) {
+      message("Some requested output files are missing.")
+    }
+    res <- .api_get_aggregate_links(links = links,
+                                    timeStep = timeStep,
+                                    select = select,
+                                    mcYears = mcYears,
+                                    synthesis = FALSE,
+                                    opts = opts
+                                   )
+    .format_api_aggregate_result(res)
+  } else {
+    suppressWarnings(
+      .importOutput("links", "values", "link", links, timeStep, select, 
+                    mcYears, showProgress, opts, parallel = parallel)
+    )
+  }
 }
+
+
+.api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
+  
+  if (is.null(links) | is.null(mcYears) | synthesis) return(NULL)
+  
+  if (synthesis) {
+    pattern_endpoint <- "mc-all"
+  } else {
+    pattern_endpoint <- "mc-ind"
+  }  
+  endpoint_root <- paste0(opts[["study_id"]], "/links/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv&query_file=values")
+  links_url <- ""
+  columns_url <- ""
+  mc_years_url <- ""  
+  
+  # link
+  if (!identical(links, "")) {
+    links_url <- paste0("&links_ids=", paste0(links, collapse = ","))
+  }
+  
+  # frequency
+  frequency_url <- paste0("&frequency=", timeStep)
+  
+  # columns
+  if (!identical(select, "")) {
+    columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
+  }
+  
+  # MC years file
+  if (!identical(mcYears, "")) {
+    mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+  }
+  
+  endpoint <- paste0(endpoint_root, frequency_url, columns_url, links_url, mc_years_url)
+  res <- api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies")
+  
+  attr(res, "spec") <- NULL
+  attr(res, "problems") <- NULL
+  
+  return(as.data.table(res))
+}
+
 
 # The two following functions read input time series that are eventually
 # stored in output and rebuild the actual time series used in each Monte-Carlo
@@ -979,10 +1364,3 @@
   res
   
 }
-
-# .changeName <- function(path, opts){
-#   path_rev <- strsplit(strsplit(path, "output/")[[1]][2], "/")[[1]]
-#   path_rev <- paste0(path_rev[2:length(path_rev)], collapse = "/")
-#   out <- sub(pattern = "studies", "file", paste0(opts$studyPath , "/output/", opts$simOutputName,"/", path_rev))
-#   out <- gsub(" ", "%20", out)
-# }
