@@ -368,7 +368,7 @@
 }
 
 
-# importFrom stringi stri_replace_all_regex
+#' @importFrom stringi stri_replace_all_regex
 .format_api_aggregate_result <- function(res) {
   
   if (is.null(res)) return(NULL)
