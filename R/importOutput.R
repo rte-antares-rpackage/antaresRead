@@ -368,6 +368,7 @@
 }
 
 
+# importFrom stringi stri_replace_all_regex
 .format_api_aggregate_result <- function(res) {
   
   if (is.null(res)) return(NULL)
@@ -384,7 +385,12 @@
   cols_to_integer <- intersect(cols_to_integer, res_cols)
   res[,(cols_to_integer):=lapply(.SD, as.integer), .SDcols=cols_to_integer]
   
-  return(res)
+  # Endpoint aggregate does not deliver the legacy column names : OP. COST MIN (endpoint) vs OP. COST_min(legacy)
+  pattern <- c(" MIN$", " MAX$", " STD$", " EXP$", " VALUES$")
+  replacement <- c("_min", "_max", "_std", "", "")
+  new_cols <- stri_replace_all_regex(str = res_cols, pattern = pattern, replacement = replacement, vectorize_all = FALSE)
+
+  return(setnames(res, old = res_cols, new = new_cols))
 }
 
 
