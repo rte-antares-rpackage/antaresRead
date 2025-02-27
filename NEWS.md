@@ -22,6 +22,8 @@ BREAKING CHANGES :
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 * `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
 * `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
+* `format_api_aggregate_result()` : match the legacy names for the output column names
+* Rename short-term storage output column from Cashflow to CashFlow
 
 GITHUB ACTIONS :  
 
