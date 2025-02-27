@@ -289,7 +289,7 @@
 #' \item{sleep}{timer for api commande execute}
 #' @rdname setSimulationPath
 setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
-                                 timeout = 60, httr_config = list()) {
+                                 timeout = 600, httr_config = list()) {
 
   if (missing(host)) {
     stop("Please specify an url to antares API host")
