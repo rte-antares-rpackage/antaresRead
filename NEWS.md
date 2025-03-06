@@ -19,7 +19,8 @@ BUGFIXES :
 
 BREAKING CHANGES :  
 
-* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)  
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
+* `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web. 
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 
 GITHUB ACTIONS :  

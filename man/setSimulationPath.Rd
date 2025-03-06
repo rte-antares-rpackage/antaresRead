@@ -12,7 +12,7 @@ setSimulationPathAPI(
   study_id,
   token,
   simulation = NULL,
-  timeout = 60,
+  timeout = 600,
   httr_config = list()
 )
 }
