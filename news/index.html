@@ -47,7 +47,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
       <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/v2.9.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
@@ -69,7 +69,9 @@
 <code>.giveSize()</code> : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters</li>
 </ul><p>BREAKING CHANGES :</p>
 <ul><li>
-<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : reads and returns the new converted study version format (ex : 9.0 =&gt; 900)<br></li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : reads and returns the new converted study version format (ex : 9.0 =&gt; 900)</li>
+<li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : sets timeout to 600s by default. 600s is the default value in Antares Web.</li>
 <li>
 <code><a href="../reference/readClusterDesc.html">readClusterDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterResDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterSTDesc()</a></code> have a new parameter (<code>dot_format = TRUE</code>) to return two format to display input cluster properties</li>
 </ul><p>GITHUB ACTIONS :</p>
