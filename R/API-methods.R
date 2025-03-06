@@ -57,7 +57,7 @@ api_get <- function(opts,
     )
   }
   if (is.null(opts$timeout))
-    opts$timeout <- 60
+    opts$timeout <- 600
   result <- GET(
     url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
