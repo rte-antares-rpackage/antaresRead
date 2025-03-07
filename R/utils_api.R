@@ -92,13 +92,3 @@ setTimeoutAPI <- function(opts, timeout){
 is_api_study <- function(opts) {
   isTRUE(opts$typeLoad == "api")
 }
-
-
-.generate_endpoint_url <- function(...){
-  
-  url_parts <- list(...)
-  url_parts <-  url_parts[!vapply(url_parts, is.null, FUN.VALUE = logical(1))]
-  url_parts <- url_parts[url_parts != "" ]
-  
-  return(do.call("paste0", args = list(url_parts, collapse = "/")))
-}

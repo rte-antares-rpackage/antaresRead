@@ -42,6 +42,11 @@ api_get <- function(opts,
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -59,7 +64,7 @@ api_get <- function(opts,
   if (is.null(opts$timeout))
     opts$timeout <- 600
   result <- GET(
-    url = URLencode(.generate_endpoint_url(opts$host, default_endpoint, endpoint)),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     timeout(opts$timeout),
     ...
@@ -91,6 +96,11 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -107,7 +117,7 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     )
   }
   result <- POST(
-    url = URLencode(.generate_endpoint_url(opts$host, default_endpoint, endpoint)),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     ...
   )
@@ -132,6 +142,11 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   if (!is.null(opts$token) && opts$token != "") {
@@ -140,7 +155,7 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     config <- add_headers(Accept = "application/json")
   }
   result <- PUT(
-    url = URLencode(.generate_endpoint_url(opts$host, default_endpoint, endpoint)),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config,
     ...
   )
@@ -165,6 +180,11 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -180,7 +200,7 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     )
   }
   result <- DELETE(
-    url = URLencode(.generate_endpoint_url(opts$host, default_endpoint, endpoint)),
+    url = URLencode(paste(c(opts$host, default_endpoint, endpoint), collapse = "/")),
     config = config,
     ...
   )
