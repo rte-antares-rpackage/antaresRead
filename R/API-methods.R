@@ -42,6 +42,11 @@ api_get <- function(opts,
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -91,6 +96,11 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -132,6 +142,11 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   if (!is.null(opts$token) && opts$token != "") {
@@ -165,6 +180,11 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(

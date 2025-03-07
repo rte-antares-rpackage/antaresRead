@@ -15,6 +15,7 @@ BUGFIXES :
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 * `.importOutput()` : check if output file exists in API mode (`.check_output_files_existence()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
+* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty
 
 BREAKING CHANGES :  
 
