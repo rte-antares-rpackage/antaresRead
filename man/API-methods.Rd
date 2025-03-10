@@ -52,11 +52,26 @@ api_get(opts = list(host = "http://0.0.0.0:8080"),
         endpoint = NULL, 
         parse_result = NULL)
 
-# you can force parse options as text and encoding to UTF-8
+# You can force parse options as text and encoding to UTF-8
 api_get(opts = list(host = "http://0.0.0.0:8080"),
         endpoint = NULL, 
         parse_result = "text",
         encoding = "UTF-8")
+        
+# You can change or delete `default_endpoint` 
 
+# no use `default_endpoint`
+api_get(opts = list(host = "http://0.0.0.0:8080"),
+        endpoint = NULL, 
+        default_endpoint = NULL,
+        parse_result = "text",
+        encoding = "UTF-8")
+        
+# replace `default_endpoint`
+api_get(opts = list(host = "http://0.0.0.0:8080"),
+        endpoint = NULL, 
+        default_endpoint = "myfolder/myfolder",
+        parse_result = "text",
+        encoding = "UTF-8")       
 }
 }
