@@ -21,7 +21,7 @@ they may have changed since a simulation has been run."><meta name="robots" cont
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.8.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.9.0.9000</span>
       </span>
     </div>
 
@@ -63,7 +63,7 @@ they may have changed since a simulation has been run.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readBindingConstraints</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readBindingConstraints</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, with_time_series <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -73,6 +73,10 @@ they may have changed since a simulation has been run.</p>
 <dl><dt id="arg-opts">opts<a class="anchor" aria-label="anchor" href="#arg-opts"></a></dt>
 <dd><p>list of simulation parameters returned by the function
 <code><a href="setSimulationPath.html">setSimulationPath</a></code></p></dd>
+
+
+<dt id="arg-with-time-series">with_time_series<a class="anchor" aria-label="anchor" href="#arg-with-time-series"></a></dt>
+<dd><p><code>boolean</code> if TRUE, the second member time series are read</p></dd>
 
 </dl></div>
     <div id="value">
@@ -96,7 +100,7 @@ per time step and three columns "less", "greater" and "equal"</p>
 
 <p>Since <code>release 2.7.0</code> the structure of the returned object has evolved for
 all versions of study Antares:</p><ul><li><p>.ini parameters are in section <code>properties</code></p></li>
-<li><p>Coeffcients links or thermal are in section <code>coefs</code></p></li>
+<li><p>Coefficients links or thermal are in section <code>coefs</code></p></li>
 <li><p>Values are already in section <code>values</code></p></li>
 </ul></div>
 
@@ -122,6 +126,8 @@ all versions of study Antares:</p><ul><li><p>.ini parameters are in section <cod
 <span class="r-in"><span><span class="co"># display equation (only for study Antares &lt;8.7.0)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">constraints</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># read binding constraints without the time series</span></span></span>
+<span class="r-in"><span><span class="fu">readBindingConstraints</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, with_time_series <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

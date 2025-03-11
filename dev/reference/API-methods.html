@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.8.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.9.0.9000</span>
       </span>
     </div>
 
@@ -116,12 +116,27 @@ Can be a full URL (by wrapping ìn <code><a href="https://rdrr.io/r/base/AsIs.ht
 <span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
 <span class="r-in"><span>        parse_result <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># you can force parse options as text and encoding to UTF-8</span></span></span>
+<span class="r-in"><span><span class="co"># You can force parse options as text and encoding to UTF-8</span></span></span>
 <span class="r-in"><span><span class="fu">api_get</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"http://0.0.0.0:8080"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
 <span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span>,</span></span>
 <span class="r-in"><span>        encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        </span></span>
+<span class="r-in"><span><span class="co"># You can change or delete `default_endpoint` </span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># no use `default_endpoint`</span></span></span>
+<span class="r-in"><span><span class="fu">api_get</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"http://0.0.0.0:8080"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
+<span class="r-in"><span>        default_endpoint <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span>,</span></span>
+<span class="r-in"><span>        encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>        </span></span>
+<span class="r-in"><span><span class="co"># replace `default_endpoint`</span></span></span>
+<span class="r-in"><span><span class="fu">api_get</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"http://0.0.0.0:8080"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        endpoint <span class="op">=</span> <span class="cn">NULL</span>, </span></span>
+<span class="r-in"><span>        default_endpoint <span class="op">=</span> <span class="st">"myfolder/myfolder"</span>,</span></span>
+<span class="r-in"><span>        parse_result <span class="op">=</span> <span class="st">"text"</span>,</span></span>
+<span class="r-in"><span>        encoding <span class="op">=</span> <span class="st">"UTF-8"</span><span class="op">)</span>       </span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
