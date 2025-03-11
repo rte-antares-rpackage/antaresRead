@@ -1,12 +1,13 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# antaresRead 2.9.0
+# antaresRead 2.9.0.9000
 (cf. Antares v9 changelog)  
 
 NEW FEATURES:  
 
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
+* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
 
 BUGFIXES :  
 
