@@ -25,12 +25,27 @@
 #'         endpoint = NULL, 
 #'         parse_result = NULL)
 #'
-#' # you can force parse options as text and encoding to UTF-8
+#' # You can force parse options as text and encoding to UTF-8
 #' api_get(opts = list(host = "http://0.0.0.0:8080"),
 #'         endpoint = NULL, 
 #'         parse_result = "text",
 #'         encoding = "UTF-8")
-#'
+#'         
+#' # You can change or delete `default_endpoint` 
+#' 
+#' # no use `default_endpoint`
+#' api_get(opts = list(host = "http://0.0.0.0:8080"),
+#'         endpoint = NULL, 
+#'         default_endpoint = NULL,
+#'         parse_result = "text",
+#'         encoding = "UTF-8")
+#'         
+#' # replace `default_endpoint`
+#' api_get(opts = list(host = "http://0.0.0.0:8080"),
+#'         endpoint = NULL, 
+#'         default_endpoint = "myfolder/myfolder",
+#'         parse_result = "text",
+#'         encoding = "UTF-8")       
 #' }
 api_get <- function(opts, 
                     endpoint, ..., 
@@ -42,6 +57,11 @@ api_get <- function(opts,
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -91,6 +111,11 @@ api_post <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(
@@ -132,6 +157,11 @@ api_put <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   if (!is.null(opts$token) && opts$token != "") {
@@ -165,6 +195,11 @@ api_delete <- function(opts, endpoint, ..., default_endpoint = "v1/studies") {
     endpoint <- NULL
     default_endpoint <- NULL
   }
+  
+  if (identical(default_endpoint, "")) {
+    default_endpoint <- NULL
+  }
+  
   if (is.null(opts$host))
     stop("No host provided in `opts`: use a valid simulation options object or explicitly provide a host with opts = list(host = ...)")
   config <- c(

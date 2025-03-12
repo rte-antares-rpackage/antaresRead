@@ -1,12 +1,13 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# antaresRead 2.9.0
+# antaresRead 2.9.0.9000
 (cf. Antares v9 changelog)  
 
 NEW FEATURES:  
 
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
+* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
 
 BUGFIXES :  
 
@@ -15,6 +16,7 @@ BUGFIXES :
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 * `.importOutput()` : check if output file exists in API mode (`.check_missing_output_files()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
+* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty
 
 BREAKING CHANGES :  
 

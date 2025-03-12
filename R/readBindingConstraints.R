@@ -12,6 +12,9 @@
 #' they may have changed since a simulation has been run.
 #' 
 #' @inheritParams readAntares
+#' @param with_time_series \code{boolean} if TRUE, the second member time series are read
+#'
+#' @importFrom assertthat assert_that
 #' 
 #' @return 
 #' An object of class \code{bindingConstraints}. This object is also a named 
@@ -21,7 +24,7 @@
 #' Since `release 2.7.0` the structure of the returned object has evolved for 
 #' all versions of study Antares:  
 #'  - .ini parameters are in section `properties`
-#'  - Coeffcients links or thermal are in section `coefs`  
+#'  - Coefficients links or thermal are in section `coefs`  
 #'  - Values are already in section `values`
 #'  
 #' @note 
@@ -60,11 +63,15 @@
 #' # display equation (only for study Antares <8.7.0)
 #' summary(constraints)
 #' 
+#' # read binding constraints without the time series
+#' readBindingConstraints(opts = simOptions(), with_time_series = FALSE)
 #' }
 #' 
 #' @export
-readBindingConstraints <- function(opts = simOptions()) {
-
+readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE) {
+  
+  assert_that(inherits(with_time_series, what = "logical"))
+  
   ##
   # API BLOC
   ##
@@ -95,9 +102,11 @@ readBindingConstraints <- function(opts = simOptions()) {
   ##
   # read values txt files
   ##
-  bindingConstraints <- lapply(bindingConstraints, 
-                               .read_binding_values, 
-                               opts = opts)
+  if (with_time_series) {
+    bindingConstraints <- lapply(bindingConstraints, 
+                                 FUN = .read_binding_values, 
+                                 opts = opts)
+  }
   
   ##
   # manage full list object
@@ -114,10 +123,18 @@ readBindingConstraints <- function(opts = simOptions()) {
                                .manage_list_structure, 
                                opts = opts)
   
+  if (!with_time_series) {
+    bindingConstraints <- lapply(bindingConstraints,
+                                 FUN = function(bc) {bc[!names(bc)=="values"]}
+                                 )
+  }
+  
   names(bindingConstraints) <- constraintNames
   class(bindingConstraints) <- "bindingConstraints"
-  bindingConstraints
+  
+  return(bindingConstraints)
 }
+
 
 # read values files for every binding of study
 .read_binding_values <- function(binding_object, 
@@ -224,6 +241,7 @@ readBindingConstraints <- function(opts = simOptions()) {
   }
 }
 
+
 # build list structure according to antares version
 .manage_list_structure <- function(binding_object, 
                                    opts = simOptions()){
@@ -301,6 +319,7 @@ readBindingConstraints <- function(opts = simOptions()) {
   
   return(core_list)
 }
+
 
 #' @title Display equation of binding constraint
 #' @description 

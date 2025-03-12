@@ -187,3 +187,71 @@ test_that("test if default values are well returned", {
                         %in% 364)
   })
 
+
+test_that("test if with_time_series argument has the expected behaviour", { 
+  
+  opts <- list(
+  "inputPath" = tempdir(),
+  "typeLoad"= "not_api",
+  "areaList" = c("fr", "de"),
+  "antaresVersion" = 880
+  )
+
+  ini_binding <- c(
+    "[0]",
+    "name = batteries_fr",
+    "id = batteries_fr",
+    "enabled = true",
+    "type = daily",
+    "operator = equal",
+    "filter-year-by-year = hourly, daily, weekly, monthly, annual",
+    "filter-synthesis = hourly, daily, weekly, monthly, annual",
+    "group = default",
+    "fr.fr_cl_1 = 1.000000",
+    "fr.fr_cl_2 = -1.000000",
+    "fr.fr_cl_3 = -2.000000",
+    "",
+    "[1]",
+    "name = batteries_de",
+    "id = batteries_de",
+    "enabled = true",
+    "type = daily",
+    "operator = equal",
+    "filter-year-by-year = hourly, daily, weekly, monthly, annual",
+    "filter-synthesis = hourly, daily, weekly, monthly, annual",
+    "group = default",
+    "de.de_cl_1 = 1.000000",
+    "de.de_cl_2 = -1.000000",
+    "de.de_cl_3 = -2.000000",
+    "",
+    "[2]",
+    "name = mix_fr_de",
+    "id = mix_fr_de",
+    "enabled = true",
+    "type = daily",
+    "operator = less",
+    "filter-year-by-year = hourly, daily, weekly, monthly, annual",
+    "filter-synthesis = hourly, daily, weekly, monthly, annual",
+    "group = default",
+    "fr.fr_cl_1 = 1.000000",
+    "de.de_cl_1 = -1.000000",
+    ""
+  )
+
+  bindingconstraints_path <- file.path(tempdir(),"bindingconstraints")
+  dir.create(bindingconstraints_path, recursive = TRUE, showWarnings = FALSE)
+  writeLines(ini_binding, file.path(bindingconstraints_path,"bindingconstraints.ini"))
+  write.table(matrix(rep(1,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"batteries_fr_eq.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(matrix(rep(1,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"batteries_de_eq.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(matrix(rep(2,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"mix_fr_de_lt.txt"), row.names = FALSE, col.names = FALSE)
+  
+  all_bc <- readBindingConstraints(opts = opts, with_time_series = FALSE)
+  expect_true(inherits(all_bc, what = "bindingConstraints"))
+  has_values <- lapply(all_bc, FUN = function(bc) {"values" %in% names(bc)})
+  expect_true(all(has_values == FALSE))
+  
+  all_bc <- readBindingConstraints(opts = opts, with_time_series = TRUE)
+  expect_true(inherits(all_bc, what = "bindingConstraints"))
+  has_values <- lapply(all_bc, FUN = function(bc) {"values" %in% names(bc)})
+  expect_true(all(has_values == TRUE))
+})
