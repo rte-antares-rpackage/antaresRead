@@ -7,7 +7,8 @@
 NEW FEATURES:  
 
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
-* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
+* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
+* `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can keep the binding constraints he wants (optimization)
 
 BUGFIXES :  
 

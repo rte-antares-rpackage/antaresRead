@@ -13,6 +13,7 @@
 #' 
 #' @inheritParams readAntares
 #' @param with_time_series \code{boolean} if TRUE, the second member time series are read
+#' @param constraint_names \code{str} constraint names to filter on
 #'
 #' @importFrom assertthat assert_that
 #' 
@@ -68,7 +69,7 @@
 #' }
 #' 
 #' @export
-readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE) {
+readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE, constraint_names = NULL) {
   
   assert_that(inherits(with_time_series, what = "logical"))
   
@@ -99,6 +100,11 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
     return(NULL)
   }
   
+  # Filter on constraint_names
+  if (!is.null(constraint_names)) {
+    bindingConstraints <- .filter_bindingConstraints_by_names(bindingConstraints = bindingConstraints,
+                                                              constraint_names = constraint_names)
+  }
   ##
   # read values txt files
   ##
@@ -383,4 +389,26 @@ summary.bindingConstraints <- function(object, ...) {
     timeStep = timeStep, 
     equation = equations
   )
+}
+
+#' @title Filter a list of binding constraints by names by a exact match
+#' @param bindingConstraints \code{list} a list of binding constraints
+#' @param constraint_names \code{str} constraint names to filter on
+#' @return A list of binding constraints containing the constraints which have their name in constraint_names.
+.filter_bindingConstraints_by_names <- function(bindingConstraints, constraint_names) {
+  
+  constraint_names <- tolower(constraint_names)
+  existing_constraint_names <- sapply(bindingConstraints, "[[", "name", USE.NAMES = FALSE, simplify = TRUE)
+  existing_constraint_names <- tolower(existing_constraint_names)
+  constraint_names <- intersect(existing_constraint_names, constraint_names)
+  
+  if (length(constraint_names) == 0) {
+    warning("No binding constraints with one of the names you provide as argument.")
+    return(NULL)
+  }
+  
+  # index starts at 0
+  idx_constraint_names <- which(existing_constraint_names %in% constraint_names) - 1
+  
+  return(bindingConstraints[names(bindingConstraints) %in% idx_constraint_names])
 }
