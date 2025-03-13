@@ -265,3 +265,27 @@ test_that("read new format version from study", {
   # test right conversion for package
   expect_equal(study$antaresVersion, 900)
 })
+
+# v920----
+test_that("Check version pb (9.2*100)<920 TRUE ?", {
+  # check `?double` (details section Double-precision values)
+  # 9.2*100)<920 return TRUE localy 
+  # (9.2*100)-920 return -1.136868e-13 
+  # check version on 9.2 don't work 
+  
+  # context
+  expect_error(
+    expect_false((9.2*100)<920)
+  )
+  
+  expect_error(
+    expect_identical((9.2*100)-920, 0)
+  )
+  
+  expect_identical(round(9.2*100)-920, 0)
+  
+  # just test private function
+  expect_false(
+    .transform_antares_version("9.2")<920
+  )
+})
