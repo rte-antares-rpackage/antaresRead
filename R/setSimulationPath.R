@@ -709,7 +709,7 @@ setSimulationPath <- function(path, simulation = NULL) {
          call. = FALSE)
   
   # convert to numeric for package understanding
-  num_version <- as.numeric(antares_version)*100
+  num_version <- round(as.numeric(antares_version)*100)
   
   return(num_version)
 }
