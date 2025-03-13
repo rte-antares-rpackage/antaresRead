@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">antaresRead</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.9.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">2.9.1.9000</span>
       </span>
     </div>
 
@@ -51,8 +51,21 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="2.9.0.9000" id="antaresread-2909000">antaresRead 2.9.0.9000<a class="anchor" aria-label="anchor" href="#antaresread-2909000"></a></h2>
-<p>(cf. Antares v9 changelog)</p>
+<h2 class="page-header" data-toc-text="2.9.1.9000" id="antaresread-2919000">antaresRead 2.9.1.9000<a class="anchor" aria-label="anchor" href="#antaresread-2919000"></a></h2>
+<p>NEW FEATURES:</p>
+<ul><li>
+<code><a href="../reference/readBindingConstraints.html">readBindingConstraints()</a></code> : has a new parameter <code>'with_time_series'</code> (default to <code>TRUE</code>) to enable or disable the time series reading (optimization)</li>
+</ul><p>BUGFIXES :</p>
+<ul><li>
+<code>api_get() / api_post () / api_put() / api_delete()</code> : treat case when default_endpoint provided is empty<br></li>
+<li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : The version number returned for a study &gt;= 9.2 (9.2*100) is in fact considered by R as &lt;920 with a precision of <code>-1.136868e-13</code>. This falsifies the version number checks (atypical error depending on machine precision, see R doc <code><a href="https://rdrr.io/r/base/double.html" class="external-link">?double</a></code>)</li>
+</ul><p>BREAKING CHANGES :</p>
+<ul><li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : sets timeout to 600s by default. 600s is the default value in Antares Web.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="2.9.0" id="antaresread-290">antaresRead 2.9.0<small>2025-02-11</small><a class="anchor" aria-label="anchor" href="#antaresread-290"></a></h2>
 <p>NEW FEATURES:</p>
 <ul><li>
 <code><a href="../reference/setSimulationPath.html">setSimulationPath()</a></code> / <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> have a new parameter <code>'verbose'</code> (default to <code>FALSE</code>) to manage diagnostic messages</li>
