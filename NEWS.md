@@ -15,6 +15,10 @@ BUGFIXES :
 BREAKING CHANGES :  
  
 * `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web.
+* `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
+* `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
+* `format_api_aggregate_result()` : match the legacy names for the output column names
+* Rename short-term storage output column from Cashflow to CashFlow
 
 
 # antaresRead 2.9.0
@@ -22,7 +26,6 @@ BREAKING CHANGES :
 NEW FEATURES:  
 
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
-* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
 
 BUGFIXES :  
 
@@ -31,17 +34,11 @@ BUGFIXES :
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 * `.importOutput()` : check if output file exists in API mode (`.check_missing_output_files()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
-* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty
 
 BREAKING CHANGES :  
 
 * `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
-* `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web. 
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
-* `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
-* `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
-* `format_api_aggregate_result()` : match the legacy names for the output column names
-* Rename short-term storage output column from Cashflow to CashFlow
 
 GITHUB ACTIONS :  
 
