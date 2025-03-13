@@ -407,7 +407,7 @@ summary.bindingConstraints <- function(object, ...) {
     return(NULL)
   }
   
-  # index starts at 0
+  # index starts at 0 in input/bindingconstraints/bindingconstraints.ini
   idx_constraint_names <- which(existing_constraint_names %in% constraint_names) - 1
   
   return(bindingConstraints[names(bindingConstraints) %in% idx_constraint_names])
