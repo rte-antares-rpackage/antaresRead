@@ -245,8 +245,9 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
 # build list structure according to antares version
 .manage_list_structure <- function(binding_object, 
                                    opts = simOptions()){
+  
   # default names of parameters (core parameters)
-  names_elements <- c("name", "id", "enabled", "type", "operator", "values")
+  names_elements <- c("name", "id", "enabled", "type", "operator", "comments", "values")
   
   # get links information from list
   coefs_elements <- setdiff(names(binding_object), 
@@ -259,8 +260,11 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
   ##
   # filter on parameters to keep only links information
   
+  is_v832 <- opts[["antaresVersion"]] >= 832
+  is_v870 <- opts[["antaresVersion"]] >= 870
+  
   # v832
-  if (opts$antaresVersion>=832){
+  if (is_v832) {
     names_elements_832 <- c("filter-year-by-year", 
                             "filter-synthesis")
     elements_832 <- binding_object[which(names(binding_object) %in% 
@@ -270,7 +274,7 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
   }
   
   # v870
-  if(opts$antaresVersion>=870){
+  if (is_v870) {
     names_elements_870 <- "group"
     elements_870 <- binding_object[which(names(binding_object) %in% 
                                            names_elements_870)]
@@ -284,22 +288,25 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
   
   # core elements list
   core_list <- list(
-    properties = list(
-      name = binding_object$name,
-      id = binding_object$id,
-      enabled = binding_object$enabled,
-      timeStep = binding_object$type,
-      operator = binding_object$operator),
-    coefs = unlist(coefs_values),
-    values = binding_object$values)
+    "properties" = list(
+      "name" = binding_object[["name"]],
+      "id" = binding_object[["id"]],
+      "enabled" = binding_object[["enabled"]],
+      "timeStep" = binding_object[["type"]],
+      "operator" = binding_object[["operator"]],
+      "comments" = binding_object[["comments"]]
+      ),
+    "coefs" = unlist(coefs_values),
+    "values" = binding_object[["values"]]
+  )
   
   # add properties according to version
   # decreasing approach
   
   # v870
-  if(opts$antaresVersion>=870){
+  if (is_v870) {
     list_870 <- list()
-    list_870$properties = append(core_list$properties, 
+    list_870[["properties"]] = append(core_list[["properties"]], 
                                  c(
                                    unlist(elements_832),
                                    unlist(elements_870)))
@@ -308,9 +315,9 @@ readBindingConstraints <- function(opts = simOptions(), with_time_series = TRUE)
     return(list_870)
   }
   # v832
-  if(opts$antaresVersion>=832){
+  if (is_v832) {
     list_832 <- list()
-    list_832$properties = append(core_list$properties, 
+    list_832[["properties"]] = append(core_list[["properties"]], 
                                  unlist(elements_832))
     list_832 <- append(list_832, 
                        core_list[c(2,3)])
