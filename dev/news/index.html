@@ -68,9 +68,9 @@
 <h2 class="page-header" data-toc-text="2.9.0" id="antaresread-290">antaresRead 2.9.0<small>2025-02-11</small><a class="anchor" aria-label="anchor" href="#antaresread-290"></a></h2>
 <p>NEW FEATURES:</p>
 <ul><li>
-<code><a href="../reference/setSimulationPath.html">setSimulationPath()</a></code> / <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> have a new parameter <code>'verbose'</code> (default to <code>FALSE</code>) to manage diagnostic messages</li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : reads and returns the new converted study version format (ex : 9.0 =&gt; 900)</li>
 <li>
-<code><a href="../reference/readBindingConstraints.html">readBindingConstraints()</a></code> : has a new parameter <code>'with_time_series'</code> (default to <code>TRUE</code>) to enable or disable the time series reading</li>
+<code><a href="../reference/setSimulationPath.html">setSimulationPath()</a></code> / <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> have a new parameter <code>'verbose'</code> (default to <code>FALSE</code>) to manage diagnostic messages</li>
 </ul><p>BUGFIXES :</p>
 <ul><li>
 <code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : encode URL before reading the data in simulation mode</li>
@@ -82,14 +82,8 @@
 <code>.importOutput()</code> : check if output file exists in API mode (<code>.check_output_files_existence()</code>)</li>
 <li>
 <code>.giveSize()</code> : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters</li>
-<li>
-<code>api_get() / api_post () / api_put() / api_delete()</code> : treat case when default_endpoint provided is empty</li>
 </ul><p>BREAKING CHANGES :</p>
 <ul><li>
-<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : reads and returns the new converted study version format (ex : 9.0 =&gt; 900)</li>
-<li>
-<code><a href="../reference/setSimulationPath.html">setSimulationPathAPI()</a></code> : sets timeout to 600s by default. 600s is the default value in Antares Web.</li>
-<li>
 <code><a href="../reference/readClusterDesc.html">readClusterDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterResDesc()</a></code> / <code><a href="../reference/readClusterDesc.html">readClusterSTDesc()</a></code> have a new parameter (<code>dot_format = TRUE</code>) to return two format to display input cluster properties</li>
 </ul><p>GITHUB ACTIONS :</p>
 <ul><li>Actions artifacts v3 is closing down, update to v4<br></li>
