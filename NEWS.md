@@ -21,8 +21,8 @@ BREAKING CHANGES :
 
 NEW FEATURES:  
 
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
-* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
 
 BUGFIXES :  
 
@@ -31,12 +31,9 @@ BUGFIXES :
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 * `.importOutput()` : check if output file exists in API mode (`.check_output_files_existence()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
-* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty
 
 BREAKING CHANGES :  
 
-* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
-* `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web. 
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 
 GITHUB ACTIONS :  
