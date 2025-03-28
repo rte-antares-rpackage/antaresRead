@@ -3,6 +3,9 @@
 # antaresRead 2.9.2.9000
 (cf. Antares v9.2 changelog)
 
+NEW FEATURES :
+
+* `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 
 
 # antaresRead 2.9.1.9000  
