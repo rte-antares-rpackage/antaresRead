@@ -218,7 +218,7 @@ test_that("test read cluster renewables", {
     # id_cols is already sorted but it could be not
     id_cols <- c("area", "cluster", "group")
     
-    input <- readClusterDesc(dot_format = FALSE)
+    input <- readClusterResDesc(dot_format = FALSE)
     expect_false(is.unsorted(setdiff(names(input), id_cols)))
   })
 })
