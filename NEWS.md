@@ -6,6 +6,7 @@
 NEW FEATURES :
 
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
+* `readInputTS()` read new optional Time Series (5 time series)
 
 
 # antaresRead 2.9.1.9000  
