@@ -114,33 +114,13 @@ utils::globalVariables(
 )
 
 ## INPUT Properties REF ----
-res_prop_ref <- data.table::fread(system.file("referential_properties/properties_input_renewable.csv", 
+cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv", 
                                               package = "antaresRead"),
                                   sep = ";", 
                                   header = TRUE)
 
-res_prop_therm <- data.table::fread(system.file("referential_properties/properties_input_thermal.csv", 
-                                                package = "antaresRead"),
-                                    sep = ";", 
-                                    header = TRUE)
-
-res_prop_st <- data.table::fread(system.file("referential_properties/properties_input_storage.csv", 
-                                             package = "antaresRead"),
-                                 sep = ";",
-                                 header = TRUE)
-
-df_files_ref <- do.call("rbind", 
-                        list(res_prop_ref, res_prop_therm, res_prop_st))
-# create new column "operating_format" to return "Valid Names" (separator variable with ".") 
-  # legacy format
-new_col_format <- make.names(df_files_ref[["INI Name"]])
-df_files_ref[, operating_format := new_col_format]
-
-# format col names too
-names(df_files_ref) <-  make.names(names(df_files_ref))
-
 # append
-pkgEnv$inputProperties <- df_files_ref
+pkgEnv$inputProperties <- cluster_properties
 
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,

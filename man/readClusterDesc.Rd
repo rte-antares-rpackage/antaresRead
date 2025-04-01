@@ -19,19 +19,17 @@ readClusterSTDesc(opts = simOptions(), dot_format = TRUE)
 \item{dot_format}{\code{logical} default TRUE to return \code{character} with "valid" format (see \code{\link[=make.names]{make.names()}})}
 }
 \value{
-A data.table with one line per cluster. The columns of the data.table may
-change between different projects, but there will always be the following
-columns:
+A \code{data.table} with one line per cluster.
+
+Columns are displayed using the 3 key columns (\emph{area}, \emph{cluster}, \emph{group}).
+The rest of the properties are displayed according to cluster type
+("thermal", "renewable" or "st-storages").
+
+key columns:
 
 \item{area}{Name of the area containing the cluster}
 \item{cluster}{Name of the cluster}
 \item{group}{Type of cluster (gaz, nuclear, etc.)}
-\item{unitcount}{number of production units}
-\item{nominalcapacity}{production capacity of each unit}
-
-The other present columns depends on the version of antares and the options
-that have been set: if an option is unset for all clusters, it will not
-appear in the table.
 
 By default, the function reads the cluster description of the default antares
 study. You can use the argument \code{opts} to specify another study.
@@ -46,7 +44,7 @@ If you have no clusters properties, \verb{Null data.table (0 rows and 0 cols)} i
 }
 \description{
 This function reads in the input files of an antares study the
-characteristics of each cluster.
+properties of each cluster.
 
 Be aware that clusters descriptions are read
 in the input files so they may have changed since a simulation has been run.

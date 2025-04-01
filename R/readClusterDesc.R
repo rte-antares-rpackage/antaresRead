@@ -4,7 +4,7 @@
 #'
 #' @description 
 #' This function reads in the input files of an antares study the
-#' characteristics of each cluster. 
+#' properties of each cluster. 
 #' 
 #' Be aware that clusters descriptions are read
 #' in the input files so they may have changed since a simulation has been run.
@@ -12,20 +12,26 @@
 #' @inheritParams readAntares
 #' @param dot_format `logical` default TRUE to return `character` with "valid" format (see [make.names()]) 
 #'
+#' @section Warning:  
+#' You have now two format output to display input properties. 
+#' Default is format uses by operating team, eg `min.down.time`.
+#' Other format is according to antares simulator, eg `min-down-time`.  
+#' 
+#' All properties are returned with default values according to Antares Study version.
+#'
 #' @return
-#' A data.table with one line per cluster. The columns of the data.table may
-#' change between different projects, but there will always be the following 
-#' columns:
+#' A `data.table` with one line per cluster.  
+#' 
+#' Columns are displayed using the 3 key columns (*area*, *cluster*, *group*). 
+#' The rest of the properties are displayed according to cluster type 
+#' ("thermal", "renewable" or "st-storages").
+#' 
+#' key columns:
 #' 
 #' \item{area}{Name of the area containing the cluster}
 #' \item{cluster}{Name of the cluster}
 #' \item{group}{Type of cluster (gaz, nuclear, etc.)}
-#' \item{unitcount}{number of production units}
-#' \item{nominalcapacity}{production capacity of each unit}
 #' 
-#' The other present columns depends on the version of antares and the options
-#' that have been set: if an option is unset for all clusters, it will not 
-#' appear in the table.
 #' 
 #' By default, the function reads the cluster description of the default antares
 #' study. You can use the argument \code{opts} to specify another study.
@@ -37,14 +43,6 @@
 #' \code{readClusterSTDesc} : read st-storage clusters (Antares >= V8.6)
 #' 
 #' If you have no clusters properties, `Null data.table (0 rows and 0 cols)` is returned.
-#' 
-#' @section Warning:  
-#' You have now two format output to display input properties. 
-#' Default is format uses by operating team, eg `min.down.time`.
-#' Other format is according to antares simulator, eg `min-down-time`.  
-#' 
-#' All properties are returned with default values according to Antares Study version.
-#' 
 #' 
 #'
 #' @examples
@@ -152,40 +150,52 @@ readClusterSTDesc <- function(opts = simOptions(), dot_format = TRUE) {
   # "text" mode
   areas <- list.files(path)
   
-  # READ cluster properties
+  # cluster properties from REFERENTIAL (according to version of study)
   properties <- get_input_cluster_properties(table_type = table_type, 
                                              opts = opts, 
                                              dot_format = dot_format)
-   
+  
   # read properties for each area
-  res <- plyr::llply(areas, function(x, prop_ref=properties) {
+  res <- lapply(areas, function(x, prop_ref=properties) {
     clusters <- readIniFile(file.path(path, x, "list.ini"))
+    
     if (length(clusters) == 0) 
       return(NULL)
-    # conversion list to data.frame
+    
+    # 'ldply' used to convert list to data.frame
     clusters <- plyr::ldply(clusters, function(x){
       df_clust <- data.frame(x, check.names = dot_format) 
       colnames_to_add <- setdiff(names(prop_ref), names(df_clust))
       if(!identical(colnames_to_add, character(0)))
         df_clust <- cbind(df_clust, prop_ref[, .SD, .SDcols = colnames_to_add])
       df_clust
-      }) # check.names = FALSE (no automatic conversion)
-    clusters$.id <- NULL
+      }, 
+      .id = NULL) # check.names = FALSE (no automatic conversion)
+    
     clusters$area <- x
     # re order columns
     clusters[, c("area", setdiff(colnames(clusters), "area"))]
   })
   
+  # convert to 'data.table' too
   res <- data.table::rbindlist(l = res, fill = TRUE)
+  
+  # order names
+  id_cols <- intersect(c("area", "name", "group"), colnames(res))
+  additional_cols <- setdiff(colnames(res), id_cols)  
+  additional_cols <- additional_cols[order(additional_cols)]
+  res <- res[, .SD, .SDcols = c(id_cols, additional_cols)]
   
   # NO PROPERTIES CLUSTER FOUND
   if(length(res) == 0)
     return(data.table())
   
-  # output format conversion
-  res <- data.table::as.data.table(res)
+  # renames 'name' to 'cluster' legacy agreement
   data.table::setnames(res, "name", "cluster")
-  res$cluster <- as.factor(tolower(res$cluster))
+  # as factor + tolower ----
+  res$cluster <- as.factor(
+    tolower(
+      res$cluster))
   res
 }
 

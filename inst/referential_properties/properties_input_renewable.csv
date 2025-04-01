@@ -1,7 +1,0 @@
-Topic;INI Name;Tech Name;Type;Default;Version;Category;Version Antares
-Operating parameters;enabled;enabled;bool;True;8.1;renewable;810
-General;group;group;str;;8.1;renewable;810
-General;name;name;str;;8.1;renewable;810
-Operating parameters;nominalcapacity;nominalCapacity;float;0.0;8.1;renewable;810
-General;ts-interpretation;tsInterpretation;str;power-generation;8.1;renewable;810
-Operating parameters;unitcount;unitCount;int;1;8.1;renewable;810
