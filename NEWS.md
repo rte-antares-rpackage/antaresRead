@@ -25,6 +25,7 @@ BREAKING CHANGES :
 
 NEW FEATURES:  
 
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
 
 BUGFIXES :  
@@ -37,7 +38,6 @@ BUGFIXES :
 
 BREAKING CHANGES :  
 
-* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 
 GITHUB ACTIONS :  
