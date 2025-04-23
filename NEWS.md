@@ -6,7 +6,8 @@
 NEW FEATURES:  
  
 * `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
- 
+* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
+
 BUGFIXES :  
  
 * `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty  
