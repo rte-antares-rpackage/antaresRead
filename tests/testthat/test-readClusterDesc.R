@@ -101,7 +101,17 @@ test_that("test read cluster", {
     })
   # object returned is one line per area/cluster
   testthat::expect_equal(nrow(input), nrow(unique(input)))
+  
+  test_that("colnames ordered", {
+    # id_cols is already sorted but it could be not
+    id_cols <- c("area", "cluster", "group")
+    
+    input <- readClusterDesc(dot_format = FALSE)
+    expect_false(is.unsorted(setdiff(names(input), id_cols)))
+  })
 })
+
+
 
 # v830 ----
 ## Renewables ----
@@ -196,10 +206,6 @@ test_that("test read cluster renewables", {
     one_line_select <- input[area%in%area_test & cluster%in%tolower(cluster_target)]
     
     # test .ini values
-    # special case on "cluster" (tolower + as.factor) corresponding to "name" in .ini 
-    testthat::expect_equal(
-      as.character(tolower(list_properties$name)), 
-      as.character(one_line_select$cluster))
     # some numerical values
     testthat::expect_equal(list_properties$nominalcapacity, one_line_select$nominalcapacity)
     testthat::expect_equal(list_properties$`ts-interpretation`, one_line_select$`ts-interpretation`)
@@ -207,6 +213,14 @@ test_that("test read cluster renewables", {
     })
   # object returned is one line per area/cluster
   testthat::expect_equal(nrow(input), nrow(unique(input)))
+  
+  test_that("colnames ordered", {
+    # id_cols is already sorted but it could be not
+    id_cols <- c("area", "cluster", "group")
+    
+    input <- readClusterResDesc(dot_format = FALSE)
+    expect_false(is.unsorted(setdiff(names(input), id_cols)))
+  })
 })
 
 # v860 ----
@@ -299,15 +313,18 @@ test_that("test read cluster st-storage v860", {
     one_line_select <- input[area%in%area_test & cluster%in%tolower(cluster_target)]
     
     # test .ini values
-    # special case on "cluster" (tolower + as.factor) corresponding to "name" in .ini 
-    testthat::expect_equal(
-      tolower(list_properties$name), 
-      as.character(one_line_select$cluster))
     # some numerical values
     testthat::expect_equal(list_properties$reservoircapacity, one_line_select$reservoircapacity)
     testthat::expect_equal(list_properties$efficiency, one_line_select$efficiency)
-    
     })
+  
+  test_that("colnames ordered", {
+    # id_cols is already sorted but it could be not
+    id_cols <- c("area", "cluster", "group")
+    
+    input <- readClusterDesc(dot_format = FALSE)
+    expect_false(is.unsorted(setdiff(names(input), id_cols)))
+  })
 })
 
 # read empty study ----
@@ -317,4 +334,102 @@ test_that("test when study has no cluster (empty)", {
   
   testthat::expect_equal(readClusterDesc(), 
                          data.table::data.table()) 
+})
+
+# v920 ----
+# st-storage ----
+
+# mock study
+areas <- c("fr", "be")
+opts <- list(
+  "inputPath" = tempdir(),
+  "typeLoad"= "txt",
+  "areaList" = areas,
+  "antaresVersion" = 920
+)
+
+# properties
+fr <- c(
+  paste0("[",
+        areas[1], "_", "myClust",
+        "]"),
+  "name = fr_myClust",
+  "group = Battery",
+  "penalize-variation-injection = false")
+
+be <- c(
+  paste0("[",
+         areas[2], "_", "myClust",
+         "]"),
+  "name = be_myClust",
+  "group = Battery",
+  "efficiencywithdrawal = 0.5")
+  
+list_properties <- list(fr, be)  
+
+# create dir with properties
+dir_path <- file.path(tempdir(), "st-storage", "clusters", areas)
+lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
+
+
+# write properties
+lapply(1:2, function(x){
+  writeLines(list_properties[[x]], 
+             file.path(dir_path[x], "list.ini"))
+})
+
+
+## Properties output format ----
+test_that("Operating format (default)", {
+  # read clusters informations
+  input <- readClusterSTDesc(opts = opts)
+  
+  # test character "-" not exists
+  testthat::expect_true(
+    identical(grep(pattern = "-", x = names(input)), 
+              integer(0)))
+})
+
+test_that("Antares format", {
+  # read clusters informations
+  input <- readClusterSTDesc(dot_format = FALSE, opts = opts)
+  
+  # test character "-" exists
+  testthat::expect_true(
+    any(grepl(pattern = "-", x = names(input))))
+})
+
+# Read properties ----
+test_that("Test properties read from .ini", {
+  # character "-" is available in .ini files
+  input <- readClusterSTDesc(dot_format = FALSE, opts = opts)
+
+  area_test <- areas[1]
+  cluster_target <- "fr_myClust"
+
+  file_propertie_path <- file.path(opts$inputPath,
+                                   "st-storage",
+                                   "clusters",
+                                   area_test,
+                                   "list.ini")
+
+  list_properties <- readIniFile(file_propertie_path)
+  list_properties <- list_properties[[cluster_target]]
+  
+  # select taget values 
+  one_line_select <- input[area%in%area_test & 
+                             cluster%in%tolower(cluster_target)]
+  
+  # test .ini values
+  # some numerical values
+  testthat::expect_equal(list_properties$`penalize-variation-injection`, 
+                         one_line_select$`penalize-variation-injection`)
+  
+  test_that("colnames ordered", {
+    # id_cols is already sorted but it could be not
+    id_cols <- c("area", "cluster", "group")
+    
+    input <- readClusterDesc(dot_format = FALSE)
+    expect_false(is.unsorted(setdiff(names(input), id_cols)))
+  })
 })

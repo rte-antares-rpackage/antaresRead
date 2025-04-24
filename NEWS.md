@@ -1,7 +1,25 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.9.2.9000
+(cf. Antares v9.2 changelog)
 
-# antaresRead 2.9.1.9000  
+NEW FEATURES :
+
+* `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
+* `readInputTS()` read new optional Time Series (5 time series)
+
+REVDEP (temporary) : 
+
+✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresProcessing 0.18.3 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3 ── E: 0     | W: 0     | N: 0 
+
+DOC :  
+
+* pkgdown site updated to bootsrap 5
+
+
+# antaresRead 2.9.1 (NOT CRAN)
 
 NEW FEATURES:  
  
