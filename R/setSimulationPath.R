@@ -405,7 +405,8 @@ setSimulationPath <- function(path, simulation = NULL) {
   simDataPath <- switch(as.character(info$mode),
                         "draft" = "adequacy-draft",
                         "Economy" = "economy",
-                        "Adequacy" = "adequacy")
+                        "Adequacy" = "adequacy",
+                        "Expansion" = "economy")
   simDataPath <- file.path(simPath, simDataPath)
   
   # Which results are available ? Synthesis ? Monte-Carlo years ?
