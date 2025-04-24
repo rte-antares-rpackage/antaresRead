@@ -8,6 +8,10 @@ NEW FEATURES :
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 * `readInputTS()` read new optional Time Series (5 time series)
 
+BUGFIXES :  
+ 
+* `.getSimOptions()` : add `Expansion` mode to compute `simDataPath` value 
+
 REVDEP (temporary) : 
 
 ✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
