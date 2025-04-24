@@ -8,6 +8,10 @@ NEW FEATURES :
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 * `readInputTS()` read new optional Time Series (5 time series)
 
+BUGFIXES :
+
+* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
+
 REVDEP (temporary) : 
 
 ✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
@@ -24,7 +28,6 @@ DOC :
 NEW FEATURES:  
  
 * `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
-* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
 
 BUGFIXES :  
  
