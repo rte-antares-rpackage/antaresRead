@@ -1,7 +1,25 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.9.2.9000
+(cf. Antares v9.2 changelog)
 
-# antaresRead 2.9.1.9000  
+NEW FEATURES :
+
+* `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
+* `readInputTS()` read new optional Time Series (5 time series)
+
+REVDEP (temporary) : 
+
+✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresProcessing 0.18.3 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3 ── E: 0     | W: 0     | N: 0 
+
+DOC :  
+
+* pkgdown site updated to bootsrap 5
+
+
+# antaresRead 2.9.1 (NOT CRAN)
 
 NEW FEATURES:  
  
@@ -22,8 +40,8 @@ BREAKING CHANGES :
 
 NEW FEATURES:  
 
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
 * `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
-* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading
 
 BUGFIXES :  
 
@@ -32,12 +50,9 @@ BUGFIXES :
 * `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
 * `.importOutput()` : check if output file exists in API mode (`.check_output_files_existence()`)
 * `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
-* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty
 
 BREAKING CHANGES :  
 
-* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
-* `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web. 
 * `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
 
 GITHUB ACTIONS :  
