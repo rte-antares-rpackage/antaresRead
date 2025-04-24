@@ -8,6 +8,10 @@ NEW FEATURES :
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 * `readInputTS()` read new optional Time Series (5 time series)
 
+BUGFIXES :
+
+* `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
+
 REVDEP (temporary) : 
 
 ✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
@@ -29,7 +33,6 @@ BUGFIXES :
  
 * `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty  
 * `setSimulationPathAPI()` : The version number returned for a study >= 9.2 (9.2*100) is in fact considered by R as <920 with a precision of `-1.136868e-13`. This falsifies the version number checks (atypical error depending on machine precision, see R doc `?double`)
-* `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
  
 BREAKING CHANGES :  
  
