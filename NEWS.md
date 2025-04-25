@@ -9,6 +9,10 @@ NEW FEATURES :
 * `readInputTS()` read new optional Time Series (5 time series)
 * `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
 
+BUGFIXES :
+
+* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
+
 REVDEP (temporary) : 
 
 ✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
@@ -25,7 +29,7 @@ DOC :
 NEW FEATURES:  
  
 * `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
- 
+
 BUGFIXES :  
  
 * `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty  
