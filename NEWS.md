@@ -13,9 +13,6 @@ BUGFIXES :
 
 * `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
 * `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
-
-BUGFIXES :  
- 
 * `.getSimOptions()` : add `Expansion` mode to compute `simDataPath` value 
 
 REVDEP (temporary) : 
