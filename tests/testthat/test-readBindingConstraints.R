@@ -188,7 +188,7 @@ test_that("test if default values are well returned", {
   })
 
 
-test_that("test if with_time_series argument has the expected behaviour", { 
+test_that("test if with_time_series and constraint_names arguments have the expected behaviour", { 
   
   opts <- list(
   "inputPath" = tempdir(),
@@ -220,9 +220,9 @@ test_that("test if with_time_series argument has the expected behaviour", {
     "filter-year-by-year = hourly, daily, weekly, monthly, annual",
     "filter-synthesis = hourly, daily, weekly, monthly, annual",
     "group = default",
-    "de.de_cl_1 = 1.000000",
-    "de.de_cl_2 = -1.000000",
-    "de.de_cl_3 = -2.000000",
+    "de.de_cl_1 = 11.000000",
+    "de.de_cl_2 = -11.000000",
+    "de.de_cl_3 = -22.000000",
     "",
     "[2]",
     "name = mix_fr_de",
@@ -233,8 +233,8 @@ test_that("test if with_time_series argument has the expected behaviour", {
     "filter-year-by-year = hourly, daily, weekly, monthly, annual",
     "filter-synthesis = hourly, daily, weekly, monthly, annual",
     "group = default",
-    "fr.fr_cl_1 = 1.000000",
-    "de.de_cl_1 = -1.000000",
+    "fr.fr_cl_1 = 23.000000",
+    "de.de_cl_1 = -45.000000",
     ""
   )
 
@@ -242,8 +242,8 @@ test_that("test if with_time_series argument has the expected behaviour", {
   dir.create(bindingconstraints_path, recursive = TRUE, showWarnings = FALSE)
   writeLines(ini_binding, file.path(bindingconstraints_path,"bindingconstraints.ini"))
   write.table(matrix(rep(1,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"batteries_fr_eq.txt"), row.names = FALSE, col.names = FALSE)
-  write.table(matrix(rep(1,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"batteries_de_eq.txt"), row.names = FALSE, col.names = FALSE)
-  write.table(matrix(rep(2,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"mix_fr_de_lt.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(matrix(rep(2,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"batteries_de_eq.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(matrix(rep(3,366 * 2), ncol = 2), file = file.path(bindingconstraints_path,"mix_fr_de_lt.txt"), row.names = FALSE, col.names = FALSE)
   
   all_bc <- readBindingConstraints(opts = opts, with_time_series = FALSE)
   expect_true(inherits(all_bc, what = "bindingConstraints"))
@@ -254,6 +254,28 @@ test_that("test if with_time_series argument has the expected behaviour", {
   expect_true(inherits(all_bc, what = "bindingConstraints"))
   has_values <- lapply(all_bc, FUN = function(bc) {"values" %in% names(bc)})
   expect_true(all(has_values == TRUE))
+  
+  expect_warning(readBindingConstraints(opts = opts, constraint_names = "not_a_binding_constraint"),
+                 regexp = "No binding constraints with one of the names you provide as argument."
+                 )
+
+  my_constraints <- c("batteries_fr", "batteries_de")
+  bcs <- readBindingConstraints(opts = opts, constraint_names = my_constraints)
+  expect_true(length(bcs) == 2)
+  expect_equal(sort(names(bcs)), sort(my_constraints))
+
+  my_constraints <- c("batteries_fr", "batteries_de", "not_a_binding_constraint")
+  bcs <- readBindingConstraints(opts = opts, constraint_names = my_constraints)
+  expect_true(length(bcs) == 2)
+  
+  my_constraints <- c("baTTeries_FR", "baTTeries_DE")
+  bcs <- readBindingConstraints(opts = opts, constraint_names = my_constraints)
+  expect_true(length(bcs) == 2)
+  expect_equal(sort(tolower(names(bcs))), sort(tolower(my_constraints)))
+  
+  bcs <- readBindingConstraints(opts = opts, constraint_names = NULL)
+  expect_true(length(bcs) == 3)
+  expect_equal(sort(names(bcs)), c("batteries_de", "batteries_fr", "mix_fr_de"))
 })
 
 
