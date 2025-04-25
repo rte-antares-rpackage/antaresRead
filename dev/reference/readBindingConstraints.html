@@ -57,7 +57,11 @@ they may have changed since a simulation has been run.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readBindingConstraints</span><span class="op">(</span>opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>, with_time_series <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">readBindingConstraints</span><span class="op">(</span></span>
+<span>  opts <span class="op">=</span> <span class="fu"><a href="simOptions.html">simOptions</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  with_time_series <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  constraint_names <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -71,6 +75,10 @@ they may have changed since a simulation has been run.</p>
 
 <dt id="arg-with-time-series">with_time_series<a class="anchor" aria-label="anchor" href="#arg-with-time-series"></a></dt>
 <dd><p><code>boolean</code> if TRUE, the second member time series are read</p></dd>
+
+
+<dt id="arg-constraint-names">constraint_names<a class="anchor" aria-label="anchor" href="#arg-constraint-names"></a></dt>
+<dd><p><code>str</code> constraint names to filter on</p></dd>
 
 </dl></div>
     <div class="section level2">
