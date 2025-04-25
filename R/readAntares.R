@@ -912,12 +912,9 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
   if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
   
   # If all arguments are NULL, import all areas
-  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersST)) {
+  if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersRes) & is.null(clustersST)) {
     areas <- "all"
   }
-  
-  # Check arguments validity. The function .checkArgs is defined below
-  synthesis <- is.null(mcYears)
   
   return(list(select = select,
               areas = areas,
@@ -927,7 +924,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
               clustersST = clustersST,
               districts = districts,
               mcYears = mcYears,
-              synthesis = synthesis,
+              synthesis = is.null(mcYears),
               computeAdd = computeAdd,
               unselect = unselect))
 }

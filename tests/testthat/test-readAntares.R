@@ -163,3 +163,163 @@ sapply(studyPathS, function(studyPath){
   })
   
 })
+
+
+test_that("Behaviour of .giveInfoRequest()", {
+  
+  # mcYears/synthesis
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_true(req[["synthesis"]])
+  expect_null(req[["mcYears"]])
+  
+  # mcYears/synthesis  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = seq(1,5)
+                          )
+  expect_false(req[["synthesis"]])
+  expect_equal(req[["mcYears"]], seq(1,5))
+  
+  # output type
+  areas_test <- c("a", "b")
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_equal(req[["areas"]], "all")
+  expect_null(req[["clusters"]])
+  expect_null(req[["clustersRes"]])
+  expect_null(req[["clustersST"]])
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = areas_test,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_equal(req[["areas"]], areas_test)
+  expect_null(req[["clusters"]])
+  expect_null(req[["clustersRes"]])
+  expect_null(req[["clustersST"]])
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = areas_test,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_equal(req[["clusters"]], areas_test)
+  expect_null(req[["clustersRes"]])
+  expect_null(req[["clustersST"]])
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = areas_test,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_null(req[["clusters"]])
+  expect_equal(req[["clustersRes"]], areas_test)
+  expect_null(req[["clustersST"]])
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = areas_test,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_null(req[["clusters"]])
+  expect_null(req[["clustersRes"]])
+  expect_equal(req[["clustersST"]], areas_test)
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = areas_test,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_null(req[["clusters"]])
+  expect_null(req[["clustersRes"]])
+  expect_null(req[["clustersST"]])
+  expect_equal(req[["districts"]], areas_test)
+  expect_null(req[["links"]])
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = paste0(areas_test, collapse = " - "),
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_null(req[["clusters"]])
+  expect_null(req[["clustersRes"]])
+  expect_null(req[["clustersST"]])
+  expect_null(req[["districts"]])
+  expect_equal(req[["links"]], paste0(areas_test, collapse = " - "))
+  
+  req <- .giveInfoRequest(select = NULL,
+                          areas = NULL,
+                          links = NULL,
+                          clusters = c("x", "y", "z"),
+                          clustersRes = NULL,
+                          clustersST = areas_test,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_null(req[["areas"]])
+  expect_equal(req[["clusters"]], c("x", "y", "z"))
+  expect_null(req[["clustersRes"]])
+  expect_equal(req[["clustersST"]], areas_test)
+  expect_null(req[["districts"]])
+  expect_null(req[["links"]])
+})
