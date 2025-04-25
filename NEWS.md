@@ -11,6 +11,7 @@ NEW FEATURES :
 BUGFIXES :
 
 * `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
+* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
 
 REVDEP (temporary) : 
 
@@ -28,7 +29,7 @@ DOC :
 NEW FEATURES:  
  
 * `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
- 
+
 BUGFIXES :  
  
 * `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty  
