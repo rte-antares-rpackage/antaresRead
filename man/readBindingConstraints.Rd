@@ -4,13 +4,19 @@
 \alias{readBindingConstraints}
 \title{Read binding constraints}
 \usage{
-readBindingConstraints(opts = simOptions(), with_time_series = TRUE)
+readBindingConstraints(
+  opts = simOptions(),
+  with_time_series = TRUE,
+  constraint_names = NULL
+)
 }
 \arguments{
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}
 
 \item{with_time_series}{\code{boolean} if TRUE, the second member time series are read}
+
+\item{constraint_names}{\code{str} constraint names to filter on}
 }
 \value{
 An object of class \code{bindingConstraints}. This object is also a named
