@@ -392,6 +392,12 @@
   pattern <- c(" MIN$", " MAX$", " STD$", " EXP$", " VALUES$")
   replacement <- c("_min", "_max", "_std", "", "")
   new_cols <- stri_replace_all_regex(str = res_cols, pattern = pattern, replacement = replacement, vectorize_all = FALSE)
+  
+  # Endpoint aggregate does not provide the column profit for the moment. We rename it here.
+  # profit is one of the possible outputs of the details file
+  if ("profit - euro" %in% tolower(new_cols)) {
+    new_cols[tolower(new_cols) == "profit - euro"] <- "profit"
+  }
 
   return(setnames(res, old = res_cols, new = new_cols))
 }
