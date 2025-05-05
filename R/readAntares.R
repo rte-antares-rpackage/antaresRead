@@ -892,24 +892,40 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
   allCompute <- pkgEnv$allCompute
   computeAdd <- allCompute[allCompute%in%unlist(select)]
   
-  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
+  if ("areas" %in% unlist(select) & is.null(areas)) {
+    areas <- "all"
+  }
   if ("links" %in% unlist(select) & is.null(links)) {
-    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
-    else links <- "all"
+    if (!is.null(areas)) {
+      links <- getLinks(getAreas(areas, regexpSelect = FALSE))
+    } else {
+      links <- "all"
+    }
   }
   if ("clusters" %in% unlist(select) & is.null(clusters)) {
-    if (!is.null(areas)) clusters <- areas
-    else clusters <- "all"
+    if (!is.null(areas)) {
+      clusters <- areas
+    } else {
+      clusters <- "all"
+    }
   }
   if ("clustersRes" %in% unlist(select) & is.null(clustersRes)) {
-    if (!is.null(areas)) clustersRes <- areas
-    else clustersRes <- "all"
+    if (!is.null(areas)) {
+      clustersRes <- areas
+    } else {
+      clustersRes <- "all"
+    }
   }
   if ("clustersST" %in% unlist(select) & is.null(clustersST)) {
-    if (!is.null(areas)) clustersST <- areas
-    else clustersST <- "all"
+    if (!is.null(areas)) {
+      clustersST <- areas
+    } else {
+      clustersST <- "all"
+    }
   }
-  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
+  if ("mcYears" %in% unlist(select) & is.null(mcYears)) {
+    mcYears <- "all"
+  }
   
   # If all arguments are NULL, import all areas
   if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersRes) & is.null(clustersST)) {
