@@ -74,3 +74,47 @@ test_that(".importOutputForSTClusters is ok", {
     expect_equal(order_simulation_variables,required_order_simulation_variables)
     expect_equal(nrow(OutputForSTClusters),1)
 })
+
+
+test_that("Test the general behaviour of .format_api_aggregate_result()", {
+    
+  expect_null(.format_api_aggregate_result(res = NULL))
+  
+  # mc-ind
+  endpoint_res <- data.table("area" = rep("fr",12 * 2),
+                             "cluster" = c(rep("Nuclear",12), rep("Gas",12)),
+                             "mcYear" = rep(1, 12 * 2),
+                             "timeId" = as.numeric(rep(seq(1,12),2)),
+                             "production" = round(rnorm(n = 12 * 2, mean = 1000, sd = 50)),
+                             "NP Cost" = round(rnorm(n = 12 * 2, mean = 10000, sd = 100)),
+                             "NODU" = round(rnorm(n = 12 * 2, mean = 10, sd = 2)),
+                             "Profit - Euro" = round(rnorm(n = 12 * 2, mean = 80, sd = 5))
+                             )  
+  final_res <- .format_api_aggregate_result(res = endpoint_res)
+  areas <- unique(final_res$area)
+  clusters <- unique(final_res$cluster)
+  
+  expect_true(inherits(final_res$timeId, what = "integer"))
+  expect_true(inherits(final_res$area, what = "factor"))
+  expect_true(inherits(final_res$cluster, what = "factor"))
+  expect_true(all(areas == tolower(areas)))
+  expect_true(all(clusters == tolower(clusters)))
+  expect_true("profit" %in% colnames(final_res))
+  
+  # mc-all
+  endpoint_res <- data.table("area" = rep("fr",12 * 2),
+                             "timeId" = as.numeric(rep(seq(1,12),2)),
+                             "OP. COST EXP" = round(rnorm(n = 12 * 2, mean = 102, sd = 7.5)),
+                             "OP. COST MAX" = round(rnorm(n = 12 * 2, mean = 160, sd = 10)),
+                             "OP. COST MIN" = round(rnorm(n = 12 * 2, mean = 80, sd = 5)),
+                             "OP. COST STD" = round(rnorm(n = 12 * 2, mean = 40, sd = 2.5))  
+                             )
+                             
+  final_res <- .format_api_aggregate_result(res = endpoint_res)
+  areas <- unique(final_res$area)
+  
+  expect_true(inherits(final_res$timeId, what = "integer"))
+  expect_true(inherits(final_res$area, what = "factor"))
+  expect_true(all(areas == tolower(areas)))
+  expect_true(all(c("OP. COST", "OP. COST_max", "OP. COST_min", "OP. COST_std") %in% colnames(final_res)))
+})
