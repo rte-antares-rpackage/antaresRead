@@ -319,8 +319,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                clustersST = clustersST,
                                districts = districts,
                                mcYears = mcYears)
-  
   select <- reqInfos$select
+  # In API mode, with the endpoint aggregate, it is possible to select the desired columns for the clusters part.
+  # In disk mode, selection is not possible for the clusters part.
+  if (!is_api_study(opts)) {
+    if ("clusters" %in% names(select)) {
+      select$clusters <- NULL
+    }
+  }
   areas <- reqInfos$areas
   links <- reqInfos$links
   clusters <- reqInfos$clusters
@@ -509,8 +515,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   # Import thermal clusters and eventually must run
   if (!mustRun) {
-    res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = FALSE, 
+    res$clusters <- .importOutputForClusters(areas = clusters,
+                                             timeStep = timeStep,
+                                             select = select$clusters,
+                                             mcYears = mcYears,
+                                             showProgress = showProgress,
+                                             opts = opts,
+                                             mustRun = FALSE,
                                              parallel = parallel)
     if(!is.null(res$clusters) && nrow(res$clusters) == 0) res$clusters <- NULL
     
@@ -526,9 +537,15 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       }
     }
     else{
-      res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
-                                               showProgress, opts, mustRun = TRUE, parallel = parallel)
-      
+      res$clusters <- .importOutputForClusters(areas = clustersAugmented,
+                                               timeStep = timeStep,
+                                               select = select$clusters,
+                                               mcYears = mcYears,
+                                               showProgress = showProgress,
+                                               opts = opts,
+                                               mustRun = TRUE,
+                                               parallel = parallel
+                                               )
       if (!is.null(res$areas)) {
         tmp <- copy(res$clusters)
         tmp[, cluster := NULL]
@@ -855,8 +872,9 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
                              districts,
                              mcYears){
   
-  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
-  
+  if (!is.list(select)) {
+    select <- list("areas" = select, "links" = select, "districts" = select, "clusters" = select)
+  }
   
   ##Get unselect columns (by - operator)
   unselect <- lapply(select, function(X){
