@@ -322,4 +322,17 @@ test_that("Behaviour of .giveInfoRequest()", {
   expect_equal(req[["clustersST"]], areas_test)
   expect_null(req[["districts"]])
   expect_null(req[["links"]])
+  
+  # select
+  req <- .giveInfoRequest(select = c("production", "NUCLEAR", "UCAP LIN."),
+                          areas = NULL,
+                          links = NULL,
+                          clusters = NULL,
+                          clustersRes = NULL,
+                          clustersST = NULL,
+                          districts = NULL,
+                          mcYears = NULL
+                          )
+  expect_true(all(c("areas", "links", "districts", "clusters") %in% names(req[["select"]])))
+  expect_true(all(c("production", "NUCLEAR", "UCAP LIN.") %in% req[["select"]][["clusters"]]))
 })
