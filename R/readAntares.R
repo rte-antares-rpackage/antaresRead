@@ -847,6 +847,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
 #' @param links Vector containing the names of the links to import. See \link{readAntares} for further information.
 #' @param clusters Vector containing the names of the thermal clusters to import. See \link{readAntares} for further information.
 #' @param clustersRes Vector containing the names of the renewable clusters to import. See \link{readAntares} for further information.
+#' @param clustersST Vector containing the names of the short-term storages to import. See \link{readAntares} for further information.
 #' @param districts Vector containing the names of the districts to import. See \link{readAntares} for further information.
 #' @param mcYears Index of the Monte-Carlo years to import. See \link{readAntares} for further information.
 #' 
@@ -856,10 +857,13 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
 #' \item areas
 #' \item links
 #' \item clusters
+#' \item clustersRes
+#' \item clustersST
 #' \item districts
 #' \item mcYears
 #' \item synthesis
 #' \item computeAdd
+#' \item unselect
 #' }
 #' 
 #' @noRd
