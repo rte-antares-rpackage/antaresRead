@@ -6,7 +6,7 @@
 NEW FEATURES :
 
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
-* `readInputTS()` read new optional Time Series (5 time series)
+* `readInputTS()` read new optional time Series (5 time series)
 * `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
 
 BUGFIXES :
