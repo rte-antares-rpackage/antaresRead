@@ -1061,7 +1061,6 @@
                                     timeStep = timeStep,
                                     select = select,
                                     mcYears = mcYears,
-                                    synthesis = FALSE,
                                     opts = opts
                                    )
     .format_api_aggregate_result(res)
@@ -1075,7 +1074,7 @@
 
 
 # Retrieve aggregated links raw data from study economy outputs
-.api_get_aggregate_links <- function(links, timeStep, select, mcYears, synthesis, opts) {
+.api_get_aggregate_links <- function(links, timeStep, select, mcYears, opts) {
 
   if (is.null(links)) {
     return(NULL)
