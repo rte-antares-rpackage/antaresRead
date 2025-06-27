@@ -384,7 +384,8 @@
   response <- api_get(opts = opts,
                       default_endpoint = default_endpoint,
                       endpoint = download_id,
-                      parse_result = "text"
+                      parse_result = "text",
+                      encoding = "UTF-8"
                      )
   
   return(fread(input = response, data.table = TRUE))    
