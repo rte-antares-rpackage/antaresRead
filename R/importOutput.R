@@ -304,13 +304,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = timeStep,
-                                    query_file = "values",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                    )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = timeStep,
+                                            query_file = "values",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                           )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)  
     .format_api_aggregate_result(res)
   } else {
     suppressWarnings(
@@ -327,16 +328,21 @@
   if (is.null(areas)) {
     return(NULL)
   }
-
+  
+  areas_url <- ""
+  columns_url <- ""
+  mc_years_url <- ""
+  
   if (is.null(mcYears)) {
     pattern_endpoint <- "mc-all"
   } else {
     pattern_endpoint <- "mc-ind"
+    # MC years file
+    if (!identical(mcYears, "")) {
+      mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+    }
   }
   endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
-  areas_url <- ""
-  columns_url <- ""
-  mc_years_url <- ""
 
   # area
   if (!identical(areas, "")) {
@@ -353,29 +359,45 @@
   # query file
   query_file_url <- paste0("&query_file=", query_file)
 
-  # MC years file
-  if (!identical(mcYears, "")) {
-    mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
-  }
-
   endpoint <- paste0(endpoint_root, query_file_url, frequency_url, columns_url, areas_url, mc_years_url)
-  
-  options(readr.show_col_types = FALSE) # disable some useless log messages
-  res <- api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies")
-  options(readr.show_col_types = TRUE)
-  
-  attr(res, "spec") <- NULL
-  attr(res, "problems") <- NULL
 
-  return(as.data.table(res))
+  return(api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies"))
+}
+
+
+#' Retrieve information on a file's state of preparation and retrieve download file.
+#'
+#' @importFrom data.table fread
+#'
+#' @param download_id the id of the download.
+#' @template opts
+#'
+#' @return a data.table
+.download_api_aggregate_result <- function(download_id, opts) {
+  
+  default_endpoint <- "v1/downloads"
+  
+  download_status <- api_get(opts = opts,
+                             default_endpoint = default_endpoint,
+                             endpoint = paste0(download_id,"/metadata?wait_for_availability=true")
+                            )
+  response <- api_get(opts = opts,
+                      default_endpoint = default_endpoint,
+                      endpoint = download_id,
+                      parse_result = "text"
+                     )
+  
+  return(fread(input = response, data.table = TRUE))    
 }
 
 
 #' @importFrom stringi stri_replace_all_regex
 .format_api_aggregate_result <- function(res) {
 
-  if (is.null(res)) return(NULL)
-
+  if (is.null(res)) {
+    return(NULL)
+  }
+  
   res_cols <- colnames(res)
 
   cols_to_factor_lower <- c("area", "link", "cluster")
@@ -496,13 +518,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = timeStep,
-                                    query_file = "details",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                    )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = timeStep,
+                                            query_file = "details",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                            )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
     .format_api_aggregate_result(res)
   } else {
     reshapeFun <- function(x){
@@ -533,13 +556,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = timeStep,
-                                    query_file = "details",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                    )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = timeStep,
+                                            query_file = "details",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                           )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
     res <- .format_api_aggregate_result(res)
   } else {
     res <- suppressWarnings(
@@ -603,13 +627,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = "hourly",
-                                    query_file = "details",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                    )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = "hourly",
+                                            query_file = "details",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                            )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts) 
     res <- .format_api_aggregate_result(res)
     mustRunPartial <- mod[J(res$area, res$cluster, res$timeId), mustRunPartial]
     res[, mustRunPartial := pmin(production, mustRunPartial)]
@@ -791,13 +816,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = timeStep,
-                                    query_file = "details-res",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                   )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = timeStep,
+                                            query_file = "details-res",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                           )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
     .format_api_aggregate_result(res)
   } else {
     reshapeFun <- function(x) {
@@ -831,13 +857,14 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_areas(areas = areas,
-                                    timeStep = timeStep,
-                                    query_file = "details-STstorage",
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                   )
+    download_id <- .api_get_aggregate_areas(areas = areas,
+                                            timeStep = timeStep,
+                                            query_file = "details-STstorage",
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                           )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)  
     .format_api_aggregate_result(res)
   } else {
     reshapeFun <- function(x) {
