@@ -322,7 +322,7 @@
 }
 
 
-# Retrieve aggregated areas raw data from study economy outputs
+# Retrieve download_id for aggregated areas raw data from study economy outputs
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
 
   if (is.null(areas)) {
@@ -342,24 +342,25 @@
       mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
     }
   }
-  endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
 
   # area
   if (!identical(areas, "")) {
     areas_url <- paste0("&areas_ids=", paste0(areas, collapse = ","))
   }
-  # frequency
-  frequency_url <- paste0("&frequency=", timeStep)
 
   # columns
   if (!identical(select, "")) {
     columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
   }
-
-  # query file
-  query_file_url <- paste0("&query_file=", query_file)
-
-  endpoint <- paste0(endpoint_root, query_file_url, frequency_url, columns_url, areas_url, mc_years_url)
+  
+  endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
+  endpoint <- paste0(endpoint_root,
+                     paste0("&query_file=", query_file),
+                     paste0("&frequency=", timeStep),
+                     columns_url,
+                     areas_url,
+                     mc_years_url
+                    )
 
   return(api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies"))
 }
@@ -1058,12 +1059,13 @@
       return (NULL)
     }
 
-    res <- .api_get_aggregate_links(links = links,
-                                    timeStep = timeStep,
-                                    select = select,
-                                    mcYears = mcYears,
-                                    opts = opts
-                                   )
+    download_id <- .api_get_aggregate_links(links = links,
+                                            timeStep = timeStep,
+                                            select = select,
+                                            mcYears = mcYears,
+                                            opts = opts
+                                           )
+    res <- .download_api_aggregate_result(download_id = download_id, opts = opts) 
     .format_api_aggregate_result(res)
   } else {
     suppressWarnings(
@@ -1074,51 +1076,46 @@
 }
 
 
-# Retrieve aggregated links raw data from study economy outputs
+# Retrieve download_id for aggregated links raw data from study economy outputs
 .api_get_aggregate_links <- function(links, timeStep, select, mcYears, opts) {
 
   if (is.null(links)) {
     return(NULL)
   }
-
+  
+  links_url <- ""
+  columns_url <- ""
+  mc_years_url <- ""
+  
   if (is.null(mcYears)) {
     pattern_endpoint <- "mc-all"
   } else {
     pattern_endpoint <- "mc-ind"
+    # MC years file
+    if (!identical(mcYears, "")) {
+      mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
+    }
   }
-  endpoint_root <- paste0(opts[["study_id"]], "/links/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv&query_file=values")
-  links_url <- ""
-  columns_url <- ""
-  mc_years_url <- ""
 
   # link
   if (!identical(links, "")) {
     links_url <- paste0("&links_ids=", paste0(links, collapse = ","))
   }
 
-  # frequency
-  frequency_url <- paste0("&frequency=", timeStep)
-
   # columns
   if (!identical(select, "")) {
     columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
   }
-
-  # MC years file
-  if (!identical(mcYears, "")) {
-    mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
-  }
-
-  endpoint <- paste0(endpoint_root, frequency_url, columns_url, links_url, mc_years_url)
   
-  options(readr.show_col_types = FALSE) # disable some useless log messages
-  res <- api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies")
-  options(readr.show_col_types = TRUE)
+  endpoint_root <- paste0(opts[["study_id"]], "/links/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv&query_file=values")
+  endpoint <- paste0(endpoint_root,
+                     paste0("&frequency=", timeStep),
+                     columns_url,
+                     links_url,
+                     mc_years_url
+                    )
   
-  attr(res, "spec") <- NULL
-  attr(res, "problems") <- NULL
-
-  return(as.data.table(res))
+  return(api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies"))
 }
 
 
