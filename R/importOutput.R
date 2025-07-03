@@ -296,7 +296,7 @@
 #' @noRd
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                  showProgress, opts, parallel) {
+                                  showProgress, opts, parallel, number_of_batches) {
 
   if (is_api_study(opts)) {
 
@@ -304,15 +304,14 @@
       return (NULL)
     }
 
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = timeStep,
-                                            query_file = "values",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                           )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)  
-    .format_api_aggregate_result(res)
+    .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                             timeStep = timeStep,
+                                                             query_file = "values",
+                                                             select = select,
+                                                             mcYears = mcYears,
+                                                             number_of_batches = number_of_batches,
+                                                             opts = opts
+                                                            )
   } else {
     suppressWarnings(
       .importOutput("areas", "values", "area", areas, timeStep, select,
@@ -325,14 +324,10 @@
 # Retrieve download_id for aggregated areas raw data from study economy outputs
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
 
-  if (is.null(areas)) {
-    return(NULL)
-  }
-  
   areas_url <- ""
-  columns_url <- ""
+  columns_url <- ""  
   mc_years_url <- ""
-  
+
   if (is.null(mcYears)) {
     pattern_endpoint <- "mc-all"
   } else {
@@ -342,13 +337,11 @@
       mc_years_url <- paste0("&mc_years=", paste0(mcYears, collapse = ","))
     }
   }
-
-  # area
+  
   if (!identical(areas, "")) {
     areas_url <- paste0("&areas_ids=", paste0(areas, collapse = ","))
   }
-
-  # columns
+  
   if (!identical(select, "")) {
     columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
   }
@@ -363,6 +356,38 @@
                     )
 
   return(api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies"))
+}
+
+
+.download_and_format_api_get_aggregate_areas_result <- function(areas, timeStep, query_file, select, mcYears, opts) {
+  
+  download_id <- .api_get_aggregate_areas(areas = areas,
+                                          timeStep = timeStep,
+                                          query_file = query_file,
+                                          select = select,
+                                          mcYears = mcYears,
+                                          opts = opts
+                                         )
+  res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
+  .format_api_aggregate_result(res)
+}
+
+
+.download_and_format_api_get_aggregate_areas_result_bulk <- function(areas, timeStep, query_file, select, mcYears, number_of_batches, opts) {
+  
+  if (is.null(mcYears)) {
+    res <- .download_and_format_api_get_aggregate_areas_result(areas = areas, timeStep = timeStep, query_file = query_file, select = select, mcYears = mcYears, opts = opts)
+  } else {
+    batches <- split(mcYears, sort(mcYears%%number_of_batches))
+    lst_res <- lapply(names(batches),
+                      FUN = function(id_batch) {
+                        .download_and_format_api_get_aggregate_areas_result(areas = areas, timeStep = timeStep, query_file = query_file, select = select, mcYears = batches[[id_batch]], opts = opts)
+                      }
+                    )
+    res <- do.call("rbind", lst_res)
+  }
+  
+  return(res)
 }
 
 
@@ -512,23 +537,21 @@
 #' @noRd
 #'
 .importOutputForClusters_wo_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                     showProgress, opts, parallel){
+                                     showProgress, opts, parallel, number_of_batches){
 
   if (is_api_study(opts)) {
 
     if (is.null(areas)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = timeStep,
-                                            query_file = "details",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                            )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
-    .format_api_aggregate_result(res)
+    .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                             timeStep = timeStep,
+                                                             query_file = "details",
+                                                             select = select,
+                                                             mcYears = mcYears,
+                                                             number_of_batches = number_of_batches,
+                                                             opts = opts
+                                                             )
   } else {
     reshapeFun <- function(x){
       .reshape_details_file(x,file_type="details",opts=opts)
@@ -550,23 +573,21 @@
 #' @noRd
 #'
 .importOutputForClusters_wo_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                                   showProgress, opts, reshapeFun, parallel) {
+                                                   showProgress, opts, reshapeFun, parallel, number_of_batches) {
 
   if (is_api_study(opts)) {
 
     if (is.null(areas)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = timeStep,
-                                            query_file = "details",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                           )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
-    res <- .format_api_aggregate_result(res)
+    res <- .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                                    timeStep = timeStep,
+                                                                    query_file = "details",
+                                                                    select = select,
+                                                                    mcYears = mcYears,
+                                                                    number_of_batches = number_of_batches,
+                                                                    opts = opts
+                                                                    )
   } else {
     res <- suppressWarnings(
       suppressWarnings(
@@ -589,7 +610,7 @@
 #' @noRd
 #'
 .importOutputForClusters_w_modulation <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                                  showProgress, opts, reshapeFun, parallel, mod, clusterDesc) {
+                                                  showProgress, opts, reshapeFun, parallel, mod, clusterDesc, number_of_batches) {
   if (timeStep != "hourly") {
     warning('Hourly data will be imported to compute partial must run min(production_t, capacity * minGenModulation_t). These data will be aggregated at the desired `timeStep`. ')
 
@@ -628,16 +649,14 @@
     if (is.null(areas)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = "hourly",
-                                            query_file = "details",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                            )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts) 
-    res <- .format_api_aggregate_result(res)
+    res <- .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                                    timeStep = timeStep,
+                                                                    query_file = "details",
+                                                                    select = select,
+                                                                    mcYears = mcYears,
+                                                                    number_of_batches = number_of_batches,
+                                                                    opts = opts
+                                                                    )
     mustRunPartial <- mod[J(res$area, res$cluster, res$timeId), mustRunPartial]
     res[, mustRunPartial := pmin(production, mustRunPartial)]
     res <- changeTimeStep(res, timeStep, "hourly", fun = "sum", opts = opts)
@@ -670,7 +689,7 @@
 #' @noRd
 #'
 .importOutputForClusters_w_mustrun <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                               showProgress, opts, parallel) {
+                                               showProgress, opts, parallel, number_of_batches) {
 
   reshapeFun <- function(x){
     .reshape_details_file(x,file_type="details",opts=opts)
@@ -710,10 +729,10 @@
   # Should we compute the partial must run ?
   if (is.null(mod$minGenModulation) || all(is.na(mod$minGenModulation) | mod$minGenModulation == 0)) {
     # We should not \o/
-    res <- .importOutputForClusters_wo_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel)
+    res <- .importOutputForClusters_wo_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel, number_of_batches = number_of_batches)
   } else {
     # Worst case ! We have to !
-    res <- .importOutputForClusters_w_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel, mod, clusterDesc)
+    res <- .importOutputForClusters_w_modulation(areas, timeStep, select, mcYears, showProgress, opts, reshapeFun, parallel, mod, clusterDesc, number_of_batches = number_of_batches)
   }
 
   .mergeByRef(res, clusterDesc[,.(area, cluster, must.run, min.stable.power)])
@@ -747,14 +766,14 @@
 #' @noRd
 #'
 .importOutputForClusters <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                     showProgress, opts, mustRun = FALSE, parallel) {
+                                     showProgress, opts, mustRun = FALSE, parallel, number_of_batches) {
 
   if (!mustRun) {
     .importOutputForClusters_wo_mustrun(areas = areas, timeStep = timeStep, select = select, mcYears = mcYears,
-                                       showProgress = showProgress, opts = opts, parallel = parallel)
+                                       showProgress = showProgress, opts = opts, parallel = parallel, number_of_batches = number_of_batches)
   } else {
     .importOutputForClusters_w_mustrun(areas = areas, timeStep = timeStep, select = select, mcYears = mcYears,
-                                       showProgress = showProgress, opts = opts, parallel = parallel)
+                                       showProgress = showProgress, opts = opts, parallel = parallel, number_of_batches = number_of_batches)
   }
 }
 
@@ -810,23 +829,21 @@
 #' @noRd
 #'
 .importOutputForResClusters <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                        showProgress, opts, parallel) {
+                                        showProgress, opts, parallel, number_of_batches) {
 
   if (is_api_study(opts)) {
 
     if (is.null(areas)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = timeStep,
-                                            query_file = "details-res",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                           )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
-    .format_api_aggregate_result(res)
+    .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                             timeStep = timeStep,
+                                                             query_file = "details-res",
+                                                             select = select,
+                                                             mcYears = mcYears,
+                                                             number_of_batches = number_of_batches,
+                                                             opts = opts
+                                                             )
   } else {
     reshapeFun <- function(x) {
       .reshape_details_file(x,file_type="details-res",opts=opts)
@@ -851,23 +868,21 @@
 #' @noRd
 #'
 .importOutputForSTClusters <- function(areas, timeStep, select = NULL, mcYears = NULL,
-                                        showProgress, opts, parallel) {
+                                        showProgress, opts, parallel, number_of_batches) {
 
   if (is_api_study(opts)) {
 
     if (is.null(areas)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_areas(areas = areas,
-                                            timeStep = timeStep,
-                                            query_file = "details-STstorage",
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                           )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts)  
-    .format_api_aggregate_result(res)
+    .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
+                                                             timeStep = timeStep,
+                                                             query_file = "details-STstorage",
+                                                             select = select,
+                                                             mcYears = mcYears,
+                                                             number_of_batches = number_of_batches,
+                                                             opts = opts
+                                                             )
   } else {
     reshapeFun <- function(x) {
       .reshape_details_file(x,file_type="details-STstorage",opts=opts)
@@ -1051,22 +1066,20 @@
 #' @noRd
 #'
 .importOutputForLinks <- function(links, timeStep, select = NULL, mcYears = NULL,
-                                  showProgress, opts, parallel) {
+                                  showProgress, opts, parallel, number_of_batches) {
 
   if (is_api_study(opts)) {
 
     if (is.null(links)) {
       return (NULL)
     }
-
-    download_id <- .api_get_aggregate_links(links = links,
-                                            timeStep = timeStep,
-                                            select = select,
-                                            mcYears = mcYears,
-                                            opts = opts
-                                           )
-    res <- .download_api_aggregate_result(download_id = download_id, opts = opts) 
-    .format_api_aggregate_result(res)
+    .download_and_format_api_get_aggregate_links_result_bulk(links = links,
+                                                             timeStep = timeStep,
+                                                             select = select,
+                                                             mcYears = mcYears,
+                                                             number_of_batches = number_of_batches,
+                                                             opts = opts
+                                                             )
   } else {
     suppressWarnings(
       .importOutput("links", "values", "link", links, timeStep, select,
@@ -1118,6 +1131,36 @@
   return(api_get(opts = opts, endpoint = endpoint, default_endpoint = "v1/studies"))
 }
 
+
+.download_and_format_api_get_aggregate_links_result <- function(links, timeStep, select, mcYears, opts) {
+  
+  download_id <- .api_get_aggregate_links(links = links,
+                                          timeStep = timeStep,
+                                          select = select,
+                                          mcYears = mcYears,
+                                          opts = opts
+                                         )
+  res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
+  .format_api_aggregate_result(res)
+}
+
+
+.download_and_format_api_get_aggregate_links_result_bulk <- function(links, timeStep, select, mcYears, number_of_batches, opts) {
+  
+  if (is.null(mcYears)) {
+    res <- .download_and_format_api_get_aggregate_links_result(links = links, timeStep = timeStep, select = select, mcYears = mcYears, opts = opts)
+  } else {
+    batches <- split(mcYears, sort(mcYears%%number_of_batches))
+    lst_res <- lapply(names(batches),
+                      FUN = function(id_batch) {
+                        .download_and_format_api_get_aggregate_links_result(links = links, timeStep = timeStep, select = select, mcYears = batches[[id_batch]], opts = opts)
+                      }
+                    )
+    res <- do.call("rbind", lst_res)
+  }
+  
+  return(res)
+}
 
 # The two following functions read input time series that are eventually
 # stored in output and rebuild the actual time series used in each Monte-Carlo

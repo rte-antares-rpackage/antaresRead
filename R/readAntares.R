@@ -153,6 +153,9 @@
 #'   be the same length as the vector provided in the \code{mcYear} parameter. The function
 #'   \code{readAntares} will then return the weighted synthetic results for the specified years,
 #'   with the specified weights.
+#' @param number_of_batches
+#'   In API mode, to read the results for individual mcYears, you can choose the number
+#'   of batches you want.
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPath}}
@@ -226,6 +229,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         mcYears = NULL,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         mcWeights = NULL,
+                        number_of_batches = 10,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
@@ -283,6 +287,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
+  if (is_api_study(opts) & !is.null(mcYears)) {
+    if (mcYears == "all") {
+      nb_years <- length(opts[["mcYears"]])
+    } else {
+      nb_years <- length(mcYears)
+    }
+    if (number_of_batches >= nb_years) {
+      number_of_batches <- nb_years
+      cat(number_of_batches)
+    }
+  }
   # if(isH5Opts(opts)){
   #   
   #   if(.requireRhdf5_Antares(stopP = FALSE)){
@@ -473,12 +488,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, 
                                      mcYears, showProgress, opts,
-                                     parallel = parallel)
+                                     parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$areas) && nrow(res$areas) == 0) res$areas <- NULL
   
   res$links <- .importOutputForLinks(links, timeStep, select$links, 
                                      mcYears, showProgress, opts,
-                                     parallel = parallel)
+                                     parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$links) && nrow(res$links) == 0) res$links <- NULL
   
   res$districts <- .importOutputForDistricts(districts, timeStep, 
@@ -504,13 +519,13 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Import renewable clusters
   res$clustersRes <- .importOutputForResClusters(clustersRes, timeStep, NULL, 
                                                  mcYears, showProgress, 
-                                                 opts, parallel = parallel)
+                                                 opts, parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$clustersRes) && nrow(res$clustersRes) == 0) res$clustersRes <- NULL
   
   # Import short-term clusters
   res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, NULL, 
                                                  mcYears, showProgress, 
-                                                 opts, parallel = parallel)
+                                                 opts, parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$clustersST) && nrow(res$clustersST) == 0) res$clustersST <- NULL
   
   # Import thermal clusters and eventually must run
@@ -522,7 +537,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                              showProgress = showProgress,
                                              opts = opts,
                                              mustRun = FALSE,
-                                             parallel = parallel)
+                                             parallel = parallel,
+                                             number_of_batches = number_of_batches)
     if(!is.null(res$clusters) && nrow(res$clusters) == 0) res$clusters <- NULL
     
   } else {
@@ -544,7 +560,8 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                                showProgress = showProgress,
                                                opts = opts,
                                                mustRun = TRUE,
-                                               parallel = parallel
+                                               parallel = parallel,
+                                               number_of_batches = number_of_batches
                                                )
       if (!is.null(res$areas)) {
         tmp <- copy(res$clusters)
