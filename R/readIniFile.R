@@ -58,37 +58,46 @@ readIni <- function(pathIni, opts = antaresRead::simOptions(), default_ext = ".i
 #' @export
 #' @rdname read-ini
 readIniFile <- function(file, stringsAsFactors = FALSE) {
+  
   X <- readLines(file)
   sections <- grep("^\\[.*\\]$", X)
   starts <- sections + 1
   ends <- c(sections[-1] - 1, length(X))
   L <- vector(mode = "list", length = length(sections))
   names(L) <- gsub("\\[|\\]", "", X[sections])
+  
   for(i in seq(along = sections)) {
+  
     if (starts[i] >= ends[i]) next
+    
     pairs <- X[seq(starts[i], ends[i])]
     pairs <- pairs[pairs != ""]
     pairs <- strsplit(pairs, "=")
-
+    
     key <- lapply(pairs, `[`, 1)
     key <- unlist(key)
     key <- trimws(key)
-
+    
     value <- lapply(pairs, `[`, 2)
     value <- as.list(trimws(unlist(value)))
-    value <- lapply(value, function(x) {
+    value <- lapply(value, function(x){
       if (tolower(x) %in% c("true", "false")) {
         tolower(x) == "true"
+      } else if(!identical(grep(pattern = "^[0-9]+(e|i)$", x = x), integer(0))) {
+        # Not convert those type of values : 789e or 789i (complex number)
+        as.character(x)
       } else {
         utils::type.convert(x, as.is = TRUE)
       }
-    })
-
+    }
+  )
+    
     L[[i]] <- value
     names(L[[i]]) <- key
   }
   L
 }
+
 
 #' @param study_id Study's identifier.
 #' @param path Path of configuration object to read.
@@ -131,15 +140,17 @@ readIniAPI <- function(study_id, path, host, token = NULL) {
     if(is.name(x[index_list]))
       return(x)
     else{
-      elements <- unlist(x[index_list], use.names = FALSE)
-      if(class(elements)%in%"character"){
-        elements <- paste("'", elements, "'", sep="", collapse=",")
-        elements <- paste0("[", elements, "]")
-      }else{
-        elements <- paste0(elements, collapse= ",")
-        elements <- paste0("[", elements, "]")
+      for (sub_list in index_list){
+        elements <- unlist(x[sub_list], use.names = FALSE)
+        if(class(elements)%in%"character"){
+          elements <- paste("'", elements, "'", sep="", collapse=",")
+          elements <- paste0("[", elements, "]")
+        }else{
+          elements <- paste0(elements, collapse= ",")
+          elements <- paste0("[", elements, "]")
+        }
+        x[sub_list] <- elements
       }
-      x[index_list] <- elements
       x
     }
   })

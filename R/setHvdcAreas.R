@@ -10,7 +10,8 @@
 #' 
 #' 
 #' 
-#' @return A list with three elements:
+#' @return  Object of class "antaresDataList" is returned. 
+#' It is a list of data.tables, each element representing one type of element (areas, links, clusters)
 #' 
 #' 
 #' @examples

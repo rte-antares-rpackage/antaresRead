@@ -1,14 +1,11 @@
 #Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# v710----
+# >= v710----
 context("Function readInputTS")
 sapply(studyPathS, function(studyPath){
   
 opts <- setSimulationPath(studyPath)
-
-
-if(!isH5Opts(opts)){
 
 test_that("Load importation works", {
   input <- readInputTS(load = "all", showProgress = FALSE)
@@ -122,14 +119,13 @@ test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax"
   
 })
 
-}
 })
 
-
-# v860----
-
-path_study_test <- grep(pattern = "86", x = studyPathSV8, value = TRUE)
+# read latest version study
+path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
 opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
+
+# >= v860----
 
 test_that("readInputTs mingen file v860", {
   
@@ -160,3 +156,66 @@ test_that("readInputTs mingen file v860", {
   
 })
 
+# >= v920----
+# mock study
+areas <- c("fr", "be")
+
+opts <- list(
+  "inputPath" = tempdir(),
+  "typeLoad"= "txt",
+  "areasWithSTClusters" = areas,
+  "timeIdMin" = 1,
+  "timeIdMax" = 8736,
+  "antaresVersion" = 920
+)
+
+# TS are read in "input/st-storage/series/{areas}/{cluster_name}"
+  # NO RHS, only ratio values {0;1} and dim (n=8760, p=1)
+list_value_920 <- c("cost-injection", 
+                   "cost-withdrawal", 
+                   "cost-level", 
+                   "cost-variation-injection", 
+                   "cost-variation-withdrawal")
+
+list_value_920txt <-  paste0(list_value_920, 
+                          ".txt")
+
+# add_prefix = FALSE 
+name_cluster <- "my_clust"
+
+path_ts <- file.path(opts$inputPath, 
+                     "st-storage",
+                     "series",
+                     areas, 
+                     name_cluster)
+
+path_ts <- lapply(path_ts, 
+                  file.path, 
+                  list_value_920txt)
+
+path_ts <- unlist(path_ts)
+
+ts_values <- matrix(0.7, 8760)
+
+# create dir with properties
+dir_path <- file.path(tempdir(), "st-storage", "series", areas, name_cluster)
+lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
+
+# write matrix/series 
+lapply(path_ts, function(x){
+  write.table(x = ts_values, 
+              file = x, 
+              row.names = FALSE, 
+              col.names = FALSE)
+})
+
+test_that("st-storage importation works", {
+  input <- readInputTS(st_storage = "all", 
+                       showProgress = FALSE, 
+                       opts = opts)
+  expect_is(input, "antaresDataTable")
+  expect_gt(nrow(input), 0)
+  expect_equal(nrow(input) %% (24 * 7 * 52), 0)
+  expect_true(all(
+    list_value_920 %in% unique(input$name_file)))
+})

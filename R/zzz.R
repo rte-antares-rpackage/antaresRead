@@ -11,13 +11,14 @@
 #' @importFrom utils untar
 #' @importFrom stringr str_match str_replace
 
-# private variables ----
 
+# private variables ----
 # Private variables accessible only by functions from the package
 
 pkgEnv <- new.env()
 
 
+## output variables ----
 pkgEnv$formatName <- read.table(system.file("format_output/tableOutput.csv", package = "antaresRead"),
                                 sep = ";", header = TRUE)
 
@@ -88,6 +89,7 @@ setAlias("nostat", "All variables except summary variable (MIN, MAX and STD)",
            "FLOW QUAD.", "CONG. FEE (ALG.)", "CONG. FEE (ABS.)", "MARG. COST",
            "CONG. PROB +", "CONG. PROB -", "HURDLE COST"))
 
+## global vars package ----
 # The goal of the following lines is only to remove many useless warnings in
 # R CMD CHECK: "no visible binding for global variable 'XXX'".
 # They come from the use of the data.table syntax.
@@ -103,36 +105,38 @@ utils::globalVariables(
     "pumpingCapacity", "pumpingCapacity.x", "pumpingCapacity.y", "rarea",
     "storageCapacity", "storageCapacity.x", "storageCapacity.y", "toDistrict",
     "transCapacityDirect", "transCapacityIndirect", "varea", "x", "y",
-    "NODU", "min.stable.power", "thermalPmin", "name", "value",
+    "NODU", "min.stable.power", 'Category', 'Version.Antares', 'Type',
+    "thermalPmin", "name", "value", "Tech.Name", '..format_field',
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
-    "MRG. PRICE", "H. LEV", "V2", "V1")
+    "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC",
+    "DETAILS_FILES_TYPE","ANTARES_DISPLAYED_NAME")
 )
 
 ## thematic ----
-data_thematic <- read.table(system.file("variables_selection/variables_thematic_by_version.csv", 
+data_thematic <- read.table(system.file("variables_selection/variables_thematic_by_version.csv",
                                         package = "antaresRead"),
-                            sep = ";", 
-                            header = TRUE, 
+                            sep = ";",
+                            header = TRUE,
                             na.strings = c("NA","NaN", ""))
 
   # ref versions
 start_vers <- 8.0
 end_vers <- 8.6
-dot_values_vers <- seq(from = start_vers, to = end_vers, 
+dot_values_vers <- seq(from = start_vers, to = end_vers,
                        by = 0.1)
 start_vers <- 800
 end_vers <- 860
-version <- seq(from = start_vers, to = end_vers, 
+version <- seq(from = start_vers, to = end_vers,
                by = 10)
-ref_columns <- data.frame(version_dot= dot_values_vers, 
+ref_columns <- data.frame(version_dot= dot_values_vers,
                           version= version)
 
   # rename columns
-pattern_search <- paste(format(ref_columns$version_dot, digits = 2), 
+pattern_search <- paste(format(ref_columns$version_dot, digits = 2),
                         collapse="|")
 
-new_columns_names <- sapply(format(ref_columns$version_dot, 
+new_columns_names <- sapply(format(ref_columns$version_dot,
                                    digits = 2), function(x){
   index <- grep(x, x = names(data_thematic))
   as.character(ref_columns$version[index])
@@ -142,163 +146,26 @@ names(data_thematic) <- new_columns_names
 
   # convert to long format
 setDT(data_thematic)
-data_thematic = melt(data_thematic,   
+data_thematic = melt(data_thematic,
                      measure.vars = names(data_thematic),
                      na.rm = TRUE, variable.factor = FALSE)
 names(data_thematic) <- c("version", "variable")
 pkgEnv$thematic <- data_thematic
 
-#-----------------------------  HDF5 ------------------------------------#
+## INPUT Properties REF ----
+cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv",
+                                              package = "antaresRead"),
+                                  sep = ";",
+                                  header = TRUE)
 
-
-is.installed <- function(mypkg) is.element(mypkg, utils::installed.packages()[,1])
-
-rhdf5_version <- "2.24.0"
-rhdf5_message <- "This function require 'rhdf5' (>= 2.24.0) package.
-         This is a bioconductor package. You can install it with :
-         source('https://bioconductor.org/biocLite.R')
-         biocLite('rhdf5')"
-
-# !! parameter versionCheck of requireNamespace does not work correctly, use utils::package_version instead
-.requireRhdf5_Antares <- function(stopP = TRUE){
-  if(.check_rhdf5(stopP = stopP)){
-    if(.check_rhdf5_version(stopP = stopP)){
-      return(TRUE)
-    }
-  }
-  return(FALSE)
-}
-
-.stop_rhdf5_version <- function(stopP = TRUE) {
-  if(stopP){
-    stop(rhdf5_message)
-  }else{
-    return(FALSE)
-  }
-}
-
-.check_rhdf5 <- function(stopP = TRUE){
-  if(requireNamespace("rhdf5", quietly = TRUE)){
-    return(TRUE)
-  }else{
-    .stop_rhdf5_version(stopP)
-  }
-}
-
-.check_rhdf5_version <- function(stopP = TRUE){
-  if(utils::packageVersion("rhdf5") >= rhdf5_version){
-    return(TRUE)
-  }else{
-    .stop_rhdf5_version(stopP)
-  }
-}
-
-# .addClassAndAttributes <- antaresRead:::.addClassAndAttributes
-
-pkgEnvAntareasH5 <- new.env()
-
-pkgEnvAntareasH5$varAreas <- c("OV. COST", "OP. COST", "MRG. PRICE", "CO2 EMIS.", "BALANCE",
-                               "ROW BAL.", "PSP", "MISC. NDG",  "LOAD", "H. ROR", "WIND", "SOLAR",
-                               "NUCLEAR", "LIGNITE", "COAL", "GAS", "OIL", "MIX. FUEL", "MISC. DTG",
-                               "H. STOR", "UNSP. ENRG", "SPIL. ENRG", "LOLD", "LOLP", "AVL DTG",
-                               "DTG MRG", "MAX MRG", "NP COST", "NODU")
-
-pkgEnvAntareasH5$varAreas <- as.vector(sapply(pkgEnvAntareasH5$varAreas, function(X){paste0(X, c("", "_min", "_max", "_std"))}))
-
-pkgEnvAntareasH5$varDistricts <- pkgEnvAntareasH5$varAreas
-
-pkgEnvAntareasH5$varLinks <- c("FLOW LIN.", "UCAP LIN.", "FLOW QUAD.",
-                               "CONG. FEE (ALG.)", "CONG. FEE (ABS.)",
-                               "MARG. COST", "CONG. PROB +", "CONG. PROB -", "HURDLE COST")
-
-pkgEnvAntareasH5$varLinks <- as.vector(sapply(pkgEnvAntareasH5$varLinks, function(X){paste0(X, c("", "_min", "_max", "_std"))}))
-
-pkgEnvAntareasH5$varClusters <- c("production", "NP Cost", "NODU")
-
-pkgEnvAntareasH5$varAliasCreated <- list()
-
-
-#misc
-pkgEnvAntareasH5$varAliasCreated$misc$areas <- c("CHP",
-                                                 "Bio_mass",
-                                                 "Bio_gas",
-                                                 "mustRunWasteTotal",
-                                                 "GeoThermal",
-                                                 "Other",
-                                                 "PSP_input",
-                                                 "ROW_Balance")
-
-pkgEnvAntareasH5$varAliasCreated$misc$districts <- c("CHP",
-                                                     "Bio_mass",
-                                                     "Bio_gas",
-                                                     "mustRunWasteTotal",
-                                                     "GeoThermal",
-                                                     "Other",
-                                                     "PSP_input",
-                                                     "ROW_Balance")
-#thermalAvailabilities
-pkgEnvAntareasH5$varAliasCreated$thermalAvailabilities$clusters <- c("thermalAvailability",
-                                                                     "availableUnits")
-
-
-#hydroStorage
-pkgEnvAntareasH5$varAliasCreated$hydroStorage$areas <- c("hydroStorage")
-
-pkgEnvAntareasH5$varAliasCreated$hydroStorage$districts <- c("hydroStorage")
-
-#hydroStorageMaxPower
-pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$areas <- c("hstorPMaxLow",
-                                                                 "hstorPMaxAvg",
-                                                                 "hstorPMaxHigh")
-
-pkgEnvAntareasH5$varAliasCreated$hydroStorageMaxPower$districts <- c("hstorPMaxLow",
-                                                                     "hstorPMaxAvg",
-                                                                     "hstorPMaxHigh")
-
-#reserve
-pkgEnvAntareasH5$varAliasCreated$reserve$areas <- c("primaryRes",
-                                                    "strategicRes",
-                                                    "DSM",
-                                                    "dayAhead")
-
-pkgEnvAntareasH5$varAliasCreated$reserve$districts <- c("primaryRes",
-                                                        "strategicRes",
-                                                        "DSM",
-                                                        "dayAhead")
-
-#linkCapacity
-pkgEnvAntareasH5$varAliasCreated$linkCapacity$links <- c("transCapacityDirect",
-                                                         "transCapacityIndirect",
-                                                         "impedances",
-                                                         "hurdlesCostDirect",
-                                                         "hurdlesCostIndirect")
-
-#mustRun
-pkgEnvAntareasH5$varAliasCreated$mustRun$areas <- c("thermalPmin",
-                                                    "mustRun",
-                                                    "mustRunPartial",
-                                                    "mustRunTotal")
-
-pkgEnvAntareasH5$varAliasCreated$mustRun$districts <- c("thermalPmin",
-                                                        "mustRun",
-                                                        "mustRunPartial",
-                                                        "mustRunTotal")
-
-pkgEnvAntareasH5$varAliasCreated$mustRun$clusters <- c("thermalPmin",
-                                                       "mustRun",
-                                                       "mustRunPartial",
-                                                       "mustRunTotal")
-
-pkgEnvAntareasH5$varAliasCreated$thermalModulation$clusters <- c("marginalCostModulation",
-                                                                 "marketBidModulation",
-                                                                 "capacityModulation",
-                                                                 "minGenModulation")
+# append
+pkgEnv$inputProperties <- cluster_properties
 
 integerVariable <- as.character(unique(pkgEnv$formatName$Name[which(pkgEnv$formatName$digits == 0)]))
 integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min", "_max")), 1,
                                 function(X){paste0(X, collapse = "")}))
 
-
+# some tools functions ----
 .tidymess <- function(..., prefix = " ", initial = ""){
   as.character(strwrap(..., prefix = prefix, initial = initial))
 }
@@ -327,3 +194,4 @@ integerVariable <- unlist(apply(expand.grid(integerVariable, c("", "_std", "_min
   bydistrict <- c("district", .get_by(x))
   return(bydistrict)
 }
+

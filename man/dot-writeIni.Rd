@@ -2,28 +2,28 @@
 % Please edit documentation in R/aggregateResult.R
 \name{.writeIni}
 \alias{.writeIni}
-\title{Write ini file from list obtain by antaresRead:::readIniFile and modify by user}
+\title{Write ini file from list obtain by antaresRead::readIniFile and modify by user}
 \usage{
 .writeIni(listData, pathIni, overwrite = FALSE)
 }
 \arguments{
-\item{listData}{\code{list}, modified list obtained by antaresRead:::readIniFile.}
+\item{listData}{\code{list}, modified list obtained by antaresRead::readIniFile.}
 
 \item{pathIni}{\code{Character}, Path to ini file.}
 
 \item{overwrite}{logical, should file be overwritten if already exist?}
 }
 \description{
-Write ini file from list obtain by antaresRead:::readIniFile and modify by user
+Write ini file from list obtain by antaresRead::readIniFile and modify by user
 }
 \examples{
 
 \dontrun{
 pathIni <- "D:/exemple_test/settings/generaldata.ini"
-generalSetting <- antaresRead:::readIniFile(pathIni)
+generalSetting <- antaresRead::readIniFile(pathIni)
 generalSetting$output$synthesis <- FALSE
 writeIni(generalSetting, pathIni)
 }
 
-
 }
+\keyword{internal}

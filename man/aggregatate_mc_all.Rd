@@ -37,9 +37,9 @@ aggregateResult(
 
 \item{verbose}{\code{numeric} show log in console. Defaut to 1
 \itemize{
-\item{0}{ : No log}
-\item{1}{ : Short log}
-\item{2}{ : Long log}
+\item 0 : No log
+\item 1 : Short log
+\item 2 : Long log
 }}
 
 \item{timestep}{\code{character} antares timestep}
@@ -55,6 +55,10 @@ aggregateResult(
 \item{selected}{\code{list} named list (pass to antaresRead) : list(areas = 'a', links = 'a - e')}
 
 \item{legacy}{\code{boolean} run old version of the function}
+}
+\value{
+Object \code{list} of data.tables, each element representing one type
+of element (areas, links, clusters)
 }
 \description{
 Creation of Mc_all new (only antares > V6)

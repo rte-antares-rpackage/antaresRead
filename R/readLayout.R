@@ -88,13 +88,13 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   
   stopifnot(class(opts) %in% "simOptions")
   
-  if(isH5Opts(opts)){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(h5ReadLayout(opts))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
+  # if(isH5Opts(opts)){
+  #   if(.requireRhdf5_Antares(stopP = FALSE)){
+  #     return(h5ReadLayout(opts))
+  #   } else {
+  #     stop(rhdf5_message)
+  #   }
+  # }
   
   #if there are no areas return NULL
   if(length(opts$areaList)==0 | identical(opts$areaList,"")) {

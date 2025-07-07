@@ -56,8 +56,11 @@
 #'   \item{districtList}{Vector of the available districts.}
 #'   \item{linkList}{Vector of the available links.}
 #'   \item{areasWithClusters}{Vector of areas containing clusters.}
+#'   \item{areasWithResClusters}{Vector of areas containing clusters renewable.}
+#'   \item{areasWithSTClusters}{Vector of areas containing clusters storage (>=v8.6.0).}
 #'   \item{variables}{Available variables for areas, districts and links.}
 #'   \item{parameters}{Other parameters of the simulation.}
+#'   \item{binding}{Table of time series dimensions for each group (>=v8.7.0).}
 #'   \item{timeIdMin}{
 #'     Minimum time id of the simulation. It is generally equal to one but can
 #'     be higher if working on a subperiod.
@@ -70,6 +73,7 @@
 #'   \item{firstWeekday}{First day of the week.}
 #'   \item{districtsDef}{data.table containing the specification of the districts.}
 #'   \item{energyCosts}{list containing the cost of spilled and unsupplied energy.}
+#'   \item{verbose}{`logical` default to FALSE, put to TRUE to manage diagnostic messages}
 #' 
 #' @seealso 
 #'   \code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}}, 
@@ -178,40 +182,19 @@
 #'
 #' @rdname setSimulationPath
 setSimulationPath <- function(path, simulation = NULL) {
-  
+ 
   if (missing(path)) {
     if (exists("choose.dir", getNamespace("utils"))) {
       # choose.dir is defined only on Windows
-      path <- utils::choose.dir(getwd(), "Select an Antares simulation directory")
+      path <- utils::choose.dir("./", "Select an Antares simulation directory")
       if (is.na(path)) stop("You have canceled the execution.")
     } else {
       stop("Please specify a path to an Antares simulation")
     }
   }
   
-  # Get study, simulation and input paths
-  # .h5 ?
-  if(grepl(".h5$", path)){
-    if(file.exists(path)){
-      if(.requireRhdf5_Antares(stopP = FALSE)){
-        return(setSimulationPathH5(path))
-      } else {
-        stop(rhdf5_message)
-      }
-    } else {
-      stop("Invalid path argument. File .h5 not found")
-    }
-  }
-
-  # else local file system
+  # # Get study, simulation and input paths
   res <- .getPaths(path, simulation)
-  if(res[1] == "H5"){
-    if(.requireRhdf5_Antares(stopP = FALSE)){
-      return(setSimulationPathH5(path, simulation))
-    } else {
-      stop(rhdf5_message)
-    }
-  }
   
   res$studyName <- readIniFile(file.path(res$studyPath, "study.antares"))$antares$caption
   
@@ -219,6 +202,8 @@ setSimulationPath <- function(path, simulation = NULL) {
   # the simulation folder.
   if (is.null(res$simPath)) {
     res <- append(res, .getInputOptions(res))
+    if(res$antaresVersion>=870)
+      res <- append(res, .getDimBCGroups(res))
   } else {
     res <- append(res, .getSimOptions(res))
   }
@@ -237,6 +222,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   res$districtsDef <- .readDistrictsDef(res$inputPath, res$areaList)
   res$energyCosts <- .readEnergyCosts(res$inputPath)
   res$typeLoad <- "txt"
+  res$verbose <- FALSE
   class(res) <- c("simOptions")
 
   options(antares=res)
@@ -246,8 +232,13 @@ setSimulationPath <- function(path, simulation = NULL) {
 
 .giv_sim <- function(simulation, simNames, path){
   if (is.numeric(simulation)) {
-    if (simulation > 0) sim <- simNames[simulation]
-    else sim <- rev(simNames)[abs(simulation)]
+    if(abs(simulation)>length(simNames))
+      stop(paste0("Parameter 'simulation' is greater than 
+                  the number of simulations (", length(simNames), ")"), call. = FALSE)
+    if (simulation > 0) 
+      sim <- simNames[simulation]
+    else 
+      sim <- rev(simNames)[abs(simulation)]
   } else {
     if (any(simNames == simulation)) sim <- simulation
     else {
@@ -269,6 +260,11 @@ setSimulationPath <- function(path, simulation = NULL) {
 # Private function that extracts study, simulation and input paths from the
 # path specified by the user.
 .getPaths <- function(path, simulation) {
+  # check path must be length 1
+  if(length(path)!=1)
+    stop("Only one path is required", 
+         call. = FALSE)
+  
   path <- gsub("[/\\]$", "", path)
   path <- normalizePath(path, winslash = "/")
   
@@ -287,19 +283,9 @@ setSimulationPath <- function(path, simulation = NULL) {
     # - 2. there is only one study in the output. Select it
     # - 3. asks the user to interactively choose one simulation
     
-    if (!file.exists(file.path(path, "study.antares"))){
-      allFiles <- list.files(path)
-      avaliableFile <- allFiles[grep(".h5$", allFiles)]
-      if(length(avaliableFile) == 0)
-      {
+    if (!file.exists(file.path(path, "study.antares")))
       stop("Directory is not an Antares study.")
-      }else{
-        ##H5 mode
-        return("H5")
-      }
-    }
       
-    
     outputPath <- file.path(path, "output")
     
     outputContent <- list.dirs(outputPath, recursive = FALSE)
@@ -366,6 +352,10 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
   
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  # Convert the Antares number version (from 9.0) 
+  if(antaresVersion<600 & antaresVersion>=9)
+    antaresVersion <- .transform_antares_version(antares_version = antaresVersion)
+  
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
   
   # Areas with thermal clusters
@@ -415,7 +405,8 @@ setSimulationPath <- function(path, simulation = NULL) {
   simDataPath <- switch(as.character(info$mode),
                         "draft" = "adequacy-draft",
                         "Economy" = "economy",
-                        "Adequacy" = "adequacy")
+                        "Adequacy" = "adequacy",
+                        "Expansion" = "economy")
   simDataPath <- file.path(simPath, simDataPath)
   
   # Which results are available ? Synthesis ? Monte-Carlo years ?
@@ -472,6 +463,20 @@ setSimulationPath <- function(path, simulation = NULL) {
   areasWithResClusters <- sort(union(areaList_mc_all[hasResClusters_mc_all], 
                                      areaList_mc_ind[hasResClusters_mc_ind]))
   
+  
+  # Areas containing short-term clusters
+  hasSTClusters_mc_all <- laply(file.path(dataPath_mc_all, "areas", areaList_mc_all), function(x) {
+    f <- list.files(x)
+    any(grepl("details-STstorage-", f))
+  })
+  hasSTClusters_mc_ind <- laply(file.path(dataPath_mc_ind, "areas", areaList_mc_ind), function(x) {
+    f <- list.files(x)
+    any(grepl("details-STstorage-", f))
+  })
+  
+  areasWithSTClusters <- sort(union(areaList_mc_all[hasSTClusters_mc_all], 
+                                     areaList_mc_ind[hasSTClusters_mc_ind]))
+  
   # Available variables
   variables <- list()
   
@@ -513,6 +518,7 @@ setSimulationPath <- function(path, simulation = NULL) {
     linksDef = linksDef,
     areasWithClusters = areasWithClusters,
     areasWithResClusters = areasWithResClusters,
+    areasWithSTClusters = areasWithSTClusters,
     variables = variables,
     parameters = params
   )
@@ -623,3 +629,92 @@ setSimulationPath <- function(path, simulation = NULL) {
     data.table(link = character(), from = character(), to = character())
   }
 }
+
+# >= v8.7.0 to have dimension of TS for binding constraints
+.getDimBCGroups <- function(list_options){
+  # list files
+  bc_path <- file.path(list_options$inputPath, "bindingconstraints")
+  bc_all_files <- list.files(bc_path, full.names = TRUE)
+  vector_size <- file.size(bc_all_files)
+  
+  # return NULL if no BC
+  if(sum(vector_size)==0)
+    return(NULL)
+  else{
+    # return NULL if no .txt files (no values)
+    search_values <- grepl(x = bc_all_files, pattern = ".txt")
+    if(!any(search_values))
+      return(NULL)
+    
+    # keep only values size >0
+    bc_name_values_files <- gsub('(.*)_.*',
+                                 '\\1',
+                                 grep(x = list.files(bc_path), 
+                                      pattern = ".txt", 
+                                      value = TRUE))
+    
+    df_info_files <- data.table(path = bc_all_files[search_values], 
+                                size = vector_size[search_values], 
+                                bc_name = bc_name_values_files)
+    df_info_files <- df_info_files[size>0,]
+    
+    # extract name + group from .ini properties
+    properties_group <- readIniFile(file = bc_all_files[!search_values])
+    
+    df_groups <- do.call("rbind",
+                         lapply(properties_group, function(x){
+                           data.table(x$id,
+                                      x$group)
+                           }))
+    names(df_groups)<-c("bc_name", "name_group")
+    
+    # merge information
+    df_groups <- merge(df_info_files, df_groups)
+    
+    # read + dim values files
+    res <- sapply(df_groups$path, function(x){
+      file <- data.table::fread(file = x)
+      dim(file)[2]
+    })
+    
+    df_groups$dim <- res
+    
+    # filter df with only one group with dim > 1
+    df_groups <- unique(df_groups[, c("name_group", "dim")])
+    df_groups <- df_groups[dim>1]
+    
+    return(list(binding = df_groups))
+  }
+}
+
+#' @title Convert the Antares number version
+#' @description From V9.0, system version is 9.0 (2 digit for minor) instead of 900
+#' 
+#' @param antares_version ``numeric` Antares number version.
+#'
+#' @return `numeric` value according to study version
+#' 
+#' @keywords internal
+.transform_antares_version <- function(antares_version) {
+  antares_version <- format(antares_version, nsmall = 2)
+  
+  # Split major and minor parts
+  antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
+  
+  major <- antares_version_splitted[1]
+  minor <- antares_version_splitted[2]  
+  
+  # max 1 digit for minor
+  if (nchar(minor) > 2) 
+    stop("Invalid antares_version format, good format is like '9.99'", 
+         call. = FALSE)
+  
+  # convert to numeric for package understanding
+  num_version <- round(as.numeric(antares_version)*100)
+  
+  return(num_version)
+}
+
+
+
+

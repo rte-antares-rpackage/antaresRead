@@ -8,6 +8,8 @@
 #' 
 #' @param x \code{numeric} RAM limit in Go
 #' 
+#' @return `list` (returned by [options()])
+#' 
 #' @examples
 #' \dontrun{
 #' #Set maximum ram to used to 50 Go
@@ -27,7 +29,7 @@ setRam <- function(x){
 #'
 #' @noRd
 .giveSize <- function(opts, areas = NULL, links = NULL,
-                      clusters = NULL, districts = NULL, select = NULL, mcYears = NULL,
+                      clusters = NULL, clustersST = NULL, districts = NULL, select = NULL, mcYears = NULL,
                       timeStep = "hourly", misc = FALSE, thermalAvailabilities = FALSE,
                       hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
                       linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE){
@@ -66,7 +68,7 @@ setRam <- function(x){
   }
   
   nbTid <- nbTid
-  if(is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts)){
+  if(is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersST)){
     areas <- "all"
   }
   
@@ -176,13 +178,13 @@ setRam <- function(x){
       enabled <- TRUE
       if("enabled" %in% names(clusWithData))
       {
-        clusWithData <- clusWithData[is.na(enabled)]
+        clusWithData <- clusWithData[is.na(enabled) | enabled]
       }
     }else{
       clustersS <- clusters
       if("enabled" %in% names(clusWithData))
       {
-        clusWithData <- clusWithData[is.na(enabled)]
+        clusWithData <- clusWithData[is.na(enabled) | enabled]
       }
       if("area" %in% names(clusWithData))
       {
@@ -202,6 +204,33 @@ setRam <- function(x){
   nbRowClusters <- nbTid * nbMc * nrow(clusWithData) * ( nbColcl + nbIdCols)
   clSize <- sizeObjectCl * nbRowClusters / 1024 ^2
   
-  linksSize + areasSize + disSize + clSize
+  # ST clusters size
+  clusSTWithData <- data.table()
+  if(!is.null(clustersST))
+  {
+    clusSTWithData  <- tryCatch(readClusterSTDesc(opts = opts), error = function(e) data.table())
+    if("all" %in% clustersST){
+      enabled <- TRUE
+      if("enabled" %in% names(clusSTWithData))
+      {
+        clusSTWithData <- clusSTWithData[is.na(enabled) | enabled]
+      }
+    }else{
+      clustersS <- clustersST
+      if("enabled" %in% names(clusSTWithData))
+      {
+        clusSTWithData <- clusSTWithData[is.na(enabled) | enabled]
+      }
+      if("area" %in% names(clusSTWithData))
+      {
+      clusSTWithData <- clusSTWithData[ area %in% clustersS]
+      }
+    }
+  }
+  
+  nbColclST <- 4
+  nbRowClustersST <- nbTid * nbMc * nrow(clusSTWithData) * ( nbColclST + nbIdCols)
+  clSTSize <- sizeObjectCl * nbRowClustersST / 1024 ^2
+  
+  linksSize + areasSize + disSize + clSize + clSTSize
 }
-

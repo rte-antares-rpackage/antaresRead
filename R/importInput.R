@@ -369,8 +369,13 @@
     
     data$area <- area
     data$cluster <- cl
-    data <- data[opts$timeIdMin:opts$timeIdMax]
-    data$timeId <- opts$timeIdMin:opts$timeIdMax
+    
+    # index blocks
+    a <- opts$parameters$general$simulation.start
+    b <- opts$parameters$general$simulation.end
+    
+    data <- data[a:b]
+    data$timeId <- a:b
     
     changeTimeStep(data, timeStep, "daily", fun = "mean")
   })
@@ -428,7 +433,7 @@
 # }
 
 
-# "st-storage" (v860)
+# "st-storage" (>=v860)
 .importSTStorage <- function(area, timeStep, opts, ...){
 
   if (!area %in% opts$areasWithSTClusters) 
@@ -441,7 +446,8 @@
                 area)
       )
     
-    # "st-storage" have 5 txt files output for each cluster
+    # "st-storage" have 5 txt files output for each cluster (v860)
+      # + new optional TS (v920)
     list_names_txt_files <- unique(
       list.files(
         file.path(opts$inputPath,  

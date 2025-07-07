@@ -1,15 +1,166 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 2.6.1 (devlopment)
+# antaresRead 2.9.2.9000
+(cf. Antares v9.2 changelog)
 
-NEW FEATURES :  
+NEW FEATURES :
+
+* `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
+* `readInputTS()` read new optional time Series (5 time series)
+* `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`
+
+BUGFIXES :
+
+* `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
+* `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
+* `.getSimOptions()` : add `Expansion` mode to compute `simDataPath` value 
+
+REVDEP (temporary) : 
+
+✔ antaresEditObject 0.9.0 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresProcessing 0.18.3 ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3 ── E: 0     | W: 0     | N: 0 
+
+DOC :  
+
+* pkgdown site updated to bootsrap 5
+
+
+# antaresRead 2.9.1 (NOT CRAN)
+
+NEW FEATURES:  
+ 
+* `readBindingConstraints()` : has a new parameter `'with_time_series'` (default to `TRUE`) to enable or disable the time series reading (optimization)
+
+BUGFIXES :  
+ 
+* `api_get() / api_post () / api_put() / api_delete()` : treat case when default_endpoint provided is empty  
+* `setSimulationPathAPI()` : The version number returned for a study >= 9.2 (9.2*100) is in fact considered by R as <920 with a precision of `-1.136868e-13`. This falsifies the version number checks (atypical error depending on machine precision, see R doc `?double`)
+ 
+BREAKING CHANGES :  
+ 
+* `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web.
+
+
+# antaresRead 2.9.0
+
+NEW FEATURES:  
+
+* `setSimulationPathAPI()` : reads and returns the new converted study version format (ex : 9.0 => 900)
+* `setSimulationPath()` / `setSimulationPathAPI()` have a new parameter `'verbose'` (default to `FALSE`) to manage diagnostic messages
+
 
 BUGFIXES :  
 
-* `setSimulationPathAPI()` error message with bad id
-* correction in `readClusterDesc()` calls to add "opts"
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+* `api_get()` : add warn_for_status in importFrom section
+* `readAntares()` : In disk mode, return all the available columns for a short-term storage output and match the column with the content
+* `.importOutput()` : check if output file exists in API mode (`.check_output_files_existence()`)
+* `.giveSize()` : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters 
 
+BREAKING CHANGES :  
+
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` have a new parameter (`dot_format = TRUE`) to return two format to display input cluster properties
+
+GITHUB ACTIONS :  
+
+* Actions artifacts v3 is closing down, update to v4  
+* test-coverage.yaml updated 
+
+
+
+# antaresRead 2.7.2
+
+NEW FEATURES:
+
+* New function `readAntaresSTClusters()`
+* `fread_antares()` shiny compatible with a conditional processing of the error messages
+
+BREAKING CHANGES :
+
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` are updated with new endpoint "table mode".  
+  - In "text" mode, functions return all properties (with default properties) according to study version.
+
+BUGFIXES :  
+
+* `setSimulationPathAPI()`: control the existence of the output folder **links** or **areas** before reading the data (upgrade Antares Web)
+* `readClusterDesc()` / `readClusterResDesc()` / `readClusterSTDesc()` return a data.table in API mode
+* `setSimulationPathAPI()` : encode URL before reading the data in simulation mode
+
+
+# antaresRead 2.7.1 
+
+NEW FEATURES:
+
+* `readInputThermal()` :
+    - new parameter **areas** to get desired clusters from selected areas.
+    - new parameter **thermalAvailabilities** to import time series.  
+* `readInputRES()` new parameter **areas** to get desired clusters from selected areas.
+* `setSimulationPath()` return a new parameter `binding` (for studies >= v8.7.0). 
+It contains a table with group dimensions of time series for binding constraints.
+* `readAntares()` new parameter **clustersST** to read (output simulation) short-term clusters
+
+BREAKING CHANGES :
+
+* `readInputThermal()` / `readInputRES()` default value when no time series in the selected clusters.
+
+BUGFIXES :  
+
+* `readInputThermal()` return data from file data.txt with `thermalData` parameter
+* `setSimulationPath()` has also the parameter **areasWithSTClusters** in 'output' mode
+
+
+# antaresRead 2.7.0
+
+### Breaking changes (Antares v8.7.0) : 
+
+* `readBindingConstraints()` read now Scenarized RHS for binding constraints (cf. Antares v8.7 changelog)
+  - function returns a new list structure
+* Private function `fread_antares()` no longer returns warnings  
+* `api_put()/api_delete()` return a server error message 
+
+BUGFIXES :  
+
+* `readBindingConstraints()` read well study >= v8.3.2
+
+DATA : 
+
+* A test study in tar.gz format is available in version v8.7.0  
+* An empty test study in version v8.7.0 for marginal cases 
+
+Dependencies :  
+
+* New package `lifecycle` to manage functions status/package status
+
+
+
+# antaresRead 2.6.2 
+
+BUGFIXES :
+* `readIniFile()` : avoid `utils::type.convert` on specific cases (ex : 789e or 123i) 
+* `api_get()` add encoding argument to pass to `httr::content()`
+
+
+# antaresRead 2.6.1
+
+BUGFIXES :  
+
+* `setSimulationPathAPI()` :  
+  - returns an API exception if the requested study ID is incorrect 
+  - `simulation` the simulation parameter works with negative values within the limit of the number of simulations
+* correction in `readClusterDesc()` calls to add "opts"
+* `readAntares()` :  
+  - returns the right column names for details-timeStep.txt and details-res-timeStep.txt 
+* Correction in `.formatlist()`, read N-level list instead of 2.
+
+BREAKING CHANGES :  
+
+* `api_get()` has a new parameter to control JSON file parsing
+* `readInputThermal()` default value when no time series in the selected clusters.
+* `readInputRES()` default value when no time series in the selected clusters
+* `readClusterDesc()`/ `readClusterRESDesc()` / `readClusterSTDesc()` 
+return empty dataTable and warning if no cluster in Antares study.
 
 # antaresRead 2.6.0
 
@@ -23,7 +174,7 @@ BREAKING CHANGES (Antares v8.6) :
 * `readInputTS()` is now compatible to read time series with :  
   - "short-term storage"  
   - "mingen" (pmin hydro value)
-* `setSimulationPath()` has new parameter `areasWithSTClusters` (name of area with "st-storage" cluster)
+* `setSimulationPath()` has new parameter **areasWithSTClusters** (name of area with "st-storage" cluster)
 
 
 BUGFIXES : 

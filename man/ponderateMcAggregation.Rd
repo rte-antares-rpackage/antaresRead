@@ -13,6 +13,9 @@ ponderateMcAggregation(x, fun = weighted.mean, ...)
 
 \item{...}{\code{args} others args pass to fun}
 }
+\value{
+Object of class "antaresDataTable".
+}
 \description{
 Mcyear aggregation weigthed by wd
 }
