@@ -114,43 +114,20 @@ utils::globalVariables(
 )
 
 ## thematic ----
-data_thematic <- read.table(system.file("variables_selection/variables_thematic_by_version.csv",
+ref_thematic_880 <- read.table(file = system.file("variables_selection/ref_thematic_by_version/ref_880.csv",
                                         package = "antaresRead"),
-                            sep = ";",
-                            header = TRUE,
-                            na.strings = c("NA","NaN", ""))
+                               header = TRUE,
+                               sep = ",")
 
-  # ref versions
-start_vers <- 8.0
-end_vers <- 8.6
-dot_values_vers <- seq(from = start_vers, to = end_vers,
-                       by = 0.1)
-start_vers <- 800
-end_vers <- 860
-version <- seq(from = start_vers, to = end_vers,
-               by = 10)
-ref_columns <- data.frame(version_dot= dot_values_vers,
-                          version= version)
+ref_thematic_920 <- read.table(system.file("variables_selection/ref_thematic_by_version/ref_920.csv",
+                                           package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
 
-  # rename columns
-pattern_search <- paste(format(ref_columns$version_dot, digits = 2),
-                        collapse="|")
+ref_thematic <- list("880" = ref_thematic_880,
+                     "920" = ref_thematic_920)
 
-new_columns_names <- sapply(format(ref_columns$version_dot,
-                                   digits = 2), function(x){
-  index <- grep(x, x = names(data_thematic))
-  as.character(ref_columns$version[index])
-})
-
-names(data_thematic) <- new_columns_names
-
-  # convert to long format
-setDT(data_thematic)
-data_thematic = melt(data_thematic,
-                     measure.vars = names(data_thematic),
-                     na.rm = TRUE, variable.factor = FALSE)
-names(data_thematic) <- c("version", "variable")
-pkgEnv$thematic <- data_thematic
+pkgEnv$thematic <- ref_thematic
 
 ## INPUT Properties REF ----
 cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv",
