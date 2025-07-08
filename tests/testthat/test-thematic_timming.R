@@ -1,139 +1,187 @@
-# read study  ----
-path_study_test <- grep(pattern = "study_v870", x = studyPathSV8, value = TRUE)
-opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 
-# NOTES :
-  # In this study test there is no section [selection variables]
+test_that("minimal version is v8.8", {
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 860
+  )
 
-# test_that("Empty selection variables", {
-#   # template study 860 as no section
-#
-#   # read general data [variables selection] (thematic trimming)
-#   testthat::expect_warning(
-#     getThematicTrimming(opts = opts_study_test),
-#     regexp = "`variables selection` section in file 'generaldata.ini' does not exist"
-#   )
-#   })
+  # then
+  expect_error(
+    getThematicTrimming(opts = opts)
+  )
 
-# Empty section "selection variables" ----
-test_that("read generaldata with empty [selection variables]", {
-  # read general data [variables selection]
-  read_thematic <- getThematicTrimming(opts = opts_study_test)
+})
+
+# v8.8 ----
+test_that("All variables active", {
+  # test getThematicTrimming() return all default columns according version
+
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 880
+  )
+
+  # when
+  read_thematic <- getThematicTrimming(opts = opts)
+
+  # then
+  # structure returned
+  testthat::expect_true(!is.null(read_thematic))
+  testthat::expect_true(all(names(read_thematic)%in%
+                              c("variables", "status_selection")))
 
   # check variables names according to antares version
-  antares_version <- opts_study_test$antaresVersion
-  filter_vars_version <- pkgEnv$thematic[version<=antares_version,]
+  antares_version <- as.character(opts$antaresVersion)
+  filter_vars_version <- pkgEnv$thematic[[antares_version]]
 
   # test if variables are all in output
-  testthat::expect_true(all(filter_vars_version$variable%in%
+  testthat::expect_true(all(filter_vars_version$col_name%in%
                               read_thematic$variables))
   # test status values
   testthat::expect_equal(object = unique(read_thematic$status_selection),
                          expected = "active")
 })
 
-# ADD VARIABLES ----
-test_that("read selection variables (+)", {
-    # use generaldata test file
-    # copy and paste it in study
-    # rename and paste it
-  path_file <- system.file("variables_selection/generaldata_add_var.ini",
-                           package = "antaresRead")
+test_that("All variables skiped", {
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 880,
+    parameters=list(
+      `variables selection` = list(
+        selected_vars_reset = FALSE
+      )
+    )
+  )
 
-  # copy
-  path_file_study <- file.path(opts_study_test$studyPath, "settings")
-  file.copy(from = path_file, to = path_file_study)
+  # when
+  read_thematic <- getThematicTrimming(opts = opts)
 
-  # remove
-  file.remove(file.path(path_file_study, "generaldata.ini"))
-
-  # rename
-  file.rename(from = file.path(path_file_study, "generaldata_add_var.ini"),
-              to = file.path(path_file_study, "generaldata.ini"))
-
-  # read general data [variables selection] (thematic trimming)
-  read_thematic <- getThematicTrimming(opts = opts_study_test)
-
-  # tests
-  testthat::expect_true(!is.null(read_thematic))
-  testthat::expect_true(all(names(read_thematic)%in%
-                          c("variables", "status_selection")))
-    # check variables names according to antares version
-  antares_version <- opts_study_test$antaresVersion
-  filter_vars_version <- pkgEnv$thematic[version<=antares_version,]
-
-  testthat::expect_true(all(filter_vars_version$variable%in%
-                          read_thematic$variables))
-    # check status values
-  pattern_add <- "select_var +"
-  list_var_to_add <- readIni("settings/generaldata")
-  list_var_to_add <- list_var_to_add$`variables selection`
-
-  check_pattern_add <- grepl(pattern = pattern_add,
-                             x = names(list_var_to_add))
-  var_selection <- unlist(list_var_to_add[check_pattern_add],
-                          use.names = FALSE)
-
-  check_index <- read_thematic$variables %in% var_selection
-  check_values <- read_thematic$variables[check_index]
-
-  testthat::expect_equal(check_values, var_selection)
-  testthat::expect_true(all(read_thematic[check_index,]$status_selection%in%
-                          "active"))
-
-})
-
-
-# REMOVE VARIABLES ----
-test_that("read selection variables (-)", {
-  # use generaldata test file
-  # copy and paste it in study
-  # rename and paste it
-  path_file <- system.file("variables_selection/generaldata_remove_var.ini",
-                           package = "antaresRead")
-
-  # copy
-  path_file_study <- file.path(opts_study_test$studyPath, "settings")
-  file.copy(from = path_file, to = path_file_study)
-
-  # remove
-  file.remove(file.path(path_file_study, "generaldata.ini"))
-
-  # rename
-  file.rename(from = file.path(path_file_study, "generaldata_remove_var.ini"),
-              to = file.path(path_file_study, "generaldata.ini"))
-
-  # read general data [variables selection] (thematic trimming)
-  read_thematic <- getThematicTrimming(opts = opts_study_test)
-
-  # tests
+  # then
+  # structure returned
   testthat::expect_true(!is.null(read_thematic))
   testthat::expect_true(all(names(read_thematic)%in%
                               c("variables", "status_selection")))
+
   # check variables names according to antares version
-  antares_version <- opts_study_test$antaresVersion
-  filter_vars_version <- pkgEnv$thematic[version<=antares_version,]
+  antares_version <- as.character(opts$antaresVersion)
+  filter_vars_version <- pkgEnv$thematic[[antares_version]]
 
-  testthat::expect_true(all(filter_vars_version$variable%in%
+  # test if variables are all in output
+  testthat::expect_true(all(filter_vars_version$col_name%in%
                               read_thematic$variables))
-  # check status values
-  pattern_remove <- "select_var -"
-  list_var_to_remove <- readIni("settings/generaldata")
-  list_var_to_remove <- list_var_to_remove$`variables selection`
+  # test status values
+  testthat::expect_equal(object = unique(read_thematic$status_selection),
+                         expected = "skip")
+})
 
-  check_pattern_remove <- grepl(pattern = pattern_remove,
-                                x = names(list_var_to_remove),
-                                fixed = TRUE)
-  var_selection <- unlist(list_var_to_remove[check_pattern_remove],
-                          use.names = FALSE)
+
+test_that("selection variables (+)", {
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 880,
+    parameters=list(
+      `variables selection` = list(
+        selected_vars_reset = FALSE,
+        `select_var +` = "RENW. 4",
+        `select_var +` = "DENS",
+        `select_var +` = "Profit by plant"
+      )
+    )
+  )
+
+  # when
+  read_thematic <- getThematicTrimming(opts = opts)
+
+  # then
+  # structure returned
+  testthat::expect_true(!is.null(read_thematic))
+  testthat::expect_true(all(names(read_thematic)%in%
+                              c("variables", "status_selection")))
+
+  # check variables names according to antares version
+  antares_version <- as.character(opts$antaresVersion)
+  filter_vars_version <- pkgEnv$thematic[[antares_version]]
+
+  # test if variables are all in output
+  testthat::expect_true(all(filter_vars_version$col_name%in%
+                              read_thematic$variables))
+
+  # check status values
+  index <- names(opts$parameters$`variables selection`)%in%"select_var +"
+  var_selection <- unlist(opts$parameters$`variables selection`[index], use.names = FALSE)
 
   check_index <- read_thematic$variables %in% var_selection
   check_values <- read_thematic$variables[check_index]
 
   testthat::expect_equal(check_values, var_selection)
   testthat::expect_true(all(read_thematic[check_index,]$status_selection%in%
-                          "skip"))
+                              "active"))
 })
 
-# delete study ----
-unlink(opts_study_test$studyPath, recursive = TRUE)
+
+test_that("selection variables (-)", {
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 880,
+    parameters=list(
+      `variables selection` = list(
+        selected_vars_reset = FALSE,
+        `select_var -` = "LOOP FLOW",
+        `select_var -` = "FLOW QUAD.",
+        `select_var -` = "CONG. FEE (ALG.)",
+        `select_var -` = "CONG. FEE (ABS.)"
+      )
+    )
+  )
+
+  # when
+  read_thematic <- getThematicTrimming(opts = opts)
+
+  # then
+  # structure returned
+  testthat::expect_true(!is.null(read_thematic))
+  testthat::expect_true(all(names(read_thematic)%in%
+                              c("variables", "status_selection")))
+
+  # check variables names according to antares version
+  antares_version <- as.character(opts$antaresVersion)
+  filter_vars_version <- pkgEnv$thematic[[antares_version]]
+
+  # test if variables are all in output
+  testthat::expect_true(all(filter_vars_version$col_name%in%
+                              read_thematic$variables))
+
+  # check status values
+  index <- names(opts$parameters$`variables selection`)%in%"select_var -"
+  var_selection <- unlist(opts$parameters$`variables selection`[index], use.names = FALSE)
+
+  check_index <- read_thematic$variables %in% var_selection
+  check_values <- read_thematic$variables[check_index]
+
+  testthat::expect_equal(check_values, var_selection)
+  testthat::expect_true(all(read_thematic[check_index,]$status_selection%in%
+                              "skip"))
+})
+
+
+

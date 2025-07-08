@@ -6,9 +6,11 @@
 #' `r antaresRead:::badge_api_no()`
 #'
 #'
+#'
 #' This function reads the "selection variables" section of the study's
 #' "generaldata.ini" file.
 #'
+#' Minimal version required is `v8.8`.
 #'
 #' @inheritParams readAntares
 #'
@@ -19,12 +21,11 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' # Get Thematic trimming of Antares study version >= v8.0
+#' # Get Thematic trimming of Antares study version >= v8.8
 #' getThematicTrimming()
 #' }
 getThematicTrimming <- function(opts = simOptions()){
-  stopifnot(inherits(opts, "simOptions"))
-  stopifnot(opts$antaresVersion>=800)
+  stopifnot(opts$antaresVersion>=880)
 
   ##
   # API bloc
@@ -45,20 +46,12 @@ getThematicTrimming <- function(opts = simOptions()){
   # Desktop
   ##
 
-  # read study to update opts meta data
-  suppressWarnings(
-    opts_study <- setSimulationPath(opts$studyPath,
-                                    simulation = "input")
-  )
-
-  # use private referentiel
-  ref_list_vars_thematic <- pkgEnv$thematic
-
-  # filter vars with version
-  ref_list_vars_thematic <- ref_list_vars_thematic[version<=opts_study$antaresVersion,]
+  # use private referentiel according to version
+  target_version <- as.character(opts$antaresVersion)
+  ref_list_vars_thematic <- pkgEnv$thematic[[target_version]]
 
   # thematic vars
-  vs_section <- opts_study$parameters$`variables selection`
+  vs_section <- opts$parameters$`variables selection`
 
   # case with no meta data
     # generaldata.ini has no section "[variables selection]"
@@ -70,7 +63,7 @@ getThematicTrimming <- function(opts = simOptions()){
             call. = FALSE)
 
     df_thematic <- data.frame(
-      variables = ref_list_vars_thematic$variable,
+      variables = ref_list_vars_thematic$col_name,
       status_selection = "active"
     )
 
@@ -83,7 +76,7 @@ getThematicTrimming <- function(opts = simOptions()){
     message("All variables status are 'skip'")
 
     df_thematic <- data.frame(
-      variables = ref_list_vars_thematic$variable,
+      variables = ref_list_vars_thematic$col_name,
       status_selection = "skip"
     )
 
@@ -105,10 +98,10 @@ getThematicTrimming <- function(opts = simOptions()){
     col_names <- vs_section[check_pattern_add]
     col_names <- unlist(col_names, use.names = FALSE)
 
-    check_index <- ref_list_vars_thematic$variable %in% col_names
+    check_index <- ref_list_vars_thematic$col_name %in% col_names
 
     df_thematic <- data.frame(
-      variables = ref_list_vars_thematic$variable,
+      variables = ref_list_vars_thematic$col_name,
       status_selection = ifelse(check_index, "active", "skip")
       )
     return(df_thematic)
@@ -117,10 +110,10 @@ getThematicTrimming <- function(opts = simOptions()){
     col_names <- vs_section[check_pattern_remove]
     col_names <- unlist(col_names, use.names = FALSE)
 
-    check_index <- ref_list_vars_thematic$variable %in% col_names
+    check_index <- ref_list_vars_thematic$col_name %in% col_names
 
     df_thematic <- data.frame(
-      variables = ref_list_vars_thematic$variable,
+      variables = ref_list_vars_thematic$col_name,
       status_selection = ifelse(check_index, "skip", "active")
     )
     return(df_thematic)

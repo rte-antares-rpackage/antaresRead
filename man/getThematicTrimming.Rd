@@ -22,10 +22,12 @@ getThematicTrimming(opts = simOptions())
 
 This function reads the "selection variables" section of the study's
 "generaldata.ini" file.
+
+Minimal version required is \code{v8.8}.
 }
 \examples{
 \dontrun{
-# Get Thematic trimming of Antares study version >= v8.0
+# Get Thematic trimming of Antares study version >= v8.8
 getThematicTrimming()
 }
 }
