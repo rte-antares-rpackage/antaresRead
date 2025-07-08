@@ -378,12 +378,15 @@
   if (is.null(mcYears)) {
     res <- .download_and_format_api_get_aggregate_areas_result(areas = areas, timeStep = timeStep, query_file = query_file, select = select, mcYears = mcYears, opts = opts)
   } else {
-    batches <- split(mcYears, sort(seq(mcYears)%%number_of_batches))
-    lst_res <- lapply(names(batches),
-                      FUN = function(id_batch) {
-                        .download_and_format_api_get_aggregate_areas_result(areas = areas, timeStep = timeStep, query_file = query_file, select = select, mcYears = batches[[id_batch]], opts = opts)
-                      }
-                    )
+    batches <- split_vector_in_equal_parts(x = mcYears, n = number_of_batches) 
+    lst_res <- lapply(batches,
+                      FUN = .download_and_format_api_get_aggregate_areas_result,
+                      areas = areas,
+                      timeStep = timeStep,
+                      query_file = query_file,
+                      select = select,
+                      opts = opts
+                      )
     res <- do.call("rbind", lst_res)
   }
   
@@ -1150,12 +1153,14 @@
   if (is.null(mcYears)) {
     res <- .download_and_format_api_get_aggregate_links_result(links = links, timeStep = timeStep, select = select, mcYears = mcYears, opts = opts)
   } else {
-    batches <- split(mcYears, sort(seq(mcYears)%%number_of_batches))
-    lst_res <- lapply(names(batches),
-                      FUN = function(id_batch) {
-                        .download_and_format_api_get_aggregate_links_result(links = links, timeStep = timeStep, select = select, mcYears = batches[[id_batch]], opts = opts)
-                      }
-                    )
+    batches <- split_vector_in_equal_parts(x = mcYears, n = number_of_batches) 
+    lst_res <- lapply(batches,
+                      FUN = .download_and_format_api_get_aggregate_links_result,
+                      links = links,
+                      timeStep = timeStep,
+                      select = select,
+                      opts = opts
+                      )
     res <- do.call("rbind", lst_res)
   }
   
