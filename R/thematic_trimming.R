@@ -57,10 +57,8 @@ getThematicTrimming <- function(opts = simOptions()){
     # generaldata.ini has no section "[variables selection]"
     # with no data all variables are "active"
   if(is.null(vs_section)){
-    warning("`variables selection` section in file 'generaldata.ini' does not exist",
-            call. = FALSE)
-    warning("All variables status are 'active'",
-            call. = FALSE)
+    message("`variables selection` section in file 'generaldata.ini' does not exist")
+    message("All variables status are 'active'")
 
     df_thematic <- data.frame(
       variables = ref_list_vars_thematic$col_name,
