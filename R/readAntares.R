@@ -295,7 +295,6 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
     if (number_of_batches >= nb_years) {
       number_of_batches <- nb_years
-      cat(number_of_batches)
     }
   }
   # if(isH5Opts(opts)){
