@@ -8,7 +8,8 @@ NEW FEATURES :
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 * `readInputTS()` read new optional time Series (5 time series)
 * `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
-* `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`
+* `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
+  - Use new referentials, twice for file system and one for API
 
 BUGFIXES :
 
