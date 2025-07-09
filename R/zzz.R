@@ -129,6 +129,15 @@ ref_thematic <- list("880" = ref_thematic_880,
 
 pkgEnv$thematic <- ref_thematic
 
+### api ----
+ref_thematic_api <- read.table(file = system.file("variables_selection/ref_thematic_by_version/api_ref_conversion.csv",
+                                                  package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
+
+pkgEnv$thematic_api <- ref_thematic_api
+
+
 ## INPUT Properties REF ----
 cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv",
                                               package = "antaresRead"),

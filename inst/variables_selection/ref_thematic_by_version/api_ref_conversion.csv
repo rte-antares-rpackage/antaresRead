@@ -1,0 +1,98 @@
+antares,api
+OV. COST,ovCost
+OP. COST,opCost
+MRG. PRICE,mrgPrice
+CO2 EMIS.,co2Emis
+DTG by plant,dtgByPlant
+BALANCE,balance
+ROW BAL.,rowBal
+PSP,psp
+MISC. NDG,miscNdg
+LOAD,load
+H. ROR,hRor
+WIND,wind
+SOLAR,solar
+NUCLEAR,nuclear
+LIGNITE,lignite
+COAL,coal
+GAS,gas
+OIL,oil
+MIX. FUEL,mixFuel
+MISC. DTG,miscDtg
+H. STOR,hStor
+H. PUMP,hPump
+H. LEV,hLev
+H. INFL,hInfl
+H. OVFL,hOvfl
+H. VAL,hVal
+H. COST,hCost
+UNSP. ENRG,unspEnrg
+SPIL. ENRG,spilEnrg
+LOLD,lold
+LOLP,lolp
+AVL DTG,avlDtg
+DTG MRG,dtgMrg
+MAX MRG,maxMrg
+NP COST,npCost
+NP Cost by plant,npCostByPlant
+NODU,nodu
+NODU by plant,noduByPlant
+FLOW LIN.,flowLin
+UCAP LIN.,ucapLin
+LOOP FLOW,loopFlow
+FLOW QUAD.,flowQuad
+CONG. FEE (ALG.),congFeeAlg
+CONG. FEE (ABS.),congFeeAbs
+MARG. COST,margCost
+CONG. PROB +,congProbPlus
+CONG. PROB -,congProbMinus
+HURDLE COST,hurdleCost
+RES generation by plant,resGenerationByPlant
+MISC. DTG 2,miscDtg2
+MISC. DTG 3,miscDtg3
+MISC. DTG 4,miscDtg4
+WIND OFFSHORE,windOffshore
+WIND ONSHORE,windOnshore
+SOLAR CONCR,solarConcrt
+SOLAR PV,solarPv
+SOLAR ROOFT,solarRooft
+RENW. 1,renw1
+RENW. 2,renw2
+RENW. 3,renw3
+RENW. 4,renw4
+DENS,dens
+Profit by plant,profitByPlant
+BC. MARG. COST,bcMargCost
+STS inj by plant,stsInjByPlant
+STS withdrawal by plant,stsWithdrawalByPlant
+STS lvl by plant,stsLvlByPlant
+PSP_open_injection,pspOpenInjection
+PSP_open_withdrawal,pspOpenWithdrawal
+PSP_open_level,pspOpenLevel
+PSP_closed_injection,pspClosedInjection
+PSP_closed_withdrawal,pspClosedWithdrawal
+PSP_closed_level,pspClosedLevel
+Pondage_injection,pondageInjection
+Pondage_withdrawal,pondageWithdrawal
+Pondage_level,pondageLevel
+Battery_injection,batteryInjection
+Battery_withdrawal,batteryWithdrawal
+Battery_level,batteryLevel
+Other1_injection,other1Injection
+Other1_withdrawal,other1Withdrawal
+Other1_level,other1Level
+Other2_injection,other2Injection
+Other2_withdrawal,other2Withdrawal
+Other2_level,other2Level
+Other3_injection,other3Injection
+Other3_withdrawal,other3Withdrawal
+Other3_level,other3Level
+Other4_injection,other4Injection
+Other4_withdrawal,other4Withdrawal
+Other4_level,other4Level
+Other5_injection,other5Injection
+Other5_withdrawal,other5Withdrawal
+Other5_level,other5Level
+STS Cashflow By Cluster,stsCashflowByCluster
+NPCAP HOURS,npcapHours
+STS by group,stsByGroup
