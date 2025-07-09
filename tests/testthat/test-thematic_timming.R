@@ -8,15 +8,43 @@ test_that("minimal version is v8.8", {
     "areaList" = areas,
     "antaresVersion" = 860
   )
+  class(opts) <- c("simOptions")
 
   # then
   expect_error(
     getThematicTrimming(opts = opts)
   )
 
+  expect_error(
+    list_thematic_variables(opts = opts)
+  )
 })
 
 # v8.8 ----
+test_that("list_thematic_variables works", {
+  # given
+  areas <- c("fr", "be")
+  opts <- list(
+    "inputPath" = tempdir(),
+    "typeLoad"= "txt",
+    "areaList" = areas,
+    "antaresVersion" = 880
+  )
+  class(opts) <- c("simOptions")
+
+  # when
+  res <- list_thematic_variables(opts = opts)
+
+  # then
+  # check variables names according to antares version
+  antares_version <- as.character(opts$antaresVersion)
+  filter_vars_version <- pkgEnv$thematic[[antares_version]]
+
+  # test if variables are all in output
+  testthat::expect_true(all(filter_vars_version$col_name%in%
+                              res$col_name))
+})
+
 test_that("All variables active", {
   # test getThematicTrimming() return all default columns according version
 
@@ -28,6 +56,8 @@ test_that("All variables active", {
     "areaList" = areas,
     "antaresVersion" = 880
   )
+  class(opts) <- c("simOptions")
+
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -64,6 +94,7 @@ test_that("All variables skiped", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -104,6 +135,7 @@ test_that("selection variables (+)", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -153,6 +185,7 @@ test_that("selection variables (-)", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -196,6 +229,7 @@ test_that("All variables active", {
     "areaList" = areas,
     "antaresVersion" = 920
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -232,6 +266,7 @@ test_that("All variables skiped", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -272,6 +307,7 @@ test_that("selection variables (+)", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)
@@ -321,6 +357,7 @@ test_that("selection variables (-)", {
       )
     )
   )
+  class(opts) <- c("simOptions")
 
   # when
   read_thematic <- getThematicTrimming(opts = opts)

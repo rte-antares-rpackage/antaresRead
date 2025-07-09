@@ -25,6 +25,7 @@
 #' getThematicTrimming()
 #' }
 getThematicTrimming <- function(opts = simOptions()){
+  assertthat::assert_that(inherits(opts, "simOptions"))
   stopifnot(opts$antaresVersion>=880)
 
   ##
@@ -143,4 +144,29 @@ getThematicTrimming <- function(opts = simOptions()){
     return(df_thematic)
   }
 
+}
+
+
+#' List of thematic trimming variables available according to study version
+#'
+#' @description
+#' Minimal version required is v8.8
+#'
+#' @inheritParams readAntares
+#' @return `data.frame` of available columns
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Display list (use first `setSimulationPath()` to have an active study loaded)
+#' list_thematic_variables()
+#' }
+list_thematic_variables <- function(opts = simOptions()){
+  assertthat::assert_that(inherits(opts, "simOptions"))
+  stopifnot(opts$antaresVersion>=880)
+
+  target_version <- as.character(opts$antaresVersion)
+  ref_list_vars_thematic <- pkgEnv$thematic[[target_version]]
+
+  return(ref_list_vars_thematic)
 }

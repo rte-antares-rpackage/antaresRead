@@ -9,7 +9,8 @@ NEW FEATURES :
 * `readInputTS()` read new optional time Series (5 time series)
 * `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
-  - Use new referentials, twice for file system and one for API
+  - Use new referentials, twice for file system and one for API  
+  - New function `list_thematic_variables()` to display available columns according to current study version
 
 BUGFIXES :
 
