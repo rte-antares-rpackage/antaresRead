@@ -3,7 +3,7 @@
 #' @title  Get the Thematic trimming of an Antares study
 #'
 #' @description
-#' `r antaresRead:::badge_api_no()`
+#' `r antaresRead:::badge_api_ok()`
 #'
 #'
 #'
@@ -38,6 +38,32 @@ getThematicTrimming <- function(opts = simOptions()){
 
     thematic_vars <- api_get(opts = opts,
                              endpoint = endpoint_to_use)
+
+    # data management with ref to return antares format
+    new_df <- data.frame(variables_api = names(thematic_vars),
+                         status_selection=unlist(thematic_vars, use.names = FALSE))
+
+    ref_api <- pkgEnv$thematic_api
+
+    thematic_vars <- merge(new_df,
+                           ref_api,
+                           by.x = "variables_api",
+                           by.y = "api",
+                           all.x = TRUE)
+
+    thematic_vars$variables_api <- NULL
+    thematic_vars$status_selection <- ifelse(thematic_vars$status_selection,
+                                             "active",
+                                             "skip")
+
+    # rename
+    names(thematic_vars) <- c("status_selection", "variables")
+
+    # re order
+    thematic_vars <- thematic_vars[,
+                                   c("variables",
+                                     setdiff(names(thematic_vars),
+                                             "variables"))]
 
     return(thematic_vars)
   }
