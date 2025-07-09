@@ -109,14 +109,39 @@ utils::globalVariables(
     "thermalPmin", "name", "value", "Tech.Name", '..format_field',
     "Folder", "Mode", "Stats", "Name", "progNam", "mrgprice", "isLOLD_cum",
     "...To", "upstream", "downstream", "LOLD", "LOLD_data", "LOLP", "warn_for_status",
-    "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC", 
+    "MRG. PRICE", "H. LEV", "V2", "V1", "size", "ORDINAL_POSITION_BY_TOPIC",
     "DETAILS_FILES_TYPE","ANTARES_DISPLAYED_NAME")
 )
 
+## thematic ----
+ref_thematic_880 <- read.table(file = system.file("variables_selection/ref_thematic_by_version/ref_880.csv",
+                                        package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
+
+ref_thematic_920 <- read.table(system.file("variables_selection/ref_thematic_by_version/ref_920.csv",
+                                           package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
+
+ref_thematic <- list("880" = ref_thematic_880,
+                     "920" = ref_thematic_920)
+
+pkgEnv$thematic <- ref_thematic
+
+### api ----
+ref_thematic_api <- read.table(file = system.file("variables_selection/ref_thematic_by_version/api_ref_conversion.csv",
+                                                  package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
+
+pkgEnv$thematic_api <- ref_thematic_api
+
+
 ## INPUT Properties REF ----
-cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv", 
+cluster_properties <- data.table::fread(system.file("referential_properties/cluster_properties.csv",
                                               package = "antaresRead"),
-                                  sep = ";", 
+                                  sep = ";",
                                   header = TRUE)
 
 # append
