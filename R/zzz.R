@@ -115,14 +115,18 @@ utils::globalVariables(
 
 ## thematic ----
 ref_thematic_880 <- read.table(file = system.file("variables_selection/ref_thematic_by_version/ref_880.csv",
-                                        package = "antaresRead"),
-                               header = TRUE,
-                               sep = ",")
+                                                 package = "antaresRead"),
+                              header = TRUE,
+                              sep = ",")
+
+ref_thematic_880$col_name <- trimws(ref_thematic_880$col_name)
 
 ref_thematic_920 <- read.table(system.file("variables_selection/ref_thematic_by_version/ref_920.csv",
                                            package = "antaresRead"),
                                header = TRUE,
                                sep = ",")
+
+ref_thematic_920$col_name <- trimws(ref_thematic_920$col_name)
 
 ref_thematic <- list("880" = ref_thematic_880,
                      "920" = ref_thematic_920)
