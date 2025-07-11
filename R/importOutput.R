@@ -369,7 +369,7 @@
                                           opts = opts
                                          )
   res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
-  .format_api_aggregate_result(res)
+  .format_api_aggregate_result(res = res, type_res = query_file)
 }
 
 
@@ -421,8 +421,49 @@
 }
 
 
+#' .rename_api_aggregate_result_colnames_to_legacy_names
+#'
+#' Private function used to rename the columns delivered by the endpoint aggregate as the legacy ones.
+#'
+#' @return
+#' a vector
+#'
+#' @importFrom assertthat assert_that
+#'
+#' @noRd
+#'
+.rename_api_aggregate_result_colnames_to_legacy_names <- function(res_colnames, type_res) {
+  
+  assert_that(type_res %in% c("details","details-res","details-STstorage"))
+  
+  simulation_variables_names_by_support <- read.table(system.file(
+    "format_output","simulation_variables_names_by_support.csv", package = "antaresRead"
+    ),
+    sep = ";",
+    fileEncoding = "UTF-8",
+    header = TRUE
+  )
+  filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type_res)
+  
+  res_cols <- data.frame("cols" = res_colnames,
+                         "ORDINAL_POSITION" = seq(res_colnames)
+                        )
+  
+  res_cols <- merge(x = res_cols, 
+                    y = filtered_variables_names,
+                    by.x = "cols",
+                    by.y = "RPACKAGE_DISPLAYED_NAME",
+                    all.x = TRUE
+                    )
+  res_cols <- res_cols[order(res_cols$ORDINAL_POSITION),]
+  res_cols$OUTPUT_DISPLAYED_NAME[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] <- res_cols$cols[is.na(res_cols$OUTPUT_DISPLAYED_NAME)]
+  
+  return(res_cols$OUTPUT_DISPLAYED_NAME)
+}
+
+
 #' @importFrom stringi stri_replace_all_regex
-.format_api_aggregate_result <- function(res) {
+.format_api_aggregate_result <- function(res, type_res) {
 
   if (is.null(res)) {
     return(NULL)
@@ -445,12 +486,8 @@
   replacement <- c("_min", "_max", "_std", "", "")
   new_cols <- stri_replace_all_regex(str = res_cols, pattern = pattern, replacement = replacement, vectorize_all = FALSE)
   
-  # Endpoint aggregate provides the column Profit - Euro for the moment. We rename it here to profit to match the legacy names.
-  # profit is one of the possible outputs of the details file
-  if ("profit - euro" %in% tolower(new_cols)) {
-    new_cols[tolower(new_cols) == "profit - euro"] <- "profit"
-  }
-
+  new_cols <- .rename_api_aggregate_result_colnames_to_legacy_names(res_colnames = new_cols, type_res = type_res)
+  
   return(setnames(res, old = res_cols, new = new_cols))
 }
 

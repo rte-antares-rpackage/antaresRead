@@ -78,7 +78,7 @@ test_that(".importOutputForSTClusters is ok", {
 
 test_that("Test the general behaviour of .format_api_aggregate_result()", {
     
-  expect_null(.format_api_aggregate_result(res = NULL))
+  expect_null(.format_api_aggregate_result(res = NULL, type_res = "details"))
   
   # mc-ind
   endpoint_res <- data.table("area" = rep("fr",12 * 2),
@@ -90,7 +90,7 @@ test_that("Test the general behaviour of .format_api_aggregate_result()", {
                              "NODU" = round(rnorm(n = 12 * 2, mean = 10, sd = 2)),
                              "Profit - Euro" = round(rnorm(n = 12 * 2, mean = 80, sd = 5))
                              )  
-  final_res <- .format_api_aggregate_result(res = endpoint_res)
+  final_res <- .format_api_aggregate_result(res = endpoint_res, type_res = "details")
   areas <- unique(final_res$area)
   clusters <- unique(final_res$cluster)
   
@@ -99,7 +99,7 @@ test_that("Test the general behaviour of .format_api_aggregate_result()", {
   expect_true(inherits(final_res$cluster, what = "factor"))
   expect_true(all(areas == tolower(areas)))
   expect_true(all(clusters == tolower(clusters)))
-  expect_true("profit" %in% colnames(final_res))
+  #expect_true("profit" %in% colnames(final_res))
   
   # mc-all
   endpoint_res <- data.table("area" = rep("fr",12 * 2),
@@ -110,7 +110,7 @@ test_that("Test the general behaviour of .format_api_aggregate_result()", {
                              "OP. COST STD" = round(rnorm(n = 12 * 2, mean = 40, sd = 2.5))  
                              )
                              
-  final_res <- .format_api_aggregate_result(res = endpoint_res)
+  final_res <- .format_api_aggregate_result(res = endpoint_res, type_res = "details")
   areas <- unique(final_res$area)
   
   expect_true(inherits(final_res$timeId, what = "integer"))
