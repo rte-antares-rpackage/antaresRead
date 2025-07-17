@@ -321,11 +321,31 @@
 }
 
 
+.compute_pattern_select_url <- function(select, query_file) {
+  
+  columns_url <- ""
+  
+  if (!identical(select, "")) {
+    if (query_file == "values") {
+      columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
+    }
+    if (query_file %in% c("details", "details-res", "details-STstorage")) {
+      filtered_variables_names <- .filter_referential_output_column_names_by_type(type_res = query_file)
+      new_select <- filtered_variables_names[filtered_variables_names$RPACKAGE_DISPLAYED_NAME %in% select,]$OUTPUT_DISPLAYED_NAME #KKEM
+      if (length(new_select) > 0) {
+        columns_url <- paste0("&columns_names=", paste0(new_select, collapse = ",")) 
+      }    
+    }
+  }
+
+  return(columns_url)  
+}
+
+
 # Retrieve download_id for aggregated areas raw data from study economy outputs
 .api_get_aggregate_areas <- function(areas, timeStep, query_file, select, mcYears, opts) {
 
   areas_url <- ""
-  columns_url <- ""  
   mc_years_url <- ""
 
   if (is.null(mcYears)) {
@@ -342,9 +362,7 @@
     areas_url <- paste0("&areas_ids=", paste0(areas, collapse = ","))
   }
   
-  if (!identical(select, "")) {
-    columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
-  }
+  columns_url <- .compute_pattern_select_url(select = select, query_file = query_file)
   
   endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
   endpoint <- paste0(endpoint_root,
@@ -421,6 +439,22 @@
 }
 
 
+.filter_referential_output_column_names_by_type <- function(type_res){
+  
+  assert_that(type_res %in% c("details","details-res","details-STstorage"))
+  
+  simulation_variables_names_by_support <- read.table(system.file(
+    "format_output","simulation_variables_names_by_support.csv", package = "antaresRead"
+    ),
+    sep = ";",
+    fileEncoding = "UTF-8",
+    header = TRUE
+  )
+  
+  return(subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type_res))
+}
+
+
 #' .rename_api_aggregate_result_colnames_to_legacy_names
 #'
 #' Private function used to rename the columns delivered by the endpoint aggregate as the legacy ones.
@@ -434,16 +468,7 @@
 #'
 .rename_api_aggregate_result_colnames_to_legacy_names <- function(res_colnames, type_res) {
   
-  assert_that(type_res %in% c("details","details-res","details-STstorage"))
-  
-  simulation_variables_names_by_support <- read.table(system.file(
-    "format_output","simulation_variables_names_by_support.csv", package = "antaresRead"
-    ),
-    sep = ";",
-    fileEncoding = "UTF-8",
-    header = TRUE
-  )
-  filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type_res)
+  filtered_variables_names <- .filter_referential_output_column_names_by_type(type_res = type_res)
   
   res_cols <- data.frame("cols" = res_colnames,
                          "ORDINAL_POSITION" = seq(res_colnames)
@@ -456,7 +481,7 @@
                     all.x = TRUE
                     )
   res_cols <- res_cols[order(res_cols$ORDINAL_POSITION),]
-  res_cols$OUTPUT_DISPLAYED_NAME[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] <- res_cols$cols[is.na(res_cols$OUTPUT_DISPLAYED_NAME)]
+  res_cols$OUTPUT_DISPLAYED_NAME[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] <- res_cols$cols[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] #KKEM
   
   return(res_cols$OUTPUT_DISPLAYED_NAME)
 }
