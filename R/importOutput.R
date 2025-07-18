@@ -417,7 +417,12 @@
                       encoding = "UTF-8"
                      )
   
-  return(fread(input = response, data.table = TRUE))    
+  if (identical(response, "")) {
+    return(data.table())
+  } else {
+    return(fread(input = response, data.table = TRUE)) 
+  }
+     
 }
 
 
