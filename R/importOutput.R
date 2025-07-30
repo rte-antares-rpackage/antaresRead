@@ -321,6 +321,7 @@
 }
 
 
+# Compute the pattern to put in the url to select the desired columns
 .compute_pattern_select_url <- function(select, query_file) {
   
   columns_url <- ""
@@ -331,14 +332,14 @@
     }
     if (query_file %in% c("details", "details-res", "details-STstorage")) {
       filtered_variables_names <- .filter_referential_output_column_names_by_type(type_res = query_file)
-      new_select <- filtered_variables_names[filtered_variables_names$RPACKAGE_DISPLAYED_NAME %in% select,]$OUTPUT_DISPLAYED_NAME #KKEM
+      new_select <- filtered_variables_names[filtered_variables_names$RPACKAGE_DISPLAYED_NAME %in% select,]$OUTPUT_DISPLAYED_NAME
       if (length(new_select) > 0) {
-        columns_url <- paste0("&columns_names=", paste0(new_select, collapse = ",")) 
+        columns_url <- paste0("&columns_names=", paste0(new_select, collapse = ","))
       }    
     }
   }
 
-  return(columns_url)  
+  return(columns_url)
 }
 
 
@@ -438,15 +439,13 @@
   if (identical(response, "")) {
     return(data.table())
   } else {
-    return(fread(input = response, data.table = TRUE)) 
+    return(fread(input = response, data.table = TRUE))
   }
      
 }
 
 
 .filter_referential_output_column_names_by_type <- function(type_res){
-  
-  assert_that(type_res %in% c("details","details-res","details-STstorage"))
   
   simulation_variables_names_by_support <- read.table(system.file(
     "format_output","simulation_variables_names_by_support.csv", package = "antaresRead"
@@ -480,15 +479,15 @@
                         )
   
   res_cols <- merge(x = res_cols, 
-                    y = filtered_variables_names,
+                    y = filtered_variables_names[,c("OUTPUT_DISPLAYED_NAME", "RPACKAGE_DISPLAYED_NAME")],
                     by.x = "cols",
-                    by.y = "RPACKAGE_DISPLAYED_NAME",
+                    by.y = "OUTPUT_DISPLAYED_NAME",
                     all.x = TRUE
                     )
   res_cols <- res_cols[order(res_cols$ORDINAL_POSITION),]
-  res_cols$OUTPUT_DISPLAYED_NAME[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] <- res_cols$cols[is.na(res_cols$OUTPUT_DISPLAYED_NAME)] #KKEM
+  res_cols$RPACKAGE_DISPLAYED_NAME[is.na(res_cols$RPACKAGE_DISPLAYED_NAME)] <- res_cols$cols[is.na(res_cols$RPACKAGE_DISPLAYED_NAME)]
   
-  return(res_cols$OUTPUT_DISPLAYED_NAME)
+  return(res_cols$RPACKAGE_DISPLAYED_NAME)
 }
 
 
@@ -1211,7 +1210,7 @@
                                           opts = opts
                                          )
   res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
-  .format_api_aggregate_result(res)
+  .format_api_aggregate_result(res = res, type_res = "links")
 }
 
 
