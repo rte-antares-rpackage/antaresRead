@@ -118,3 +118,30 @@ test_that("Test the general behaviour of .format_api_aggregate_result()", {
   expect_true(all(areas == tolower(areas)))
   expect_true(all(c("OP. COST", "OP. COST_max", "OP. COST_min", "OP. COST_std") %in% colnames(final_res)))
 })
+
+
+test_that(".compute_pattern_select_url() for column selection in API mode with aggregate endpoint", {
+  
+  expect_equal(.compute_pattern_select_url(select = "", query_file = "values"), "")
+  expect_equal(.compute_pattern_select_url(select = "", query_file = "details"), "")
+  expect_equal(.compute_pattern_select_url(select = "", query_file = "details-res"), "")
+  expect_equal(.compute_pattern_select_url(select = "", query_file = "details-STstorage"), "")
+
+  expect_equal(.compute_pattern_select_url(select = c("LOLD", "LOLP"), query_file = "values"),
+               "&columns_names=LOLD,LOLP"
+              )
+  
+  expect_equal(.compute_pattern_select_url(select = c("LOLD", "LOLP"), query_file = "details"),
+               ""
+              )
+  expect_equal(.compute_pattern_select_url(select = c("fake_one", "production", "fake_two", "NP Cost"), query_file = "details"),
+               "&columns_names=MWh,NP Cost - Euro"
+              )
+  expect_equal(.compute_pattern_select_url(select = c("fake_one", "production", "fake_two", "NP Cost - Euro"), query_file = "details"),
+               "&columns_names=MWh"
+  )
+  
+  expect_equal(.compute_pattern_select_url(select = c("fake_one", "levels", "P.withdrawal"), query_file = "details-STstorage"),
+               "&columns_names=P-withdrawal - MW,Levels - MWh"
+  )
+})
