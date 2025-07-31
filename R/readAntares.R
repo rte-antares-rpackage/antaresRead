@@ -522,7 +522,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   if(!is.null(res$clustersRes) && nrow(res$clustersRes) == 0) res$clustersRes <- NULL
   
   # Import short-term clusters
-  res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, NULL, 
+  res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, select$clustersST, 
                                                  mcYears, showProgress, 
                                                  opts, parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$clustersST) && nrow(res$clustersST) == 0) res$clustersST <- NULL
@@ -893,7 +893,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
                              mcYears){
   
   if (!is.list(select)) {
-    select <- list("areas" = select, "links" = select, "districts" = select, "clusters" = select)
+    select <- list("areas" = select, "links" = select, "districts" = select, "clusters" = select, "clustersST" = select)
   }
   
   ##Get unselect columns (by - operator)
