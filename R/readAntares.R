@@ -334,11 +334,14 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                districts = districts,
                                mcYears = mcYears)
   select <- reqInfos$select
-  # In API mode, with the endpoint aggregate, it is possible to select the desired columns for the clusters part.
-  # In disk mode, selection is not possible for the clusters part.
+  # In API mode, with the endpoint aggregate, it is possible to select the desired columns for the clusters/clustersST part.
+  # In disk mode, selection is not possible for the clusters/clustersST part.
   if (!is_api_study(opts)) {
     if ("clusters" %in% names(select)) {
       select$clusters <- NULL
+    }
+    if ("clustersST" %in% names(select)) {
+      select$clustersST <- NULL
     }
   }
   areas <- reqInfos$areas
