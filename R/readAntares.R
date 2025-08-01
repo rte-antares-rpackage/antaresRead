@@ -293,7 +293,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     } else {
       nb_years <- length(mcYears)
     }
-    if (number_of_batches >= nb_years) {
+    if (number_of_batches > nb_years) {
       number_of_batches <- nb_years
     }
   }
