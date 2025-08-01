@@ -333,6 +333,6 @@ test_that("Behaviour of .giveInfoRequest()", {
                           districts = NULL,
                           mcYears = NULL
                           )
-  expect_true(all(c("areas", "links", "districts", "clusters") %in% names(req[["select"]])))
+  expect_true(all(c("areas", "links", "districts", "clusters", "clustersST") %in% names(req[["select"]])))
   expect_true(all(c("production", "NUCLEAR", "UCAP LIN.") %in% req[["select"]][["clusters"]]))
 })
