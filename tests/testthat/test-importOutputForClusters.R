@@ -4,7 +4,7 @@ context("Functions .importOutput")
 
 path_study_test <- grep(pattern = "test_case_study_v870", x = studyPathSV8, value = TRUE)
 
-opts <- setSimulationPath(path_study_test,simulation="20240105-0934eco")
+opts <- suppressWarnings({setSimulationPath(path_study_test,simulation="20240105-0934eco")})
 
 
 test_that(".check_missing_output_files is ok", {
@@ -144,4 +144,18 @@ test_that(".compute_pattern_select_url() for column selection in API mode with a
   expect_equal(.compute_pattern_select_url(select = c("fake_one", "levels", "P.withdrawal"), query_file = "details-STstorage"),
                "&columns_names=P-withdrawal - MW,Levels - MWh"
   )
+})
+
+
+test_that("Test the general behaviour of .rename_api_aggregate_result_colnames_to_legacy_names()", {
+  
+  cols_renamed <- .rename_api_aggregate_result_colnames_to_legacy_names(res_colnames = c("area", "timeId", "NP Cost - Euro"), type_res = "details")
+  expect_equal(cols_renamed, c("area", "timeId", "NP Cost"))
+  
+  # Case sensitive
+  cols_renamed <- .rename_api_aggregate_result_colnames_to_legacy_names(res_colnames = c("area", "timeId", "NP CoSt - EuRo"), type_res = "details")
+  expect_equal(cols_renamed, c("area", "timeId", "NP CoSt - EuRo"))
+  
+  cols_renamed <- .rename_api_aggregate_result_colnames_to_legacy_names(res_colnames = c("area", "timeId", "another_column"), type_res = "details")
+  expect_equal(cols_renamed, c("area", "timeId", "another_column"))
 })
