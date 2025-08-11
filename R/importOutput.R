@@ -560,7 +560,7 @@
   filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type)
   if (type=="details" && opts$antaresVersion < 830)
     filtered_variables_names <- subset(filtered_variables_names,ANTARES_DISPLAYED_NAME!="Profit by plant")
-  filtered_variables_names <- subset(filtered_variables_names,opts[["antaresVersion"]] >= MIN_VERSION) 
+  filtered_variables_names <- subset(filtered_variables_names,opts[["antaresVersion"]] >= MIN_VERSION | is.na(MIN_VERSION)) 
   # Order is important. There is a correspondance between elements
   ordered_filtered_variables_names <- filtered_variables_names[
     order(filtered_variables_names$ORDINAL_POSITION_BY_TOPIC),
@@ -568,7 +568,7 @@
 
   all_thematic_variables <- ordered_filtered_variables_names$ANTARES_DISPLAYED_NAME
   colNames <- ordered_filtered_variables_names$RPACKAGE_DISPLAYED_NAME
-
+  
   # With thematic-trimming enabled
   if (opts$parameters$general$`thematic-trimming`) {
     if ("variables selection" %in% names(opts$parameters)) {
