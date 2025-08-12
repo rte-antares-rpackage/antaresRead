@@ -11,12 +11,21 @@ NEW FEATURES :
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
   - Use new referentials, twice for file system and one for API  
   - New function `list_thematic_variables()` to display available columns according to current study version
+* `readAntares()` : has a new parameter `'number_of_batches'` to choose the number of batches for the data you read. Only available in API mode.
 
 BUGFIXES :
 
 * `.manage_list_structure()` : returns the `comments` property in `properties` instead of `coefs`
 * `.giveInfoRequest()` : if argument `clustersRes` is not null, argument `areas` should not be equal to `all`
-* `.getSimOptions()` : add `Expansion` mode to compute `simDataPath` value 
+* `.getSimOptions()` : add `Expansion` mode to compute `simDataPath` value
+* `.giveSize()` : control the size of the renewables outputs
+
+BREAKING CHANGES :  
+ 
+* `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
+* `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
+* `format_api_aggregate_result()` : match the legacy names for the output column names
+* Rename short-term storage output column from Cashflow to CashFlow
 
 REVDEP (temporary) : 
 
@@ -43,11 +52,6 @@ BUGFIXES :
 BREAKING CHANGES :  
  
 * `setSimulationPathAPI()` : sets timeout to 600s by default. 600s is the default value in Antares Web.
-* `.importOutputForAreas()` / `.importOutputForLinks()` / `.importOutputForClusters()` / `.importOutputForResClusters()` / `.importOutputForSTClusters()` : uses specific endpoint in API mode
-* `.api_get_aggregate_areas()` / `.api_get_aggregate_links()` : retrieve aggregated areas/links raw data from study economy outputs
-* `format_api_aggregate_result()` : match the legacy names for the output column names
-* Rename short-term storage output column from Cashflow to CashFlow
-
 
 # antaresRead 2.9.0
 
