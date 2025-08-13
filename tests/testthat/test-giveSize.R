@@ -3,12 +3,13 @@ test_that("Check the size of the object to get", {
   opts <- list(
     "inputPath"=tempdir(),
     "typeLoad"='not_api',
-    "areaList" = c("fr","de"),
+    "areaList" = c("fr","de", "be"),
     "antaresVersion" = 880,
     "mcYears" = seq(1,1000),
     "timeIdMax" = 8736,
     "timeIdMin" = 1
   )
+  opts$parameters$`other preferences`$`renewable-generation-modelling` <- "clusters"
   
   # enabled = true 3*
   ini_clusters <- c(
@@ -53,6 +54,37 @@ test_that("Check the size of the object to get", {
     ""
   )
   
+  ini_clusters_res <- c(
+    "[be_res_1]",
+    "name = be_res_1",
+    "group = Solar PV",
+    "unitcount = 1",
+    "nominalcapacity = 84560.000000",
+    "ts-interpretation = production-factor",
+    "",
+    "[be_res_2]",
+    "name = be_res_2",
+    "group = Solar Thermal",
+    "unitcount = 1",
+    "nominalcapacity = 42500.000000",
+    "ts-interpretation = production-factor",
+    "",
+    "[be_res_3]",
+    "name = be_res_3",
+    "group = Wind Offshore",
+    "unitcount = 1",
+    "nominalcapacity = 33875.000000",
+    "ts-interpretation = production-factor",
+    "",
+    "[be_res_4]",
+    "name = be_res_4",
+    "group = Wind Onshore",
+    "unitcount = 1",
+    "nominalcapacity = 54160.000000",
+    "ts-interpretation = production-factor",
+    ""
+  )
+  
   clusters_fr_path <- file.path(tempdir(),"thermal", "clusters", "fr")
   suppressWarnings(dir.create(clusters_fr_path, recursive = TRUE, showWarnings = FALSE))
   writeLines(ini_clusters, file.path(clusters_fr_path,"list.ini"))
@@ -60,6 +92,10 @@ test_that("Check the size of the object to get", {
   clusters_st_de_path <- file.path(tempdir(),"st-storage", "clusters", "de")
   suppressWarnings(dir.create(clusters_st_de_path, recursive = TRUE, showWarnings = FALSE))
   writeLines(ini_clusters_st, file.path(clusters_st_de_path,"list.ini"))
+  
+  clusters_res_be_path <- file.path(tempdir(),"renewables", "clusters", "be")
+  suppressWarnings(dir.create(clusters_res_be_path, recursive = TRUE, showWarnings = FALSE))
+  writeLines(ini_clusters_res, file.path(clusters_res_be_path,"list.ini"))
   
   size <- .giveSize(opts = opts, clusters = "fr", timeStep = "hourly", mcYears = "all")
   expected_size <- (8735 * 1000 * 3 * 11 * 5.5) / 1024^2
@@ -69,8 +105,12 @@ test_that("Check the size of the object to get", {
   expected_size <- (8735 * 1000 * 2 * 11 * 5.5) / 1024^2
   testthat::expect_equal(size, expected_size)
   
-  size <- .giveSize(opts = opts, clusters = "fr", clustersST = "de", timeStep = "hourly", mcYears = "all")
-  expected_size <- (8735 * 1000 * 3 * 11 * 5.5) / 1024^2 + (8735 * 1000 * 2 * 11 * 5.5) / 1024^2
+  size <- .giveSize(opts = opts, clustersRes = "be", timeStep = "hourly", mcYears = "all")
+  expected_size <- (8735 * 1000 * 4 * 8 * 5.5) / 1024^2
+  testthat::expect_equal(size, expected_size)
+  
+  size <- .giveSize(opts = opts, clusters = "fr", clustersST = "de", clustersRes = "be", timeStep = "hourly", mcYears = "all")
+  expected_size <- (8735 * 1000 * 3 * 11 * 5.5) / 1024^2 + (8735 * 1000 * 2 * 11 * 5.5) / 1024^2 + (8735 * 1000 * 4 * 8 * 5.5) / 1024^2
   testthat::expect_equal(size, expected_size)
   
   # enabled = true 2* enabled = false 1*

@@ -29,7 +29,7 @@ setRam <- function(x){
 #'
 #' @noRd
 .giveSize <- function(opts, areas = NULL, links = NULL,
-                      clusters = NULL, clustersST = NULL, districts = NULL, select = NULL, mcYears = NULL,
+                      clusters = NULL, clustersRes = NULL, clustersST = NULL, districts = NULL, select = NULL, mcYears = NULL,
                       timeStep = "hourly", misc = FALSE, thermalAvailabilities = FALSE,
                       hydroStorage = FALSE, hydroStorageMaxPower = FALSE, reserve = FALSE,
                       linkCapacity = FALSE, mustRun = FALSE, thermalModulation = FALSE){
@@ -68,7 +68,7 @@ setRam <- function(x){
   }
   
   nbTid <- nbTid
-  if(is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersST)){
+  if(is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersST) & is.null(clustersRes)){
     areas <- "all"
   }
   
@@ -232,5 +232,33 @@ setRam <- function(x){
   nbRowClustersST <- nbTid * nbMc * nrow(clusSTWithData) * ( nbColclST + nbIdCols)
   clSTSize <- sizeObjectCl * nbRowClustersST / 1024 ^2
   
-  linksSize + areasSize + disSize + clSize + clSTSize
+  # RES clusters size
+  clusResWithData <- data.table()
+  if(!is.null(clustersRes))
+  {
+    clusResWithData  <- tryCatch(readClusterResDesc(opts = opts), error = function(e) data.table())
+    if("all" %in% clustersRes){
+      enabled <- TRUE
+      if("enabled" %in% names(clusResWithData))
+      {
+        clusResWithData <- clusResWithData[is.na(enabled) | enabled]
+      }
+    }else{
+      clustersS <- clustersRes
+      if("enabled" %in% names(clusResWithData))
+      {
+        clusResWithData <- clusResWithData[is.na(enabled) | enabled]
+      }
+      if("area" %in% names(clusResWithData))
+      {
+      clusResWithData <- clusResWithData[ area %in% clustersS]
+      }
+    }
+  }
+  
+  nbColclRes <- 1
+  nbRowClustersRes <- nbTid * nbMc * nrow(clusResWithData) * ( nbColclRes + nbIdCols)
+  clResSize <- sizeObjectCl * nbRowClustersRes / 1024 ^2
+  
+  linksSize + areasSize + disSize + clSize + clSTSize + clResSize
 }

@@ -153,6 +153,9 @@
 #'   be the same length as the vector provided in the \code{mcYear} parameter. The function
 #'   \code{readAntares} will then return the weighted synthetic results for the specified years,
 #'   with the specified weights.
+#' @param number_of_batches
+#'   In API mode, to read the results for individual mcYears, you can choose the number
+#'   of batches you want.
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPath}}
@@ -226,6 +229,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                         mcYears = NULL,
                         timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
                         mcWeights = NULL,
+                        number_of_batches = 10,
                         opts = simOptions(),
                         parallel = FALSE, simplify = TRUE, showProgress = TRUE) {
 
@@ -243,7 +247,7 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   ##Controle size of data load
   size <- .giveSize(opts = opts, areas = areas, links = links, 
-                    clusters = clusters, clustersST = clustersST, districts = districts, select = select,
+                    clusters = clusters, clustersRes = clustersRes, clustersST = clustersST, districts = districts, select = select,
                     mcYears = mcYears ,timeStep = timeStep, misc = misc, thermalAvailabilities = thermalAvailabilities,
                     hydroStorage = hydroStorage, hydroStorageMaxPower = hydroStorageMaxPower, reserve = reserve,
                     linkCapacity = linkCapacity, mustRun = mustRun, thermalModulation = thermalModulation)/1024
@@ -283,6 +287,16 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
     }
   }
   
+  if (is_api_study(opts) & !is.null(mcYears)) {
+    if (mcYears == "all") {
+      nb_years <- length(opts[["mcYears"]])
+    } else {
+      nb_years <- length(mcYears)
+    }
+    if (number_of_batches > nb_years) {
+      number_of_batches <- nb_years
+    }
+  }
   # if(isH5Opts(opts)){
   #   
   #   if(.requireRhdf5_Antares(stopP = FALSE)){
@@ -319,8 +333,17 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
                                clustersST = clustersST,
                                districts = districts,
                                mcYears = mcYears)
-  
   select <- reqInfos$select
+  # In API mode, with the endpoint aggregate, it is possible to select the desired columns for the clusters/clustersST part.
+  # In disk mode, selection is not possible for the clusters/clustersST part.
+  if (!is_api_study(opts)) {
+    if ("clusters" %in% names(select)) {
+      select$clusters <- NULL
+    }
+    if ("clustersST" %in% names(select)) {
+      select$clustersST <- NULL
+    }
+  }
   areas <- reqInfos$areas
   links <- reqInfos$links
   clusters <- reqInfos$clusters
@@ -467,12 +490,12 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   
   res$areas <- .importOutputForAreas(areas, timeStep, select$areas, 
                                      mcYears, showProgress, opts,
-                                     parallel = parallel)
+                                     parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$areas) && nrow(res$areas) == 0) res$areas <- NULL
   
   res$links <- .importOutputForLinks(links, timeStep, select$links, 
                                      mcYears, showProgress, opts,
-                                     parallel = parallel)
+                                     parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$links) && nrow(res$links) == 0) res$links <- NULL
   
   res$districts <- .importOutputForDistricts(districts, timeStep, 
@@ -498,20 +521,26 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
   # Import renewable clusters
   res$clustersRes <- .importOutputForResClusters(clustersRes, timeStep, NULL, 
                                                  mcYears, showProgress, 
-                                                 opts, parallel = parallel)
+                                                 opts, parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$clustersRes) && nrow(res$clustersRes) == 0) res$clustersRes <- NULL
   
   # Import short-term clusters
-  res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, NULL, 
+  res$clustersST <- .importOutputForSTClusters(clustersST, timeStep, select$clustersST, 
                                                  mcYears, showProgress, 
-                                                 opts, parallel = parallel)
+                                                 opts, parallel = parallel, number_of_batches = number_of_batches)
   if(!is.null(res$clustersST) && nrow(res$clustersST) == 0) res$clustersST <- NULL
   
   # Import thermal clusters and eventually must run
   if (!mustRun) {
-    res$clusters <- .importOutputForClusters(clusters, timeStep, NULL, mcYears,
-                                             showProgress, opts, mustRun = FALSE, 
-                                             parallel = parallel)
+    res$clusters <- .importOutputForClusters(areas = clusters,
+                                             timeStep = timeStep,
+                                             select = select$clusters,
+                                             mcYears = mcYears,
+                                             showProgress = showProgress,
+                                             opts = opts,
+                                             mustRun = FALSE,
+                                             parallel = parallel,
+                                             number_of_batches = number_of_batches)
     if(!is.null(res$clusters) && nrow(res$clusters) == 0) res$clusters <- NULL
     
   } else {
@@ -526,9 +555,16 @@ readAntares <- function(areas = NULL, links = NULL, clusters = NULL,
       }
     }
     else{
-      res$clusters <- .importOutputForClusters(clustersAugmented, timeStep, NULL, mcYears,
-                                               showProgress, opts, mustRun = TRUE, parallel = parallel)
-      
+      res$clusters <- .importOutputForClusters(areas = clustersAugmented,
+                                               timeStep = timeStep,
+                                               select = select$clusters,
+                                               mcYears = mcYears,
+                                               showProgress = showProgress,
+                                               opts = opts,
+                                               mustRun = TRUE,
+                                               parallel = parallel,
+                                               number_of_batches = number_of_batches
+                                               )
       if (!is.null(res$areas)) {
         tmp <- copy(res$clusters)
         tmp[, cluster := NULL]
@@ -830,6 +866,7 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
 #' @param links Vector containing the names of the links to import. See \link{readAntares} for further information.
 #' @param clusters Vector containing the names of the thermal clusters to import. See \link{readAntares} for further information.
 #' @param clustersRes Vector containing the names of the renewable clusters to import. See \link{readAntares} for further information.
+#' @param clustersST Vector containing the names of the short-term storages to import. See \link{readAntares} for further information.
 #' @param districts Vector containing the names of the districts to import. See \link{readAntares} for further information.
 #' @param mcYears Index of the Monte-Carlo years to import. See \link{readAntares} for further information.
 #' 
@@ -839,10 +876,13 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
 #' \item areas
 #' \item links
 #' \item clusters
+#' \item clustersRes
+#' \item clustersST
 #' \item districts
 #' \item mcYears
 #' \item synthesis
 #' \item computeAdd
+#' \item unselect
 #' }
 #' 
 #' @noRd
@@ -855,8 +895,9 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
                              districts,
                              mcYears){
   
-  if (!is.list(select)) select <- list(areas = select, links = select, districts = select)
-  
+  if (!is.list(select)) {
+    select <- list("areas" = select, "links" = select, "districts" = select, "clusters" = select, "clustersST" = select)
+  }
   
   ##Get unselect columns (by - operator)
   unselect <- lapply(select, function(X){
@@ -892,24 +933,40 @@ readAntaresAreas <- function(areas, links = TRUE, clusters = TRUE, clustersRes =
   allCompute <- pkgEnv$allCompute
   computeAdd <- allCompute[allCompute%in%unlist(select)]
   
-  if ("areas" %in% unlist(select) & is.null(areas)) areas <- "all"
+  if ("areas" %in% unlist(select) & is.null(areas)) {
+    areas <- "all"
+  }
   if ("links" %in% unlist(select) & is.null(links)) {
-    if (!is.null(areas)) links <- getLinks(getAreas(areas, regexpSelect = FALSE))
-    else links <- "all"
+    if (!is.null(areas)) {
+      links <- getLinks(getAreas(areas, regexpSelect = FALSE))
+    } else {
+      links <- "all"
+    }
   }
   if ("clusters" %in% unlist(select) & is.null(clusters)) {
-    if (!is.null(areas)) clusters <- areas
-    else clusters <- "all"
+    if (!is.null(areas)) {
+      clusters <- areas
+    } else {
+      clusters <- "all"
+    }
   }
   if ("clustersRes" %in% unlist(select) & is.null(clustersRes)) {
-    if (!is.null(areas)) clustersRes <- areas
-    else clustersRes <- "all"
+    if (!is.null(areas)) {
+      clustersRes <- areas
+    } else {
+      clustersRes <- "all"
+    }
   }
   if ("clustersST" %in% unlist(select) & is.null(clustersST)) {
-    if (!is.null(areas)) clustersST <- areas
-    else clustersST <- "all"
+    if (!is.null(areas)) {
+      clustersST <- areas
+    } else {
+      clustersST <- "all"
+    }
   }
-  if ("mcYears" %in% unlist(select) & is.null(mcYears)) mcYears <- "all"
+  if ("mcYears" %in% unlist(select) & is.null(mcYears)) {
+    mcYears <- "all"
+  }
   
   # If all arguments are NULL, import all areas
   if (is.null(areas) & is.null(links) & is.null(clusters) & is.null(districts) & is.null(clustersRes) & is.null(clustersST)) {

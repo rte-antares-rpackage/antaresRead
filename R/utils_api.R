@@ -92,3 +92,9 @@ setTimeoutAPI <- function(opts, timeout){
 is_api_study <- function(opts) {
   isTRUE(opts$typeLoad == "api")
 }
+
+
+split_vector_in_equal_parts <- function(x, n) {
+  
+  return(split(x, sort(seq(x)%%n)))
+}
