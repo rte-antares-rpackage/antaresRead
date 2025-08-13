@@ -54,6 +54,8 @@
 <ul><li>Use new referentials, twice for file system and one for API<br></li>
 <li>New function <code><a href="../reference/list_thematic_variables.html">list_thematic_variables()</a></code> to display available columns according to current study version</li>
 </ul></li>
+<li>
+<code><a href="../reference/readAntares.html">readAntares()</a></code> : has a new parameter <code>'number_of_batches'</code> to choose the number of batches for the data you read. Only available in API mode.</li>
 </ul><p>BUGFIXES :</p>
 <ul><li>
 <code>.manage_list_structure()</code> : returns the <code>comments</code> property in <code>properties</code> instead of <code>coefs</code>
@@ -63,6 +65,16 @@
 </li>
 <li>
 <code>.getSimOptions()</code> : add <code>Expansion</code> mode to compute <code>simDataPath</code> value</li>
+<li>
+<code>.giveSize()</code> : control the size of the renewables outputs</li>
+</ul><p>BREAKING CHANGES :</p>
+<ul><li>
+<code>.importOutputForAreas()</code> / <code>.importOutputForLinks()</code> / <code>.importOutputForClusters()</code> / <code>.importOutputForResClusters()</code> / <code>.importOutputForSTClusters()</code> : uses specific endpoint in API mode</li>
+<li>
+<code>.api_get_aggregate_areas()</code> / <code>.api_get_aggregate_links()</code> : retrieve aggregated areas/links raw data from study economy outputs</li>
+<li>
+<code>format_api_aggregate_result()</code> : match the legacy names for the output column names</li>
+<li>Rename short-term storage output column from Cashflow to CashFlow</li>
 </ul><p>REVDEP (temporary) :</p>
 <p>✔ antaresEditObject 0.9.0 ── E: 0 | W: 0 | N: 0<br>
 ✔ antaresProcessing 0.18.3 ── E: 0 | W: 0 | N: 0<br>
@@ -99,7 +111,7 @@
 <li>
 <code><a href="../reference/readAntares.html">readAntares()</a></code> : In disk mode, return all the available columns for a short-term storage output and match the column with the content</li>
 <li>
-<code>.importOutput()</code> : check if output file exists in API mode (<code>.check_output_files_existence()</code>)</li>
+<code>.importOutput()</code> : check if output file exists in API mode (<code>.check_missing_output_files()</code>)</li>
 <li>
 <code>.giveSize()</code> : take into account ST clusters in the size computing and use enabled == TRUE or empty enabled for enabled clusters and ST clusters</li>
 </ul><p>BREAKING CHANGES :</p>
