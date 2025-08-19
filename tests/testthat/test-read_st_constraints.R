@@ -106,7 +106,7 @@ lapply(names_constraints_2, function(x){
 test_that("Read without dir 'constraints'",{
 
   # when
-  read_storages_constraints(opts = opts)
+  full_st_constraints <- read_storages_constraints(opts = opts)
 })
 
 
