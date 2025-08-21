@@ -24,6 +24,7 @@ readAntares(
   mcYears = NULL,
   timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
   mcWeights = NULL,
+  number_of_batches = 10,
   opts = simOptions(),
   parallel = FALSE,
   simplify = TRUE,
@@ -115,6 +116,9 @@ weekly, monthly or annual.}
 be the same length as the vector provided in the \code{mcYear} parameter. The function
 \code{readAntares} will then return the weighted synthetic results for the specified years,
 with the specified weights.}
+
+\item{number_of_batches}{In API mode, to read the results for individual mcYears, you can choose the number
+of batches you want.}
 
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPath}}}

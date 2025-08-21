@@ -87,16 +87,29 @@ api_get <- function(opts,
   #fix for skipping 404 when some output is missing
   url_elements <- strsplit(result$url, "%2F")[[1]]
   condition_status_check <- !(!is.na(url_elements[4]) & url_elements[4] %in% c("economy","adequacy") & result$status_code == 404)
-  if(condition_status_check){
+  if (condition_status_check) {
     mess_error <- content(result)
-    if(!is.null(names(mess_error)))
-      mess_error <- paste0("\n[Description] : ", mess_error$description,
-                           "\n[Exception] : ", mess_error$exception)
-    else
+    if (!is.null(names(mess_error))) {
+      with_description <- "description" %in% names(mess_error)
+      with_exception <- "exception" %in% names(mess_error)
+      if (with_description & with_exception) {
+        mess_error <- paste0("\n[Description] : ", mess_error$description,
+                             "\n[Exception] : ", mess_error$exception)
+      } else if (with_description & !with_exception) {
+        mess_error <- paste0("\n[Description] : ", mess_error$description)
+      } else if (!with_description & with_exception) {
+        mess_error <- paste0("\n[Exception] : ", mess_error$exception)
+      } else {
+        mess_error <- NULL
+      }
+    } else {
       mess_error <- NULL
+    }
     stop_for_status(result, task = mess_error)
-    }else 
-      warn_for_status(result)
+  } else {
+    warn_for_status(result)
+  }
+  
   content(result, as = parse_result, encoding = encoding)
 }
 
