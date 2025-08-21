@@ -1,17 +1,22 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 # antaresRead 2.9.2.9000
-(cf. Antares v9.2 changelog)
 
-NEW FEATURES :
+NEW FEATURES (cf. Antares v9.2 changelog) :
 
 * `readClusterSTDesc()` read new clusters parameters (parameters names are now sorted)
 * `readInputTS()` read new optional time Series (5 time series)
+* **NEW FUNCTION** `read_storages_constraints()` read properties and time series of a *short-term storages/additional constraints*
+
+
+NEW FEATURES (other) :  
+
 * `readBindingConstraints()` : has a new parameter `'constraint_names'` so the user can read only the binding constraints he wants (optimization)
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
   - Use new referentials, twice for file system and one for API  
   - New function `list_thematic_variables()` to display available columns according to current study version
 * `readAntares()` : has a new parameter `'number_of_batches'` to choose the number of batches for the data you read. Only available in API mode.
+
 
 BUGFIXES :
 
