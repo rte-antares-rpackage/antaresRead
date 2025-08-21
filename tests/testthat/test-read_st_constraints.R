@@ -23,7 +23,7 @@ test_that("Check minimal version",{
     "studyPath" = tempdir(),
     "inputPath" = file.path(tempdir(), "input"),
     "typeLoad"= "txt",
-    "areaList" = areas,
+    "areaList" = "areas",
     "antaresVersion" = 910
   )
   class(opts_min) <- c("simOptions")
@@ -88,45 +88,53 @@ test_that("Check structure of list",{
                         "st-storage",
                         "constraints",
                         areas,
-                        paste0(areas, "_", cluster_names))
-
-  dir_path <- file.path(tempdir(),
-                        "st-storage",
-                        "constraints",
-                        areas,
                         paste0(comb$x, "_", comb$y))
 
   lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
 
 
-  # write properties
-  lapply(seq(1, length(list_properties)), function(x){
-    writeLines(list_properties[[x]],
-               file.path(dir_path[x], "additional-constraints.ini"))
+  # write properties fr
+  path_fr <- grep(pattern = "fr", x = dir_path, value = TRUE)
+  lapply(path_fr, function(x){
+    writeLines(list_properties[[1]],
+               file.path(x, "additional-constraints.ini"))
   })
 
-  # write TS
-  names_constraints_1 <- c("withdrawal-1", "withdrawal-2")
-  names_constraints_2 <- c("netting-1", "netting-2")
-
-  lapply(names_constraints_1, function(x){
-    write.table(TS_VALUE,
-                file = file.path(dir_path[1],
-                                 paste0("rhs_",
-                                        x,
-                                        ".txt")),
-                row.names = FALSE,
-                col.names = FALSE)
+  # write properties be
+  path_be <- grep(pattern = "be", x = dir_path, value = TRUE)
+  lapply(path_be, function(x){
+    writeLines(list_properties[[2]],
+               file.path(x, "additional-constraints.ini"))
   })
 
-  lapply(names_constraints_2, function(x){
-    write.table(TS_VALUE,
-                file = file.path(dir_path[2],
-                                 paste0("rhs_",
-                                        x,
-                                        ".txt")),
-                row.names = FALSE,
-                col.names = FALSE)
+  # write TS fr
+  names_constraints_fr <- c("withdrawal-1", "withdrawal-2")
+
+  lapply(path_fr, function(x){
+    lapply(names_constraints_fr, function(xts){
+      write.table(TS_VALUE,
+                  file = file.path(x,
+                                   paste0("rhs_",
+                                          xts,
+                                          ".txt")),
+                  row.names = FALSE,
+                  col.names = FALSE)
+    })
+  })
+
+  # write TS be
+  names_constraints_be <- c("netting-1", "netting-2")
+
+  lapply(path_be, function(x){
+    lapply(names_constraints_be, function(xts){
+      write.table(TS_VALUE,
+                  file = file.path(x,
+                                   paste0("rhs_",
+                                          xts,
+                                          ".txt")),
+                  row.names = FALSE,
+                  col.names = FALSE)
+    })
   })
 
   # when
@@ -141,7 +149,8 @@ test_that("Check structure of list",{
   # cluster
   clust_names <- unlist(lapply(full_st_constraints, names),
                         use.names = FALSE)
-  expect_equal(clust_names, c("be_storage_2", "fr_storage_1"))
+  expect_equal(clust_names,
+               c("be_storage_1", "be_storage_2", "fr_storage_1", "fr_storage_2"))
 
   # properties + values
   struct_names <- unlist(
@@ -169,7 +178,7 @@ test_that("Check structure of list",{
     # given
 
     # fr
-    ts_fr <- lapply(names_constraints_1, function(x){
+    ts_fr <- lapply(names_constraints_fr, function(x){
       fread_antares(file = file.path(dir_path[1],
                                      paste0("rhs_",
                                             x,
@@ -181,16 +190,18 @@ test_that("Check structure of list",{
     expect_true(all(
       file.exists(file.path(dir_path[1],
                                       paste0("rhs_",
-                                             names_constraints_1,
+                                             names_constraints_fr,
                                              ".txt")))))
 
     expect_equal(ts_fr, list(data.table(TS_VALUE), data.table(TS_VALUE)))
   })
-
+  unlink(opts$inputPath, recursive = TRUE)
 })
 
 
 test_that("Check with cluster without time series",{
+  # /!\ TS are not mandatory !
+
   # given
   # mock study
   areas <- c("fr", "be")
@@ -235,7 +246,7 @@ test_that("Check with cluster without time series",{
   TS_VALUE <- matrix(2, 8760)
 
   # create dir with properties
-  cluster_names <- c("storage_3", "storage_4")
+  cluster_names <- c("storage_1", "storage_2")
   comb <- merge(areas, cluster_names)
 
   dir_path <- file.path(tempdir(),
@@ -243,30 +254,53 @@ test_that("Check with cluster without time series",{
                         "st-storage",
                         "constraints",
                         areas,
-                        paste0(areas, "_", cluster_names))
+                        paste0(comb$x, "_", comb$y))
 
   lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
 
 
-  # write properties
-  lapply(seq(1, length(list_properties)), function(x){
-    writeLines(list_properties[[x]],
-               file.path(dir_path[x], "additional-constraints.ini"))
+  # write properties fr
+  path_fr <- grep(pattern = "fr", x = dir_path, value = TRUE)
+  lapply(path_fr, function(x){
+    writeLines(list_properties[[1]],
+               file.path(x, "additional-constraints.ini"))
   })
 
-  # write TS
-  names_constraints_1 <- c("withdrawal-1", "withdrawal-2")
-  # names_constraints_2 <- c("netting-1", "netting-2")
+  # write properties be
+  path_be <- grep(pattern = "be", x = dir_path, value = TRUE)
+  lapply(path_be, function(x){
+    writeLines(list_properties[[2]],
+               file.path(x, "additional-constraints.ini"))
+  })
 
-  lapply(names_constraints_1, function(x){
+  # write TS fr
+  names_constraints_fr <- c("withdrawal-1")
+
+  lapply(path_fr, function(x){
+    lapply(names_constraints_fr, function(xts){
+      write.table(TS_VALUE,
+                  file = file.path(x,
+                                   paste0("rhs_",
+                                          xts,
+                                          ".txt")),
+                  row.names = FALSE,
+                  col.names = FALSE)
+    })
+  })
+
+  # write TS be
+  names_constraints_be <- c("netting-1", "netting-2")
+
+  lapply(names_constraints_be, function(xts){
     write.table(TS_VALUE,
-                file = file.path(dir_path[1],
+                file = file.path(path_be[1],
                                  paste0("rhs_",
-                                        x,
+                                        xts,
                                         ".txt")),
                 row.names = FALSE,
                 col.names = FALSE)
   })
+
 
   # when
   full_st_constraints <- read_storages_constraints(opts = opts)
@@ -280,7 +314,8 @@ test_that("Check with cluster without time series",{
   # cluster
   clust_names <- unlist(lapply(full_st_constraints, names),
                         use.names = FALSE)
-  expect_equal(clust_names, c("be_storage_2", "fr_storage_1"))
+  expect_equal(clust_names,
+               c("be_storage_1", "be_storage_2", "fr_storage_1", "fr_storage_2"))
 
   # properties + values
   struct_names <- unlist(
@@ -289,4 +324,16 @@ test_that("Check with cluster without time series",{
     use.names = FALSE)
   expect_equal(unique(struct_names), c("properties", "values" ))
 
+  test_that("Check wiyhout values",{
+    # given
+
+    # cluster without ts
+    path_without_values <- file.path(path_be[2])
+
+    # then
+    expect_equal(full_st_constraints$be$be_storage_2$values,
+                 data.table())
+  })
+
+  unlink(opts$inputPath, recursive = TRUE)
 })

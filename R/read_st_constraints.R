@@ -1,14 +1,36 @@
-#'
-#'
-#'
-#'
+
+utils::globalVariables(c("cluster_name", "full_path"))
+
 # RULES :
 # read only written files values
 # no default values for TS => return data.table() empty
+
+#' @title Read Short-term storages / additional constraints
+#' @description
+#' `r antaresRead:::badge_api_no()`
+#' `r lifecycle::badge("experimental")`
 #'
-#' @importFrom data.table data.table strsplit rbindlist split
+#' This function reads constraints of an Antares project (by area/cluster) :
+#'  - Properties
+#'  - Time series
+#'
+#' *Be aware that constraints are read in the input files of a study.
+#' So they may have changed since a simulation has been run.*
+#'
+#' @inheritParams readAntares
+#'
+#' @return `list` with 2 sections per cluster/constraint (properties + values).
+#'
+#' @importFrom data.table data.table rbindlist
+#'
+#' @examples
+#' \dontrun{
+#' # read/load an existing study (version >= 9.2)
+#' setSimulationPath(path = "mypath/study")
+#'
+#' read_storages_constraints()
+#' }
 read_storages_constraints <- function(opts=simOptions()){
-  browser()
   assertthat::assert_that(inherits(opts, "simOptions"))
   stopifnot(opts$antaresVersion>=920)
 
@@ -47,44 +69,7 @@ read_storages_constraints <- function(opts=simOptions()){
   # re split to have a list by area
   df_structured_splited <- split(x = df_structured, f = df_structured$area)
 
-  # # filter properties
-  # df_prop_filtered <- df_structured[grep(pattern = ".ini", x = file)]
-  #
-  # # filter TS values
-  # df_ts_filtered <- df_structured[grep(pattern = ".txt", x = file)]
-  #
-  # # TODO split/filter by area
-  #
-  # list_prop <- lapply(seq(1, nrow(df_prop_filtered)), function(x){
-  #
-  #   # names structure
-  #   clust_name <- df_prop_filtered[x, cluster_name]
-  #   area_name <- df_prop_filtered[x, area]
-  #
-  #   # read TS
-  #   df_ts <- df_ts_filtered[area %in% area_name,]
-  #   l_ts <- lapply(df_ts$full_path, function(x){
-  #     fread_antares(opts = opts,
-  #                   file = x,
-  #                   integer64 = "numeric",
-  #                   header = FALSE,
-  #                   showProgress = FALSE)
-  #   })
-  #
-  #   names(l_ts) <- sub(pattern = ".txt", replacement = "", x = df_ts$file)
-  #
-  #   # output list
-  #   ll <- list(
-  #     list(properties=readIniFile(df_prop_filtered[x, full_path]),
-  #          values=l_ts))
-  #
-  #   names(ll) <- clust_name
-  #   ll
-  #  })
-  #
-  # names(list_prop) <- df_prop_filtered[, area]
-  # list_prop
-
+  # read and build object with properties + values
   list_prop <- lapply(names(df_structured_splited), function(x){
 
     df <- df_structured_splited[[x]]
