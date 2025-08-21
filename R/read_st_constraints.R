@@ -22,6 +22,7 @@ utils::globalVariables(c("cluster_name", "full_path"))
 #' @return `list` with 2 sections per cluster/constraint (properties + values).
 #'
 #' @importFrom data.table data.table rbindlist
+#' @export
 #'
 #' @examples
 #' \dontrun{
