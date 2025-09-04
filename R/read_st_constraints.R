@@ -31,6 +31,8 @@ utils::globalVariables(c("cluster_name", "full_path"))
 #'
 #' read_storages_constraints()
 #' }
+#' 
+
 read_storages_constraints <- function(opts=simOptions()){
   assertthat::assert_that(inherits(opts, "simOptions"))
   stopifnot(opts$antaresVersion>=920)
@@ -38,7 +40,62 @@ read_storages_constraints <- function(opts=simOptions()){
   ##
   # API bloc
   ##
-  if(is_api_study(opts = opts)){}
+  `%||%` <- function(x, y) if (is.null(x)) y else x
+  
+  # JSON -> data.table (1 ligne par occurrence)
+  .st_additional_constraints_to_datatable <- function(body_json) {
+    if (length(body_json) == 0) return(data.table())
+    
+    rows <- lapply(names(body_json), function(key) {
+      item  <- body_json[[key]]
+      parts <- strsplit(key, " / ", fixed = TRUE)[[1]]
+      area       <- parts[1] %||% NA_character_
+      cluster    <- parts[2] %||% NA_character_
+      constraint <- parts[3] %||% NA_character_
+      
+      occs <- item$occurrences
+      if (length(occs) == 0) {
+        data.table(
+          area, cluster = tolower(cluster), constraint,
+          variable = item$variable %||% NA_character_,
+          operator = item$operator %||% NA_character_,
+          enabled  = isTRUE(item$enabled),
+          hours = list(integer())
+        )
+      } else {
+        rbindlist(lapply(occs, function(occ) {
+          data.table(
+            area, cluster = tolower(cluster), constraint,
+            variable = item$variable %||% NA_character_,
+            operator = item$operator %||% NA_character_,
+            enabled  = isTRUE(item$enabled),
+            hours = list(as.integer(occ$hours))
+          )
+        }), fill = TRUE)
+      }
+    })
+    
+    dt <- rbindlist(rows, fill = TRUE)
+    dt[, cluster := as.factor(cluster)]
+    dt[]
+  }
+  
+  
+  # ---- API bloc (plus AUCUNE référence à 'dir') ----
+  table_type <- "st-storages-additional-constraints"
+  
+  if (is_api_study(opts = opts)) {
+    
+      body_json <- api_get(
+        opts = opts,
+        endpoint = paste0(opts$study_id, "/table-mode/", table_type),
+        query = list(columns = "")
+      )
+      dt_clusters <- .st_additional_constraints_to_datatable(body_json)
+      return(dt_clusters)
+    
+  }
+  
 
   ##
   # Desktop
