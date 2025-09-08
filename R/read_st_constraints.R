@@ -80,22 +80,76 @@ read_storages_constraints <- function(opts=simOptions()){
     dt[]
   }
   
-  
   # ---- API bloc (plus AUCUNE référence à 'dir') ----
   table_type <- "st-storages-additional-constraints"
   
   if (is_api_study(opts = opts)) {
-    
-      body_json <- api_get(
-        opts = opts,
-        endpoint = paste0(opts$study_id, "/table-mode/", table_type),
-        query = list(columns = "")
-      )
-      dt_clusters <- .st_additional_constraints_to_datatable(body_json)
-      return(dt_clusters)
-    
+
+    body_json <- api_get(
+      opts = opts,
+      endpoint = paste0(opts$study_id, "/table-mode/", table_type),
+      query = list(columns = "")
+    )
+    dt_clusters <- .st_additional_constraints_to_datatable(body_json)
+      # Lit TOUTES les rhs_* sous input/st-storage/constraints/<area>/<cluster>/,
+      # et renvoie les fichiers tels que lus par fread_antares (brut).
+    importSTConstraints_API <- function(opts, verbose = FALSE) {
+      #retire les “/” de fin d’une chaîne
+      trim_slash <- function(x) sub("/+$", "", x)
+      api_base   <- trim_slash(opts$inputPath)
+      
+      # récupère les noms (areas, clusters, fichiers) depuis l'API (liste nommée,vecteur de chaînes ou liste d’objets )
+      ls_names <- function(path) {
+        x <- read_secure_json(path, token = opts$token,
+                              timeout = opts$timeout, config = opts$httr_config)
+        if (is.null(x)) return(character(0))
+        nms <- names(x); if (!is.null(nms) && length(nms)) return(nms)
+        if (is.character(x)) return(x)
+        if (is.list(x) && length(x)) {
+          has <- vapply(x, function(e) !is.null(e[["name"]]), logical(1))
+          if (all(has)) return(vapply(x, `[[`, character(1), "name"))
+        }
+        character(0)
+      }
+      
+      # URL complète /raw?path=/input/<rel>
+      make_raw_url <- function(rel) {
+        paste0(api_base, "/", rel, "&formatted=FALSE")
+      }
+      
+      # ---- lecture brute de TOUTES les rhs_* ----
+      res <- list()
+      
+      areas <- tolower(ls_names(paste0(api_base, "/st-storage/constraints")))
+      for (a in areas) {
+        clusters <- tolower(ls_names(paste0(api_base, "/st-storage/constraints/", a)))
+        for (cl in clusters) {
+          files <- ls_names(paste0(api_base, "/st-storage/constraints/", a, "/", cl))
+          rhs   <- grep("^rhs_", files, value = TRUE, ignore.case = TRUE)
+          for (f in rhs) {
+            rel <- paste("st-storage/constraints", a, cl, f, sep = "/")
+            url <- make_raw_url(rel)
+            #if (verbose) message("GET ", url)
+            
+            dt_raw <- antaresRead:::fread_antares(
+              opts = opts, file = url, integer64 = "numeric",
+              header = FALSE, showProgress = FALSE
+            )
+            dt_raw
+            res[[paste(a, cl, f, sep = "/")]] <- dt_raw
+          }
+        }
+      }
+      
+      res
+    }
+      # Utilisation
+      st_constraints_ts <- importSTConstraints_API(opts, verbose = FALSE)
+      return(list(
+        dt_clusters      = data.table::as.data.table(dt_clusters),
+        st_constraints_ts = st_constraints_ts
+      ))
   }
-  
 
   ##
   # Desktop
