@@ -40,47 +40,96 @@ read_storages_constraints <- function(opts=simOptions()){
   ##
   # API bloc
   ##
+  # =========================
+  # DIRECTLY transforms:
+  #   - body_json (api_get table-mode)
+  #   - st_constraints_ts (importSTConstraints_API)
+  # into structure:
+  # full_st_constraints -> area -> cluster -> {properties, values}
+  # =========================
+  
   `%||%` <- function(x, y) if (is.null(x)) y else x
   
-  # JSON -> data.table (1 ligne par occurrence)
-  .st_additional_constraints_to_datatable <- function(body_json) {
-    if (length(body_json) == 0) return(data.table())
-    
-    rows <- lapply(names(body_json), function(key) {
-      item  <- body_json[[key]]
-      parts <- strsplit(key, " / ", fixed = TRUE)[[1]]
-      area       <- parts[1] %||% NA_character_
-      cluster    <- parts[2] %||% NA_character_
-      constraint <- parts[3] %||% NA_character_
-      
-      occs <- item$occurrences
-      if (length(occs) == 0) {
-        data.table(
-          area, cluster = tolower(cluster), constraint,
-          variable = item$variable %||% NA_character_,
-          operator = item$operator %||% NA_character_,
-          enabled  = isTRUE(item$enabled),
-          hours = list(integer())
-        )
-      } else {
-        rbindlist(lapply(occs, function(occ) {
-          data.table(
-            area, cluster = tolower(cluster), constraint,
-            variable = item$variable %||% NA_character_,
-            operator = item$operator %||% NA_character_,
-            enabled  = isTRUE(item$enabled),
-            hours = list(as.integer(occ$hours))
-          )
-        }), fill = TRUE)
-      }
-    })
-    
-    dt <- rbindlist(rows, fill = TRUE)
-    dt[, cluster := as.factor(cluster)]
-    dt[]
+  # returns a list of hour vectors (one entry per occurrence)
+  .collect_hours_lists <- function(occs) {
+    if (length(occs) == 0) return(list())
+    lapply(occs, function(oc) as.integer(oc$hours %||% integer()))
   }
   
-  # ---- API bloc (plus AUCUNE référence à 'dir') ----
+  .to_bracket_string <- function(v) paste0("[", paste(v, collapse = ", "), "]")
+  
+  # extract a numeric vector (priority to column V1) for rhs_*
+  .extract_rhs_vector <- function(dt_raw) {
+    if (is.null(dt_raw)) return(numeric())
+    if ("V1" %in% names(dt_raw)) return(as.numeric(dt_raw$V1))
+    num_cols <- names(dt_raw)[vapply(dt_raw, is.numeric, logical(1))]
+    if (length(num_cols)) return(as.numeric(dt_raw[[ num_cols[1] ]]))
+    as.numeric(dt_raw[[1]])
+  }
+  
+  # --------------- main builder ----------------
+  # body_json : named list "area / cluster / constraint" -> list(variable, operator, occurrences, enabled)
+  # st_constraints_ts : named list "area/cluster/rhs_name" -> data.table (values)
+  # hours_format :
+  #   - "list_string" 
+  #   - "list_vector"
+  build_full_st_constraints_from_json <- function(
+    body_json,
+    st_constraints_ts,
+    hours_format = c("list_string", "list_vector")
+  ) {
+    hours_format <- match.arg(hours_format)
+    out <- list()
+    
+    # ---- properties from body_json (without using data.table) ----
+    if (length(body_json) && !is.null(names(body_json))) {
+      for (key in names(body_json)) {
+        item  <- body_json[[key]]
+        parts <- strsplit(key, " / ", fixed = TRUE)[[1]]
+        area       <- parts[1] %||% NA_character_
+        cluster    <- parts[2] %||% NA_character_
+        constraint <- parts[3] %||% NA_character_
+        
+        if (is.null(out[[area]])) out[[area]] <- list()
+        if (is.null(out[[area]][[cluster]])) out[[area]][[cluster]] <- list(properties = list(), values = list())
+        
+        hrs_lists <- .collect_hours_lists(item$occurrences)
+        hrs_out <- switch(
+          hours_format,
+          list_string = vapply(hrs_lists, .to_bracket_string, character(1)),
+          list_vector = hrs_lists
+        )
+        
+        out[[area]][[cluster]]$properties[[constraint]] <- list(
+          variable = item$variable %||% NA_character_,
+          operator = item$operator %||% NA_character_,
+          hours    = hrs_out,         
+          enabled  = isTRUE(item$enabled)
+        )
+      }
+    }
+    
+    # ---- values from st_constraints_ts (rhs_*) ----
+    ks <- names(st_constraints_ts %||% list())
+    if (length(ks)) {
+      for (k in ks) {
+        parts <- strsplit(k, "/", fixed = TRUE)[[1]]  # "area/cluster/file"
+        area    <- parts[1] %||% NA_character_
+        cluster <- parts[2] %||% NA_character_
+        file    <- parts[3] %||% NA_character_
+        
+        if (is.null(out[[area]])) out[[area]] <- list()
+        if (is.null(out[[area]][[cluster]])) out[[area]][[cluster]] <- list(properties = list(), values = list())
+        
+        v <- .extract_rhs_vector(st_constraints_ts[[k]])
+        out[[area]][[cluster]]$values[[file]] <- list(V1 = v)
+      }
+    }
+    
+    list(full_st_constraints = out)
+  }
+  
+  # ---- API block ----
   table_type <- "st-storages-additional-constraints"
   
   if (is_api_study(opts = opts)) {
@@ -90,15 +139,14 @@ read_storages_constraints <- function(opts=simOptions()){
       endpoint = paste0(opts$study_id, "/table-mode/", table_type),
       query = list(columns = "")
     )
-    dt_clusters <- .st_additional_constraints_to_datatable(body_json)
-      # Lit TOUTES les rhs_* sous input/st-storage/constraints/<area>/<cluster>/,
-      # et renvoie les fichiers tels que lus par fread_antares (brut).
+    # Reads ALL rhs_* under input/st-storage/constraints/<area>/<cluster>/,
+    # and returns the files as read by fread_antares 
     importSTConstraints_API <- function(opts, verbose = FALSE) {
-      #retire les “/” de fin d’une chaîne
+      # remove trailing slashes
       trim_slash <- function(x) sub("/+$", "", x)
       api_base   <- trim_slash(opts$inputPath)
       
-      # récupère les noms (areas, clusters, fichiers) depuis l'API (liste nommée,vecteur de chaînes ou liste d’objets )
+      # list names (areas, clusters, files) from the API (named list, character vector or list of objects)
       ls_names <- function(path) {
         x <- read_secure_json(path, token = opts$token,
                               timeout = opts$timeout, config = opts$httr_config)
@@ -112,12 +160,12 @@ read_storages_constraints <- function(opts=simOptions()){
         character(0)
       }
       
-      # URL complète /raw?path=/input/<rel>
+      # full URL /raw?path=/input/<rel>
       make_raw_url <- function(rel) {
         paste0(api_base, "/", rel, "&formatted=FALSE")
       }
       
-      # ---- lecture brute de TOUTES les rhs_* ----
+      # ---- raw reading of ALL rhs_* ----
       res <- list()
       
       areas <- tolower(ls_names(paste0(api_base, "/st-storage/constraints")))
@@ -129,8 +177,6 @@ read_storages_constraints <- function(opts=simOptions()){
           for (f in rhs) {
             rel <- paste("st-storage/constraints", a, cl, f, sep = "/")
             url <- make_raw_url(rel)
-            #if (verbose) message("GET ", url)
-            
             dt_raw <- antaresRead:::fread_antares(
               opts = opts, file = url, integer64 = "numeric",
               header = FALSE, showProgress = FALSE
@@ -143,11 +189,12 @@ read_storages_constraints <- function(opts=simOptions()){
       
       res
     }
-      # Utilisation
+    
       st_constraints_ts <- importSTConstraints_API(opts, verbose = FALSE)
-      return(list(
-        dt_clusters      = data.table::as.data.table(dt_clusters),
-        st_constraints_ts = st_constraints_ts
+      return(res <- build_full_st_constraints_from_json(
+        body_json,
+        st_constraints_ts,
+        hours_format = "list_string" 
       ))
   }
 
