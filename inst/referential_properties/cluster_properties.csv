@@ -51,6 +51,6 @@ General;injectionnominalcapacity;injectionNominalCapacity;float;0.0;8,6;storage;
 General;name;name;str;;8,6;storage;860;name
 General;reservoircapacity;reservoirCapacity;float;0.0;8,6;storage;860;reservoircapacity
 General;withdrawalnominalcapacity;withdrawalNominalCapacity;float;0.0;8,6;storage;860;withdrawalnominalcapacity
-General;efficiencywithdrawal;;float;1;9,2;storage;920;efficiencywithdrawal
-General;penalize-variation-injection;;bool;False;9,2;storage;920;penalize.variation.injection
-General;penalize-variation-withdrawal;;bool;False;9,2;storage;920;penalize.variation.withdrawal
+General;efficiencywithdrawal;efficiencyWithdrawal;float;1;9,2;storage;920;efficiencywithdrawal
+General;penalize-variation-injection;penalizeVariationInjection;bool;False;9,2;storage;920;penalize.variation.injection
+General;penalize-variation-withdrawal;penalizeVariationWithdrawal;bool;False;9,2;storage;920;penalize.variation.withdrawal
