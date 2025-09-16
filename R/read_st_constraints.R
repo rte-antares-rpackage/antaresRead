@@ -124,7 +124,7 @@ read_storages_constraints <- function(opts=simOptions()){
       }
     }
 
-    list(full_st_constraints = out)
+    return( out)
   }
 
   # ---- API block ----
