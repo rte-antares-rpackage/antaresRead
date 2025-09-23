@@ -14,7 +14,7 @@ getThematicTrimming(opts = simOptions())
 \code{data.frame} with 2 columns :
 \itemize{
 \item \code{variables} : names are displayed according to the study version
-\item \code{status_selection} : have 2 possible values {"active"; "skip"}
+\item \code{status_selection} : have 2 possible values ("active"; "skip")
 }
 }
 \description{
