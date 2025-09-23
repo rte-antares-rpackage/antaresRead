@@ -16,7 +16,7 @@
 #'
 #' @return `data.frame` with 2 columns :
 #'  - `variables` : names are displayed according to the study version
-#'  - `status_selection` : have 2 possible values {"active"; "skip"}
+#'  - `status_selection` : have 2 possible values ("active"; "skip")
 #'
 #' @export
 #' @examples
