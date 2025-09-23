@@ -13,6 +13,8 @@
 <url><loc>/reference/as.antaresDataTable.html</loc></url>
 <url><loc>/reference/changeTimeStep.html</loc></url>
 <url><loc>/reference/copyToClipboard.html</loc></url>
+<url><loc>/reference/dot-download_api_aggregate_result.html</loc></url>
+<url><loc>/reference/dot-filter_bindingConstraints_by_names.html</loc></url>
 <url><loc>/reference/dot-transform_antares_version.html</loc></url>
 <url><loc>/reference/dot-writeIni.html</loc></url>
 <url><loc>/reference/extractDataList.html</loc></url>
@@ -20,8 +22,10 @@
 <url><loc>/reference/getGeographicTrimming.html</loc></url>
 <url><loc>/reference/getIdCols.html</loc></url>
 <url><loc>/reference/getLinks.html</loc></url>
+<url><loc>/reference/getThematicTrimming.html</loc></url>
 <url><loc>/reference/hvdcModification.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/list_thematic_variables.html</loc></url>
 <url><loc>/reference/mergeDigests.html</loc></url>
 <url><loc>/reference/ponderateMcAggregation.html</loc></url>
 <url><loc>/reference/read-ini.html</loc></url>
@@ -37,6 +41,7 @@
 <url><loc>/reference/readInputThermal.html</loc></url>
 <url><loc>/reference/readLayout.html</loc></url>
 <url><loc>/reference/readOptimCriteria.html</loc></url>
+<url><loc>/reference/read_storages_constraints.html</loc></url>
 <url><loc>/reference/removeVirtualAreas.html</loc></url>
 <url><loc>/reference/setAlias.html</loc></url>
 <url><loc>/reference/setHvdcAreas.html</loc></url>
