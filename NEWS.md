@@ -1,5 +1,12 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 2.9.3.9000
+
+DOCFIX :  
+
+* `setSimulationPathAPI()`/`setTimeoutAPI()` updated with timeout to *600s*  
+  - All functions with default value timeout to *60s* are updated with *600s* 
+
 # antaresRead 2.9.2
 
 NEW FEATURES (cf. Antares v9.2 changelog) :

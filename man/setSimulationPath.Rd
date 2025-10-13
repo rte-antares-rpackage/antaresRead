@@ -38,7 +38,7 @@ In such a case, the function \code{\link{readAntares}} is unavailable.}
 
 \item{token}{\code{character} API personnal access token}
 
-\item{timeout}{\code{numeric} API timeout (seconds). Default to 60. See also \code{\link{setTimeoutAPI}}}
+\item{timeout}{\code{numeric} API timeout (Default to 600 seconds).}
 
 \item{httr_config}{API httr configuration. See \code{\link[httr]{config}}}
 }
@@ -132,8 +132,8 @@ setSimulationPath("path_of_the_folder_of_the_study", 0)
 # Working with API
 #--------------------------
 setSimulationPathAPI(
-    host = "http://antares_api_adress", 
-    study_id = "study_id_on_api", 
+    host = "http://antares_api_adress",
+    study_id = "study_id_on_api",
     token = "token"
 )
 
@@ -143,8 +143,8 @@ setSimulationPathAPI(
 require(httr)
 set_config(verbose())
 setSimulationPathAPI(
-    host = "http://antares_api_adress", 
-    study_id = "study_id_on_api", 
+    host = "http://antares_api_adress",
+    study_id = "study_id_on_api",
     token = "token"
 )
 
@@ -152,16 +152,16 @@ reset_config()
 
 # or in setSimulationPathAPI
 setSimulationPathAPI(
-    host = "http://antares_api_adress", 
-    study_id = "study_id_on_api", 
+    host = "http://antares_api_adress",
+    study_id = "study_id_on_api",
     token = "token",
     httr_config = config(verbose = TRUE)
 )
 
 # disable ssl certificate checking ?
 setSimulationPathAPI(
-    host = "http://antares_api_adress", 
-    study_id = "study_id_on_api", 
+    host = "http://antares_api_adress",
+    study_id = "study_id_on_api",
     token = "token",
     httr_config = config(ssl_verifypeer = FALSE)
 )
@@ -193,7 +193,7 @@ output <- dcast(output, timeId + areaId ~ simulation, value.var = "LOAD")
 output
 
 # Quick visualization
-matplot(output[area == area[1], !c("area", "timeId"), with = FALSE], 
+matplot(output[area == area[1], !c("area", "timeId"), with = FALSE],
         type = "l")
 }
 
@@ -201,4 +201,6 @@ matplot(output[area == area[1], !c("area", "timeId"), with = FALSE],
 \seealso{
 \code{\link{simOptions}}, \code{\link{readAntares}}, \code{\link{readLayout}},
 \code{\link{readClusterDesc}}, \code{\link{readBindingConstraints}}
+
+\code{\link{setTimeoutAPI}}
 }
