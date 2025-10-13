@@ -52,10 +52,10 @@
 
 
 .getSimOptionsAPI <- function(paths, host, ...){
-  
+
   ## Read info from json
   simPath <- paths$simPath
-  
+
   # Get basic information about the simulation
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
 
@@ -63,24 +63,24 @@
 
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
-  
+
   mc_ind_path <- file.path(simDataPath, "mc-ind&depth=1")
-  
+
   synthesis <- .getSuccess(file.path(simDataPath, "mc-all&depth=1"), ...)
   yearByYear <- .getSuccess(mc_ind_path, ...)
   scenarios <- .getSuccess(file.path(simPath, "ts-numbers&depth=1"), ...)
-  
+
   if (yearByYear) {
     year_no_filter <- names(read_secure_json(mc_ind_path, ...))
     mcYears <- as.numeric(year_no_filter[grep("^\\d{5}$", year_no_filter)])
   } else {
     mcYears <- numeric()
   }
-  
+
   if (!synthesis & !yearByYear) {
     stop("No results/data found in API", call. = FALSE)
   }
-  
+
   # List of available areas and links
   if (synthesis) {
     dataPath <- file.path(simDataPath, "mc-all")
@@ -94,20 +94,20 @@
   )
   districtList <- grep("^@", areaList, value = TRUE)
   areaList <- areaList[!areaList %in% districtList]
-  
+
   # linkList
   links_path <- file.path(dataPath, "links&depth=2")
   links_success <- .getSuccess(links_path, ...)
-  
+
   linkList <- character(0)
   if (links_success) {
     linkList <- .scan_output_links_folder(links_path, ...)
   }
-  
+
   # areasWithClusters areasWithResClusters areasWithSTClusters
   areas_path <- file.path(dataPath, "areas&depth=2")
   areas_success <- .getSuccess(areas_path, ...)
-  
+
   areasWithClusters <- character(0)
   areasWithResClusters <- character(0)
   areasWithSTClusters <- character(0)
@@ -122,7 +122,7 @@
                                                        type = "st-storage",
                                                        ...)
   }
-  
+
   # variables
   variables <- list()
   areas_variables <- character(0)
@@ -134,21 +134,21 @@
                                                        areaList = areaList,
                                                        ...)
   }
-  if (links_success) {  
+  if (links_success) {
     links_variables <- .get_available_output_variables(path = dataPath,
                                                        type = "links",
                                                        linkList = linkList,
                                                        areaList = areaList,
                                                        ...)
   }
-  
+
   if (length(areas_variables) > 0) {
     variables[["areas"]] <- areas_variables
   }
   if (length(links_variables) > 0) {
     variables[["links"]] <- links_variables
   }
-  
+
   # linksDef
   linksDef <- .readLinksDef(strsplit(read_secure_json(file.path(simPath, "about-the-study", "links"), ...), "\n")[[1]])
 
@@ -236,8 +236,8 @@
       })
     }
   }
-  
-  # Areas with st-storage (>=860) 
+
+  # Areas with st-storage (>=860)
   if(paths$version>=860){
     clusterSTList <- read_secure_json(file.path(inputPath, "st-storage", "clusters", "&depth=4"), ...)
     areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
@@ -248,7 +248,7 @@
       })
       return(TF)
     })
-    
+
     # return
     list(
       mode = "Input",
@@ -284,8 +284,11 @@
 # }
 
 #' @import jsonlite
+#' @param timeout \code{numeric} API timeout (Default to 600 seconds).
+#'
+#' @seealso \code{\link{setTimeoutAPI}}
 #' @export
-#' @return  
+#' @return
 #' \item{sleep}{timer for api commande execute}
 #' @rdname setSimulationPath
 setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
@@ -332,32 +335,32 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
     stop("Can't find your 'study_id' on the API")
   }
 
-  res <- .getPathsAPI(host, 
-                      study_id, 
-                      simulation, 
-                      token = token, 
-                      timeout = timeout, 
+  res <- .getPathsAPI(host,
+                      study_id,
+                      simulation,
+                      token = token,
+                      timeout = timeout,
                       config = httr_config)
 
   res$studyName <- check_study$name
-  
+
   res$version <- check_study$version
-  
+
   # If "input mode", read options from the input folder, else read them from
   # the simulation folder.
   if (is.null(res$simPath) | length(res$simPath) == 0) {
-    res <- append(res, 
-                  .getInputOptionsAPI(res, 
-                                      token = token, 
-                                      timeout = timeout, 
+    res <- append(res,
+                  .getInputOptionsAPI(res,
+                                      token = token,
+                                      timeout = timeout,
                                       config = httr_config))
   } else {
     res$simPath <- URLencode(res$simPath)
-    res <- append(res, 
-                  .getSimOptionsAPI(res, 
-                                    host, 
-                                    token = token, 
-                                    timeout = timeout, 
+    res <- append(res,
+                  .getSimOptionsAPI(res,
+                                    host,
+                                    token = token,
+                                    timeout = timeout,
                                     config = httr_config))
   }
 
@@ -384,13 +387,13 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   res$timeout <- timeout
   res$httr_config <- httr_config
   res$modeAPI <- "sync"
-  
+
   # delete version to keep only "antares_version"
   res$version <- NULL
-  
+
   # timer for api commande execute
   res$sleep <- 0.5
-  
+
   # param "verbose" similar to disk mode
   res$verbose <- FALSE
 
@@ -403,7 +406,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
 
 # Private function that reads the definition of the districts
-.readDistrictsDefAPI <- function(inputPath, areas, token = NULL, timeout = 60) {
+.readDistrictsDefAPI <- function(inputPath, areas, token = NULL, timeout = 600) {
   districts <- read_secure_json(file.path(inputPath, "areas/sets"), token = token, timeout = timeout)
   if (length(districts) == 0) return(NULL)
 
@@ -426,7 +429,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
 
 # Private function that reads costs of unsuplied and spilled energy
-.readEnergyCostsAPI <- function(inputPath, token = NULL, timeout = 60) {
+.readEnergyCostsAPI <- function(inputPath, token = NULL, timeout = 600) {
 
   costs <- read_secure_json(file.path(inputPath, "thermal", "areas"), token = token, timeout = timeout)
 
@@ -439,29 +442,29 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
 # Detect if there is at least one output by type of cluster
 .detect_areas_with_clusters <- function(path, type, ...) {
-  
+
   assertthat::assert_that(type %in% c("thermal", "renewables", "st-storage"))
-  
+
   pattern_type <- switch(type,
                          "thermal" = "(details-annual)|(details-daily)|(details-hourly)|(details-monthly)|(details-weekly)",
                          "renewables" = "details-res-",
                          "st-storage" = "details-STstorage-"
                          )
-  
+
   hasClusters <- unlist(
     lapply(
       read_secure_json(path, ...),
       function(x) any(grepl(pattern = pattern_type, x = names(x)))
     )
   )
-  
+
   return(names(hasClusters)[hasClusters])
 }
 
 
 # Build the link list by scanning the output folder links
 .scan_output_links_folder <- function(path, ...) {
-  
+
   linkList <- read_secure_json(path, ...)
   linkList <- mapply(function(X, Y){
     if (length(Y) >= 1) {
@@ -473,27 +476,27 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   )
   linkList <- unlist(linkList)
   names(linkList) <- NULL
-  
+
   return(linkList)
 }
 
 
 .get_available_output_variables <- function(path, type, linkList, areaList, ...) {
-  
+
   variables <- character(0)
-  
+
   lst_type <- list("areas" = list("object_name" = "area", "elements" = areaList),
                    "links" = list("object_name" = "link", "elements" = linkList)
                    )
   lst_type_target <- lst_type[[type]]
-  
+
   target_list <- lst_type_target[["elements"]]
-  
+
   has_items <- length(target_list) > 0
   if (!has_items) {
     return(variables)
   }
-  
+
   if (has_items) {
     path_element <- target_list[1]
     if (type == "links") {
@@ -513,6 +516,6 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
       }
     }
   }
-  
+
   return(variables)
 }

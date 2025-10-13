@@ -10,11 +10,11 @@ setTimeoutAPI(opts, timeout)
 \item{opts}{list of simulation parameters returned by the function
 \code{\link{setSimulationPathAPI}}}
 
-\item{timeout}{\code{numeric} API timeout (seconds). Default to 60.}
+\item{timeout}{\code{numeric} API timeout (seconds). Default to 600.}
 }
 \value{
 Object of class \code{simOptions}, list of options used to read the data contained in the last
-simulation read by \code{\link{setTimeoutAPI}}.
+simulation read by \code{\link{setSimulationPathAPI}}.
 }
 \description{
 Change API Timeout
