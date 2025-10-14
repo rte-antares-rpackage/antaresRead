@@ -7,6 +7,10 @@ DOCFIX :
 * `setSimulationPathAPI()`/`setTimeoutAPI()` updated with timeout to *600s*  
   - All functions with default value timeout to *60s* are updated with *600s* 
 
+BUGFIXES :
+
+* `.fread_antares()` : in API mode, add *parse_result* argument to text
+
 # antaresRead 2.9.2
 
 NEW FEATURES (cf. Antares v9.2 changelog) :
