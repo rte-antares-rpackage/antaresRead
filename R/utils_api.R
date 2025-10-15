@@ -12,7 +12,7 @@ fread_antares <- function(opts, file, ...) {
       tryCatch(fread(response, ...), error = function(e){
         if(isRunning())
           e <- as.character(e)
-        message(file)
+        message(file) 
         message(e)
       }))
   } else {
@@ -37,7 +37,7 @@ empty_strings_as_NA <- function(x) {
 
 
 #' @importFrom utils URLencode
-read_secure_json <- function(url, token = NULL, timeout = 600, config = list()) {
+read_secure_json <- function(url, token = NULL, timeout = 60, config = list()) {
   result <- api_get(
     opts = list(token = token, timeout = timeout, httr_config = config),
     endpoint = I(url)
@@ -47,7 +47,7 @@ read_secure_json <- function(url, token = NULL, timeout = 600, config = list()) 
 
 
 #' @importFrom httr GET timeout add_headers http_status
-.getSuccess <- function(path, token, timeout = 600, config = list()) {
+.getSuccess <- function(path, token, timeout = 60, config = list()) {
   if (!is.null(token) && token != "") {
     response <- GET(
       URLencode(path), timeout(timeout),
@@ -66,11 +66,11 @@ read_secure_json <- function(url, token = NULL, timeout = 600, config = list()) 
 #' @param opts
 #'   list of simulation parameters returned by the function
 #'   \code{\link{setSimulationPathAPI}}
-#' @param timeout \code{numeric} API timeout (seconds). Default to 600.
-#'
+#' @param timeout \code{numeric} API timeout (seconds). Default to 60.
+#' 
 #' @return
 #' Object of class `simOptions`, list of options used to read the data contained in the last
-#' simulation read by \code{\link{setSimulationPathAPI}}.
+#' simulation read by \code{\link{setTimeoutAPI}}.
 #'
 #' @export
 #'
@@ -95,6 +95,6 @@ is_api_study <- function(opts) {
 
 
 split_vector_in_equal_parts <- function(x, n) {
-
+  
   return(split(x, sort(seq(x)%%n)))
 }
