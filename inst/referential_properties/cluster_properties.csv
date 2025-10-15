@@ -54,3 +54,4 @@ General;withdrawalnominalcapacity;withdrawalNominalCapacity;float;0.0;8,6;storag
 General;efficiencywithdrawal;efficiencyWithdrawal;float;1;9,2;storage;920;efficiencywithdrawal
 General;penalize-variation-injection;penalizeVariationInjection;bool;False;9,2;storage;920;penalize.variation.injection
 General;penalize-variation-withdrawal;penalizeVariationWithdrawal;bool;False;9,2;storage;920;penalize.variation.withdrawal
+General;allow-overflow;allowOverflow;bool;False;9,3;storage;930;allow.overflow
