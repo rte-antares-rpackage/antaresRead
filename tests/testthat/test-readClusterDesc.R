@@ -433,3 +433,93 @@ test_that("Test properties read from .ini", {
     expect_false(is.unsorted(setdiff(names(input), id_cols)))
   })
 })
+
+# v930 ----
+# st-storage ----
+
+# mock study
+areas <- "fr"
+opts <- list(
+  "inputPath" = tempdir(),
+  "typeLoad"= "txt",
+  "areaList" = areas,
+  "antaresVersion" = 930
+)
+
+# properties
+fr <- c(
+  paste0("[",
+         areas[1], "_", "myClust",
+         "]"),
+  "name = fr_myClust",
+  "group = Battery",
+  "allow-overflow = false")
+
+
+list_properties <- list(fr)  
+
+# create dir with properties
+dir_path <- file.path(tempdir(), "st-storage", "clusters", areas)
+lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
+
+
+# write properties
+lapply(1, function(x){
+  writeLines(list_properties[[x]], 
+             file.path(dir_path[x], "list.ini"))
+})
+
+
+## Properties output format ----
+test_that("Operating format (default)", {
+  # read clusters informations
+  input <- readClusterSTDesc(opts = opts)
+  
+  # test character "-" not exists
+  testthat::expect_true(
+    identical(grep(pattern = "-", x = names(input)), 
+              integer(0)))
+})
+
+test_that("Antares format", {
+  # read clusters informations
+  input <- readClusterSTDesc(dot_format = FALSE, opts = opts)
+  
+  # test character "-" exists
+  testthat::expect_true(
+    any(grepl(pattern = "-", x = names(input))))
+})
+
+# Read properties ----
+test_that("Test properties read from .ini", {
+  # character "-" is available in .ini files
+  input <- readClusterSTDesc(dot_format = FALSE, opts = opts)
+  
+  area_test <- areas[1]
+  cluster_target <- "fr_myClust"
+  
+  file_propertie_path <- file.path(opts$inputPath,
+                                   "st-storage",
+                                   "clusters",
+                                   area_test,
+                                   "list.ini")
+  
+  list_properties <- readIniFile(file_propertie_path)
+  list_properties <- list_properties[[cluster_target]]
+  
+  # select taget values 
+  one_line_select <- input[area%in%area_test & 
+                             cluster%in%tolower(cluster_target)]
+  
+  # test .ini values
+  testthat::expect_equal(list_properties$`allow-overflow`, 
+                         one_line_select$`allow-overflow`)
+  
+  test_that("colnames ordered", {
+    # id_cols is already sorted but it could be not
+    id_cols <- c("area", "cluster", "group")
+    
+    input <- readClusterDesc(dot_format = FALSE, opts = opts)
+    expect_false(is.unsorted(setdiff(names(input), id_cols)))
+  })
+})
