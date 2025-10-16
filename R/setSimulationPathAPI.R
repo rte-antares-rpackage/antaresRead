@@ -216,7 +216,7 @@
     TF <- FALSE
     try({
       f <- clusterList[[a]]$list
-      if(!is.null(f))return(TRUE)
+      return(!is.null(f) & length(f) > 0)
     })
     return(TF)
   })
@@ -230,7 +230,7 @@
         TF <- FALSE
         try({
           f <- clusterResList[[a]]$list
-          if(!is.null(f))return(TRUE)
+          return(!is.null(f) & length(f) > 0)
         })
         return(TF)
       })
@@ -240,11 +240,12 @@
   # Areas with st-storage (>=860)
   if(paths$version>=860){
     clusterSTList <- read_secure_json(file.path(inputPath, "st-storage", "clusters", "&depth=4"), ...)
+    
     areaHasSTClusters <- vapply(areaList, FUN.VALUE = logical(1), function(a) {
       TF <- FALSE
       try({
         f <- clusterSTList[[a]]$list
-        if(!is.null(f))return(TRUE)
+        return(!is.null(f) & length(f) > 0)
       })
       return(TF)
     })
