@@ -2,11 +2,14 @@
 
 # antaresRead 2.9.3.9000
 
+NEW FEATURES (cf. Antares v9.3 changelog) :
 DOCFIX :  
 
 * `setSimulationPathAPI()`/`setTimeoutAPI()` updated with timeout to *600s*  
   - All functions with default value timeout to *60s* are updated with *600s* 
-
+* `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
+  - Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API
+  
 # antaresRead 2.9.2
 
 NEW FEATURES (cf. Antares v9.2 changelog) :
