@@ -2,14 +2,19 @@
 
 # antaresRead 2.9.3.9000
 
+NEW FEATURES (cf. Antares v9.3 changelog) :
 DOCFIX :  
 
 * `setSimulationPathAPI()`/`setTimeoutAPI()` updated with timeout to *600s*  
   - All functions with default value timeout to *60s* are updated with *600s* 
+* `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
+  - Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API
 
 BUGFIXES :
 
 * `.fread_antares()` : in API mode, add *parse_result* argument to text
+* `.getInputOptionsAPI()` : in API mode, ensure that the areas with clusters are stored in areasWithClusters, areasWithResClusters, areasWithSTClusters
+
 
 # antaresRead 2.9.2
 

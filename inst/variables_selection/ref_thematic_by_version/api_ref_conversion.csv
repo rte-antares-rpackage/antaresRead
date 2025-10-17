@@ -98,3 +98,5 @@ NPCAP HOURS,npcapHours
 STS by group,stsByGroup
 DTG MRG CSR,dtgMrgCsr
 UNSP ENRG CSR,unspEnrgCsr
+DISPATCH. GEN.,dispatchGen
+RENEWABLE GEN.,renewableGen
