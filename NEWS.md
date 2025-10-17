@@ -13,7 +13,7 @@ DOCFIX :
 BUGFIXES :
 
 * `.fread_antares()` : in API mode, add *parse_result* argument to text
-* `.getInputOptionsAPI()` : in API mode, ensure that the areas with clusters are stored in areasWithClusters, areasWithResClusters, areasWithSTClusters
+* `.getInputOptionsAPI()` : in API mode, ensure that the areas stored in areasWithClusters, areasWithResClusters, areasWithSTClusters have clusters
 
 
 # antaresRead 2.9.2
