@@ -128,8 +128,16 @@ ref_thematic_920 <- read.table(system.file("variables_selection/ref_thematic_by_
 
 ref_thematic_920$col_name <- trimws(ref_thematic_920$col_name)
 
+ref_thematic_930 <- read.table(system.file("variables_selection/ref_thematic_by_version/ref_930.csv",
+                                           package = "antaresRead"),
+                               header = TRUE,
+                               sep = ",")
+
+ref_thematic_930$col_name <- trimws(ref_thematic_930$col_name)
+
 ref_thematic <- list("880" = ref_thematic_880,
-                     "920" = ref_thematic_920)
+                     "920" = ref_thematic_920,
+                    "930" = ref_thematic_930)
 
 pkgEnv$thematic <- ref_thematic
 
