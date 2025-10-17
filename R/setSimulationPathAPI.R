@@ -9,7 +9,7 @@
     outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), ...))
     simNames <- setdiff(basename(outputContent), c("maps", "logs"))
   }
-  if (length(simNames) == 0) {
+	if (length(simNames) == 0) {
     if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
       stop("Cannot find any simulation result")
     } else {
@@ -55,7 +55,7 @@
 
   ## Read info from json
   simPath <- paths$simPath
-
+  
   # Get basic information about the simulation
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
 
@@ -181,7 +181,6 @@
 
   studyPath <- paths$studyPath
   inputPath <- paths$inputPath
-  outputPath <- paths$simPath
 
   # Lists of areas, links and districts existing in the study
   areaList <- unique(
@@ -316,7 +315,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   }
 
   stopifnot(timeout > 0)
-
+  
   check_study <- tryCatch({
     read_secure_json(file.path(host, "v1/studies", study_id), token = token,
                      timeout = timeout, config = httr_config
