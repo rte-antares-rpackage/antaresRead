@@ -11,7 +11,7 @@ DOCFIX :
   - Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API
 
 BUGFIXES :
-
+* `.readDistrictsDefAPI()` picks `add-all` value in expected property `apply-filter`
 * `.fread_antares()` : in API mode, add *parse_result* argument to text
 * `.getInputOptionsAPI()` : in API mode, ensure that the areas stored in areasWithClusters, areasWithResClusters, areasWithSTClusters have clusters
 
