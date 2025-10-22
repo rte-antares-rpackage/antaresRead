@@ -12,6 +12,8 @@ DOCFIX :
 
 BUGFIXES :
 * `.readDistrictsDefAPI()` picks `add-all` value in expected property `apply-filter`
+* `.fread_antares()` : in API mode, add *parse_result* argument to text
+* `.getInputOptionsAPI()` : in API mode, ensure that the areas stored in areasWithClusters, areasWithResClusters, areasWithSTClusters have clusters
 
 
 # antaresRead 2.9.2

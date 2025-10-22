@@ -1376,6 +1376,7 @@
       f <- file.path(pathInput, area, "mod.txt")
     }
   } else {
+    # Bug here. tsIds are stored in a list of numbers with read_secure_json(). No need to use strsplit. Use unlist or names instead. Check .importThermal and the goal of this.
     tsIds <- as.numeric(strsplit(
       read_secure_json(file.path(pathTSNumbers, area), token = opts$token,
                        timeout = opts$timeout, config = opts$httr_config),
@@ -1454,7 +1455,7 @@
   if (synthesis) {
     res <- res[, .(hydroStorage=mean(hydroStorage)), keyby = .(area, timeId)]
   }
-
+  
   res
 
 }
