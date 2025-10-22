@@ -9,7 +9,11 @@ DOCFIX :
   - All functions with default value timeout to *60s* are updated with *600s* 
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
   - Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API
-  
+
+BUGFIXES :
+* `.readDistrictsDefAPI()` picks `add-all` value in expected property `apply-filter`
+
+
 # antaresRead 2.9.2
 
 NEW FEATURES (cf. Antares v9.2 changelog) :

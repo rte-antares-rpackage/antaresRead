@@ -412,7 +412,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
   res <- ldply(names(districts), function(n) {
     x <- districts[[n]]
-    if (any(unlist(x) == "add-all")) {
+    if (x[["apply-filter"]] == "add-all") {
       areasToRemove <- unlist(x[names(x) == "-"], use.names = FALSE)
       areas <- setdiff(areas, areasToRemove)
     } else {
