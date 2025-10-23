@@ -249,7 +249,7 @@ path_ts <- file.path(
 )
 path_ts <- unlist(lapply(path_ts, file.path, list_value_930txt))
 
-# ---- matrix (8760, N) ----
+# matrix (8760, N)
 N <-3
 ts_values <- matrix(0.7, nrow = 8760, ncol = N)
 
