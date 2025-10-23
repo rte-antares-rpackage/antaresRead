@@ -228,7 +228,7 @@ opts <- list(
   "typeLoad"        = "txt",
   "areasWithSTClusters" = areas,
   "timeIdMin"       = 1,
-  "timeIdMax"       = 8736,   # <-- horizon = 8736
+  "timeIdMax"       = 8736,
   "antaresVersion"  = 930
 )
 
@@ -249,9 +249,9 @@ path_ts <- file.path(
 )
 path_ts <- unlist(lapply(path_ts, file.path, list_value_930txt))
 
-# ---- matrix (8736, N) ----
+# ---- matrix (8760, N) ----
 N <-3
-ts_values <- matrix(0.7, nrow = 8736, ncol = N)
+ts_values <- matrix(0.7, nrow = 8760, ncol = N)
 
 # create directories
 dir_path <- file.path(tempdir(), "st-storage", "series", areas, name_cluster)
