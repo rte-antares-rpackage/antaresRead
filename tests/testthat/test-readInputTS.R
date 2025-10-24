@@ -219,3 +219,65 @@ test_that("st-storage importation works", {
   expect_true(all(
     list_value_920 %in% unique(input$name_file)))
 })
+
+# >= v930 ----
+areas <- c("fr", "be")
+
+opts <- list(
+  "inputPath"       = tempdir(),
+  "typeLoad"        = "txt",
+  "areasWithSTClusters" = areas,
+  "timeIdMin"       = 1,
+  "timeIdMax"       = 8736,
+  "antaresVersion"  = 930
+)
+
+list_value_930 <- c(
+  "cost-injection",
+  "cost-withdrawal",
+  "cost-level",
+  "cost-variation-injection",
+  "cost-variation-withdrawal"
+)
+list_value_930txt <- paste0(list_value_930, ".txt")
+
+name_cluster <- "my_clust"
+
+# file paths
+path_ts <- file.path(
+  opts$inputPath, "st-storage", "series", areas, name_cluster
+)
+path_ts <- unlist(lapply(path_ts, file.path, list_value_930txt))
+
+# matrix (8760, N)
+N <-3
+ts_values <- matrix(0.7, nrow = 8760, ncol = N)
+
+# create directories
+dir_path <- file.path(tempdir(), "st-storage", "series", areas, name_cluster)
+lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
+
+# write matrix/series
+lapply(path_ts, function(x) {
+  write.table(ts_values, file = x, row.names = FALSE, col.names = FALSE)
+})
+
+test_that("st-storage importation works (8736 x N)", {
+  input <- readInputTS(st_storage = "all", showProgress = FALSE, opts = opts)
+  
+  expect_is(input, "antaresDataTable")
+  expect_gt(nrow(input), 0)
+  
+  # 1) time horizon = 8736
+  expect_equal(max(input$timeId) - min(input$timeId) + 1, 8736)
+  
+  # 2) we have N columns (verified via the number of rows per series)
+  # each (area, cluster, name_file) must have 8736 * N rows
+  dt <- data.table::as.data.table(input)
+  rows_per_ts <- dt[, .N, by = .(area, cluster, name_file)]
+  expect_true(all(rows_per_ts$N == 8736 * N))
+  expect_equal(unique(rows_per_ts$N / 8736), N)
+  
+  # 3) expected files present
+  expect_true(all(list_value_930 %in% unique(input$name_file)))
+})
