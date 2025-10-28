@@ -42,7 +42,8 @@ Imports:
     memuse,
     purrr,
     lifecycle,
-    assertthat
+    assertthat,
+    arrow
 Suggests:
     testthat,
     covr,
