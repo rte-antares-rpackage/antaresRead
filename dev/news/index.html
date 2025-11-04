@@ -51,6 +51,12 @@
 <code><a href="../reference/getThematicTrimming.html">getThematicTrimming()</a></code> to read sub section “variables selection” of file <code>generaldata.ini</code>
 <ul><li>Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API</li>
 </ul></li>
+</ul><p>NEW FEATURES (other) :</p>
+<ul><li>
+<code>.api_get_aggregate_areas()/.api_get_aggregate_links()</code> : query the endpoint in format <code>parquet</code>
+</li>
+<li>
+<code><a href="../reference/dot-download_api_aggregate_result.html">.download_api_aggregate_result()</a></code> : read a parquet file with arrow package</li>
 </ul><p>BUGFIXES : * <code>.readDistrictsDefAPI()</code> picks <code>add-all</code> value in expected property <code>apply-filter</code> * <code>.fread_antares()</code> : in API mode, add <em>parse_result</em> argument to text * <code>.getInputOptionsAPI()</code> : in API mode, ensure that the areas stored in areasWithClusters, areasWithResClusters, areasWithSTClusters have clusters</p>
 </div>
     <div class="section level2">
