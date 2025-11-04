@@ -1,5 +1,6 @@
 #' @importFrom utils URLencode
 #' @importFrom shiny isRunning
+#' @importFrom data.table fread
 fread_antares <- function(opts, file, ...) {
   if (identical(opts$typeLoad, "api")) {
     file <- gsub("\\.txt$", "", file)

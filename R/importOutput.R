@@ -365,7 +365,7 @@
 
   columns_url <- .compute_pattern_select_url(select = select, query_file = query_file)
 
-  endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv")
+  endpoint_root <- paste0(opts[["study_id"]], "/areas/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=parquet")
   endpoint <- paste0(endpoint_root,
                      paste0("&query_file=", query_file),
                      paste0("&frequency=", timeStep),
@@ -386,7 +386,7 @@
                                           select = select,
                                           mcYears = mcYears,
                                           opts = opts
-                                         )
+                                         )  
   res <- .download_api_aggregate_result(download_id = download_id, opts = opts)
   .format_api_aggregate_result(res = res, type_res = query_file)
 }
@@ -395,7 +395,13 @@
 .download_and_format_api_get_aggregate_areas_result_bulk <- function(areas, timeStep, query_file, select, mcYears, number_of_batches, opts) {
 
   if (is.null(mcYears)) {
-    res <- .download_and_format_api_get_aggregate_areas_result(areas = areas, timeStep = timeStep, query_file = query_file, select = select, mcYears = mcYears, opts = opts)
+    res <- .download_and_format_api_get_aggregate_areas_result(areas = areas,
+                                                               timeStep = timeStep,
+                                                               query_file = query_file,
+                                                               select = select,
+                                                               mcYears = mcYears,
+                                                               opts = opts
+                                                              )
   } else {
     batches <- split_vector_in_equal_parts(x = mcYears, n = number_of_batches)
     lst_res <- lapply(batches,
@@ -415,7 +421,8 @@
 
 #' Retrieve information on a file's state of preparation and retrieve download file.
 #'
-#' @importFrom data.table fread
+#' @importFrom arrow read_parquet
+#' @importFrom data.table as.data.table
 #'
 #' @param download_id the id of the download.
 #' @template opts
@@ -431,17 +438,15 @@
                             )
   response <- api_get(opts = opts,
                       default_endpoint = default_endpoint,
-                      endpoint = download_id,
-                      parse_result = "text",
-                      encoding = "UTF-8"
+                      endpoint = download_id
                      )
-
+  
   if (identical(response, "")) {
     return(data.table())
   } else {
-    return(fread(input = response, data.table = TRUE))
+    res <- read_parquet(file = response, as_data_frame = TRUE)
+    return(as.data.table(res))
   }
-
 }
 
 
@@ -1189,7 +1194,7 @@
     columns_url <- paste0("&columns_names=", paste0(select, collapse = ","))
   }
 
-  endpoint_root <- paste0(opts[["study_id"]], "/links/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=csv&query_file=values")
+  endpoint_root <- paste0(opts[["study_id"]], "/links/aggregate/", pattern_endpoint, "/", opts[["simOutputName"]], "?format=parquet&query_file=values")
   endpoint <- paste0(endpoint_root,
                      paste0("&frequency=", timeStep),
                      columns_url,

@@ -10,6 +10,11 @@ DOCFIX :
 * `getThematicTrimming()` to read sub section "variables selection" of file `generaldata.ini`  
   - Use new referentials(DISPATCH. GEN. and RENEWABLE GEN.), twice for file system and one for API
 
+NEW FEATURES (other) :  
+
+* `.api_get_aggregate_areas()/.api_get_aggregate_links()` : query the endpoint in format `parquet`
+* `.download_api_aggregate_result()` : read a parquet file with arrow package
+
 BUGFIXES :
 * `.readDistrictsDefAPI()` picks `add-all` value in expected property `apply-filter`
 * `.fread_antares()` : in API mode, add *parse_result* argument to text
