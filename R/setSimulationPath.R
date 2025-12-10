@@ -399,7 +399,12 @@ setSimulationPath <- function(path, simulation = NULL) {
   # Get basic information about the simulation
   info <- readIniFile(file.path(simPath, "info.antares-output"))$general
   params <- readIniFile(file.path(simPath, "about-the-study/parameters.ini"))
-
+  
+  # Convert the Antares number version (from 9.0)
+  if(info$version<600 & info$version>=9) {┴
+    info$version <- .transform_antares_version(antares_version = info$version)
+  }
+  
   # Where are located the results ?
   simDataPath <- switch(as.character(info$mode),
                         "draft" = "adequacy-draft",
