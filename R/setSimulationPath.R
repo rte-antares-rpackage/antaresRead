@@ -401,7 +401,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   params <- readIniFile(file.path(simPath, "about-the-study/parameters.ini"))
   
   # Convert the Antares number version (from 9.0)
-  if(info$version<600 & info$version>=9) {┴
+  if(info$version<600 & info$version>=9) {
     info$version <- .transform_antares_version(antares_version = info$version)
   }
   
