@@ -1,0 +1,3 @@
+# License
+
+    COPYRIGHT HOLDER: RTE Réseau de transport d’électricité
