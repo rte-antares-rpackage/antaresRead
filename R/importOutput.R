@@ -313,13 +313,75 @@
                                                              opts = opts
                                                             )
   } else {
+    
+    # For Antares 9.3+, collect all unique columns first
+    if (opts$antaresVersion >= 930) {
+      
+      # Get all files to read
+      args <- .generate_output_data_to_read(
+        folder = "areas", 
+        fileName = "values", 
+        ids = areas, 
+        timeStep = timeStep, 
+        mcYears = mcYears, 
+        opts = opts
+      )
+      
+      outputMissing <- .check_missing_output_files(opts = opts, args = args)
+      
+      if (!all(outputMissing)) {
+        args <- args[!outputMissing, ]
+        
+        # Collect all unique column names
+        all_colNames_list <- list()
+        for (i in 1:nrow(args)) {
+          colNames_i <- .getOutputHeader(args$path[i], "area")
+          if (!is.null(colNames_i)) {
+            all_colNames_list[[i]] <- colNames_i[!colNames_i %in% pkgEnv$idVars]
+          }
+        }
+        all_unique_cols <- unique(unlist(all_colNames_list))
+      } else {
+        all_unique_cols <- NULL
+      }
+      
+      # Reshape function to add missing columns with 0
+      reshapeFun <- function(x) {
+        if (!is.null(all_unique_cols)) {
+          current_cols <- names(x)
+          id_cols <- intersect(c("area", "timeId", "mcYear"), current_cols)
+          data_cols <- setdiff(current_cols, c(id_cols, pkgEnv$idVars))
+          missing_cols <- setdiff(all_unique_cols, data_cols)
+          
+          # Add missing columns with 0
+          if (length(missing_cols) > 0) {
+            for (col in missing_cols) {
+              x[, (col) := 0]
+            }
+          }
+          
+          # Reorder columns
+          final_cols <- c(id_cols, all_unique_cols)
+          final_cols <- intersect(final_cols, names(x))
+          setcolorder(x, final_cols)
+        }
+        return(x)
+      }
+      
+    } else {
+      # For older versions, no reshape needed
+      reshapeFun <- NULL
+    }
+    
     suppressWarnings(
       .importOutput("areas", "values", "area", areas, timeStep, select,
-                    mcYears, showProgress, opts, parallel = parallel)
+                    mcYears, showProgress, opts, 
+                    processFun = reshapeFun,
+                    parallel = parallel, 
+                    sameNames = FALSE)
     )
   }
 }
-
 
 # Compute the pattern to put in the url to select the desired columns
 .compute_pattern_select_url <- function(select, query_file) {
