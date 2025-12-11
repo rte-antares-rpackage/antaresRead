@@ -3,7 +3,7 @@
 # antaresRead 2.9.4.9000
 
 BUGFIXES :
-* `setSimulationPath()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
+* `.getSimOptions()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
 
 
 # antaresRead 2.9.3
