@@ -282,7 +282,13 @@
     )
   }
 
-  rbindlist(res, fill=TRUE)
+  # Use fill=TRUE only for areas outputs on Antares >= 9.3
+  # This is required to handle dynamic area columns introduced in newer versions.
+  # For all other objects (links, clusters, etc.), keep strict binding to avoid side effects.
+  rbindlist(
+    res,
+    fill = identical(folder, "areas")  && opts$antaresVersion >= 930
+  )
 }
 
 
@@ -298,117 +304,73 @@
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL,
                                   showProgress, opts, parallel, number_of_batches) {
   
-  # API mode
+  # API mode 
   if (is_api_study(opts)) {
-    if (is.null(areas)) {
-      return(NULL)
-    }
+    if (is.null(areas)) return(NULL)
     
+    return(
       .download_and_format_api_get_aggregate_areas_result_bulk(
-        areas            = areas,
-        timeStep         = timeStep,
-        query_file       = "values",
-        select           = select,
-        mcYears          = mcYears,
+        areas             = areas,
+        timeStep          = timeStep,
+        query_file        = "values",
+        select            = select,
+        mcYears           = mcYears,
         number_of_batches = number_of_batches,
-        opts             = opts
+        opts              = opts
+      )
     )
   }
   
-  # Disk mode
+  # Disk mode 
   
-  # By default, we keep the legacy behaviour:
-  # - sameNames = TRUE  => .importOutput() will compute selectCol based on "select"
-  #                       and use the common colnames logic as before.
-  # - reshapeFun = NULL => no post-processing of columns.
-  reshapeFun <- NULL
-  sameNames  <- TRUE
+  is_930 <- opts$antaresVersion >= 930
+  use_new_schema <- is_930 && is.null(select)
   
-  # For Antares >= 9.3, when no "select" is provided, we want to:
-  #  - collect all unique column names across all files
-  #  - add missing columns with 0 and reorder columns for consistency
-  # This is the new behaviour and only affects the "full" read (select = NULL).
-  if (opts$antaresVersion >= 930 && is.null(select)) {
-    
-    # Build the list of files to read
-    args <- .generate_output_data_to_read(
-      folder   = "areas", 
-      fileName = "values", 
-      ids      = areas, 
-      timeStep = timeStep, 
-      mcYears  = mcYears, 
-      opts     = opts
-    )
-    
-    # Detect missing output files
-    outputMissing <- .check_missing_output_files(opts = opts, args = args)
-    
-    if (!all(outputMissing)) {
-      # Keep only existing files
-      args <- args[!outputMissing, ]
-      
-      # Collect all unique column names across all files
-      all_colNames_list <- vector("list", length = nrow(args))
-      for (i in seq_len(nrow(args))) {
-        colNames_i <- .getOutputHeader(args$path[i], "area")
-        if (!is.null(colNames_i)) {
-          # Remove idVars so we only keep "value" columns here
-          all_colNames_list[[i]] <- colNames_i[!colNames_i %in% pkgEnv$idVars]
-        }
-      }
-      all_unique_cols <- unique(unlist(all_colNames_list))
-    } else {
-      # No files -> no additional columns
-      all_unique_cols <- NULL
-    }
-    
-    # reshapeFun will:
-    #  - add missing columns with 0 (instead of NA)
-    #  - reorder columns to have consistent layout across all areas
-    reshapeFun <- function(x) {
-      if (!is.null(all_unique_cols)) {
-        current_cols <- names(x)
-        
-        # Identify id columns that may be present
-        id_cols <- intersect(c("area", "timeId", "mcYear"), current_cols)
-        
-        # Data columns are the remaining ones (excluding id columns and pkgEnv$idVars)
-        data_cols    <- setdiff(current_cols, c(id_cols, pkgEnv$idVars))
-        missing_cols <- setdiff(all_unique_cols, data_cols)
-        
-        # Add any missing columns with 0 (numeric 0, not NA)
-        if (length(missing_cols) > 0) {
-          for (col in missing_cols) {
-            x[, (col) := 0]
-          }
-        }
-        
-        # Reorder columns: id columns first, then all_unique_cols in a fixed order
-        final_cols <- c(id_cols, all_unique_cols)
-        final_cols <- intersect(final_cols, names(x))
-        setcolorder(x, final_cols)
-      }
-      x
-    }
-    
-    # In this special case (Antares >= 9.3, no select), we use sameNames = FALSE
-    # so that .importOutput() recomputes colNames from each file header and
-    # then we apply reshapeFun to harmonize columns.
-    sameNames <- FALSE
-  }
-  
-  # Finally call .importOutput with the appropriate configuration.
-  # - If sameNames = TRUE  -> legacy behaviour, "select" is handled inside .importOutput.
-  # - If sameNames = FALSE -> new behaviour (header per file + reshapeFun).
-  suppressWarnings(
-    .importOutput(folder= "areas",
-      fileName  = "values",objectName = "area",
-      ids  = areas,timeStep  = timeStep,select = select,
-      mcYears  = mcYears,showProgress  = showProgress,
-      opts = opts,processFun = reshapeFun,parallel = parallel, sameNames  = sameNames
+  # Read data (let .importOutput do the heavy lifting)
+  res <- suppressWarnings(
+    .importOutput(
+      folder       = "areas",
+      fileName     = "values",
+      objectName   = "area",
+      ids          = areas,
+      timeStep     = timeStep,
+      select       = select,
+      mcYears      = mcYears,
+      showProgress = showProgress,
+      opts         = opts,
+      sameNames    = !use_new_schema,
+      parallel     = parallel
     )
   )
+  
+  if (is.null(res) || !use_new_schema) {
+    return(res)
+  }
+  
+ 
+  # Antares >= 9.3: harmonize columns dynamically (ONCE, at the end)
+
+  
+  id_cols <- intersect(c("area", "timeId", "mcYear"), names(res))
+  value_cols <- setdiff(names(res), id_cols)
+  
+  # Compute full set of columns actually present
+  all_value_cols <- unique(value_cols)
+  
+  # Add missing columns (if any) with 0
+  missing_cols <- setdiff(all_value_cols, names(res))
+  if (length(missing_cols) > 0) {
+    for (col in missing_cols) {
+      res[, (col) := 0]
+    }
+  }
+  
+  # Reorder columns: ids first, then values
+  setcolorder(res, c(id_cols, setdiff(names(res), id_cols)))
+  
+  res
 }
+
 
 # Compute the pattern to put in the url to select the desired columns
 .compute_pattern_select_url <- function(select, query_file) {
