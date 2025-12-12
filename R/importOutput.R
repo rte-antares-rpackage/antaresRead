@@ -287,7 +287,8 @@
   # For all other objects (links, clusters, etc.), keep strict binding to avoid side effects.
   rbindlist(
     res,
-    fill = identical(folder, "areas")  && opts$antaresVersion >= 930
+    fill = identical(folder, "areas") && identical(fileName, "values")  
+    && opts$antaresVersion >= 930
   )
 }
 
@@ -352,21 +353,14 @@
 
   
   id_cols <- intersect(c("area", "timeId", "mcYear"), names(res))
-  value_cols <- setdiff(names(res), id_cols)
+  thematic_col_expand=expand.grid((as.character(pkgEnv$thematic$`930`$col_name)),c("_min", "_max", "_std",""))
+  thematic_col=paste0(thematic_col_expand$Var1, thematic_col_expand$Var2)
+  dynamic_cols <- setdiff(names(res), thematic_col)
+  dynamic_cols <- setdiff( dynamic_cols,id_cols)
   
-  # Compute full set of columns actually present
-  all_value_cols <- unique(value_cols)
-  
-  # Add missing columns (if any) with 0
-  missing_cols <- setdiff(all_value_cols, names(res))
-  if (length(missing_cols) > 0) {
-    for (col in missing_cols) {
-      res[, (col) := 0]
-    }
+  if (length(dynamic_cols) > 0) {
+    res[, (dynamic_cols) := lapply(.SD, nafill, fill = 0), .SDcols = dynamic_cols]
   }
-  
-  # Reorder columns: ids first, then values
-  setcolorder(res, c(id_cols, setdiff(names(res), id_cols)))
   
   res
 }
