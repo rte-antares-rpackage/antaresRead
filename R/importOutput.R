@@ -282,7 +282,14 @@
     )
   }
 
-  rbindlist(res)
+  # Use fill=TRUE only for areas outputs on Antares >= 9.3
+  # This is required to handle dynamic area columns introduced in newer versions.
+  # For all other objects (links, clusters, etc.), keep strict binding to avoid side effects.
+  rbindlist(
+    res,
+    fill = identical(folder, "areas") && identical(fileName, "values")  
+    && opts$antaresVersion >= 930
+  )
 }
 
 
@@ -297,27 +304,65 @@
 #'
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL,
                                   showProgress, opts, parallel, number_of_batches) {
-
+  
+  # API mode 
   if (is_api_study(opts)) {
-
-    if (is.null(areas)) {
-      return (NULL)
-    }
-
-    .download_and_format_api_get_aggregate_areas_result_bulk(areas = areas,
-                                                             timeStep = timeStep,
-                                                             query_file = "values",
-                                                             select = select,
-                                                             mcYears = mcYears,
-                                                             number_of_batches = number_of_batches,
-                                                             opts = opts
-                                                            )
-  } else {
-    suppressWarnings(
-      .importOutput("areas", "values", "area", areas, timeStep, select,
-                    mcYears, showProgress, opts, parallel = parallel)
+    if (is.null(areas)) return(NULL)
+    
+    return(
+      .download_and_format_api_get_aggregate_areas_result_bulk(
+        areas             = areas,
+        timeStep          = timeStep,
+        query_file        = "values",
+        select            = select,
+        mcYears           = mcYears,
+        number_of_batches = number_of_batches,
+        opts              = opts
+      )
     )
   }
+  
+  # Disk mode 
+  
+  is_930 <- opts$antaresVersion >= 930
+  use_new_schema <- is_930 && is.null(select)
+  
+  # Read data (let .importOutput do the heavy lifting)
+  res <- suppressWarnings(
+    .importOutput(
+      folder       = "areas",
+      fileName     = "values",
+      objectName   = "area",
+      ids          = areas,
+      timeStep     = timeStep,
+      select       = select,
+      mcYears      = mcYears,
+      showProgress = showProgress,
+      opts         = opts,
+      sameNames    = !use_new_schema,
+      parallel     = parallel
+    )
+  )
+  
+  if (is.null(res) || !use_new_schema) {
+    return(res)
+  }
+  
+ 
+  # Antares >= 9.3: harmonize columns dynamically (ONCE, at the end)
+
+  
+  id_cols <- intersect(c("area", "timeId", "mcYear"), names(res))
+  thematic_col_expand=expand.grid((as.character(pkgEnv$thematic$`930`$col_name)),c("_min", "_max", "_std",""))
+  thematic_col=paste0(thematic_col_expand$Var1, thematic_col_expand$Var2)
+  dynamic_cols <- setdiff(names(res), thematic_col)
+  dynamic_cols <- setdiff( dynamic_cols,id_cols)
+  
+  if (length(dynamic_cols) > 0) {
+    res[, (dynamic_cols) := lapply(.SD, nafill, fill = 0), .SDcols = dynamic_cols]
+  }
+  
+  res
 }
 
 
