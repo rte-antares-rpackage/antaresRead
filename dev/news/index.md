@@ -3,11 +3,9 @@
 ## antaresRead 2.9.4.9000
 
 BUGFIXES : \* `.getSimOptions()` reads and returns the new converted
-study version format (ex : 9.0 =\> 900) in output mode
-
-## antaresRead 2.9.3
-
-CRAN release: 2025-11-06
+study version format (ex : 9.0 =\> 900) in output mode \*
+`.importOutput()` Fixed area outputs import for Antares ≥ 9.3 when
+output columns differ between areas. . \# antaresRead 2.9.3
 
 NEW FEATURES (cf. Antares v9.3 changelog) : DOCFIX :
 
