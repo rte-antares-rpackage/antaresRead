@@ -407,25 +407,35 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
 
 # Private function that reads the definition of the districts
 .readDistrictsDefAPI <- function(inputPath, areas, token = NULL, timeout = 600) {
+  
   districts <- read_secure_json(file.path(inputPath, "areas/sets"), token = token, timeout = timeout)
-  if (length(districts) == 0) return(NULL)
+  
+  if (length(districts) == 0) {
+    return(NULL)
+  }
 
   res <- ldply(names(districts), function(n) {
     x <- districts[[n]]
-    if (x[["apply-filter"]] == "add-all") {
-      areasToRemove <- unlist(x[names(x) == "-"], use.names = FALSE)
-      areas <- setdiff(areas, areasToRemove)
+    if ("apply-filter" %in% names(x)) {
+      if (x[["apply-filter"]] == "add-all") {
+        areasToRemove <- unlist(x[names(x) == "-"], use.names = FALSE)
+        areas <- setdiff(areas, areasToRemove)
+      } else {
+        areas <- unlist(x[names(x) == "+"], use.names = FALSE)
+      }
     } else {
       areas <- unlist(x[names(x) == "+"], use.names = FALSE)
     }
-    if (length(areas) == 0) return(NULL)
-
+    
+    if (length(areas) == 0) {
+      return(NULL)
+    }
+    
     data.frame(district = tolower(n), area = tolower(areas), stringsAsFactors = TRUE)
   })
 
   data.table(res)
 }
-
 
 
 # Private function that reads costs of unsuplied and spilled energy
