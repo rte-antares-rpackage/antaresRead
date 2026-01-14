@@ -323,9 +323,18 @@
   }
   
   # Disk mode 
-  
   is_930 <- opts$antaresVersion >= 930
-  use_new_schema <- is_930 && is.null(select)
+  has_select <- !is.null(select)
+  select_ori <- select
+  
+  w_col_selection <- is_930 & has_select
+  
+  # From Antares 9.3, column selection part is not optimal. areas/<area>/values-<timeStep>.txt files do not have the same structure.
+  # The user can ask for one column present for an area and not present for another area.
+  # So we read everything and we select the appropriate columns at the end.   
+  if (w_col_selection) {
+    select <- NULL
+  }
   
   # Read data (let .importOutput do the heavy lifting)
   res <- suppressWarnings(
@@ -339,27 +348,31 @@
       mcYears      = mcYears,
       showProgress = showProgress,
       opts         = opts,
-      sameNames    = !use_new_schema,
+      sameNames    = !is_930,
       parallel     = parallel
     )
   )
-  
-  if (is.null(res) || !use_new_schema) {
-    return(res)
-  }
-  
  
   # Antares >= 9.3: harmonize columns dynamically (ONCE, at the end)
-
   
   id_cols <- intersect(c("area", "timeId", "mcYear"), names(res))
-  thematic_col_expand=expand.grid((as.character(pkgEnv$thematic$`930`$col_name)),c("_min", "_max", "_std",""))
-  thematic_col=paste0(thematic_col_expand$Var1, thematic_col_expand$Var2)
+  thematic_col_expand <- expand.grid((as.character(pkgEnv$thematic$`930`$col_name)),c("_min", "_max", "_std",""))
+  thematic_col <- paste0(thematic_col_expand$Var1, thematic_col_expand$Var2)
   dynamic_cols <- setdiff(names(res), thematic_col)
-  dynamic_cols <- setdiff( dynamic_cols,id_cols)
+  dynamic_cols <- setdiff(dynamic_cols,id_cols)
   
   if (length(dynamic_cols) > 0) {
     res[, (dynamic_cols) := lapply(.SD, nafill, fill = 0), .SDcols = dynamic_cols]
+  }
+  
+  if (w_col_selection) {
+    cols_to_keep <- c(id_cols,select_ori)
+    cols_to_keep <- intersect(cols_to_keep, colnames(res))
+    if (any(select_ori %in% cols_to_keep)) { 
+      res <- res[,..cols_to_keep]
+    } else {
+      res <- res[,..id_cols]
+    }
   }
   
   res

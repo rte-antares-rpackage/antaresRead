@@ -6,6 +6,7 @@ BUGFIXES :
 * `.getSimOptions()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
 * `.importOutput()` Fixed area outputs import for Antares ≥ 9.3 when output columns differ between areas.
 * `.readDistrictsDefAPI()` treats case when `apply-filter` property is not written.
+* `.importOutputForAreas()`from Antares 9.3, for values files, if select is not null, get all the columns and select the desired ones at the end.
 .
 # antaresRead 2.9.3
 
