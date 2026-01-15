@@ -44,6 +44,39 @@ describe(".getStartDate", {
       }
     }
   }
+  
+  # First character of first-month-in-year to upper (like antaresCraft)
+  for (month in mNames) {
+    for (day in dNames) {
+      for (leapyear in c(FALSE, TRUE)) {
+        params <- list(general = list(
+          horizon = 2018,
+          `first-month-in-year` = paste(toupper(substr(month, 1, 1)), substr(month, 2, nchar(month)), sep = ""),
+          leapyear = leapyear,
+          january.1st = day
+        ))
+        
+        describe(sprintf("corrects the year of the study (%s, %s, %s)", month, day, leapyear), {
+          start <- suppressWarnings(.getStartDate(params))
+          # start compatible with january.1st?
+          if (month == "january") {
+            expect_equal(wday(start), which(dNames == day))
+          } else {
+            start2 <- start
+            year(start2) <- year(start) + 1
+            month(start2) <- 1
+            expect_equal(wday(start2), which(dNames == day))
+          }
+          # Start compatible with leapyear?horizon = 2018, 
+          if (month %in% c("january", "february")) {
+            expect_equal(lubridate::leap_year(year(start)), leapyear)
+          } else {
+            expect_equal(lubridate::leap_year(year(start) + 1), leapyear)
+          }
+        })
+      }
+    }
+  }
 })
   
 test_that(".getStartDate must work with default param", {
@@ -56,7 +89,17 @@ test_that(".getStartDate must work with default param", {
   
   start <- suppressWarnings(.getStartDate(params))
   expect_equal(start, as.POSIXct("2018-07-01", tz ="UTC"))
+
+  # First character of first-month-in-year to upper (like antaresCraft)
+  params <- list(general = list(
+    horizon = 2018,
+    `first-month-in-year` = "July",
+    leapyear = FALSE,
+    january.1st = "Tuesday"
+  ))
   
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2018-07-01", tz ="UTC"))  
 })
 
 test_that(".getStartDate must work with leap year ", {
@@ -83,6 +126,37 @@ test_that(".getStartDate must work with leap year ", {
   params <- list(general = list(
     horizon = 2020,
     `first-month-in-year` = "july",
+    leapyear = FALSE,
+    january.1st = "Friday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2020-07-01", tz ="UTC"))
+  
+  # First character of first-month-in-year to upper (like antaresCraft)
+  params <- list(general = list(
+    horizon = 2019,
+    `first-month-in-year` = "July",
+    leapyear = TRUE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2019-07-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2020,
+    `first-month-in-year` = "January",
+    leapyear = TRUE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2020-01-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2020,
+    `first-month-in-year` = "July",
     leapyear = FALSE,
     january.1st = "Friday"
   ))
@@ -125,6 +199,48 @@ test_that(".getStartDate must work with a month different from July", {
   params <- list(general = list(
     horizon = 2020,
     `first-month-in-year` = "january",
+    leapyear = TRUE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2020-01-01", tz ="UTC"))
+  
+  
+  # First character of first-month-in-year to upper (like antaresCraft)
+  params <- list(general = list(
+    horizon = 2018,
+    `first-month-in-year` = "October",
+    leapyear = FALSE,
+    january.1st = "Tuesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2018-10-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2018,
+    `first-month-in-year` = "August",
+    leapyear = FALSE,
+    january.1st = "Tuesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2018-08-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2019,
+    `first-month-in-year` = "February",
+    leapyear = FALSE,
+    january.1st = "Wednesday"
+  ))
+  
+  start <- suppressWarnings(.getStartDate(params))
+  expect_equal(start, as.POSIXct("2019-02-01", tz ="UTC"))
+  
+  params <- list(general = list(
+    horizon = 2020,
+    `first-month-in-year` = "January",
     leapyear = TRUE,
     january.1st = "Wednesday"
   ))
