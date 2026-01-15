@@ -353,7 +353,10 @@
       parallel     = parallel
     )
   )
- 
+  
+  if (is.null(res) || !is_930) {
+    return(res)
+  }
   # Antares >= 9.3: harmonize columns dynamically (ONCE, at the end)
   
   id_cols <- intersect(c("area", "timeId", "mcYear"), names(res))
