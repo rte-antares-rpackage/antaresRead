@@ -305,10 +305,9 @@
 .importOutputForAreas <- function(areas, timeStep, select = NULL, mcYears = NULL,
                                   showProgress, opts, parallel, number_of_batches) {
   
-  if (is.null(areas)) return(NULL)
-  
   # API mode 
   if (is_api_study(opts)) {
+    if (is.null(areas)) return(NULL)
     
     return(
       .download_and_format_api_get_aggregate_areas_result_bulk(
