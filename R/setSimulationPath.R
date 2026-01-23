@@ -530,19 +530,24 @@ setSimulationPath <- function(path, simulation = NULL) {
 
 # Get the first date of the simulation, ie. the date corresponding to timeId == 1
 .getStartDate <- function(params) {
+  
   mNames <- c("january", "february", "march", "april", "may", "june", "july", "august",
               "september", "october", "november", "december")
   dNames <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-
+  
   p <- params$general
-
+  
+	first_month_in_year <- tolower(as.character(p[["first-month-in-year"]]))
+  is_january_first_month_in_year <- first_month_in_year == "january"
+  
   # Extract year from the "horizon" parameter.
   m <- regexpr("\\d{4}", p$horizon)
 
-   if (is.na(m) || length(m) == 0 || m == -1) {year <- lubridate::year(Sys.Date())
-   }else {year <- as.numeric(substr(p$horizon,1,4))}
-
-
+  if (is.na(m) || length(m) == 0 || m == -1) {
+     year <- lubridate::year(Sys.Date())
+   } else {
+     year <- as.numeric(substr(p$horizon,1,4))
+  }
 
   # Is this year compatible with the parameters "january.1st" and "leapyear" ?
   start <- as.Date(paste(year, "01 01"), format = "%Y %m %d")
@@ -551,23 +556,30 @@ setSimulationPath <- function(path, simulation = NULL) {
   # If the year does not begin in january, then "january.1st" corresponds to
   # the first january of the second year
   dateJan1 <- start
-  if (p$`first-month-in-year` != "january") lubridate::year(dateJan1) <- year(dateJan1) + 1
+  if (!is_january_first_month_in_year) {
+    lubridate::year(dateJan1) <- year(dateJan1) + 1
+  }
 
   # Similar problem with "leapyear"
   dateLeapYear <- start
-  if (!p$`first-month-in-year` %in% c("january", "february"))
+  if (!first_month_in_year %in% c("january", "february")) {
     lubridate::year(dateLeapYear) <- year(dateLeapYear) + 1
-
+  }
+  
   # If inconsistency, then choose a year that restores consistency
   if (jan1 != lubridate::wday(dateJan1) | lubridate::leap_year(dateLeapYear) != p$leapyear) {
 
-    if (p$leapyear & p$`first-month-in-year` == "february") {
+    if (p$leapyear & first_month_in_year == "february") {
       newYear <- switch(jan1, 2045, 2029, 2041, 2025, 2037, 2021, 2033)
-    } else if (p$leapyear & p$`first-month-in-year` != "february") {
+    } else if (p$leapyear & first_month_in_year != "february") {
       newYear <- switch(jan1, 2040, 2024, 2036, 2020, 2032, 2044, 2028)
-    } else newYear <- switch(jan1, 2023, 2018, 2019, 2031, 2026, 2027, 2022)
+    } else {
+      newYear <- switch(jan1, 2023, 2018, 2019, 2031, 2026, 2027, 2022)
+    }
 
-    if (p$`first-month-in-year` != "january") newYear <- newYear - 1
+    if (!is_january_first_month_in_year) {
+      newYear <- newYear - 1
+    }
     lubridate::year(start) <- newYear
     warning("Parameter 'horizon' is missing or inconsistent with 'january.1st' and 'leapyear'. Assume correct year is ",
             newYear,
@@ -576,7 +588,7 @@ setSimulationPath <- function(path, simulation = NULL) {
 
   }
 
-  lubridate::month(start) <-  which(mNames == p$`first-month-in-year`)
+  lubridate::month(start) <- which(mNames == first_month_in_year)
   as.POSIXlt(start, tz = "UTC")
 }
 
