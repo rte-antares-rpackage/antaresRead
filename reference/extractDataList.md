@@ -1,0 +1,33 @@
+# Format data PPSE-style
+
+This function converts an "readAntares" object in the data structure
+used by PPSE : instead of having one table for areas, one for links and
+one for clusters, the function creates a list with one element per area.
+Each element is a data.table containing the data about the area and one
+column per cluster of the area containing the production of this
+cluster.
+
+## Usage
+
+``` r
+extractDataList(x, areas = NULL)
+```
+
+## Arguments
+
+- x:
+
+  object of class "antaresData" or "antaresTable" created by the
+  function [`readAntares`](readAntares.md)
+
+- areas:
+
+  character vector containing the name of areas to keep in the final
+  object. If `NULL`, all areas are kept in the final object.
+
+## Value
+
+a list of data.tables with one element per area. The list also contains
+an element named "areaList" containing the name of areas in the object
+and a table called "infos" that contains for each area the number of
+variables of different type (values, details, link).

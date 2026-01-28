@@ -1,0 +1,207 @@
+# The 'antaresRead' Package
+
+This document describes a typical use of the `antaresRead` package.
+
+This package has been designed to read the results of an Antares
+simulation in an easy and convivial way. It can of course read any
+output files of a simulation at any desired time step, read synthetic
+results or detailed Monte Carlo scenarios but it can also add input time
+series to the results and perform some basic treatments like removing
+virtual areas.
+
+## Installation
+
+The `antaresRead` package depends on the packages `data.table`, `plyr`
+and `lubridate`. If you have not already got them you can install them
+with the following command:
+
+``` r
+install.packages(c("data.table", "plyr", "lubridate"))
+```
+
+Then you can install the `antaresRead` package either with the Rstudio
+assistant in the “Packages” tab or with the following command:
+
+``` r
+install.packages("path_to_the_package/antaresRead_***.zip")
+```
+
+## Before reading data
+
+First, when you start a new R session, you need to load the package:
+
+``` r
+library(antaresRead)
+```
+
+To display the list of all the functions of the package and access their
+help pages, type in the R console:
+
+``` r
+help(package = "antaresRead")
+```
+
+Then you can start using the package. The first function to use is
+`setSimulationPath`.
+
+This function needs to be called at least once during each R session. It
+stores important informations that are used by most of the functions of
+the package. While it has not been run, these functions will not work.
+
+Without any argument, `setSimulationPath` asks interactively to choose a
+directory containing an antares study. If the study contains multiple
+simulation results, it will also asks the user to choose one of them.
+This function stores the path to the output and reads some useful
+information about the simulation: type of output available, list of
+areas, links and clusters in the simulation, variables present in the
+output files, etc.
+
+`setSimulationPath` can also be used in a non-interactive way with one
+of these syntaxes:
+
+``` r
+# Specify full path
+setSimulationPath("study_path/output/simulation_name")
+
+# Specify the name of the simulation
+setSimulationPath("study_path", simulation_name)
+
+# Select a simulation by order
+setSimulationPath("study_path", 1) # first simulation
+
+# Select a simulation by reverse order
+setSimulationPath("study_path", -1) # last simulation
+
+# It is possible to store in a variable the result of the function
+opts <- setSimulationPath("study_path", 1)
+```
+
+The function returns an object containing informations about the
+selected simulation. You can store this object in a variable for later
+use but this is not necessary because at any moment you can retrieve
+these informations.
+
+## Reading time series
+
+Once `setSimulationPath` has been run, you can start reading data.
+Function `readAntares` is there for that !
+
+`readAntares` is the main function of the package. It is used to read
+every possible time series and it performs a few treatments on them to
+make your life easier. The result of the function will have the simplest
+structure possible: either a simple table or a list of tables if you
+asks data for differents elements (for instance links and areas)
+
+It has a huge number of parameters to control exactly what you get, but
+all of them are optional. Without any argument the function will still
+works and it will read the synthetic results for all the areas. But you
+can import other kind of output. here are some examples:
+
+``` r
+# Synthetic results for all links
+readAntares(links="all")
+
+#Synthetic results for all clusters
+readAntares(clusters="all")
+
+# Areas and links at the same time
+readAntares(areas="all", links="all")
+
+# Select only a few columns. 
+readAntares(select = c("OV. COST", "OP. COST", "LOAD"))
+```
+
+You can also choose what elements to import and what level of details
+you want. For instance, the following command reads the first 10
+Monte-Carlo scenarii data at monthly time step for the areas named
+“area1”, “area2” and “area3”.
+
+``` r
+readAntares(areas=c("area1", "area2", "area3"), timeStep="monthly",
+            synthesis=FALSE, mcYears = 1:10)
+```
+
+Finally many arguments of `readAntares` can be used to add input time
+series to the object returned by the function. For instance, `misc=TRUE`
+will add columns containing miscelaneous productions for the imported
+areas.
+
+## Manipulating data
+
+`readAntares` returns either a single table or a list of tables
+depending on the query of the user. More precisely the tables are
+`data.table` objects. It is then possible to use the powerful syntax
+offered by the package `data.table`.
+
+The general syntax is like:
+
+``` r
+name_of_the_table[filter_rows, select_columns, group_by]
+```
+
+For instance, `areas[area == "08_fr", .(timeId, LOAD)]` will return a
+table containing columns `timeId` and `LOAD` for the area names “08_fr”.
+In the select statement, it is also possible to calculate new columns.
+For instance, one can compute the net load like this:
+
+``` r
+areas[, .(area, timeId, netLoad = LOAD - `ROW BAL.` - PSP - MISC. - NDG -
+                                    H. ROR - WIND - SOLAR)]
+```
+
+One can also compute aggregated statistics. For instance, the following
+code will compute the total load of all areas per `timeId`:
+
+``` r
+areas[, .(totalLoad = sum(LOAD)), by = .(timeId)]
+```
+
+Of course, aggregation also works with filters. For instance to compute
+the total load only for french areas (assuming their names contain
+“fr”):
+
+``` r
+areas[area %in% getAreas("fr"), .(totalLoad = sum(LOAD)), by = .(timeId)]
+```
+
+If you are not familiar with package `data.table`, you should have a
+look at the documentation and especially at the vignettes of the
+package:
+
+``` r
+help(package="data.table")
+```
+
+## Other useful functions
+
+`readAntares` can import almost everything but not everything because
+some data is not time series. Other functions exist to read this
+specific data: `readBindingConstraints` to read binding constraints,
+`readClusterDesc` to read cluster characteristics and `readLayout` to
+get the coordinates of the areas in the user interface of Antares.
+
+Some parameters in `readAntares` and other functions wait for vectors of
+area names or link names. On large projects with lots of areas. It may
+be painful to specify by hand a long list of areas or links. Hopefully,
+the functions `getAreas`and `getLinks` can be used to select or exclude
+areas using regular expressions. For instance, let us assume that the
+name of all areas located in France start with the characters”fr”, then
+the following command returns the list of all french areas:
+
+``` r
+getAreas("fr")
+```
+
+To exclude offshore production areas (assuming their name contains the
+word “offshore”) one can use:
+
+``` r
+getAreas("fr", exclude="offshore")
+```
+
+A few other functions are provided by the package. To see a list of
+them, type in the console:
+
+``` r
+help(package = "antaresRead")
+```

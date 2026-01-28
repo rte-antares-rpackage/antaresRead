@@ -1,0 +1,297 @@
+# Read the data of an Antares simulation
+
+![Antares API OK](figures/badge_api_ok.svg)
+
+`readAntares` is a swiss-army-knife function used to read almost every
+possible time series of an antares Project at any desired time
+resolution (hourly, daily, weekly, monthly or annual).
+
+It was first designed to read output time series, but it can also read
+input time series. The input time series are processed by the function
+to fit the query of the user (timeStep, synthetic results or Monte-Carlo
+simulation, etc.). The few data that are not read by `readAntares` can
+generally by read with other functions of the package starting with
+"read" ([`readClusterDesc`](readClusterDesc.md),
+[`readLayout`](readLayout.md),
+[`readBindingConstraints`](readBindingConstraints.md))
+
+## Usage
+
+``` r
+readAntares(
+  areas = NULL,
+  links = NULL,
+  clusters = NULL,
+  districts = NULL,
+  clustersRes = NULL,
+  clustersST = NULL,
+  bindingConstraints = FALSE,
+  misc = FALSE,
+  thermalAvailabilities = FALSE,
+  hydroStorage = FALSE,
+  hydroStorageMaxPower = FALSE,
+  reserve = FALSE,
+  linkCapacity = FALSE,
+  mustRun = FALSE,
+  thermalModulation = FALSE,
+  select = NULL,
+  mcYears = NULL,
+  timeStep = c("hourly", "daily", "weekly", "monthly", "annual"),
+  mcWeights = NULL,
+  number_of_batches = 10,
+  opts = simOptions(),
+  parallel = FALSE,
+  simplify = TRUE,
+  showProgress = TRUE
+)
+```
+
+## Arguments
+
+- areas:
+
+  Vector containing the names of the areas to import. If `NULL` no area
+  is imported. The special value `"all"` tells the function to import
+  all areas. By default, the value is "all" when no other argument is
+  enter and "NULL" when other arguments are enter.
+
+- links:
+
+  Vector containing the name of links to import. If `NULL` no area is
+  imported. The special value `"all"` tells the function to import all
+  areas. Use function [`getLinks`](getLinks.md) to import all links
+  connected to some areas.
+
+- clusters:
+
+  Vector containing the name of the areas for which you want to import
+  results at thermal cluster level. If `NULL` no cluster is imported.
+  The special value `"all"` tells the function to import thermal
+  clusters from all areas.
+
+- districts:
+
+  Vector containing the names of the districts to import. If `NULL`, no
+  district is imported. The special value `"all"` tells the function to
+  import all districts.
+
+- clustersRes:
+
+  Vector containing the name of the areas for which you want to import
+  results at renewable cluster level. If `NULL` no cluster is imported.
+  The special value `"all"` tells the function to import renewable
+  clusters from all areas.
+
+- clustersST:
+
+  Vector containing the name of the areas for which you want to import
+  results at short-term cluster level. If `NULL` no cluster is imported.
+  The special value `"all"` tells the function to import short-term
+  clusters from all areas.
+
+- bindingConstraints:
+
+  Should binding constraints be imported (v8.4+)?
+
+- misc:
+
+  Vector containing the name of the areas for which you want to import
+  misc.
+
+- thermalAvailabilities:
+
+  Should thermal availabilities of clusters be imported ? If TRUE, the
+  column "thermalAvailability" is added to the result and a new column
+  "availableUnits" containing the number of available units in a cluster
+  is created.If synthesis is set to TRUE then "availableUnits" contain
+  the mean of avaible units on all MC Years.
+
+- hydroStorage:
+
+  Should hydro storage be imported ?
+
+- hydroStorageMaxPower:
+
+  Should hydro storage maximum power be imported ?
+
+- reserve:
+
+  Should reserve be imported ?
+
+- linkCapacity:
+
+  Should link capacities be imported ?
+
+- mustRun:
+
+  Should must run productions be added to the result? If TRUE, then four
+  columns are added: `mustRun` contains the production of clusters that
+  are in complete must run mode; `mustRunPartial` contains the partial
+  must run production of clusters; `mustRunTotal` is the sum of the two
+  previous columns. Finally `thermalPmin` is similar to mustRunTotal
+  except it also takes into account the production induced by the
+  minimum stable power of the units of a cluster. More precisely, for a
+  given cluster and a given time step, it is equal to
+  `min(NODU x min.stable.power, mustRunTotal)`.
+
+- thermalModulation:
+
+  Should thermal modulation time series be imported ? If `TRUE`, the
+  columns "marginalCostModulation", "marketBidModulation",
+  "capacityModulation" and "minGenModulation" are added to the cluster
+  data.
+
+- select:
+
+  Character vector containing the name of the columns to import. If this
+  argument is `NULL`, all variables are imported. Special names
+  `"allAreas"` and `"allLinks"` indicate to the function to import all
+  variables for areas or for links. Since version 1.0, values "misc",
+  "thermalAvailabilities", "hydroStorage", "hydroStorageMaxPower",
+  "reserve", "linkCapacity", "mustRun", "thermalModulation" are also
+  accepted and can replace the corresponding arguments. The list of
+  available variables can be seen with the command
+  `simOptions()$variables`. Id variables like `area`, `link` or `timeId`
+  are automatically imported. Note that `select` is *not* taken into
+  account when importing cluster data.
+
+- mcYears:
+
+  Index of the Monte-Carlo years to import. If `NULL`, synthetic results
+  are read, else the specified Monte-Carlo simulations are imported. The
+  special value `all` tells the function to import all Monte-Carlo
+  simulations.
+
+- timeStep:
+
+  Resolution of the data to import: hourly (default), daily, weekly,
+  monthly or annual.
+
+- mcWeights:
+
+  Vector of weights to apply to the specified mcYears. If not `NULL`,
+  the vector must be the same length as the vector provided in the
+  `mcYear` parameter. The function `readAntares` will then return the
+  weighted synthetic results for the specified years, with the specified
+  weights.
+
+- number_of_batches:
+
+  In API mode, to read the results for individual mcYears, you can
+  choose the number of batches you want.
+
+- opts:
+
+  list of simulation parameters returned by the function
+  [`setSimulationPath`](setSimulationPath.md)
+
+- parallel:
+
+  Should the importation be parallelized ? (See details)
+
+- simplify:
+
+  If TRUE and only one type of output is imported then a data.table is
+  returned. If FALSE, the result will always be a list of class
+  "antaresData".
+
+- showProgress:
+
+  If TRUE the function displays information about the progress of the
+  importation.
+
+## Value
+
+If `simplify = TRUE` and only one type of output is imported then the
+result is a data.table.
+
+Else an object of class "antaresDataList" is returned. It is a list of
+data.tables, each element representing one type of element (areas,
+links, clusters)
+
+## Details
+
+If parameters `areas`, `links`, `clusters` and `districts` are all
+`NULL`, `readAntares` will read output for all areas. By default the
+function reads synthetic results if they are available.
+
+`readAntares` is able to read input time series, but when they are not
+stored in output, these time series may have changed since a simulation
+has been run. In such a case the function will remind you this danger
+with a warning.
+
+When individual Monte-Carlo simulations are read, the function may crash
+because of insufficient memory. In such a case, it is necessary to
+reduce size of the output. Different strategies are available depending
+on your objective:
+
+- Use a larger time step (parameter `timeStep`)
+
+- Filter the elements to import (parameters `areas`,`links`, `clusters`
+  and `districts`)
+
+- Select only a few columns (parameter `select`)
+
+- read only a subset of Monte-Carlo simulations (parameter `mcYears`).
+  For instance one can import a random sample of 100 simulations with
+  `mcYears = sample(simOptions()$mcYears, 100)`
+
+## Parallelization
+
+If you import several elements of the same type (areas, links,
+clusters), you can use parallelized importation to improve performance.
+Setting the parameter `parallel = TRUE` is not enough to parallelize the
+importation, you also have to install the package
+[foreach](https://CRAN.R-project.org/package=foreach) and a package that
+provides a parallel backend (for instance the package
+[doParallel](https://CRAN.R-project.org/package=doParallel)).
+
+Before running the function with argument `parallel=TRUE`, you need to
+register your parallel backend. For instance, if you use package
+"doParallel" you need to use the function `registerDoParallel` once per
+session.
+
+## See also
+
+[`setSimulationPath`](setSimulationPath.md), [`getAreas`](getAreas.md),
+[`getLinks`](getLinks.md), [`getDistricts`](getAreas.md)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# Import areas and links separately
+
+areas <- readAntares() # equivalent to readAntares(areas="all")
+links <- readAntares(links="all")
+
+# Import areas and links at same time
+
+output <- readAntares(areas = "all", links = "all")
+
+# Add input time series to the object returned by the function
+areas <- readAntares(areas = "all", misc = TRUE, reserve = TRUE)
+
+# Get all output for one area
+
+myArea <- sample(simOptions()$areaList, 1)
+myArea
+
+myAreaOutput <- readAntares(area = myArea,
+                            links = getLinks(myArea, regexpSelect=FALSE),
+                            clusters = myArea)
+
+# Or equivalently:
+myAreaOutput <- readAntaresAreas(myArea)
+
+# Use parameter "select" to read only some columns.
+
+areas <- readAntares(select = c("LOAD", "OV. COST"))
+
+# Aliases can be used to select frequent groups of columns. use showAliases()
+# to view a list of available aliases
+
+areas <- readAntares(select="economy")
+
+} # }
+```
