@@ -33,7 +33,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/rte-antares-rpackage/antaresRead/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/rte-antares-rpackage/antaresRead/blob/v2.9.3.1/DESCRIPTION)
 
 Vargas T, ZAWAM J, Guillem F, Thieurmel B, Robert T (2026).
 *antaresRead: Import, Manipulate and Explore the Results of an 'Antares'
