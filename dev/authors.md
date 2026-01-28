@@ -33,17 +33,17 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/rte-antares-rpackage/antaresRead/blob/v2.9.3.1/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/rte-antares-rpackage/antaresRead/blob/master/DESCRIPTION)
 
 Vargas T, ZAWAM J, Guillem F, Thieurmel B, Robert T (2026).
 *antaresRead: Import, Manipulate and Explore the Results of an 'Antares'
-Simulation*. R package version 2.9.3.1,
+Simulation*. R package version 2.9.3-1,
 <https://github.com/rte-antares-rpackage/antaresRead>.
 
     @Manual{,
       title = {antaresRead: Import, Manipulate and Explore the Results of an 'Antares' Simulation},
       author = {Tatiana Vargas and Jalal-Edine ZAWAM and Francois Guillem and Benoit Thieurmel and Titouan Robert},
       year = {2026},
-      note = {R package version 2.9.3.1},
+      note = {R package version 2.9.3-1},
       url = {https://github.com/rte-antares-rpackage/antaresRead},
     }
