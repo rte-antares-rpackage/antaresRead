@@ -2,6 +2,8 @@
 
 ## antaresRead 3.0.0
 
+CRAN release: 2026-01-28
+
 BUGFIXES : \* `.getSimOptions()` reads and returns the new converted
 study version format (ex : 9.0 =\> 900) in output mode \*
 `.importOutput()` Fixed area outputs import for Antares ≥ 9.3 when
