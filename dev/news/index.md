@@ -1,6 +1,13 @@
 # Changelog
 
-## antaresRead 2.9.3-1
+## antaresRead 3.0.1.9000
+
+BUGFIXES : \* `.getSimOptionsAPI()` reads and returns the new converted
+study version format (ex : 9.0 =\> 900) in output mode
+
+## antaresRead 3.0.0
+
+CRAN release: 2026-01-28
 
 BUGFIXES : \* `.getSimOptions()` reads and returns the new converted
 study version format (ex : 9.0 =\> 900) in output mode \*
