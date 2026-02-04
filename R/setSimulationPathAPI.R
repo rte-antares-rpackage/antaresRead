@@ -9,7 +9,7 @@
     outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), ...))
     simNames <- setdiff(basename(outputContent), c("maps", "logs"))
   }
-	if (length(simNames) == 0) {
+  if (length(simNames) == 0) {
     if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
       stop("Cannot find any simulation result")
     } else {
@@ -63,6 +63,11 @@
 
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
+  
+  # Convert the Antares number version (from 9.0)
+  if(info$version<600 & info$version>=9) {
+    info$version <- .transform_antares_version(antares_version = info$version)
+  }
 
   mc_ind_path <- file.path(simDataPath, "mc-ind&depth=1")
 
