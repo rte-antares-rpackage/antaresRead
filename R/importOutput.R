@@ -602,6 +602,49 @@
 }
 
 
+#' .extract_selection_type_from_variables_selection_section
+#'
+#' Get the value of selection type in variables selection section. Can be select_var + or select_var -. Not both at the same time.
+#'
+#' @noRd
+#'
+.extract_selection_type_from_variables_selection_section <- function(variables_selection) {
+  
+  selection_type <- unique(names(variables_selection))
+  allowed_selection_type <- c("select_var -", "select_var +")
+  
+  # Filter the vector to avoid other properties (for example : selected_vars_reset)
+  return(intersect(selection_type, allowed_selection_type))
+}
+
+
+#' .get_index_variables_to_adjust
+#'
+#' Based on a reference vector, define the index of values to adjust. If negative, to remove, else, to keep
+#'
+#' @noRd
+#'
+.get_index_variables_to_adjust <- function(variables_selection, reference_metrics) {
+  
+  selection_type <- .extract_selection_type_from_variables_selection_section(variables_selection = variables_selection)
+  
+  # List with a repeated name
+  variables_selection <- variables_selection[which(names(variables_selection) == selection_type)]
+  selected_variables <- unlist(variables_selection, use.names = FALSE)
+  
+  if (selection_type == "select_var -") {
+    coeff <- -1
+  } else if (selection_type == "select_var +") {
+    coeff <- 1
+  }
+  
+  # Index of the variables found in the section "variables selection"
+  idx_vars <- which(tolower(reference_metrics) %in% tolower(selected_variables))
+  
+  return(coeff * idx_vars)
+}  
+
+
 #' .get_value_columns_details_file
 #'
 #' Private function used to get the column names for the details-timeStep.txt, details-res-timeStep.txt, or details-STstorage-timeStep.txt.
@@ -619,43 +662,24 @@
 
   assert_that(type %in% c("details","details-res","details-STstorage"))
 
-  simulation_variables_names_by_support <- read.table(system.file(
-    "format_output","simulation_variables_names_by_support.csv",package="antaresRead"
-  ),sep=";",fileEncoding="UTF-8",header = TRUE)
-
-  filtered_variables_names <- subset(simulation_variables_names_by_support,DETAILS_FILES_TYPE==type)
-  if (type=="details" && opts$antaresVersion < 830)
-    filtered_variables_names <- subset(filtered_variables_names,ANTARES_DISPLAYED_NAME!="Profit by plant")
-  filtered_variables_names <- subset(filtered_variables_names,opts[["antaresVersion"]] >= MIN_VERSION | is.na(MIN_VERSION))
+  filtered_variables_names <- .filter_referential_output_column_names_by_type(type_res = type)
+  filtered_variables_names <- subset(filtered_variables_names, opts[["antaresVersion"]] >= MIN_VERSION | is.na(MIN_VERSION))
   # Order is important. There is a correspondance between elements
   ordered_filtered_variables_names <- filtered_variables_names[
     order(filtered_variables_names$ORDINAL_POSITION_BY_TOPIC),
   ]
-
+  
   all_thematic_variables <- ordered_filtered_variables_names$ANTARES_DISPLAYED_NAME
   colNames <- ordered_filtered_variables_names$RPACKAGE_DISPLAYED_NAME
 
   # With thematic-trimming enabled
   if (opts$parameters$general$`thematic-trimming`) {
-    if ("variables selection" %in% names(opts$parameters)) {
-      var_selection <- opts$parameters$`variables selection`
-      selection_type <- unique(names(var_selection))
-      allowed_selection_type <- c("select_var -", "select_var +")
-      # Filter the vector to avoid other properties (for example : selected_vars_reset)
-      selection_type <- intersect(selection_type, allowed_selection_type)
-      # List with a repeated name
-      var_selection <- var_selection[which(names(var_selection) == selection_type)]
-      selected_variables <- unlist(var_selection, use.names = FALSE)
-      # Index of the variables found in the section "variables selection"
-      idx_vars <- which(all_thematic_variables %in% selected_variables)
+    if ("variables selection" %in% names(opts[["parameters"]])) {
+      idx_vars <- .get_index_variables_to_adjust(variables_selection = opts[["parameters"]][["variables selection"]],
+                                                 reference_metrics = all_thematic_variables
+                                                 )
       if (length(idx_vars) > 0) {
-        if (selection_type == "select_var -") {
-          # vars to remove
-          colNames <- colNames[-idx_vars]
-        } else if (selection_type == "select_var +") {
-          # vars to keep
-          colNames <- colNames[idx_vars]
-        }
+        colNames <- colNames[idx_vars]
       }
     }
   }
