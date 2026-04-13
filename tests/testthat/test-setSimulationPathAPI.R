@@ -33,10 +33,38 @@ test_that("getSimOptionsAPI return antares version in right format", {
     .readLinksDef = function(x) data.frame(link="fr-de", from="fr", to="de"),
     .package = "antaresRead"
   )
-
+ 
   # when
   res <- .getSimOptionsAPI(paths = list(version=930, simPath="sim"))
 
   # then
   expect_equal(res$antaresVersion, 930)
+})
+
+
+test_that("getInputOptionsAPI return antares version in right format", {
+  # given
+  fixtures <- list(
+
+    # --- root
+    "study/general" = list(
+      name = "test",
+      date = "today"
+    ),
+
+    "input/areas/list" = c("fr", "de"),
+    "input/areas/sets" = list("@district1" = "district1"),
+    "input/links&depth=1" = list("de" = "de - fr", "fr" = "de - fr")
+  )
+
+  testthat::local_mocked_bindings(
+    read_secure_json = function(url, ...) fixtures[[url]],
+    .package = "antaresRead"
+  )
+
+  res <- .getInputOptionsAPI(paths = list(version="7.1", studyPath="study", inputPath="input"))
+  expect_equal(res$antaresVersion, 710)
+  
+  res <- .getInputOptionsAPI(paths = list(version="7", studyPath="study", inputPath="input"))
+  expect_equal(res$antaresVersion, 700)
 })
