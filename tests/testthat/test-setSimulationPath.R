@@ -289,3 +289,24 @@ test_that("Check version pb (9.2*100)<920 TRUE ?", {
     .transform_antares_version("9.2")<920
   )
 })
+
+
+test_that("Check that if version x < version y, then converted version x is < converted version y", {
+
+  ant_version <- c("7",
+                   "7.1",
+                   "7.2",
+                   "8",
+                   "8.1",
+                   "8.2",
+                   "8.3",
+                   "8.4",
+                   "8.5",
+                   "8.6",
+                   "8.7",
+                   "8.8",
+                   "9.2",
+                   "9.3")
+  ant_version_converted <- sapply(ant_version, .transform_antares_version)
+  expect_true(all(diff(ant_version_converted) > 0))
+})

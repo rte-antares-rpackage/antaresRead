@@ -537,7 +537,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   p <- params$general
   
-	first_month_in_year <- tolower(as.character(p[["first-month-in-year"]]))
+  first_month_in_year <- tolower(as.character(p[["first-month-in-year"]]))
   is_january_first_month_in_year <- first_month_in_year == "january"
   
   # Extract year from the "horizon" parameter.
@@ -713,24 +713,25 @@ setSimulationPath <- function(path, simulation = NULL) {
 #' @keywords internal
 .transform_antares_version <- function(antares_version) {
   antares_version <- format(antares_version, nsmall = 2)
-
+  
   # Split major and minor parts
   antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
-
+  
   major <- antares_version_splitted[1]
   minor <- antares_version_splitted[2]
+  
+  # In API mode, API sends "7" for a study "7.0". No minor version.
+  if (is.na(minor)) {
+    minor <- "0"
+  }
 
   # max 1 digit for minor
   if (nchar(minor) > 2)
     stop("Invalid antares_version format, good format is like '9.99'",
          call. = FALSE)
-
+  
   # convert to numeric for package understanding
   num_version <- round(as.numeric(antares_version)*100)
 
   return(num_version)
 }
-
-
-
-

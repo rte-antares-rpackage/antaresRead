@@ -5,6 +5,11 @@
 BUGFIXES :
 * `.getSimOptionsAPI()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
 
+NEW FEATURES :  
+
+* `.getInputOptionsAPI()` : new numbering system in API mode (ex : 7, 8.2, 9.2, ...) 
+
+
 # antaresRead 3.0.0
 
 BUGFIXES :
