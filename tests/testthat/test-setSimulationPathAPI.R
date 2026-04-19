@@ -65,6 +65,6 @@ test_that("getInputOptionsAPI return antares version in right format", {
   res <- .getInputOptionsAPI(paths = list(version="7.1", studyPath="study", inputPath="input"))
   expect_equal(res$antaresVersion, 710)
   
-  res <- .getInputOptionsAPI(paths = list(version="7", studyPath="study", inputPath="input"))
+  res <- .getInputOptionsAPI(paths = list(version="7.0", studyPath="study", inputPath="input"))
   expect_equal(res$antaresVersion, 700)
 })

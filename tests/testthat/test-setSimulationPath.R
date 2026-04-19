@@ -293,10 +293,10 @@ test_that("Check version pb (9.2*100)<920 TRUE ?", {
 
 test_that("Check that if version x < version y, then converted version x is < converted version y", {
 
-  ant_version <- c("7",
+  ant_version <- c("7.0",
                    "7.1",
                    "7.2",
-                   "8",
+                   "8.0",
                    "8.1",
                    "8.2",
                    "8.3",

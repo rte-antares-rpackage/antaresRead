@@ -720,11 +720,6 @@ setSimulationPath <- function(path, simulation = NULL) {
   major <- antares_version_splitted[1]
   minor <- antares_version_splitted[2]
   
-  # In API mode, API sends "7" for a study "7.0". No minor version.
-  if (is.na(minor)) {
-    minor <- "0"
-  }
-
   # max 1 digit for minor
   if (nchar(minor) > 2)
     stop("Invalid antares_version format, good format is like '9.99'",
