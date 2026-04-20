@@ -7,7 +7,7 @@ BUGFIXES :
 
 NEW FEATURES :  
 
-* `.getInputOptionsAPI()` : new numbering system in API mode (ex : 7, 8.2, 9.2, ...) 
+* `.getInputOptionsAPI()` : new numbering system in API mode (ex : 7.0, 8.2, 9.2, ...) 
 
 
 # antaresRead 3.0.0
