@@ -2,9 +2,11 @@
 
 # antaresRead 3.0.1.9000
 
+* `.transform_antares_version_v10()` to transform a study version format on a format compliant with multiple digits for minor and major (ex : 10.1 => 100100)  
+
 BUGFIXES :
 * `.getSimOptionsAPI()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
-* `simulation_variables_names_by_supprt.csv` update to read the new thermal output variable `MIN GEN - MWh` available since 9.2 version
+* `simulation_variables_names_by_support.csv` update to read the new thermal output variable `MIN GEN - MWh` available since 9.2 version
 
 # antaresRead 3.0.0
 

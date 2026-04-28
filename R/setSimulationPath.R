@@ -537,7 +537,7 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   p <- params$general
   
-	first_month_in_year <- tolower(as.character(p[["first-month-in-year"]]))
+  first_month_in_year <- tolower(as.character(p[["first-month-in-year"]]))
   is_january_first_month_in_year <- first_month_in_year == "january"
   
   # Extract year from the "horizon" parameter.
@@ -725,6 +725,10 @@ setSimulationPath <- function(path, simulation = NULL) {
     stop("Invalid antares_version format, good format is like '9.99'",
          call. = FALSE)
 
+  if (as.numeric(major) >= 10) {
+    return(.transform_antares_version_v10(version_major = major, version_minor = minor))
+  }
+
   # convert to numeric for package understanding
   num_version <- round(as.numeric(antares_version)*100)
 
@@ -732,5 +736,23 @@ setSimulationPath <- function(path, simulation = NULL) {
 }
 
 
-
-
+#' @title Convert the Antares number version for a study version >= 10
+#' @description From V10.0, ensure consistency between Antares number version and Antares number version converted.
+#'
+#' @param version_major `numeric` Antares major version
+#' @param version_minor `numeric` Antares minor version
+#' @param version_patch `numeric` Antares patch version if exists, default to 0
+#'
+#' @return `numeric` value according to study version
+#'
+#' @keywords internal
+#' @noRd
+.transform_antares_version_v10 <- function(version_major, version_minor, version_patch = 0) {
+  
+  antares_version_num <- as.numeric(c(version_major, version_minor, version_patch))
+  # multiply by 100^2 for the major and 100^1 for the minor
+  # ensure that "x.99" < "y.0" if x < y and that "x.y" < "x.z" if y < z
+  coeff <- c(10000, 100, 1)
+  
+  return(sum(antares_version_num * coeff))
+}

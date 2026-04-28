@@ -289,3 +289,19 @@ test_that("Check version pb (9.2*100)<920 TRUE ?", {
     .transform_antares_version("9.2")<920
   )
 })
+
+
+test_that("General behaviour of .transform_antares_version_v10()", {
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 3)
+  expect_equal(ant_version, 100300)
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 30)
+  expect_equal(ant_version, 103000)
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 99)
+  expect_equal(ant_version, 109900)
+
+  ant_version <- .transform_antares_version_v10(version_major = 11, version_minor = 0)
+  expect_equal(ant_version, 110000)
+})
