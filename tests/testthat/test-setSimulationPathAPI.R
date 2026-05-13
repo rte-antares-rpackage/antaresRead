@@ -5,7 +5,7 @@ test_that("getSimOptionsAPI return antares version in right format", {
     # --- root
     "sim/info/general" = list(
       mode = "adequacy",
-      #version = 930,
+      version=9.3,
       name = "test",
       date = "today"
     ),
@@ -35,7 +35,7 @@ test_that("getSimOptionsAPI return antares version in right format", {
   )
  
   # when
-  res <- .getSimOptionsAPI(paths = list(version=930, simPath="sim"))
+  res <- .getSimOptionsAPI(paths = list(simPath="sim"))
 
   # then
   expect_equal(res$antaresVersion, 930)
@@ -62,9 +62,12 @@ test_that("getInputOptionsAPI return antares version in right format", {
     .package = "antaresRead"
   )
 
-  res <- .getInputOptionsAPI(paths = list(version="7.1", studyPath="study", inputPath="input"))
+  res <- .getInputOptionsAPI(paths = list(version=7.1, studyPath="study", inputPath="input"))
   expect_equal(res$antaresVersion, 710)
   
-  res <- .getInputOptionsAPI(paths = list(version="7.0", studyPath="study", inputPath="input"))
+  res <- .getInputOptionsAPI(paths = list(version=7.0, studyPath="study", inputPath="input"))
   expect_equal(res$antaresVersion, 700)
+
+  res <- .getInputOptionsAPI(paths = list(version=9.3, studyPath="study", inputPath="input"))
+  expect_equal(res$antaresVersion, 930)
 })
