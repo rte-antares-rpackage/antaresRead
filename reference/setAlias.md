@@ -52,6 +52,7 @@ data.frame with columns "name", "desc" and "select".
 ## Examples
 
 ``` r
+
 # Display the short description of an alias
 showAliases()
 #>              name                                                        desc

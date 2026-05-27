@@ -211,6 +211,7 @@ examples).
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 # Select interactively a study. It only works on windows.
 

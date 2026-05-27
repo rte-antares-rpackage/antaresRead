@@ -26,6 +26,7 @@ by user
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 pathIni <- "D:/exemple_test/settings/generaldata.ini"
 generalSetting <- antaresRead::readIniFile(pathIni)
