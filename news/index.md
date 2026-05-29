@@ -2,6 +2,8 @@
 
 ## antaresRead 3.0.1
 
+CRAN release: 2026-05-28
+
 BUGFIXES : \* `.getSimOptionsAPI()` reads and returns the new converted
 study version format (ex : 9.0 =\> 900) in output mode \*
 `simulation_variables_names_by_supprt.csv` update to read the new
