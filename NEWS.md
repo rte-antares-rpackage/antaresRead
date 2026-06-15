@@ -1,6 +1,6 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 3.0.1.9000
+# antaresRead 3.0.1
 
 BUGFIXES :
 * `.getSimOptionsAPI()` reads and returns the new converted study version format (ex : 9.0 => 900) in output mode
