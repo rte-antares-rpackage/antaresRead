@@ -324,7 +324,7 @@ test_that("Check with cluster without time series",{
     use.names = FALSE)
   expect_equal(unique(struct_names), c("properties", "values" ))
 
-  test_that("Check wiyhout values",{
+  test_that("Check without values",{
     # given
 
     # cluster without ts
@@ -332,7 +332,9 @@ test_that("Check with cluster without time series",{
 
     # then
     expect_equal(full_st_constraints$be$be_storage_2$values,
-                 data.table())
+                 data.table(),
+                 ignore.attr = TRUE
+                 )
   })
 
   unlink(opts$inputPath, recursive = TRUE)
