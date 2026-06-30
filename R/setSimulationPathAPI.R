@@ -1,6 +1,6 @@
 .getPathsAPI <- function(host, token, study_id, simulation, ...){
   
-	simNames <- NULL
+  simNames <- NULL
   path <- paste0(host, "/v1/studies/", study_id)
   path <- gsub("[/\\]$", "", path)
   path <- paste0(path, "/raw?path=")
