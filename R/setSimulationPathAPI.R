@@ -62,12 +62,17 @@
 
   # Get basic information about the simulation
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
-
+  
   info <- read_secure_json(file.path(simPath, "info", "general"), ...)
 
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
-
+  antares_version <- info$version
+  
+  if (antares_version < 600 & antares_version >= 9) {
+    antares_version <- .transform_antares_version(antares_version = antares_version)
+  }
+  
   mc_ind_path <- file.path(simDataPath, "mc-ind&depth=1")
 
   synthesis <- .getSuccess(file.path(simDataPath, "mc-all&depth=1"), ...)
@@ -166,7 +171,7 @@
       yearByYear = yearByYear,
       scenarios = scenarios,
       mcYears = mcYears,
-      antaresVersion = paths$version,
+      antaresVersion = antares_version,
       areaList = areaList,
       districtList = gsub("^@ ?", "", districtList),
       linkList = linkList[linkList %in% linksDef$link],
@@ -206,10 +211,8 @@
     data.frame(link = paste(Y, "-", to), from = Y, to = to, stringsAsFactors = TRUE)
 
   }, allLinks, names(allLinks)))
-
-  # info <- read_secure_json(studyPath, ...)
-
-  antaresVersion <- paths$version
+  
+  antaresVersion <- .transform_antares_version(antares_version = paths$version)
   params <- read_secure_json(file.path(studyPath, "settings", "generaldata"), ...)
 
   # Areas with clusters
@@ -309,7 +312,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   if (missing(token)) {
     stop("Please specify your access token")
   }
-
+  
   valid_host <- tryCatch({
     .getSuccess(file.path(host, "health"), token = "", timeout = timeout, config = httr_config)
   }, error = function(e) FALSE)
@@ -319,7 +322,7 @@ setSimulationPathAPI <- function(host, study_id, token, simulation = NULL,
   }
 
   stopifnot(timeout > 0)
-
+  
   check_study <- tryCatch({
     read_secure_json(file.path(host, "v1/studies", study_id), token = token,
                      timeout = timeout, config = httr_config
