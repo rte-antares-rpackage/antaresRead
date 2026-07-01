@@ -1,4 +1,5 @@
-.getPathsAPI <- function(host, study_id, simulation, ...){
+.getPathsAPI <- function(host, token, study_id, simulation, ...){
+  
   simNames <- NULL
   path <- paste0(host, "/v1/studies/", study_id)
   path <- gsub("[/\\]$", "", path)
@@ -6,8 +7,11 @@
   inputPath <- file.path(path,  "input")
   outputPath <- file.path(path,  "output")
   if(is.null(simulation) | (!is.null(simulation) && !simulation %in% c(0, "input"))){
-    outputContent <- names(read_secure_json(paste0(outputPath, "&depth=4"), ...))
-    simNames <- setdiff(basename(outputContent), c("maps", "logs"))
+    config <- c(httr::add_headers(Authorization = paste("Bearer ", token)))
+    result <- httr::GET(url = URLencode(paste(c(host, "v1/studies", study_id, "outputs"), collapse = "/")),
+                  config = config
+                  )
+    simNames <- sapply(content(result), "[[", "name")
   }
   if (length(simNames) == 0) {
     if (length(simulation) > 0 && !simulation %in% c(0, "input")) {
