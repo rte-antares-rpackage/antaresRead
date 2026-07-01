@@ -16,6 +16,7 @@ and `lubridate`. If you have not already got them you can install them
 with the following command:
 
 ``` r
+
 install.packages(c("data.table", "plyr", "lubridate"))
 ```
 
@@ -23,6 +24,7 @@ Then you can install the `antaresRead` package either with the Rstudio
 assistant in the “Packages” tab or with the following command:
 
 ``` r
+
 install.packages("path_to_the_package/antaresRead_***.zip")
 ```
 
@@ -31,6 +33,7 @@ install.packages("path_to_the_package/antaresRead_***.zip")
 First, when you start a new R session, you need to load the package:
 
 ``` r
+
 library(antaresRead)
 ```
 
@@ -38,6 +41,7 @@ To display the list of all the functions of the package and access their
 help pages, type in the R console:
 
 ``` r
+
 help(package = "antaresRead")
 ```
 
@@ -60,6 +64,7 @@ output files, etc.
 of these syntaxes:
 
 ``` r
+
 # Specify full path
 setSimulationPath("study_path/output/simulation_name")
 
@@ -98,6 +103,7 @@ works and it will read the synthetic results for all the areas. But you
 can import other kind of output. here are some examples:
 
 ``` r
+
 # Synthetic results for all links
 readAntares(links="all")
 
@@ -117,6 +123,7 @@ Monte-Carlo scenarii data at monthly time step for the areas named
 “area1”, “area2” and “area3”.
 
 ``` r
+
 readAntares(areas=c("area1", "area2", "area3"), timeStep="monthly",
             synthesis=FALSE, mcYears = 1:10)
 ```
@@ -136,6 +143,7 @@ offered by the package `data.table`.
 The general syntax is like:
 
 ``` r
+
 name_of_the_table[filter_rows, select_columns, group_by]
 ```
 
@@ -153,6 +161,7 @@ One can also compute aggregated statistics. For instance, the following
 code will compute the total load of all areas per `timeId`:
 
 ``` r
+
 areas[, .(totalLoad = sum(LOAD)), by = .(timeId)]
 ```
 
@@ -161,6 +170,7 @@ the total load only for french areas (assuming their names contain
 “fr”):
 
 ``` r
+
 areas[area %in% getAreas("fr"), .(totalLoad = sum(LOAD)), by = .(timeId)]
 ```
 
@@ -169,6 +179,7 @@ look at the documentation and especially at the vignettes of the
 package:
 
 ``` r
+
 help(package="data.table")
 ```
 
@@ -189,6 +200,7 @@ name of all areas located in France start with the characters”fr”, then
 the following command returns the list of all french areas:
 
 ``` r
+
 getAreas("fr")
 ```
 
@@ -196,6 +208,7 @@ To exclude offshore production areas (assuming their name contains the
 word “offshore”) one can use:
 
 ``` r
+
 getAreas("fr", exclude="offshore")
 ```
 
@@ -203,5 +216,6 @@ A few other functions are provided by the package. To see a list of
 them, type in the console:
 
 ``` r
+
 help(package = "antaresRead")
 ```

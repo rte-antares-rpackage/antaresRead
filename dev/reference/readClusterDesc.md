@@ -74,6 +74,7 @@ Study version.
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 
 # Default format with "dot separator"

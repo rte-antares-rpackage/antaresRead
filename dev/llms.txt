@@ -9,12 +9,14 @@
 You can install the package from CRAN:
 
 ``` r
+
 install.packages("antaresRead")
 ```
 
 You can also install the last development version from Github:
 
 ``` r
+
 devtools::install_github("rte-antares-rpackage/antaresRead")
 ```
 
@@ -22,12 +24,14 @@ To display the help of the package and see all the functions it
 provides, type:
 
 ``` r
+
 help(package="antaresRead")
 ```
 
 To see a practical example of use of the package, look at the vignette :
 
 ``` r
+
 vignette("antares")
 ```
 
@@ -44,18 +48,21 @@ See website for more documentation:
 Load the package
 
 ``` r
+
 library(antaresRead)
 ```
 
 Select an Antares simulation interactively.
 
 ``` r
+
 setSimulationPath()
 ```
 
 You can also select it programmatically:
 
 ``` r
+
 setsimulationPath("study_path", simulation)
 ```
 
@@ -71,6 +78,7 @@ function [`readAntares()`](reference/readAntares.md). It has many
 parameters that control what data is imported. Here are a few examples:
 
 ``` r
+
 # Read synthetic results of all areas of a study with hourly time step.
 areaData <- readAntares(areas = "all")
 
@@ -91,6 +99,7 @@ Functions `getAreas` and `getLinks` are helpful to create a selection of
 areas or links of interest. Here are a few examples:
 
 ``` r
+
 # select areas containing "fr"
 myareas <- getAreas("fr")
 
@@ -113,12 +122,14 @@ some enhanced capacities offered by package `data.table`. In particular
 it provides a special syntax to manipulate its content:
 
 ``` r
+
 name_of_the_table[filter_rows, select_columns, group_by]
 ```
 
 Here are some examples:
 
 ``` r
+
 # Select lines based on some criteria
 mydata[area == "fr" & month == "JUL"]
 
@@ -139,6 +150,7 @@ look at the documentation and especially at the vignettes of the
 package:
 
 ``` r
+
 help(package="data.table")
 vignette("datatable-intro")
 ```
@@ -153,6 +165,7 @@ tests. If you modifies it, you need to run the following command to
 include the modifications in the tests:
 
 ``` r
+
 saveWd<-getwd()
 setwd('inst/testdata/')
 tar(
