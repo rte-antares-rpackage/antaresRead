@@ -1,5 +1,10 @@
 # Changelog
 
+## antaresRead 3.0.2.9000
+
+NEW FEATURES : \* `.getPathsAPI()` uses a specific endpoint to get the
+list of the outputs of a study.
+
 ## antaresRead 3.0.1
 
 CRAN release: 2026-05-28
