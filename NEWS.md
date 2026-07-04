@@ -2,7 +2,7 @@
 
 # antaresRead 3.0.2.9000
 
-NEW FEATURES :
+ENHANCEMENT :
 * `.getPathsAPI()` uses a specific endpoint to get the list of the outputs of a study.
 
 BUGFIXES :
