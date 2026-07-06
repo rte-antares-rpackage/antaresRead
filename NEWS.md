@@ -1,6 +1,6 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 3.0.2.9000
+# antaresRead 3.1.0
 
 ENHANCEMENT :
 * `.getPathsAPI()` uses a specific endpoint to get the list of the outputs of a study.
