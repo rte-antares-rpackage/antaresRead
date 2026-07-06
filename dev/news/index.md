@@ -2,20 +2,22 @@
 
 ## antaresRead 3.0.2.9000
 
-NEW FEATURES : \* `.getPathsAPI()` uses a specific endpoint to get the
+ENHANCEMENT : \* `.getPathsAPI()` uses a specific endpoint to get the
 list of the outputs of a study.
+
+BUGFIXES : \* `.getSimOptionsAPI()` reads and returns the new converted
+study version format (ex : 9.0 =\> 900) in output mode
+
+BREAKING CHANGES : \* `.getInputOptionsAPI()` Since Antares Web 2.33.0,
+new numbering system in API mode (ex : 7.0, 8.2, 9.2, …)
 
 ## antaresRead 3.0.1
 
 CRAN release: 2026-05-28
 
-BUGFIXES : \* `.getSimOptionsAPI()` reads and returns the new converted
-study version format (ex : 9.0 =\> 900) in output mode \*
-`simulation_variables_names_by_supprt.csv` update to read the new
-thermal output variable `MIN GEN - MWh` available since 9.2 version
-
-BREAKING CHANGES : \* `.getInputOptionsAPI()` Since Antares Web 2.33.0,
-new numbering system in API mode (ex : 7.0, 8.2, 9.2, …)
+BUGFIXES : \* `simulation_variables_names_by_support.csv` update to read
+the new thermal output variable `MIN GEN - MWh` available since 9.2
+version
 
 ## antaresRead 3.0.0
 
