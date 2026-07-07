@@ -1,5 +1,5 @@
 # Relase 3.1.0  
-  -  One main feature to be compliant with the new Antares number version 
+  -  One main feature to be compliant with the new Antares number version in API mode
 ## R CMD check results OK
 
 ❯ checking for unstated dependencies in examples ... OK
