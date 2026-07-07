@@ -2,7 +2,11 @@
   -  One main feature to be compliant with the new Antares number version 
 ## R CMD check results OK
 
-0 errors  | 0 warnings | 0 notes 
+❯ checking for unstated dependencies in examples ... OK
+   WARNING
+  ‘qpdf’ is needed for checks on size reduction of PDFs
+  
+0 errors v | 1 warning x | 0 notes v
 
 ## rev dep check OK
 
