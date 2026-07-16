@@ -12,7 +12,7 @@
 
 \item{y}{A table containing at least one of the columns "area", "timeId" or
 "mcYear". If it is not \code{NULL}, then only tuples \code{(area, timeId,
-  mcYear)} present in this table are kept.}
+mcYear)} present in this table are kept.}
 
 \item{areas}{Vector of area names to keep in the result. If \code{NULL}, all
 areas are kept.}

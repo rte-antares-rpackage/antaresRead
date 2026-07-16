@@ -22,6 +22,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Tatiana Vargas \email{tatiana.vargas@rte-france.com}
   \item Jalal-Edine ZAWAM
   \item Francois Guillem
   \item Benoit Thieurmel
