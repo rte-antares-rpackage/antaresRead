@@ -713,13 +713,13 @@ setSimulationPath <- function(path, simulation = NULL) {
 #' @keywords internal
 .transform_antares_version <- function(antares_version) {
   antares_version <- format(antares_version, nsmall = 2)
-
+  
   # Split major and minor parts
   antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
-
+  
   major <- antares_version_splitted[1]
   minor <- antares_version_splitted[2]
-
+  
   # max 1 digit for minor
   if (nchar(minor) > 2)
     stop("Invalid antares_version format, good format is like '9.99'",
@@ -756,3 +756,4 @@ setSimulationPath <- function(path, simulation = NULL) {
   
   return(sum(antares_version_num * coeff))
 }
+

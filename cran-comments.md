@@ -1,3 +1,22 @@
+# Relase 3.1.0  
+  -  One main feature to be compliant with the new Antares number version in API mode
+## R CMD check results OK
+
+❯ checking for unstated dependencies in examples ... OK
+   WARNING
+  ‘qpdf’ is needed for checks on size reduction of PDFs
+  
+0 errors v | 1 warning x | 0 notes v
+
+## rev dep check OK
+
+── CHECK ─────────────────────────────────────────────────────────────────────────────────────────────────────────── 3 packages ──
+✔ antaresProcessing 0.18.3               ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3                      ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresEditObject 1.0.1                ── E: 0     | W: 0     | N: 0                                                            
+OK: 3
+
+
 # Release 3.0.0
 we decide to change major number because Antares change system version number ...
 
