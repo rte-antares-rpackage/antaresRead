@@ -306,7 +306,25 @@ test_that("Check that if version x < version y, then converted version x is < co
                    8.7,
                    8.8,
                    9.2,
-                   9.3)
+                   9.3,
+                   10.1
+                   )
   ant_version_converted <- sapply(ant_version, .transform_antares_version)
   expect_true(all(diff(ant_version_converted) > 0))
+})
+
+
+test_that("General behaviour of .transform_antares_version_v10()", {
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 3)
+  expect_equal(ant_version, 100300)
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 30)
+  expect_equal(ant_version, 103000)
+
+  ant_version <- .transform_antares_version_v10(version_major = 10, version_minor = 99)
+  expect_equal(ant_version, 109900)
+
+  ant_version <- .transform_antares_version_v10(version_major = 11, version_minor = 0)
+  expect_equal(ant_version, 110000)
 })
