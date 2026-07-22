@@ -4,7 +4,7 @@
 
 NEW FEATURES (V10) :
 * `.transform_antares_version_v10()` to transform a study version format on a format compliant with multiple digits for minor and major (ex : 10.1 => 100100)
-
+* `readInputTS()` can read minDailyReservoirLevels, avgDailyReservoirLevels and maxDailyReservoirLevels time series
 
 # antaresRead 3.1.0
 
