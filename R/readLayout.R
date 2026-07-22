@@ -84,6 +84,7 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
   }
 }
 
+
 .readLayout <- function(opts = simOptions()) {
   
   stopifnot(class(opts) %in% "simOptions")
@@ -102,15 +103,14 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
     return(NULL)
   }
   
+  is_830 <- opts[["antaresVersion"]] >= 830
   
   # areas
   path <- file.path(opts$inputPath, "areas")
   
   
-  if(opts$typeLoad == 'api'){
-    # browser()
+  if (opts$typeLoad == 'api') {
     areas <- read_secure_json(paste0(path, "&depth=4"), token = opts$token, timeout = opts$timeout, config = opts$httr_config)
-    # areas <- areas[names(areas) %in% opts$areaList]
     areas <- areas[!names(areas) %in% c("list", "sets")]
     areas <- rbindlist(mapply(function(X, Y){
       res <- data.table(area = Y)
@@ -118,19 +118,31 @@ readLayout <- function(opts = simOptions(), xyCompare = c("union","intersect")) 
       res$x <- X$ui$ui$x
       res$y <- X$ui$ui$y
       res$color <- rgb(X$ui$ui$color_r, X$ui$ui$color_g, X$ui$ui$color_b, maxColorValue = 255)
+      if (is_830) {
+        res$adequacy_patch_mode <- X[["adequacy_patch"]][["adequacy-patch"]][["adequacy-patch-mode"]]
+      }
       res
     },areas, names(areas), SIMPLIFY = FALSE))
-  }else{
-  areas <- ldply(list.files(path), function(f) {
-    if (!dir.exists(file.path(path, f))) return(NULL)
+  } else {
+    cols_to_keep <- c("area", "x", "y", "color")
+    if (is_830) {
+      cols_to_keep <- c(cols_to_keep, "adequacy_patch_mode")
+    }
+    areas <- ldply(list.files(path), function(f) {
+      
+      if (!dir.exists(file.path(path, f))) return(NULL)
     
-    res <- as.data.frame(readIniFile(file.path(path, f, "ui.ini"))$ui)
-    res$area <- f
-    res$color <- rgb(res$color_r, res$color_g, res$color_b, maxColorValue = 255)
-    
-    res[, c("area", "x", "y", "color")]
-  })
-  areas <- data.table(areas)
+      res <- as.data.frame(readIniFile(file.path(path, f, "ui.ini"))$ui)
+      res$area <- f
+      res$color <- rgb(res$color_r, res$color_g, res$color_b, maxColorValue = 255)
+      if (is_830) {
+        adq <- readIniFile(file.path(path, f, "adequacy_patch.ini"))
+        res$adequacy_patch_mode <- adq[["adequacy-patch"]][["adequacy-patch-mode"]]
+      }
+      
+      res[, cols_to_keep]
+    })
+    areas <- data.table(areas)
   }
   
   # districts

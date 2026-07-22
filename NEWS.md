@@ -1,5 +1,11 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 3.2.0.9000
+
+NEW FEATURES :
+* `.readLayout()` From Antares 8.3.0, add column `adequacy_patch_mode` to get the status of each area
+
+
 # antaresRead 3.1.0
 
 ENHANCEMENT :
