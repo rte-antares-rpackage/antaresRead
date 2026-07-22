@@ -16,6 +16,9 @@ readInputTS(
   misc = NULL,
   reserve = NULL,
   linkCapacity = NULL,
+  minReservoirLevels = NULL,
+  avgReservoirLevels = NULL,
+  maxReservoirLevels = NULL,
   resProduction = NULL,
   st_storage = NULL,
   opts = simOptions(),
@@ -48,6 +51,12 @@ readInputTS(
 \item{reserve}{vector of areas names for which reserve time series must be read}
 
 \item{linkCapacity}{vector of links names for which links characteristics time series must be read}
+
+\item{minReservoirLevels}{vector of areas names for which minimum reservoir levels time series must be read.}
+
+\item{avgReservoirLevels}{vector of areas names for which average reservoir levels time series must be read.}
+
+\item{maxReservoirLevels}{vector of areas names for which maximum reservoir levels time series must be read.}
 
 \item{resProduction}{vector of areas names for which renewables clusters production time series must be read.}
 
