@@ -4,7 +4,7 @@
 # >= v710----
 context("Function readInputTS")
 sapply(studyPathS, function(studyPath){
-  
+
 opts <- setSimulationPath(studyPath)
 
 test_that("Load importation works", {
@@ -78,45 +78,45 @@ test_that("Link capacity importation works", {
 })
 
 test_that("readInputTs must work if we change opts$timeIdMin and opts$timeIdMax", {
-  input <- readInputTS(ror = "all", 
-                       showProgress = FALSE, 
+  input <- readInputTS(ror = "all",
+                       showProgress = FALSE,
                        timeStep = "hourly",
                        opts = opts)
   expect_is(input, "antaresDataTable")
-  
+
   sumRorA <- input[ , .(sumProdRor = sum(ror)), by= .(area, tsId)]
   sumRorA[, ror := sumProdRor]
   sumRorA <- sumRorA[, ror, by= .(area, tsId)]
-  
-  inputA <- suppressWarnings(readInputTS(ror = "all", 
-                       showProgress = FALSE, 
+
+  inputA <- suppressWarnings(readInputTS(ror = "all",
+                       showProgress = FALSE,
                        timeStep = "annual",
                        opts = opts))
-  
+
   inputA[, .(ror) , by= .(area, tsId)]
-  
+
   expect_equal(sumRorA, inputA[, .(ror) , by= .(area, tsId)])
 
   optsNew <- opts
   optsNew$timeIdMin <- 3500
   optsNew$timeIdMax <- 4000
-  
+
   inputAN <- suppressWarnings(readInputTS(ror = "all",
                         showProgress = FALSE,
                         timeStep = "annual",
                         opts = optsNew))
-  
-  inputH <- readInputTS(ror = "all", 
-                       showProgress = FALSE, 
+
+  inputH <- readInputTS(ror = "all",
+                       showProgress = FALSE,
                        timeStep = "hourly",
                        opts = optsNew)
-  
+
   sumRorANew <- inputH[ , .(sumProdRor = sum(ror)), by= .(area, tsId)]
   sumRorANew[, ror := sumProdRor]
   sumRorANew <- sumRorANew[, ror, by= .(area, tsId)]
-  
+
   expect_equal(inputAN[, .( ror) , by= .(area, tsId)], sumRorANew)
-  
+
 })
 
 })
@@ -128,32 +128,32 @@ opts_study_test <- setSimulationPath(path_study_test, simulation = "input")
 # >= v860----
 
 test_that("readInputTs mingen file v860", {
-  
+
   # to read 8760
   opts_study_test$timeIdMax <- 8760
-  
-  # read mingen file of study 
+
+  # read mingen file of study
   mingen_TS <- readInputTS(mingen = "all", opts = opts_study_test, timeStep = "hourly")
-  
+
   # test class object
   testthat::expect_true("data.table" %in% class(mingen_TS))
   testthat::expect_true("antaresDataTable" %in% class(mingen_TS))
-  
-  
-  # select one area 
+
+
+  # select one area
   area_mingen <- unique(mingen_TS$area)[1]
-  
+
   # dimension of mingen file for this area
   dim_file <- max(mingen_TS[area %in% area_mingen, tsId])
-  
+
   # check dim file
   path_file <- file.path(opts_study_test$inputPath, "hydro", "series", area_mingen, "mingen.txt")
-  
+
   nb_col <- dim(antaresRead:::fread_antares(file = path_file, opts = opts_study_test))[2]
-  
+
   # check similar dim
   testthat::expect_equal(dim_file, nb_col)
-  
+
 })
 
 # >= v920----
@@ -171,26 +171,26 @@ opts <- list(
 
 # TS are read in "input/st-storage/series/{areas}/{cluster_name}"
   # NO RHS, only ratio values {0;1} and dim (n=8760, p=1)
-list_value_920 <- c("cost-injection", 
-                   "cost-withdrawal", 
-                   "cost-level", 
-                   "cost-variation-injection", 
+list_value_920 <- c("cost-injection",
+                   "cost-withdrawal",
+                   "cost-level",
+                   "cost-variation-injection",
                    "cost-variation-withdrawal")
 
-list_value_920txt <-  paste0(list_value_920, 
+list_value_920txt <-  paste0(list_value_920,
                           ".txt")
 
-# add_prefix = FALSE 
+# add_prefix = FALSE
 name_cluster <- "my_clust"
 
-path_ts <- file.path(opts$inputPath, 
+path_ts <- file.path(opts$inputPath,
                      "st-storage",
                      "series",
-                     areas, 
+                     areas,
                      name_cluster)
 
-path_ts <- lapply(path_ts, 
-                  file.path, 
+path_ts <- lapply(path_ts,
+                  file.path,
                   list_value_920txt)
 
 path_ts <- unlist(path_ts)
@@ -201,17 +201,17 @@ ts_values <- matrix(0.7, 8760)
 dir_path <- file.path(tempdir(), "st-storage", "series", areas, name_cluster)
 lapply(dir_path, dir.create, recursive = TRUE, showWarnings = FALSE)
 
-# write matrix/series 
+# write matrix/series
 lapply(path_ts, function(x){
-  write.table(x = ts_values, 
-              file = x, 
-              row.names = FALSE, 
+  write.table(x = ts_values,
+              file = x,
+              row.names = FALSE,
               col.names = FALSE)
 })
 
 test_that("st-storage importation works", {
-  input <- readInputTS(st_storage = "all", 
-                       showProgress = FALSE, 
+  input <- readInputTS(st_storage = "all",
+                       showProgress = FALSE,
                        opts = opts)
   expect_is(input, "antaresDataTable")
   expect_gt(nrow(input), 0)
@@ -264,20 +264,80 @@ lapply(path_ts, function(x) {
 
 test_that("st-storage importation works (8736 x N)", {
   input <- readInputTS(st_storage = "all", showProgress = FALSE, opts = opts)
-  
+
   expect_is(input, "antaresDataTable")
   expect_gt(nrow(input), 0)
-  
+
   # 1) time horizon = 8736
   expect_equal(max(input$timeId) - min(input$timeId) + 1, 8736)
-  
+
   # 2) we have N columns (verified via the number of rows per series)
   # each (area, cluster, name_file) must have 8736 * N rows
   dt <- data.table::as.data.table(input)
   rows_per_ts <- dt[, .N, by = .(area, cluster, name_file)]
   expect_true(all(rows_per_ts$N == 8736 * N))
   expect_equal(unique(rows_per_ts$N / 8736), N)
-  
+
   # 3) expected files present
   expect_true(all(list_value_930 %in% unique(input$name_file)))
+})
+
+
+test_that("xxxReservoirLevels importation works (364 x N)", {
+
+  opts <- list(
+    "inputPath"       = tempdir(),
+    "typeLoad"        = "txt",
+    "areaList"        = c("fr", "be"),
+    "timeIdMin"       = 1,
+    "timeIdMax"       = 8736,
+    "start"           = "2028/07/01",
+    "antaresVersion"  = 101000
+  )
+
+  fr_path <- file.path(opts[["inputPath"]], "hydro", "series", "fr")
+  be_path <- file.path(opts[["inputPath"]], "hydro", "series", "be")
+  dir.create(fr_path, recursive = TRUE, showWarnings = FALSE)
+  dir.create(be_path, recursive = TRUE, showWarnings = FALSE)
+
+  N_fr <- 3
+  min_values <- matrix(rep(c(0.1, 0.2, 0.3), 365), nrow = 365, ncol = N_fr)
+  avg_values <- matrix(rep(c(0.4, 0.5, 0.6), 365), nrow = 365, ncol = N_fr)
+  max_values <- matrix(rep(c(0.7, 0.8, 0.9), 365), nrow = 365, ncol = N_fr)
+
+  write.table(min_values, file = file.path(fr_path, "minDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(avg_values, file = file.path(fr_path, "avgDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(max_values, file = file.path(fr_path, "maxDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+
+  N_be <- 2
+  min_values <- matrix(rep(c(0.1, 0.2), 365), nrow = 365, ncol = N_be)
+  avg_values <- matrix(rep(c(0.4, 0.5), 365), nrow = 365, ncol = N_be)
+  max_values <- matrix(rep(c(0.7, 0.8), 365), nrow = 365, ncol = N_be)
+
+  write.table(min_values, file = file.path(be_path, "minDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(avg_values, file = file.path(be_path, "avgDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+  write.table(max_values, file = file.path(be_path, "maxDailyReservoirLevels.txt"), row.names = FALSE, col.names = FALSE)
+
+  input <- readInputTS(minReservoirLevels = "all", timeStep = "daily", showProgress = FALSE, opts = opts)
+  
+  expect_is(input, "antaresDataTable")
+  expect_equal(nrow(input), 364 * (N_fr + N_be))
+  expect_true("minReservoirLevels" %in% colnames(input))
+
+  input_splitted <- split(input, f = list(input$area, input$tsId), drop = TRUE)
+  expect_equal(length(input_splitted), 5)
+  expect_true(all(sapply(input_splitted, nrow) == 364))
+  expect_true(all(c("be.1", "fr.1", "be.2", "fr.2", "fr.3") %in% names(input_splitted)))
+  
+  expect_equal(input_splitted[["fr.1"]][["minReservoirLevels"]], rep(c(0.1, 0.2, 0.3), length.out = 364))
+  expect_equal(input_splitted[["fr.2"]][["minReservoirLevels"]], rep(c(0.3, 0.1, 0.2), length.out = 364))
+  expect_equal(input_splitted[["fr.3"]][["minReservoirLevels"]], rep(c(0.2, 0.3, 0.1), length.out = 364))
+  expect_equal(input_splitted[["be.1"]][["minReservoirLevels"]], rep(c(0.1, 0.2), length.out = 364))
+  expect_equal(input_splitted[["be.2"]][["minReservoirLevels"]], rep(c(0.2, 0.1), length.out = 364))
+  
+  opts[["antaresVersion"]] <- 100000
+  expect_error(
+    readInputTS(minReservoirLevels = "all", timeStep = "daily", showProgress = FALSE, opts = opts),
+    regexp = "minReservoirLevels time series is available since Antares 10.1"
+  )
 })
