@@ -18,7 +18,7 @@
 #' @param hydroStorage
 #'   vector of areas names for which hydrolic storage time series must be read.
 #' @param mingen 
-#' vector of areas names for which Hydro Pmin time series must be read.  
+#' vector of areas names for which Hydro Pmin time series must be read.
 #' (only for Antares version >= 860)  
 #' @param hydroStorageMaxPower
 #'   vector of areas names for which hydrolic storage maximum power time series must be read.
@@ -35,7 +35,13 @@
 #' @param resProduction
 #'   vector of areas names for which renewables clusters production time series must be read.
 #' @param st_storage 
-#'   vector of areas names for which st-storage clusters production time series must be read.  
+#'   vector of areas names for which st-storage clusters production time series must be read.
+#' @param minReservoirLevels 
+#'   vector of areas names for which minimum reservoir levels time series must be read.
+#' @param avgReservoirLevels 
+#'   vector of areas names for which average reservoir levels time series must be read.
+#' @param maxReservoirLevels 
+#'   vector of areas names for which maximum reservoir levels time series must be read.
 #' 
 #' @inheritParams readAntares
 #' 
@@ -82,7 +88,8 @@
 readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL, 
                         mingen= NULL, hydroStorage = NULL, hydroStorageMaxPower = NULL, 
                         wind = NULL, solar = NULL, misc = NULL,
-                        reserve = NULL, linkCapacity = NULL, 
+                        reserve = NULL, linkCapacity = NULL,
+                        minReservoirLevels = NULL, avgReservoirLevels = NULL, maxReservoirLevels = NULL,
                         resProduction = NULL,
                         st_storage= NULL,
                         opts = simOptions(),
@@ -114,6 +121,9 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   if(identical(linkCapacity, "all")) linkCapacity <- opts$linkList
   if(identical(resProduction, "all")) resProduction <- opts$areasWithResClusters
   if(identical(st_storage, "all")) st_storage <- opts$areasWithSTClusters
+  if(identical(minReservoirLevels, "all")) minReservoirLevels <- opts$areaList
+  if(identical(avgReservoirLevels, "all")) avgReservoirLevels <- opts$areaList
+  if(identical(maxReservoirLevels, "all")) maxReservoirLevels <- opts$areaList
   
   # check if study is compatible with "renewables" 
   if((!is.null(opts$parameters$`other preferences`$`renewable-generation-modelling`) &&
@@ -186,6 +196,9 @@ readInputTS <- function(load = NULL, thermalAvailabilities = NULL, ror = NULL,
   .addOutputToRes("linkCapacity", linkCapacity, .importLinkCapacity)
   .addOutputToRes("resProduction", resProduction, .importResProduction)
   .addOutputToRes("st-storage", st_storage, .importSTStorage)
+  .addOutputToRes("minReservoirLevels", minReservoirLevels, .importminReservoirLevels)
+  .addOutputToRes("avgReservoirLevels", avgReservoirLevels, .importavgReservoirLevels)
+  .addOutputToRes("maxReservoirLevels", maxReservoirLevels, .importmaxReservoirLevels)
   
   if (length(res) == 0) stop("At least one argument of readInputTS has to be defined.")
   
