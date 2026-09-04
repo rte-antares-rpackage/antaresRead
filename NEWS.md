@@ -1,5 +1,10 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
+# antaresRead 3.1.1.9000
+
+BUGFIXES :
+* `.importLinkCapacity()` returns a table even if one capacity file is empty. 
+
 # antaresRead 3.1.0
 
 ENHANCEMENT :
