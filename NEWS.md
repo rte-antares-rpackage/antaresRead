@@ -3,7 +3,7 @@
 # antaresRead 3.1.1.9000
 
 BUGFIXES :
-* `.importLinkCapacity()` returns a table even if one capacity file is empty. 
+* `.importLinkCapacity()` returns an output even if one capacity file is empty. 
 
 # antaresRead 3.1.0
 
