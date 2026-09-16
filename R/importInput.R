@@ -249,18 +249,18 @@
   areas <- strsplit(link, " - ")[[1]]
   
   unselect <- unselect$links
-  
+  is_820 <- opts$antaresVersion >= 820
   #TODO DEL after some antaresVersion, by example, del this check after Antares
   #version 8 and check in readAntares the version
   if (opts$antaresVersion >= 650) {
     
-    if (opts$antaresVersion >= 820) {
+    if (is_820) {
       
       beginName <- c("hurdlesCostDirect", "hurdlesCostIndirect",
                      "impedances", "loopFlow", "p.ShiftMin", "p.ShiftMax")
       fun = c("mean", "mean", "mean", "sum", "sum", "sum")
       
-    }else{
+    } else {
       
       beginName <- c("transCapacityDirect", "transCapacityIndirect",
                      "hurdlesCostDirect", "hurdlesCostIndirect",
@@ -275,45 +275,79 @@
     fun = c("sum", "sum", "mean", "mean", "mean")
   }
   
-  if(!is.null(unselect)){
+  if( !is.null(unselect)) {
     colSelect <- which(!beginName%in%unselect)
     names <- beginName[colSelect]
-  }else{
+  } else {
     colSelect <- NULL
     names <- beginName
   }
   
   
-  if(opts$antaresVersion >= 820){
+  if (is_820) {
     #For V>8.2 read  transCapacityDirect in separated file, include MC
-    if(!link%in%opts$linkList)return(NULL)
+    if (!link %in% opts$linkList) {
+      return(NULL)
+    }
     ###Read parameters file
-      res <- .importInputTS(areas[2], timeStep, opts, 
-                            sprintf("%s/%%s_parameters.txt", file.path("links", areas[1])), 
-                            colnames = names,
-                            inputTimeStep = "hourly", 
-                            fun = fun, colSelect = colSelect)
-      
-      
-      ###Read transCapacityDirect file
-      transCapacityDirect <- .importInputTS(areas[2], timeStep, opts, 
-                                            sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
-                                            colnames = "transCapacityDirect",
-                                            inputTimeStep = "hourly", type = "matrix",
-                                            fun = "sum", colSelect = colSelect)
-      
-      ###Read transCapacityIndirect file
-      transCapacityIndirect <- .importInputTS(areas[2], timeStep, opts, 
-                                              sprintf("%s/capacities/%%s_indirect.txt", file.path("links", areas[1])), 
-                                              colnames = "transCapacityIndirect",
-                                              inputTimeStep = "hourly", type = "matrix",
-                                              fun = "sum", colSelect = colSelect)
+    res <- .importInputTS(areas[2], timeStep, opts, 
+                          sprintf("%s/%%s_parameters.txt", file.path("links", areas[1])), 
+                          colnames = names,
+                          inputTimeStep = "hourly", 
+                           fun = fun, colSelect = colSelect)
+    
+    
+    ###Read transCapacityDirect file
+    transCapacityDirect <- .importInputTS(area = areas[2],
+                                          timeStep = timeStep,
+                                          opts = opts, 
+                                          fileNamePattern = sprintf("%s/capacities/%%s_direct.txt", file.path("links", areas[1])), 
+                                          colnames = "transCapacityDirect",
+                                          inputTimeStep = "hourly",
+                                          type = "matrix",
+                                          fun = "sum",
+                                          colSelect = colSelect
+                                          )
+    
+    ###Read transCapacityIndirect file
+    transCapacityIndirect <- .importInputTS(area = areas[2],
+                                            timeStep = timeStep,
+                                            opts = opts, 
+                                            fileNamePattern = sprintf("%s/capacities/%%s_indirect.txt", file.path("links", areas[1])), 
+                                            colnames = "transCapacityIndirect",
+                                            inputTimeStep = "hourly",
+                                            type = "matrix",
+                                            fun = "sum",
+                                            colSelect = colSelect
+                                            )
+    
+    no_transCapacityDirect <- is.null(transCapacityDirect)
+    no_transCapacityIndirect <- is.null(transCapacityIndirect)
+    
+    if (!no_transCapacityDirect && !no_transCapacityIndirect) {
       res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
       res <- merge(transCapacityDirect, res, by = c("area","timeId", "tsId"))
       res <- res[order(area, tsId, timeId)]
-      names <- c("tsId", "transCapacityDirect", "transCapacityIndirect", names)
-
-  }else{
+    }
+     
+    if (no_transCapacityDirect && no_transCapacityIndirect) {
+      res <- res[, ':=' (tsId = 1, transCapacityDirect = 0, transCapacityIndirect = 0)]
+    } else if (no_transCapacityDirect || no_transCapacityIndirect) {
+      
+      if (no_transCapacityDirect) {
+        transCapacityIndirect <- transCapacityIndirect[, transCapacityDirect := 0]
+        res <- merge(transCapacityIndirect, res,  by = c("area","timeId"))
+      }
+      
+      if (no_transCapacityIndirect) {
+        transCapacityDirect <- transCapacityDirect[, transCapacityIndirect := 0]
+        res <- merge(transCapacityDirect, res,  by = c("area","timeId"))
+      }
+    }
+    
+    names <- c("tsId", "transCapacityDirect", "transCapacityIndirect", names)
+  
+  } else {
     
     # A bit hacky, but it works !
     res <- .importInputTS(areas[2], timeStep, opts, 
