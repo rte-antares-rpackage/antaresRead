@@ -329,6 +329,7 @@ test_that("links capacities importation works with empty file(s)", {
               row.names = FALSE,
               col.names = FALSE
               )
+  file.create(file.path(dir_be_capacities, "fr_direct.txt"))
   
   ts_links <- readInputTS(linkCapacity = c("be - fr"), opts = opts)
   testthat::expect_true(all(c("transCapacityDirect", "transCapacityIndirect") %in% colnames(ts_links)))
@@ -337,6 +338,21 @@ test_that("links capacities importation works with empty file(s)", {
   testthat::expect_equal(unique(ts_links$transCapacityDirect), 0)
   testthat::expect_equal(unique(ts_links[tsId == 1]$transCapacityIndirect), 123)
   testthat::expect_equal(unique(ts_links[tsId == 2]$transCapacityIndirect), 456)
+  
+  write.table(matrix(data = c(123,456), nrow = 8760, ncol = 2, byrow = TRUE),
+              file = file.path(dir_be_capacities, "fr_direct.txt"),
+              row.names = FALSE,
+              col.names = FALSE
+              )
+  file.create(file.path(dir_be_capacities, "fr_indirect.txt"))
+  
+  ts_links <- readInputTS(linkCapacity = c("be - fr"), opts = opts)
+  testthat::expect_true(all(c("transCapacityDirect", "transCapacityIndirect") %in% colnames(ts_links)))
+  testthat::expect_equal(nrow(ts_links), 8736 * 2)
+  testthat::expect_equal(sort(unique(ts_links$tsId)), c(1,2))
+  testthat::expect_equal(unique(ts_links$transCapacityIndirect), 0)
+  testthat::expect_equal(unique(ts_links[tsId == 1]$transCapacityDirect), 123)
+  testthat::expect_equal(unique(ts_links[tsId == 2]$transCapacityDirect), 456)
   
   # Empty direct and indirect
   file.create(file.path(dir_be_capacities, "fr_direct.txt"))
