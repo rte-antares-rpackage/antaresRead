@@ -22,6 +22,8 @@ Useful links:
 
 Authors:
 
+- Tatiana Vargas <tatiana.vargas@rte-france.com>
+
 - Jalal-Edine ZAWAM
 
 - Francois Guillem

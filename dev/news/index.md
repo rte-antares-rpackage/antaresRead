@@ -1,6 +1,13 @@
 # Changelog
 
-## antaresRead 3.0.2.9000
+## antaresRead 3.1.1.9000
+
+BUGFIXES : \* `.importLinkCapacity()` returns an output even if one
+capacity file is empty.
+
+## antaresRead 3.1.0
+
+CRAN release: 2026-07-07
 
 ENHANCEMENT : \* `.getPathsAPI()` uses a specific endpoint to get the
 list of the outputs of a study.
