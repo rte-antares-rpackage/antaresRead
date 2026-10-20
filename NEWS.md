@@ -1,9 +1,13 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
-# antaresRead 3.2.0.9000
+
+# antaresRead 3.1.1.9000
 
 NEW FEATURES (V10) :
 * `.transform_antares_version_v10()` to transform a study version format on a format compliant with multiple digits for minor and major (ex : 10.1 => 100100)
+
+BUGFIXES :
+* `.importLinkCapacity()` returns an output even if one capacity file is empty.
 
 
 # antaresRead 3.1.0
