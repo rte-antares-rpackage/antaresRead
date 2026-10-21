@@ -712,8 +712,14 @@ setSimulationPath <- function(path, simulation = NULL) {
 #'
 #' @keywords internal
 .transform_antares_version <- function(antares_version) {
-  antares_version <- format(antares_version, nsmall = 2)
   
+  antares_version <- as.character(antares_version)
+  
+  # x.0 as a numeric is treated as x
+  # force the minor version to be 0
+  if (!grepl(pattern = ".", x = antares_version, fixed = TRUE)) {
+    antares_version <- paste(antares_version, "0", sep = ".")
+  }
   # Split major and minor parts
   antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
   
@@ -721,18 +727,16 @@ setSimulationPath <- function(path, simulation = NULL) {
   minor <- antares_version_splitted[2]
   
   # max 1 digit for minor
-  if (nchar(minor) > 2)
+  if (nchar(minor) > 2) {
     stop("Invalid antares_version format, good format is like '9.99'",
          call. = FALSE)
-
+  }
+  
   if (as.numeric(major) >= 10) {
     return(.transform_antares_version_v10(version_major = major, version_minor = minor))
   }
 
-  # convert to numeric for package understanding
-  num_version <- round(as.numeric(antares_version)*100)
-
-  return(num_version)
+  return(round(as.numeric(antares_version)*100))
 }
 
 
