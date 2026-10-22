@@ -304,10 +304,16 @@ test_that("Check that if version x < version y, then converted version x is < co
                    8.5,
                    8.6,
                    8.7,
-                   8.8,
-                   9.2,
-                   9.3,
-                   10.1
+                   8.8
+                   )
+  ant_version_converted <- sapply(ant_version, .transform_antares_version)
+  expect_true(all(diff(ant_version_converted) > 0))
+  
+  # For Antares version, setSimulationPath() uses the number version as a character
+  ant_version <- c("9.2",
+                   "9.3",
+                   "10.1",
+                   "10.10"
                    )
   ant_version_converted <- sapply(ant_version, .transform_antares_version)
   expect_true(all(diff(ant_version_converted) > 0))
