@@ -416,10 +416,9 @@ setSimulationPath <- function(path, simulation = NULL) {
   if(info_version_1 < 600 & info_version_1 >= 9) {
     info$version <- .transform_antares_version(antares_version = info$version)
   }
-
-  # Convert the Antares number version (from 9.0)
+  
   if(info_version_1 < 600 & info_version_1 >= 10) {
-    # Read file info.antares-output to keep version as a character. If it is not a character "10.20" will be 10.2
+    # Read file info.antares-output to keep version as a character. If it is not a character, "10.20" will be 10.2
     metadata <- readLines(con = file.path(file.path(simPath, "info.antares-output")))
     line_antares_version <- metadata[startsWith(x = metadata, prefix = "version")]
     line_antares_version <- unlist(strsplit(line_antares_version, split = "="))
