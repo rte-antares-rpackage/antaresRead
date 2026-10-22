@@ -351,10 +351,21 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
 
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  antaresVersion_1 <- antaresVersion
+  
   # Convert the Antares number version (from 9.0)
-  if(antaresVersion<600 & antaresVersion>=9)
+  if (antaresVersion < 600 & antaresVersion >= 9) {  
     antaresVersion <- .transform_antares_version(antares_version = antaresVersion)
-
+  }
+  
+  # Read file study.antares to keep version as a character. If it is not a character "10.20" will be 10.2
+  if (antaresVersion_1 < 600 & antaresVersion_1 >= 10) {
+    metadata <- readLines(con = file.path(studyPath, "study.antares"))
+    line_antares_version <- metadata[startsWith(x = metadata, prefix = "version")]
+    line_antares_version <- unlist(strsplit(line_antares_version, split = "="))
+    antaresVersion <- .transform_antares_version(antares_version = trimws(line_antares_version[2]))
+  }
+  
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
 
   # Areas with thermal clusters
@@ -400,9 +411,19 @@ setSimulationPath <- function(path, simulation = NULL) {
   info <- readIniFile(file.path(simPath, "info.antares-output"))$general
   params <- readIniFile(file.path(simPath, "about-the-study/parameters.ini"))
   
+  info_version_1 <- info$version
   # Convert the Antares number version (from 9.0)
-  if(info$version<600 & info$version>=9) {
+  if(info_version_1 < 600 & info_version_1 >= 9) {
     info$version <- .transform_antares_version(antares_version = info$version)
+  }
+
+  # Convert the Antares number version (from 9.0)
+  if(info_version_1 < 600 & info_version_1 >= 10) {
+    # Read file info.antares-output to keep version as a character. If it is not a character "10.20" will be 10.2
+    metadata <- readLines(con = file.path(file.path(simPath, "info.antares-output")))
+    line_antares_version <- metadata[startsWith(x = metadata, prefix = "version")]
+    line_antares_version <- unlist(strsplit(line_antares_version, split = "="))
+    info$version <- .transform_antares_version(antares_version = trimws(line_antares_version[2]))
   }
   
   # Where are located the results ?
