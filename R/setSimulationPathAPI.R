@@ -64,7 +64,9 @@
   params <- read_secure_json(file.path(simPath, "about-the-study", "parameters"), ...)
   
   info <- read_secure_json(file.path(simPath, "info", "general"), ...)
-
+  # info is a list with a property version. This property is an integer and should be a character to be treated properly.
+  # A simulation run with a launcher 10.20 will have 10.2 as version. Possible bug in the future.
+	
   # Where are located the results ?
   simDataPath <- file.path(simPath, tolower(as.character(info$mode)))
   antares_version <- info$version
