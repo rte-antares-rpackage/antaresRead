@@ -36,6 +36,7 @@ Imports:
     shiny,
     pbapply,
     doParallel,
+    parallel,
     jsonlite,
     httr,
     utils,
@@ -50,7 +51,6 @@ Suggests:
     knitr,
     rmarkdown,
     foreach,
-    parallel,
     htmltools
 RoxygenNote: 7.2.2
 Roxygen: list(markdown = TRUE)
