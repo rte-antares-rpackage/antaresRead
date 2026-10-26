@@ -3,7 +3,9 @@
 # antaresRead 3.1.1.9000
 
 BUGFIXES :
-* `.importLinkCapacity()` returns an output even if one capacity file is empty. 
+* `.importLinkCapacity()` returns an output even if one capacity file is empty.
+* Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
+
 
 # antaresRead 3.1.0
 
