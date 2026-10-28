@@ -351,10 +351,21 @@ setSimulationPath <- function(path, simulation = NULL) {
   linksDef <- data.table(linksDef)
 
   antaresVersion <- readIniFile(file.path(studyPath, "study.antares"))$antares$version
+  antaresVersion_1 <- antaresVersion
+  
   # Convert the Antares number version (from 9.0)
-  if(antaresVersion<600 & antaresVersion>=9)
+  if (antaresVersion < 600 & antaresVersion >= 9) {  
     antaresVersion <- .transform_antares_version(antares_version = antaresVersion)
-
+  }
+  
+  # Read file study.antares to keep version as a character. If it is not a character "10.20" will be 10.2
+  if (antaresVersion_1 < 600 & antaresVersion_1 >= 10) {
+    metadata <- readLines(con = file.path(studyPath, "study.antares"))
+    line_antares_version <- metadata[startsWith(x = metadata, prefix = "version")]
+    line_antares_version <- unlist(strsplit(line_antares_version, split = "="))
+    antaresVersion <- .transform_antares_version(antares_version = trimws(line_antares_version[2]))
+  }
+  
   params <- readIniFile(file.path(studyPath, "settings/generaldata.ini"))
 
   # Areas with thermal clusters
@@ -400,9 +411,18 @@ setSimulationPath <- function(path, simulation = NULL) {
   info <- readIniFile(file.path(simPath, "info.antares-output"))$general
   params <- readIniFile(file.path(simPath, "about-the-study/parameters.ini"))
   
+  info_version_1 <- info$version
   # Convert the Antares number version (from 9.0)
-  if(info$version<600 & info$version>=9) {
+  if(info_version_1 < 600 & info_version_1 >= 9) {
     info$version <- .transform_antares_version(antares_version = info$version)
+  }
+  
+  if(info_version_1 < 600 & info_version_1 >= 10) {
+    # Read file info.antares-output to keep version as a character. If it is not a character, "10.20" will be 10.2
+    metadata <- readLines(con = file.path(file.path(simPath, "info.antares-output")))
+    line_antares_version <- metadata[startsWith(x = metadata, prefix = "version")]
+    line_antares_version <- unlist(strsplit(line_antares_version, split = "="))
+    info$version <- .transform_antares_version(antares_version = trimws(line_antares_version[2]))
   }
   
   # Where are located the results ?
@@ -712,8 +732,14 @@ setSimulationPath <- function(path, simulation = NULL) {
 #'
 #' @keywords internal
 .transform_antares_version <- function(antares_version) {
-  antares_version <- format(antares_version, nsmall = 2)
   
+  antares_version <- as.character(antares_version)
+  
+  # x.0 as a numeric is treated as x
+  # force the minor version to be 0
+  if (!grepl(pattern = ".", x = antares_version, fixed = TRUE)) {
+    antares_version <- paste(antares_version, "0", sep = ".")
+  }
   # Split major and minor parts
   antares_version_splitted <- unlist(strsplit(antares_version, split = "\\."))
   
@@ -721,12 +747,37 @@ setSimulationPath <- function(path, simulation = NULL) {
   minor <- antares_version_splitted[2]
   
   # max 1 digit for minor
-  if (nchar(minor) > 2)
+  if (nchar(minor) > 2) {
     stop("Invalid antares_version format, good format is like '9.99'",
          call. = FALSE)
+  }
   
-  # convert to numeric for package understanding
-  num_version <- round(as.numeric(antares_version)*100)
+  if (as.numeric(major) >= 10) {
+    return(.transform_antares_version_v10(version_major = major, version_minor = minor))
+  }
 
-  return(num_version)
+  return(round(as.numeric(antares_version)*100))
 }
+
+
+#' @title Convert the Antares number version for a study version >= 10
+#' @description From V10.0, ensure consistency between Antares number version and Antares number version converted.
+#'
+#' @param version_major `numeric` Antares major version
+#' @param version_minor `numeric` Antares minor version
+#' @param version_patch `numeric` Antares patch version if exists, default to 0
+#'
+#' @return `numeric` value according to study version
+#'
+#' @keywords internal
+#' @noRd
+.transform_antares_version_v10 <- function(version_major, version_minor, version_patch = 0) {
+  
+  antares_version_num <- as.numeric(c(version_major, version_minor, version_patch))
+  # multiply by 100^2 for the major and 100^1 for the minor
+  # ensure that "x.99" < "y.0" if x < y and that "x.y" < "x.z" if y < z
+  coeff <- c(10000, 100, 1)
+  
+  return(sum(antares_version_num * coeff))
+}
+
