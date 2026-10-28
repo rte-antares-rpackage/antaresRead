@@ -86,6 +86,75 @@ selected simulation. You can store this object in a variable for later
 use but this is not necessary because at any moment you can retrieve
 these informations.
 
+## Study version/numbering
+
+The object returned by setSimulationPath()/setSimulationPathAPI()
+contains some metadata of the study. (studyPath, inputPath,
+antaresVersion, …)
+
+Study version in the Antares files can be found in
+studyPath/study.antares (input mode) or
+studyPath/output/output_name/info.antares-output (output mode). Up to
+8.8.z version, the study version is an integer (710, 820, 880). Since
+9.2 version, the study version is at the format x.y (9.2, 9.3, 10.2).
+
+antaresVersion in the object returned by
+setSimulationPath()/setSimulationPathAPI() is an integer trying to match
+an Antares version with a specific integer. There was nothing to do up
+to 9.2 version.
+
+``` r
+
+# Study version
+820
+
+opts[["antaresVersion"]]
+820
+```
+
+Since 9.2 version, we have to convert a x.y to a specific integer.
+
+``` r
+
+# Study version
+9.2
+
+opts[["antaresVersion"]]
+920
+```
+
+This integer has to respect some constraints. Current code does not
+manage double digit in minor version correctly. 9.3 and 9.30 (which is
+not an existing version) give the same value 930. That’s why, from 10.2
+version, we decide to compute this integer in another way.
+
+``` r
+Antares version : 8.2.0 < 8.8.0 < 9.2 < 9.3 < 10.2 < 10.20
+
+# Must be TRUE but is not TRUE
+opts[["antaresVersion"]] : 820 < 880 < 920 < 930 < 1020 < 1020
+```
+
+New formula :
+
+``` r
+
+# x.y study version
+f(x,y) = function(x,y) {x * 100^2 + y * 100^1 + 0 * 100^0}
+```
+
+`10.2` will return `100200` and `10.20` will return `102000`.
+
+``` r
+Antares version : 8.2.0 < 8.8.0 < 9.2 < 9.3 < 10.2 < 10.20
+
+# Must be TRUE but and is TRUE
+opts[["antaresVersion"]] : 820 < 880 < 920 < 930 < 100200 < 102000
+```
+
+This new format can impact your existing scripts. If you use a condition
+that needs the antaresVersion value, it is better to use the new format.
+
 ## Reading time series
 
 Once `setSimulationPath` has been run, you can start reading data.

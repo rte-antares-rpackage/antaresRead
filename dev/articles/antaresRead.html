@@ -64,7 +64,7 @@
                         <h4 data-toc-skip class="author">François
 Guillem</h4>
             
-            <h4 data-toc-skip class="date">2026-10-26</h4>
+            <h4 data-toc-skip class="date">2026-10-28</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/rte-antares-rpackage/antaresRead/blob/master/vignettes/antaresRead.Rmd" class="external-link"><code>vignettes/antaresRead.Rmd</code></a></small>
       <div class="d-none name"><code>antaresRead.Rmd</code></div>
@@ -142,6 +142,58 @@ use but this is not necessary because at any moment you can retrieve
 these informations.</p>
 </div>
 <div class="section level2">
+<h2 id="study-versionnumbering">Study version/numbering<a class="anchor" aria-label="anchor" href="#study-versionnumbering"></a>
+</h2>
+<p>The object returned by setSimulationPath()/setSimulationPathAPI()
+contains some metadata of the study. (studyPath, inputPath,
+antaresVersion, …)</p>
+<p>Study version in the Antares files can be found in
+studyPath/study.antares (input mode) or
+studyPath/output/output_name/info.antares-output (output mode). Up to
+8.8.z version, the study version is an integer (710, 820, 880). Since
+9.2 version, the study version is at the format x.y (9.2, 9.3,
+10.2).</p>
+<p>antaresVersion in the object returned by
+setSimulationPath()/setSimulationPathAPI() is an integer trying to match
+an Antares version with a specific integer. There was nothing to do up
+to 9.2 version.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Study version</span></span>
+<span><span class="fl">820</span></span>
+<span></span>
+<span><span class="va">opts</span><span class="op">[[</span><span class="st">"antaresVersion"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fl">820</span></span></code></pre></div>
+<p>Since 9.2 version, we have to convert a x.y to a specific
+integer.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Study version</span></span>
+<span><span class="fl">9.2</span></span>
+<span></span>
+<span><span class="va">opts</span><span class="op">[[</span><span class="st">"antaresVersion"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fl">920</span></span></code></pre></div>
+<p>This integer has to respect some constraints. Current code does not
+manage double digit in minor version correctly. 9.3 and 9.30 (which is
+not an existing version) give the same value 930. That’s why, from 10.2
+version, we decide to compute this integer in another way.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>Antares version <span class="sc">:</span> <span class="dv">8</span>.<span class="fl">2.0</span> <span class="sc">&lt;</span> <span class="dv">8</span>.<span class="fl">8.0</span> <span class="sc">&lt;</span> <span class="fl">9.2</span> <span class="sc">&lt;</span> <span class="fl">9.3</span> <span class="sc">&lt;</span> <span class="fl">10.2</span> <span class="sc">&lt;</span> <span class="fl">10.20</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># Must be TRUE but is not TRUE</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>opts[[<span class="st">"antaresVersion"</span>]] <span class="sc">:</span> <span class="dv">820</span> <span class="sc">&lt;</span> <span class="dv">880</span> <span class="sc">&lt;</span> <span class="dv">920</span> <span class="sc">&lt;</span> <span class="dv">930</span> <span class="sc">&lt;</span> <span class="dv">1020</span> <span class="sc">&lt;</span> <span class="dv">1020</span></span></code></pre></div>
+<p>New formula :</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># x.y study version</span></span>
+<span><span class="fu">f</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>,<span class="va">y</span><span class="op">)</span> <span class="op">{</span><span class="va">x</span> <span class="op">*</span> <span class="fl">100</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span> <span class="op">*</span> <span class="fl">100</span><span class="op">^</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">0</span> <span class="op">*</span> <span class="fl">100</span><span class="op">^</span><span class="fl">0</span><span class="op">}</span></span></code></pre></div>
+<p><code>10.2</code> will return <code>100200</code> and
+<code>10.20</code> will return <code>102000</code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>Antares version <span class="sc">:</span> <span class="dv">8</span>.<span class="fl">2.0</span> <span class="sc">&lt;</span> <span class="dv">8</span>.<span class="fl">8.0</span> <span class="sc">&lt;</span> <span class="fl">9.2</span> <span class="sc">&lt;</span> <span class="fl">9.3</span> <span class="sc">&lt;</span> <span class="fl">10.2</span> <span class="sc">&lt;</span> <span class="fl">10.20</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co"># Must be TRUE but and is TRUE</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>opts[[<span class="st">"antaresVersion"</span>]] <span class="sc">:</span> <span class="dv">820</span> <span class="sc">&lt;</span> <span class="dv">880</span> <span class="sc">&lt;</span> <span class="dv">920</span> <span class="sc">&lt;</span> <span class="dv">930</span> <span class="sc">&lt;</span> <span class="dv">100200</span> <span class="sc">&lt;</span> <span class="dv">102000</span></span></code></pre></div>
+<p>This new format can impact your existing scripts. If you use a
+condition that needs the antaresVersion value, it is better to use the
+new format.</p>
+</div>
+<div class="section level2">
 <h2 id="reading-time-series">Reading time series<a class="anchor" aria-label="anchor" href="#reading-time-series"></a>
 </h2>
 <p>Once <code>setSimulationPath</code> has been run, you can start
@@ -156,7 +208,7 @@ areas)</p>
 but all of them are optional. Without any argument the function will
 still works and it will read the synthetic results for all the areas.
 But you can import other kind of output. here are some examples:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Synthetic results for all links</span></span>
 <span><span class="fu"><a href="../reference/readAntares.html">readAntares</a></span><span class="op">(</span>links<span class="op">=</span><span class="st">"all"</span><span class="op">)</span></span>
 <span></span>
@@ -172,7 +224,7 @@ But you can import other kind of output. here are some examples:</p>
 you want. For instance, the following command reads the first 10
 Monte-Carlo scenarii data at monthly time step for the areas named
 “area1”, “area2” and “area3”.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/readAntares.html">readAntares</a></span><span class="op">(</span>areas<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area1"</span>, <span class="st">"area2"</span>, <span class="st">"area3"</span><span class="op">)</span>, timeStep<span class="op">=</span><span class="st">"monthly"</span>,</span>
 <span>            synthesis<span class="op">=</span><span class="cn">FALSE</span>, mcYears <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span></span></code></pre></div>
 <p>Finally many arguments of <code>readAntares</code> can be used to add
@@ -188,29 +240,29 @@ tables depending on the query of the user. More precisely the tables are
 <code>data.table</code> objects. It is then possible to use the powerful
 syntax offered by the package <code>data.table</code>.</p>
 <p>The general syntax is like:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">name_of_the_table</span><span class="op">[</span><span class="va">filter_rows</span>, <span class="va">select_columns</span>, <span class="va">group_by</span><span class="op">]</span></span></code></pre></div>
 <p>For instance, <code>areas[area == "08_fr", .(timeId, LOAD)]</code>
 will return a table containing columns <code>timeId</code> and
 <code>LOAD</code> for the area names “08_fr”. In the select statement,
 it is also possible to calculate new columns. For instance, one can
 compute the net load like this:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>areas[, .(area, timeId, <span class="at">netLoad =</span> LOAD <span class="sc">-</span> <span class="st">`</span><span class="at">ROW BAL.</span><span class="st">`</span> <span class="sc">-</span> PSP <span class="sc">-</span> MISC. <span class="sc">-</span> NDG <span class="sc">-</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                                    H. ROR <span class="sc">-</span> WIND <span class="sc">-</span> SOLAR)]</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>areas[, .(area, timeId, <span class="at">netLoad =</span> LOAD <span class="sc">-</span> <span class="st">`</span><span class="at">ROW BAL.</span><span class="st">`</span> <span class="sc">-</span> PSP <span class="sc">-</span> MISC. <span class="sc">-</span> NDG <span class="sc">-</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>                                    H. ROR <span class="sc">-</span> WIND <span class="sc">-</span> SOLAR)]</span></code></pre></div>
 <p>One can also compute aggregated statistics. For instance, the
 following code will compute the total load of all areas per
 <code>timeId</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">areas</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span>totalLoad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">timeId</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>Of course, aggregation also works with filters. For instance to
 compute the total load only for french areas (assuming their names
 contain “fr”):</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">areas</span><span class="op">[</span><span class="va">area</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="../reference/getAreas.html">getAreas</a></span><span class="op">(</span><span class="st">"fr"</span><span class="op">)</span>, <span class="fu">.</span><span class="op">(</span>totalLoad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">LOAD</span><span class="op">)</span><span class="op">)</span>, by <span class="op">=</span> <span class="fu">.</span><span class="op">(</span><span class="va">timeId</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <p>If you are not familiar with package <code>data.table</code>, you
 should have a look at the documentation and especially at the vignettes
 of the package:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package<span class="op">=</span><span class="st">"data.table"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -230,15 +282,15 @@ links. Hopefully, the functions <code>getAreas</code>and
 regular expressions. For instance, let us assume that the name of all
 areas located in France start with the characters”fr”, then the
 following command returns the list of all french areas:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getAreas.html">getAreas</a></span><span class="op">(</span><span class="st">"fr"</span><span class="op">)</span></span></code></pre></div>
 <p>To exclude offshore production areas (assuming their name contains
 the word “offshore”) one can use:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/getAreas.html">getAreas</a></span><span class="op">(</span><span class="st">"fr"</span>, exclude<span class="op">=</span><span class="st">"offshore"</span><span class="op">)</span></span></code></pre></div>
 <p>A few other functions are provided by the package. To see a list of
 them, type in the console:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/help.html" class="external-link">help</a></span><span class="op">(</span>package <span class="op">=</span> <span class="st">"antaresRead"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
