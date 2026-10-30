@@ -10,6 +10,10 @@ BUGFIXES :
 * `.importLinkCapacity()` returns an output even if one capacity file is empty.
 * Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
 
+INTERNAL CHANGES :
+
+* `.importOutputForDistricts()` use the endpoint `aggregate` to read th output data for the districts
+
 
 # antaresRead 3.1.0
 
