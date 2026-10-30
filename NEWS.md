@@ -12,7 +12,7 @@ BUGFIXES :
 
 INTERNAL CHANGES :
 
-* `.importOutputForDistricts()` use the endpoint `aggregate` to read th output data for the districts
+* `.importOutputForDistricts()` use the endpoint `aggregate` to read the output data for the districts
 
 
 # antaresRead 3.1.0
