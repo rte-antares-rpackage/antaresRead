@@ -588,13 +588,30 @@
 
 
 .importOutputForDistricts <- function(districts, timeStep, select = NULL, mcYears = NULL,
-                                      showProgress, opts, parallel) {
-  if (is.null(districts)) return(NULL)
-
+                                      showProgress, opts, parallel, number_of_batches) {
+  if (is.null(districts)) {
+    return(NULL)
+  }
+  
+  if (is_api_study(opts = opts)) {
+    
+    res <- .download_and_format_api_get_aggregate_areas_result_bulk(
+        areas             = paste("@", districts),
+        timeStep          = timeStep,
+        query_file        = "values",
+        select            = select,
+        mcYears           = mcYears,
+        number_of_batches = number_of_batches,
+        opts              = opts
+      )
+    
+    return(res[, `:=`(district = as.factor(gsub("^@ ", "", area)), area = NULL)])
+  }
+  
   processFun <- function(dt) {
     dt[, district := as.factor(gsub("^@ ", "", district))]
   }
-
+  
   suppressWarnings(
     .importOutput("areas", "values", "district", paste("@", districts), timeStep, select,
                   mcYears, showProgress, opts, processFun, parallel = parallel)
