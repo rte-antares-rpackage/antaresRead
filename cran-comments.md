@@ -1,13 +1,13 @@
 # Relase 3.2.0  
   - One main feature to transform a study version into an integer from V10
   - Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
+
 ## R CMD check results OK
 
-❯ checking for unstated dependencies in examples ... OK
-   WARNING
-  ‘qpdf’ is needed for checks on size reduction of PDFs
-  
-0 errors v | 1 warning x | 0 notes v
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
+
+0 errors v | 0 warnings v | 1 note x
 
 ## rev dep check OK
 
