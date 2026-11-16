@@ -11,7 +11,6 @@ BUGFIXES :
 * Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
 
 INTERNAL CHANGES :
-
 * `.importOutputForDistricts()` use the endpoint `aggregate` to read the output data for the districts
 
 
