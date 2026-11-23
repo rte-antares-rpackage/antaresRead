@@ -1,7 +1,7 @@
 > Copyright © 2016 RTE Réseau de transport d’électricité
 
 
-# antaresRead 3.1.1.9000
+# antaresRead 3.2.0
 
 NEW FEATURES (V10) :
 * `.transform_antares_version_v10()` to transform a study version format on a format compliant with multiple digits for minor and major (ex : 10.1 => 100100)
@@ -11,7 +11,6 @@ BUGFIXES :
 * Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
 
 INTERNAL CHANGES :
-
 * `.importOutputForDistricts()` use the endpoint `aggregate` to read the output data for the districts
 
 

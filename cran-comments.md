@@ -1,3 +1,23 @@
+# Relase 3.2.0  
+  - One main feature to transform a study version into an integer from V10
+  - Fix CRAN note by moving `parallel` from `Suggests` to `Imports` in `DESCRIPTION` file
+
+## R CMD check results OK
+
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
+
+0 errors v | 0 warnings v | 1 note x
+
+## rev dep check OK
+
+── CHECK ─────────────────────────────────────────────────────────────────────────────────────────────────────────── 3 packages ──
+✔ antaresProcessing 0.18.3               ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresViz 0.18.3                      ── E: 0     | W: 0     | N: 0                                                            
+✔ antaresEditObject 1.0.1                ── E: 0     | W: 0     | N: 0                                                            
+OK: 3
+
+
 # Relase 3.1.0  
   -  One main feature to be compliant with the new Antares number version in API mode
 ## R CMD check results OK
